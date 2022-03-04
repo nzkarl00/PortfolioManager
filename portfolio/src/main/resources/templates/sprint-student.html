@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio Project</title>
+    <style>
+            #banner {
+                display:grid;
+                grid-template-columns: auto auto;
+            }
+
+            #title_logo {
+                float: left;
+            }
+
+            #title_heading {
+                float: left;
+            }
+
+            #profile_logo {
+                float: right;
+            }
+
+            #profile_heading {
+                float: right;
+            }
+
+            p {
+               word-wrap: break-word;
+               width: 400px;
+               padding-left: 20px;
+            }
+
+            .detail {
+              padding-left: 20px;
+            }
+
+        </style>
+</head>
+<body>
+<div id="banner">
+    <div id="title">
+        <img src="logo.PNG" alt="Logo" id="title_logo" width="64" height="64">
+        <h1 id="title_heading">Project Portfolio</h1>
+    </div>
+    <div id="profile">
+        <img src="profile_logo.PNG" alt="Logo" id="profile_logo" width="64" height="64">
+        <h5 id="profile_heading">Profile</h5>
+    </div>
+</div>
+
+<hr>
+
+<div id="details">
+    <div class = "detail" id="label">
+        <h3>Label:</h3>
+        <div class="info">
+            <div class="item"><p>Sprint 1</p></div>
+        </div>
+    </div>
+    <div class = "detail" id="name">
+        <h3>Name:</h3>
+        <div class="info">
+            <div class="item"><p>Sprint 1</p></div>
+        </div>
+    </div>
+    <div class = "detail" id="description">
+        <h3>Description:</h3>
+        <div class="info">
+            <div class="item"><p>This is the first sprint and we intend to lorem ipsum dolor sit amet,
+                consectetur adipiscing elit. Proin eu libero ultrices, luctus arcu nec,
+                ullamcorper purus. Nam arcu libero, tincidunt nec augue quis, egestas
+                iaculis mauris. Curabitur auctor nisi lectus, a ultrices tellus ultricies.</p></div>
+        </div>
+
+    </div>
+    <div class = "detail" id="dates">
+        <h3>Dates:</h3>
+        <div class="info">
+            <div class="item"><p>Start: 28 Feb 2022</p>
+                <p>End: 8 Mar 2022</p></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
