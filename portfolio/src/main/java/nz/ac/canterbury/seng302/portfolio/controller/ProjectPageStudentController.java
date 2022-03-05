@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ProjectPageStudentController {
 
     @GetMapping("/projectPageStudent")
-    public String greeting(
-            @AuthenticationPrincipal AuthState principal,
-            Model model
-    ) {
+    public String projectPageStudentController(Model model) {
         return "projectPageStudent";
     }
 }
