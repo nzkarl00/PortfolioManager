@@ -71,6 +71,12 @@
     <h3>Label:</h3>
     <div class="info">
       <div class="item"><p>Sprint 1</p></div>
+      <form th:action="@{./favouriteColour}"
+            method="post">
+        <input id="nameChange" type="text" th:name="favouriteColour" th:value="*{favouriteColour}">
+
+        <button type="submit">Submit edit</button>
+      </form>
       <div class="item"><button><img src="edit.PNG" width="16" height="16"></button></div>
     </div>
   </div>
