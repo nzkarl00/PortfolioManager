@@ -16,9 +16,60 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class SprintTeacherController {
 
   @GetMapping("/sprintTeacher")
-  public String sprintTeacher(Model model) {
-    model.addAttribute("message", "Hello from the controller");
+  public String sprintTeacher(
+      @AuthenticationPrincipal AuthState principal,
+      @RequestParam(name="name", required=false, defaultValue="Sprint 1") String editName,
+      @RequestParam(name="description", required=false, defaultValue="This is the first sprint and we " +
+          "intend to lorem ipsum dolor sit amet,\n" +
+          "        consectetur adipiscing elit. Proin eu libero ultrices, luctus arcu nec,\n" +
+          "        ullamcorper purus. Nam arcu libero, tincidunt nec augue quis, egestas\n" +
+          "        iaculis mauris. Curabitur auctor nisi lectus, a ultrices tellus ultricies.")
+          String editDescription,
+      @RequestParam(name="start", required=false, defaultValue="28 Feb 2022") String editStart,
+      @RequestParam(name="end", required=false, defaultValue="7 Mar 2022") String editEnd,
+      Model model
+  ) {
+    model.addAttribute("currentName", editName);
+    model.addAttribute("currentDescription", editDescription);
+    model.addAttribute("currentStart", editStart);
+    model.addAttribute("currentEnd", editEnd);
     return "sprintTeacher";
+  }
+
+  @PostMapping("/editName")
+  public String editName(
+      @AuthenticationPrincipal AuthState principal,
+      @RequestParam(value="editName") String editName,
+      Model model
+  ) {
+    return "redirect:/sprintTeacher?name=" + editName;
+  }
+
+  @PostMapping("/editDescription")
+  public String editDescription(
+      @AuthenticationPrincipal AuthState principal,
+      @RequestParam(value="editDescription") String editDescription,
+      Model model
+  ) {
+    return "redirect:/sprintTeacher?description=" + editDescription;
+  }
+
+  @PostMapping("/editStart")
+  public String editStart(
+      @AuthenticationPrincipal AuthState principal,
+      @RequestParam(value="editStart") String editStart,
+      Model model
+  ) {
+    return "redirect:/sprintTeacher?start=" + editStart;
+  }
+
+  @PostMapping("/editEnd")
+  public String editEnd(
+      @AuthenticationPrincipal AuthState principal,
+      @RequestParam(value="editEnd") String editEnd,
+      Model model
+  ) {
+    return "redirect:/sprintTeacher?end=" + editEnd;
   }
 
 }
