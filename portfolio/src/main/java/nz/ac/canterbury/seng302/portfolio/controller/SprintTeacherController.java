@@ -29,11 +29,21 @@ public class SprintTeacherController {
       @RequestParam(name="end", required=false, defaultValue="7 Mar 2022") String editEnd,
       Model model
   ) {
-    model.addAttribute("currentName", editName);
-    model.addAttribute("currentDescription", editDescription);
-    model.addAttribute("currentStart", editStart);
-    model.addAttribute("currentEnd", editEnd);
-    return "sprintTeacher";
+    String role = principal.getClaimsList().stream()
+        .filter(claim -> claim.getType().equals("role"))
+        .findFirst()
+        .map(ClaimDTO::getValue)
+        .orElse("NOT FOUND");
+
+    if (role == "teacher") {
+      model.addAttribute("currentName", editName);
+      model.addAttribute("currentDescription", editDescription);
+      model.addAttribute("currentStart", editStart);
+      model.addAttribute("currentEnd", editEnd);
+      return "sprintTeacher";
+    } else {
+      return "redirect:/error";
+    }
   }
 
   @PostMapping("/editName")
