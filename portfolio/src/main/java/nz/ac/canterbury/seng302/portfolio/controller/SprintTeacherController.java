@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.Timestamp;
+
 @Controller
 public class SprintTeacherController {
 
@@ -27,6 +29,7 @@ public class SprintTeacherController {
           String editDescription,
       @RequestParam(name="start", required=false, defaultValue="28 Feb 2022") String editStart,
       @RequestParam(name="end", required=false, defaultValue="7 Mar 2022") String editEnd,
+      @RequestParam(name="status", required=false, defaultValue="403") String status,
       Model model
   ) {
     String role = principal.getClaimsList().stream()
@@ -42,7 +45,13 @@ public class SprintTeacherController {
       model.addAttribute("currentEnd", editEnd);
       return "sprintTeacher";
     } else {
-      return "redirect:/error";
+      String time = new Timestamp(System.currentTimeMillis()).toString();
+      model.addAttribute("timestamp", time);
+      model.addAttribute("path", "/sprintTeacher");
+      model.addAttribute("error", "Forbidden");
+      model.addAttribute("status", "403");
+      model.addAttribute("message", "Acess Denied");
+      return "/error";
     }
   }
 
