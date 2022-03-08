@@ -16,7 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ProjectPageStudentController {
 
     @GetMapping("/projectPageStudent")
-    public String projectPageStudentController(Model model) {
+    public String projectPageStudentController(
+            @RequestParam(name="sprints", required = false, defaultValue="sprint 1, sprint 2") String[] sprintList,
+            Model model
+    ) {
+        model.addAttribute("currentSprints", sprintList);
         return "projectPageStudent";
     }
 }

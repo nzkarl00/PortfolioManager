@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Project Page</title>
     <style>
+        table, th, td {
+            border:1px solid black;
+        }
         #banner {
             display:grid;
             grid-template-columns: auto auto;
@@ -52,27 +55,17 @@
 </div>
 <hr>
 <br>
-<div id="sprint_container">
-    <div class="current_sprint">
-        <h3>Sprint 1 - Development Stage</h3>
-        <p id="current_sprint_start_date"> Start Date: 13 Mar 2022</p>
-        <p id="current_sprint_end_date"> End Date: 20 Mar 2022</p>
-        <h3> Description</h3>
-        <p>
-            Development stage refers to the first phase in the life cycle of a new business...
-        </p>
-        <br>
-    </div>
-    <div class="non_current_sprint">
-        <h3>Sprint 2 - Development Stage 2 </h3>
-        <p id="sprint2_start_date"> Start Date: 21 Mar 2022</p>
-        <p id="sprint2_end_date"> End Date: 12 APR 2022</p>
-        <h3> Description</h3>
-        <p>
-            Development stage refers to the first phase in the life cycle of a new business...
-        </p>
+<table style="width:50%">
+    <thead>
+    <tr>
+        <th scope="col">Sprints</th>
+    </tr>
+    </thead>
+    <tr th:each = "eachSprints : ${currentSprints}">
+        <td th:text="${eachSprints}"> </td>
+    </tr>
+</table>
 
-    </div>
-</div>
+
 </body>
 </html>
