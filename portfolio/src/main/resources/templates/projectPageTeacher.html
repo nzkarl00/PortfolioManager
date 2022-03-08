@@ -25,38 +25,127 @@
             float: right;
         }
 
+        p {
+            word-wrap: break-word;
+            width: 400px;
+            padding-left: 20px;
+        }
+
+        .detail {
+            padding-left: 20px;
+        }
+
+        button {
+            float: left;
+        }
+
+        .item {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        #back {
+            float: right;
+        }
+
+        #nameEdit {
+            display: none;
+        }
+
+        #datesEdit {
+            display: none;
+        }
+
+        #descriptionEdit {
+            display: none;
+        }
+
+
     </style>
 </head>
 <body>
 <div id="banner">
     <div id="title">
         <img src="../images/logo.PNG" alt="Logo" id="title_logo" width="64" height="64">
-        <h1 id="title_heading">Project Page</h1>
+        <h1 id="title_heading">Project Portfolio</h1>
     </div>
     <div id="profile">
         <img src="../images/profile_logo.PNG" alt="Logo" id="profile_logo" width="64" height="64">
         <h5 id="profile_heading">Profile</h5>
     </div>
 </div>
+
 <hr>
 <br>
-<div id="project_container">
-    <h3> Project Run</h3>
-    <p id="start_date"> Start Date: 03/03/2022</p>
-    <p id="end_date"> End Date: 10/06/2022</p>
-    <h3> Project Description</h3>
-    <p>
-        A project description is a high-level overview of why you're doing a project. The document explains a project's objectives
-        and its essential qualities. Think of it as the elevator pitch that focuses on what and why without delving into how.
-    </p>
+<div class = "detail" id="name">
+    <h3><span th:text="${currentName}" ></span></h3>
+    <div class="info">
+        <div class="item" id="namePara"><p><span></span></p></div>
+        <div class="item" id="nameEdit">
+            <form th:action="@{./editName}"
+                  method="post">
+                <label for="editName">Make your changes to the sprint name.</label>
+
+                <input id="editName" type="text" th:name="editName" th:value="*{editName}">
+
+                <button type="submit">Submit Edit</button>
+            </form>
+        </div>
+        <div class="item"><button onclick="editName()"><img src="../images/edit.PNG" width="16" height="16" alt="Edit"></button></div>
+    </div>
+</div>
+<div class = "detail" id="dates">
+    <h3>Dates:</h3>
+    <div class="info">
+        <div class="item" id="datesPara"><p>Start: <span th:text="${currentStart}" ></span></p>
+            <p>End: <span th:text="${currentEnd}" ></span></p></div>
+        <div class="item" id="datesEdit">
+            <form th:action="@{./editStart}"
+                  method="post">
+                <label for="editStart">Enter new project start date: </label>
+
+                <input id="editStart" type="text" th:name="editStart" th:value="*{editStart}">
+
+                <button type="submit">Submit Edit</button>
+            </form>
+
+            <form th:action="@{./editEnd}"
+                  method="post">
+                <label for="editEnd">Enter new project end date: </label>
+
+                <input id="editEnd" type="text" th:name="editEnd" th:value="*{editEnd}">
+
+                <button type="submit">Submit Edit</button>
+            </form>
+        </div>
+        <div class="item"><button onclick="editDates()"><img src="../images/edit.PNG" width="16" height="16" alt="Edit"></button></div>
+    </div>
+</div>
+<div class = "detail" id="description">
+    <h3>Description</h3>
+    <div class="info">
+        <div class="item" id="descriptionPara"><p><span th:text="${currentDescription}" ></span></p></div>
+            <div class="item" id="descriptionEdit">
+                <form th:action="@{./editDescription}"
+                      method="post">
+                    <label for="editDescription">Enter new project description: </label>
+
+                    <input id="editDescription" type="text" th:name="editDescription" th:value="*{editDescription}">
+
+                    <button type="submit">Submit Edit</button>
+                </form>
+            </div>
+            <div class="item"><button onclick="editDescription()"><img src="../images/edit.PNG" width="16" height="16" alt="Edit"></button></div>
+        </div>
+    </div>
 </div>
 <hr>
 <br>
 <div id="sprint_container">
     <div class="current_sprint">
         <h3>Sprint 1 - Development Stage</h3>
-        <p id="current_sprint_start_date"> Start Date: 13/03/2022</p>
-        <p id="current_sprint_end_date"> End Date: 20/03/2022</p>
+        <p id="current_sprint_start_date"> Start Date: 13 Mar 2022</p>
+        <p id="current_sprint_end_date"> End Date: 20 Mar 2022</p>
         <h3> Description</h3>
         <p>
             Development stage refers to the first phase in the life cycle of a new business...
@@ -65,8 +154,8 @@
     </div>
     <div class="non_current_sprint">
         <h3>Sprint 2 - Development Stage 2 </h3>
-        <p id="sprint2_start_date"> Start Date: 21/03/2022</p>
-        <p id="sprint2_end_date"> End Date: 12/04/2022</p>
+        <p id="sprint2_start_date"> Start Date: 21 Mar 2022</p>
+        <p id="sprint2_end_date"> End Date: 21 Mar 20222</p>
         <h3> Description</h3>
         <p>
             Development stage refers to the first phase in the life cycle of a new business...
@@ -74,5 +163,42 @@
 
     </div>
 </div>
+<script>
+    function editDates() {
+        var x = document.getElementById("datesPara");
+        var y = document.getElementById("datesEdit");
+        if (x.style.display === "none") {
+            x.style.display = "inline-block";
+            y.style.display = "none";
+        } else {
+            x.style.display = "none";
+            y.style.display = "inline-block";
+        }
+    }
+
+    function editName() {
+        var x = document.getElementById("namePara");
+        var y = document.getElementById("nameEdit");
+        if (x.style.display === "none") {
+            x.style.display = "inline-block";
+            y.style.display = "none";
+        } else {
+            x.style.display = "none";
+            y.style.display = "inline-block";
+        }
+    }
+
+    function editDescription() {
+        var x = document.getElementById("descriptionPara");
+        var y = document.getElementById("descriptionEdit");
+        if (x.style.display === "none") {
+            x.style.display = "inline-block";
+            y.style.display = "none";
+        } else {
+            x.style.display = "none";
+            y.style.display = "inline-block";
+        }
+    }
+</script>
 </body>
 </html>
