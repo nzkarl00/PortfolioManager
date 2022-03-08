@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 public class ProjectPageTeacherController {
 
     @GetMapping("/projectPageTeacher")
-    public String sprintTeacher(
+    public String projectPageTeacher(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(name="name", required= true, defaultValue="Default Project") String editName,
             @RequestParam(name="description", required=false, defaultValue=" A project description is a high-level overview of why you're" +
