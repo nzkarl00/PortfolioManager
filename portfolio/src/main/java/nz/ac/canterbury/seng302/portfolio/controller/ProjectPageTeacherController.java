@@ -29,6 +29,7 @@ public class ProjectPageTeacherController {
             @RequestParam(name="start", required=false, defaultValue="03 Mar 2022") String editStart,
             @RequestParam(name="end", required=false, defaultValue="10 Jun 2022") String editEnd,
             @RequestParam(name="status", required=false, defaultValue="404") String status,
+            @RequestParam(name="sprints", required = false, defaultValue="sprint 1, sprint 2") String[] sprintList,
             Model model
     ) {
         String role = principal.getClaimsList().stream()
@@ -36,12 +37,12 @@ public class ProjectPageTeacherController {
                 .findFirst()
                 .map(ClaimDTO::getValue)
                 .orElse("NOT FOUND");
-
         if (role.equals("teacher")) {
             model.addAttribute("currentName", editName);
             model.addAttribute("currentDescription", editDescription);
             model.addAttribute("currentStart", editStart);
             model.addAttribute("currentEnd", editEnd);
+            model.addAttribute("currentSprints", sprintList);
             return "projectPageTeacher";
         } else {
             String time = new Timestamp(System.currentTimeMillis()).toString();
@@ -88,6 +89,14 @@ public class ProjectPageTeacherController {
             Model model
     ) {
         return "redirect:/projectPageTeacher?end=" + editEnd;
+    }
+
+    @PostMapping("/greeting")
+    public String editEnd(
+            @AuthenticationPrincipal AuthState principal,
+            Model model
+    ) {
+        return "redirect:/greeting";
     }
 
 }
