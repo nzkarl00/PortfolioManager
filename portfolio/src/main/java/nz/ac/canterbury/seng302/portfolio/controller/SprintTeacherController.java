@@ -38,7 +38,7 @@ public class SprintTeacherController {
         .map(ClaimDTO::getValue)
         .orElse("NOT FOUND");
 
-    if (role == "teacher") {
+    if (role.equals("teacher")) {
       model.addAttribute("currentName", editName);
       model.addAttribute("currentDescription", editDescription);
       model.addAttribute("currentStart", editStart);
@@ -50,7 +50,7 @@ public class SprintTeacherController {
       model.addAttribute("path", "/sprintTeacher");
       model.addAttribute("error", "Forbidden");
       model.addAttribute("status", "403");
-      model.addAttribute("message", "Acess Denied");
+      model.addAttribute("message", "Access Denied");
       return "/error";
     }
   }

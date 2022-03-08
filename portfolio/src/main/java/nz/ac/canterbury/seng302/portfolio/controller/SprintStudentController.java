@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class SprintStudentController {
 
   @GetMapping("/sprintStudent")
-  public String sprintTeacher(Model model) {
+  public String sprintStudent(Model model) {
     model.addAttribute("message", "Hello from the controller");
     return "sprintStudent";
   }
