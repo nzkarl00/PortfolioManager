@@ -91,12 +91,12 @@ public class ProjectPageTeacherController {
         return "redirect:/projectPageTeacher?end=" + editEnd;
     }
 
-    @PostMapping("/greeting")
+    @PostMapping("/sprintTeacher")
     public String editEnd(
             @AuthenticationPrincipal AuthState principal,
             Model model
     ) {
-        return "redirect:/greeting";
+        return "redirect:/sprintTeacher";
     }
 
 }
