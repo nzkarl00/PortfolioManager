@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Page</title>
+    <style>
+        table, th, td {
+            border:1px solid black;
+        }
+
+        #banner {
+            display:grid;
+            grid-template-columns: auto auto;
+        }
+
+        #title_logo {
+            float: left;
+        }
+
+        #title_heading {
+            float: left;
+        }
+
+        #profile_logo {
+            float: right;
+        }
+
+        #profile_heading {
+            float: right;
+        }
+
+        p {
+            word-wrap: break-word;
+            width: 400px;
+            padding-left: 20px;
+        }
+
+        .detail {
+            padding-left: 20px;
+        }
+
+        button {
+            float: left;
+        }
+
+        .item {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        #back {
+            float: right;
+        }
+
+        #nameEdit {
+            display: none;
+        }
+
+        #datesEdit {
+            display: none;
+        }
+
+        #descriptionEdit {
+            display: none;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="banner">
+    <div id="title">
+        <img src="../images/logo.PNG" alt="Logo" id="title_logo" width="64" height="64">
+        <h1 id="title_heading">Project Portfolio</h1>
+    </div>
+    <div id="profile">
+        <img src="../images/profile_logo.PNG" alt="Logo" id="profile_logo" width="64" height="64">
+        <h5 id="profile_heading">Profile</h5>
+    </div>
+</div>
+
+<hr>
+<br>
+<div class = "detail" id="name">
+    <h3><span th:text="${currentName}" ></span></h3>
+    <div class="info">
+        <div class="item" id="namePara"><p><span></span></p></div>
+        <div class="item" id="nameEdit">
+            <form th:action="@{./editName}"
+                  method="post">
+                <label for="editName">Make your changes to the sprint name.</label>
+
+                <input id="editName" type="text" th:name="editName" th:value="*{editName}">
+
+                <button type="submit">Submit Edit</button>
+            </form>
+        </div>
+        <div class="item"><button onclick="editName()"><img src="../images/edit.PNG" width="16" height="16" alt="Edit"></button></div>
+    </div>
+</div>
+<div class = "detail" id="dates">
+    <h3>Dates:</h3>
+    <div class="info">
+        <div class="item" id="datesPara"><p>Start: <span th:text="${currentStart}" ></span></p>
+            <p>End: <span th:text="${currentEnd}" ></span></p></div>
+        <div class="item" id="datesEdit">
+            <form th:action="@{./editStart}"
+                  method="post">
+                <label for="editStart">Enter new project start date: </label>
+
+                <input id="editStart" type="text" th:name="editStart" th:value="*{editStart}">
+
+                <button type="submit">Submit Edit</button>
+            </form>
+
+            <form th:action="@{./editEnd}"
+                  method="post">
+                <label for="editEnd">Enter new project end date: </label>
+
+                <input id="editEnd" type="text" th:name="editEnd" th:value="*{editEnd}">
+
+                <button type="submit">Submit Edit</button>
+            </form>
+        </div>
+        <div class="item"><button onclick="editDates()"><img src="../images/edit.PNG" width="16" height="16" alt="Edit"></button></div>
+    </div>
+</div>
+<div class = "detail" id="description">
+    <h3>Description</h3>
+    <div class="info">
+        <div class="item" id="descriptionPara"><p><span th:text="${currentDescription}" ></span></p></div>
+            <div class="item" id="descriptionEdit">
+                <form th:action="@{./editDescription}"
+                      method="post">
+                    <label for="editDescription">Enter new project description: </label>
+
+                    <input id="editDescription" type="text" th:name="editDescription" th:value="*{editDescription}">
+
+                    <button type="submit">Submit Edit</button>
+                </form>
+            </div>
+            <div class="item"><button onclick="editDescription()"><img src="../images/edit.PNG" width="16" height="16" alt="Edit"></button></div>
+        </div>
+    </div>
+</div>
+<hr>
+<form th:action="@{./sprintTeacher}"
+    method="post">
+    <button id="sprintButton">Add Sprint</button>
+</form>
+
+<br>
+<br>
+<table style="width:50%">
+    <thead>
+    <tr>
+        <th scope="col">Sprints</th>
+    </tr>
+    </thead>
+    <tr th:each = "eachSprints : ${currentSprints}">
+        <td th:text="${eachSprints}"> </td>
+    </tr>
+</table>
+<br>
+<script>
+    function editDates() {
+        var x = document.getElementById("datesPara");
+        var y = document.getElementById("datesEdit");
+        if (x.style.display === "none") {
+            x.style.display = "inline-block";
+            y.style.display = "none";
+        } else {
+            x.style.display = "none";
+            y.style.display = "inline-block";
+        }
+    }
+
+    function editName() {
+        var x = document.getElementById("namePara");
+        var y = document.getElementById("nameEdit");
+        if (x.style.display === "none") {
+            x.style.display = "inline-block";
+            y.style.display = "none";
+        } else {
+            x.style.display = "none";
+            y.style.display = "inline-block";
+        }
+    }
+
+    function editDescription() {
+        var x = document.getElementById("descriptionPara");
+        var y = document.getElementById("descriptionEdit");
+        if (x.style.display === "none") {
+            x.style.display = "inline-block";
+            y.style.display = "none";
+        } else {
+            x.style.display = "none";
+            y.style.display = "inline-block";
+        }
+    }
+
+</script>
+</body>
+</html>
