@@ -180,3 +180,12 @@ Such examples would include:
 * Gamification achievements, badges, etc.
 
 
+
+
+## Running H2
+
+Download the H2 Jar File
+
+```bash
+java -cp ./h2-*.jar org.h2.tools.Shell
+```

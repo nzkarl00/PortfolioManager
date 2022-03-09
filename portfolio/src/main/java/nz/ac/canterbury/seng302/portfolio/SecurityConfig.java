@@ -41,6 +41,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         security
             .httpBasic().disable()
             .formLogin().disable();
+
+        // Changing configurations so enabled spring security does not deny display to H2 console
+        security.csrf().disable();
+        security.headers().frameOptions().disable();
     }
 
     @Override

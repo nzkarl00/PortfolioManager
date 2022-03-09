@@ -4,7 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'nz.ac.canterbury.seng302'
+group = 'nz.ac.canterbury.seng302.team10'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
@@ -30,6 +30,11 @@ dependencies {
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
