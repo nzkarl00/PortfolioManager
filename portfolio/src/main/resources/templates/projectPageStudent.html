@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Page</title>
+    <style>
+        table, th, td {
+            border:1px solid black;
+        }
+        #banner {
+            display:grid;
+            grid-template-columns: auto auto;
+        }
+
+        #title_logo {
+            float: left;
+        }
+
+        #title_heading {
+            float: left;
+        }
+
+        #profile_logo {
+            float: right;
+        }
+
+        #profile_heading {
+            float: right;
+        }
+
+    </style>
+</head>
+<body>
+<div id="banner">
+    <div id="title">
+        <img src="../images/logo.PNG" alt="Logo" id="title_logo" width="64" height="64">
+        <h1 id="title_heading">Project Page</h1>
+    </div>
+    <div id="profile">
+        <img src="../images/profile_logo.PNG" alt="Logo" id="profile_logo" width="64" height="64">
+        <h5 id="profile_heading">Profile</h5>
+    </div>
+</div>
+<hr>
+<br>
+<div id="project_container">
+    <h3> Project Run</h3>
+    <p id="start_date"> Start Date: 03 Mar 2022</p>
+    <p id="end_date"> End Date: 10 Jun 2022</p>
+    <h3> Project Description</h3>
+    <p>
+        A project description is a high-level overview of why you're doing a project. The document explains a project's objectives
+        and its essential qualities. Think of it as the elevator pitch that focuses on what and why without delving into how.
+    </p>
+</div>
+<hr>
+<br>
+<table style="width:50%">
+    <thead>
+    <tr>
+        <th scope="col">Sprints</th>
+    </tr>
+    </thead>
+    <tr th:each = "eachSprints : ${currentSprints}">
+        <td th:text="${eachSprints}"> </td>
+    </tr>
+</table>
+
+
+</body>
+</html>
