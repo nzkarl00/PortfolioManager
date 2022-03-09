@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
+import nz.ac.canterbury.seng302.portfolio.store.SprintRepository;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 
@@ -18,12 +20,20 @@ public class GreeterController {
     @Autowired
     private GreeterClientService greeterClientService;
 
+    @Autowired
+    private SprintRepository sprintRepo;
+
     @GetMapping("/greeting")
     public String greeting(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(name="name", required=false, defaultValue="Blue") String favouriteColour,
             Model model
     ) {
+
+        // TODO: Remove, this only serves as a demo of writing to H2 from controller
+        sprintRepo.save(new Sprint("A", "BCD"));
+
+
         // Talk to the GreeterService on the IdP to get a message, we'll tell them our favourite colour too
         String idpMessage = greeterClientService.receiveGreeting(favouriteColour);
         model.addAttribute("idpMessage", idpMessage);
