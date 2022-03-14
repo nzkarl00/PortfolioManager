@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Portfolio Project</title>
+  <style>
+            #banner {
+                display:grid;
+                grid-template-columns: auto auto;
+            }
+
+            #title_logo {
+                float: left;
+            }
+
+            #title_heading {
+                float: left;
+            }
+
+            #profile_logo {
+                float: right;
+            }
+
+            #profile_heading {
+                float: right;
+            }
+
+            .project {
+               word-wrap: break-word;
+               width: 500px;
+               color: black;
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+        </style>
+</head>
+<body>
+<div id="banner">
+  <div id="title">
+    <img src="../images/logo.PNG" alt="Logo" id="title_logo" width="64" height="64">
+    <h1 id="title_heading">Project Portfolio</h1>
+  </div>
+  <div id="profile">
+    <img src="../images/profile_logo.PNG" alt="Logo" id="profile_logo" width="64" height="64">
+    <h5 id="profile_heading">Profile</h5>
+  </div>
+</div>
+<hr>
+<div id="projects">
+  <a href="link to project page.html">
+    <div class="project">
+      <h3>Project 1</h3>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eu libero ultrices, luctus
+        arcu nec, ullamcorper purus. Nam arcu libero, tincidunt nec augue quis, egestas iaculis
+        mauris. Curabitur auctor nisi lectus, a ultrices tellus ultricies.
+      </p>
+    </div>
+  </a>
+</div>
+</body>
+</html>
