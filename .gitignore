@@ -5,3 +5,7 @@
 */.idea/
 */src/generated/
 */bin/
+
+**/*.mv.db
+
+.envrc
