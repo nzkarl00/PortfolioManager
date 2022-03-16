@@ -14,6 +14,9 @@ import javax.persistence.OneToOne;
 */
 @Entity
 public class AccountProfile {
+
+    //Auto-generated ID is assigned to each persons account
+    //Personal details associated with a users account
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
@@ -24,8 +27,10 @@ public class AccountProfile {
     private String email;
     private String photoPath;
 
+    //Necessary for Hibernate to work properly
     protected AccountProfile() {}
-
+ 
+    //Constructor for a new profile
     public AccountProfile(String username, String passwordHash, String registerDate, String bio, String email, String photoPath) {
         this.username = username;
         this.passwordHash = passwordHash;
