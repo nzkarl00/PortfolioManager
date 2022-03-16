@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -41,8 +42,18 @@ public class LoginController {
     public String login(
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(name="username", required=false, defaultValue="abc123") String username,
-            @RequestParam(name="password", required=false, defaultValue="Password123!") String password,
+            Model model
+    ) {
+        model.addAttribute("loginMessage", "");
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String signin(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam(value="username") String username,
+            @RequestParam(value="password") String password,
             Model model
     ) {
         AuthenticateResponse loginReply;
@@ -62,10 +73,36 @@ public class LoginController {
                 5 * 60 * 60, // Expires in 5 hours
                 domain.startsWith("localhost") ? null : domain
             );
+            return "account";
         }
 
         model.addAttribute("loginMessage", loginReply.getMessage());
         return "login";
     }
 
+    @GetMapping("/signup")
+    public String signup(
+        Model model
+    ) {
+        model.addAttribute("testData", "null");
+        return "signup";
+    }
+
+    @PostMapping("/signup")
+    public String createAccount(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam(value="username") String username,
+            @RequestParam(value="password") String password,
+            @RequestParam(value="passwordConfirm") String passwordConfirm,
+            @RequestParam(value="firstname") String firstname,
+            @RequestParam(value="lastname") String lastname,
+            @RequestParam(value="pronouns") String pronouns,
+            @RequestParam(value="email") String email,
+            Model model
+            )
+    {
+        model.addAttribute("testData", username + "\n" + password);
+        return "signup";
+    }
 }

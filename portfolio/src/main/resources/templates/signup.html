@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sign in</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/css/stylesheet.css}" rel="stylesheet">
+</head>
+<body>
+
+<div class="vertical-center">
+    <form th:action="@{/signup}" method="post">
+    <label class="text-muted py-5">Username:</label>
+    <input id="username" type="text" th:name="username" th:value="*{username}"><br/>
+    <label class="text-muted py-5">Password:</label>
+    <input id="password" type="password" th:name="password" th:value="*{password}"><br/>
+    <label class="text-muted py-5">Confirm PasswordA:</label>
+    <input id="passwordConfirm" type="password" th:name="passwordConfirm" th:value="*{passwordConfirm}"><br/>
+    <label class="text-muted py-5">First Name:</label>
+    <input id="firstname" type="text" th:name="firstname" th:value="*{firstname}"><br/>
+    <label class="text-muted py-5">Last Name:</label>
+    <input id="lastname" type="text" th:name="latsname" th:value="*{lastname}"><br/>
+    <label class="text-muted py-5">Pronouns:</label>
+    <select id="pronouns" th:name="pronouns" th:value="*{pronouns}">
+        <option value="he">He/Him</option>
+        <option value="she">She/Her</option>
+        <option value="they">They/Them</option>
+    </select>
+    <br/>
+    <label class="text-muted py-5">Email Address:</label>
+    <input id="email" type="email" th:name="email" th:value="*{email}"><br/>
+    <button class="dropdown-circle" type="submit">Sign Up</button>
+    </form>
+    <p class="text-muted py-5" th:text="${testData}" />
+</div>
+</body>
+</html>

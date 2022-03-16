@@ -5,7 +5,7 @@
 */.idea/
 */src/generated/
 */bin/
-
 **/*.mv.db
 
 .envrc
+*/src/main/java/nz/ac/canterbury/seng302/identityprovider/model/database/

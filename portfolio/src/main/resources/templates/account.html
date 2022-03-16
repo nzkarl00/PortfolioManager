@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="generator" content="Hugo 0.88.1">
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
+
+
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/css/stylesheet.css}" rel="stylesheet">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+</head>
+<body>
+
+<!-- Header -->
+<nav class="navbar sticky-top navbar-light bg-light">
+    <div class="container-fluid ms-auto">
+        <div class="dropdown show">
+            <a class="nav-item navbar-brand btn btn-secondary dropdown-toggle dropdown-circle" href="#" role="button" id="dropProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{/profile_none.png}" width=90em height=90em alt="">
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropProfile">
+                <a class="dropdown-item" href="#">Logout</a>
+            </div>
+        </div>
+
+
+        <p class="nav-item header_name">Hello User</p>
+
+        <p class="header_date">
+            Date Information Here
+        </p>
+    </div>
+    </div>
+</nav>
+
+
+<!-- Body -->
+<div class="main">
+    <div class="container">
+        <!--<p class="text-muted py-5" th:text="${idpMessage}" />
+        <br>
+        <p class="text-muted py-5" th:text="${portfolioMessage}" /> -->
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+        <div class="row">
+
+            <div class="col-1">
+            </div>
+
+            <div class="col-6 portion_body">
+
+                <br>
+                <p class="profile_head">Your Profile</p>
+
+                <div>
+                    <p class="profile_subhead">Username</p>
+                    <div class="profile_data">
+                        <p class="data">GiveMeAnA+</p>
+                    </div>
+                </div>
+
+
+                <div>
+                    <p class="profile_subhead">Full name</p>
+                    <div class="profile_data">
+                        <p class="data">John Fakename</p>
+                    </div>
+                </div>
+
+
+                <div>
+                    <p class="profile_subhead">Email Address</p>
+                    <div class="profile_data">
+                        <p class="data">funnyemail@uclive.ac.nz</p>
+                    </div>
+                </div>
+
+
+                <div>
+                    <p class="profile_subhead">Nickname</p>
+                    <div class="profile_data">
+                        <p class="data">Fabian</p>
+                    </div>
+                </div>
+
+
+                <div>
+                    <p class="profile_subhead">Pronouns</p>
+                    <div class="profile_data">
+                        <p class="data">He/They</p>
+                    </div>
+                </div>
+
+
+                <div>
+                    <p class="profile_subhead">Bio</p>
+                    <div class="profile_data">
+                        <p class="bio">Hey my name is john and I'm here to say, I like seng302 in a major way.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-1">
+
+
+            </div>
+
+            <div class="col-4"></div>
+
+        </div>
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+
+</body>
+</html>
