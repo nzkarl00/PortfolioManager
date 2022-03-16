@@ -1,0 +1,23 @@
+.navbar {
+  border-radius: 0px 0px 50px 50px !important;
+  background-color: #19DAFF !important;
+ }
+
+.body {
+    color: #F7FEFF !important;
+    background-color: #F7FEFF !important;
+}
+
+.formContainer {
+    position: absolute;
+}
+
+.vertical-center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
