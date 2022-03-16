@@ -3,22 +3,15 @@ DROP TABLE IF EXISTS AccountLogin;
 DROP TABLE IF EXISTS AccountName;
 DROP TABLE IF EXISTS Pronouns;
 DROP TABLE IF EXISTS Teacher;
-DROP TABLE IF EXISTS Account_Profile CASCADE CONSTRAINTS;
-DROP TABLE IF EXISTS Account_Login;
 
 CREATE TABLE AccountProfile (
-    idnumber INTEGER NOT NULL PRIMARY KEY CHECK (idnumber > 0), /*The user's unique identification number*/
-    accountname VARCHAR(10) UNIQUE NOT NULL, /*The user's username*/
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id > 0), /*The user's unique identification number*/
+    username VARCHAR(10) UNIQUE NOT NULL, /*The user's username*/
+    passwordhash VARCHAR(30), /*The user's encrypted password*/
     registerdate DATE NOT NULL CHECK (registerdate > DATE'2022-01-01'), /*The date the user registered their account, must be after 1/1/2022*/
     bio VARCHAR(1024), /*The user's short autobiography with a maximum length of 1MB of text*/
     email VARCHAR(30) UNIQUE NOT NULL, /*The user's email address*/
     photopath VARCHAR(50) /*A path to the user's uploaded profile photo*/
-);
-
-CREATE TABLE AccountLogin (
-    registereduser INTEGER NOT NULL PRIMARY KEY, /*A user with an existing login and password*/
-    passwordenc VARCHAR(30), /*The user's encrypted password*/
-    FOREIGN KEY (registereduser) REFERENCES AccountProfile
 );
 
 CREATE TABLE AccountName (
@@ -31,7 +24,7 @@ CREATE TABLE AccountName (
 );
 
 CREATE TABLE Pronouns (
-    registereduser INTEGER NOT NULL,
+    registereduser INTEGER NOT NULL PRIMARY KEY,
     pronoun CHAR(10), /*User's preferred pronouns, a user may have multiple pronouns, e.g him/her*/
     FOREIGN KEY (registereduser) REFERENCES AccountProfile
 );
