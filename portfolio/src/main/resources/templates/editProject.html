@@ -3,41 +3,110 @@
 <head>
     <title>Edit Project</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link th:href="@{/styles/main.css}" rel="stylesheet" />
-    <link th:href="@{/styles/form.css}" rel="stylesheet" />
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/css/stylesheet.css}" rel="stylesheet">
+
 </head>
 <body>
-<div class="header">
-    <div class="title">
-        <div class="title-name">Edit Project</div>
+
+<!-- Header -->
+<nav class="navbar sticky-top navbar-light bg-light">
+    <div class="container-fluid ms-auto">
+        <div class="dropdown show">
+            <a class="nav-item navbar-brand btn btn-secondary dropdown-toggle dropdown-circle" href="#" role="button" id="dropProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{/profile_none.png}" width=90em height=90em alt="">
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropProfile">
+                <a class="dropdown-item" href="#">Logout</a>
+            </div>
+        </div>
+
+
+        <p class="nav-item header_name">Hello User</p>
+
+        <p class="header_date">
+            Date Information Here
+        </p>
+    </div>
+    </div>
+</nav>
+
+
+
+<!-- Body -->
+<div class="main">
+    <div class="container">
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+
+        <!-- Editing heading -->
+
+        <div class="row-1">
+
+            <div class="col-12">
+                <p class="body_title_large">Edit Project</p>
+            </div>
+
+        </div>
+
+        <!-- Editing body -->
+
+
+        <form class="row" th:action="@{/edit-project}" method="post">
+
+            <div class="col-2"></div>
+
+            <div class="col-6 portion_body">
+                <label class="profile_subhead" for="projectName">Project Name</label> <br/>
+                <input id="projectName" type="text" th:name="projectName" th:value="*{projectName}">
+                <br/>
+                <div class="horizontal-group">
+                    <div class="horizontal-group-element" >
+                        <label class="profile_subhead" for="projectStartDate">Project Start Date</label> <br/>
+                        <input id="projectStartDate" type="text" th:name="projectStartDate" th:value="*{projectStartDate}">
+                    </div>
+                    <div class="horizontal-group-element" >
+                        <label class="profile_subhead" for="projectEndDate">Project End Date</label> <br/>
+                        <input id="projectEndDate" type="text" th:name="projectEndDate" th:value="*{projectEndDate}">
+                    </div>
+                </div>
+                <div>
+                    <label class="profile_subhead" for="projectDescription">Project Description</label> <br/>
+                    <textarea class="description-input" id="projectDescription" th:name="projectDescription" th:text="*{projectDescription}"></textarea>
+                </div>
+            </div>
+
+            <div class="col-1"></div>
+
+            <div class="col-1">
+
+                <button class="cancel" type="button">
+                    <a th:href="@{'/details'}">Cancel</a>
+                </button>
+                <button class="save" type="submit">Save</button>
+            </div>
+
+
+            <div class="col-2"></div>
+
+        </form>
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+
     </div>
 </div>
-<div class="content">
-<form th:action="@{/edit-project}"
-      method="post">
-    <label for="projectName">Project Name</label> <br/>
-    <input id="projectName" type="text" th:name="projectName" th:value="*{projectName}">
-    <br/>
-    <div class="horizontal-group">
-    <div class="horizontal-group-element" >
-        <label for="projectStartDate">Project Start Date</label> <br/>
-        <input id="projectStartDate" type="text" th:name="projectStartDate" th:value="*{projectStartDate}">
-    </div>
-    <div class="horizontal-group-element" >
-        <label for="projectEndDate">Project End Date</label> <br/>
-        <input id="projectEndDate" type="text" th:name="projectEndDate" th:value="*{projectEndDate}">
-    </div>
-    </div>
-    <div>
-        <label for="projectDescription">Project Description</label> <br/>
-        <textarea class="description-input" id="projectDescription" th:name="projectDescription" th:text="*{projectDescription}"></textarea>
-    </div>
-    <br/>
-    <button class="cancel" type="button">
-        <a th:href="@{'/details'}">Cancel</a>
-    </button>
-    <button class="save" type="submit">Save</button>
-</form>
-</div>
+
+
+
+
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
