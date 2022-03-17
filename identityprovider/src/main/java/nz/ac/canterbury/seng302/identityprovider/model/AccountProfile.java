@@ -28,7 +28,7 @@ public class AccountProfile {
     private String photoPath;
 
     //Necessary for Hibernate to work properly
-    protected AccountProfile() {}
+    public AccountProfile() {}
  
     //Constructor for a new profile
     public AccountProfile(String username, String passwordHash, String registerDate, String bio, String email, String photoPath) {
@@ -80,5 +80,17 @@ public class AccountProfile {
 
     public String getPhotoPath() {
         return photoPath;
+    }
+
+    public void setID(Long newId) {
+        this.id = newId;
+    }
+
+    public void setUsername(String newUsername) {
+        this.username = newUsername;
+    }
+
+    public void setEmail(String newEmail) {
+        this.email = newEmail;
     }
 }
