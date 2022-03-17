@@ -1,5 +1,4 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
-import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
