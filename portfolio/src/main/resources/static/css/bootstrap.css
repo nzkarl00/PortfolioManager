@@ -703,23 +703,6 @@ progress {
 
 }
 
-.portion_sprintbody {
-
-  font-family: nexa !important;
-  background-color: #19DAFF !important;
-  border-radius: 25px  !important;
-  padding: 1rem !important;
-  font-align: center !important;
-  content-align: center !important;
-  align: center !important;
-
-}
-
-.portion_sprintbody:hover {
-
-  background-color: #056BFA !important;
-
-}
 
 .hr {
 
@@ -787,10 +770,8 @@ progress {
 .project_sprinthead {
 
   font-family: nexaLight !important;
-  color: #F7FEFF !important;
+  color: #19DAFF !important;
   font-size: 100% !important;
-  font-align: center !important;
-  content-align: center !important;
   align: center !important;
 
 }
@@ -891,6 +872,82 @@ progress {
 .cancel:hover {
 
     background: #FF655D !important;
+    color: #ffffff !important;
+
+}
+
+
+.portion_sprintbody {
+
+  font-family: nexa !important;
+  background-color: #D9F9FF !important;
+  border-radius: 5px  !important;
+  padding: 0.5rem !important;
+  padding-left: 0.75rem !important;
+  content-align: center !important;
+
+}
+
+
+.delete {
+
+    background-color: #FF202E !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    margin-top: 1rem !important;
+    padding: 0.5rem !important;
+    font-family: nexaLight !important;
+
+}
+.delete:hover {
+
+    background: #FF655D !important;
+    color: #ffffff !important;
+
+}
+
+.add {
+
+    background-color: #26D20F !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    margin-top: 1rem !important;
+    padding: 0.5rem !important;
+    font-family: nexaLight !important;
+
+}
+.add:hover {
+
+    background: #08F722 !important;
+    color: #ffffff !important;
+
+}
+
+.edit {
+
+    background-color: #DF5DC0 !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    padding: 0.5rem !important;
+    margin-top: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+.edit:hover {
+
+    background: #FF48CF !important;
     color: #ffffff !important;
 
 }

@@ -3,57 +3,153 @@
 <head>
     <title th:text="${project.getName}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link th:href="@{/styles/main.css}" rel="stylesheet" />
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/css/stylesheet.css}" rel="stylesheet">
 </head>
 <body>
-<div class="header">
-    <div class="title">
-        <p class="title-name" th:text="${project.getName}" />
-        <p class="title-date" th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
-    </div>
-    <button class="edit-project-button">
-        <a th:href="@{'/edit-project'}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-            </svg>
-        </a>
-    </button>
-</div>
-<div class="content">
-    <div class="detail-block" th:text="${project.getDescription}" />
-    <hr/>
-    <div th:each="sprint: ${sprints}">
-        <div class="sprint-block">
-            <div class="sprint-label" th:text="${sprint.getLabel}" />
-            <div class="detail-block">
-                <div>
-                    <div class="sprint-title" th:text="${sprint.getName}" />
-                    <!-- <div class="sprint-date" th:text="${sprint.getDates}" /> -->
-                    <div class="sprint-description" th:text="${sprint.getDescription}" />
-                </div>
-                <div>
-                    <button class="edit-button">
-                        <a th:href="@{'/edit-sprint?label=' + ${sprint.getLabel}}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-                        </svg>
-                        </a>
-                    </button>
-                    <button class="delete-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
-                        <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/>
-                    </svg>
-                    </button>
-                </div>
+
+
+<!-- Header -->
+<nav class="navbar sticky-top navbar-light bg-light">
+    <div class="container-fluid ms-auto">
+        <div class="dropdown show">
+            <a class="nav-item navbar-brand btn btn-secondary dropdown-toggle dropdown-circle" href="#" role="button" id="dropProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{/profile_none.png}" width=90em height=90em alt="">
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropProfile">
+                <a class="dropdown-item" href="#">Logout</a>
             </div>
         </div>
+
+
+        <p class="nav-item header_name">Hello User</p>
+
+        <p class="header_date">
+            Date Information Here
+        </p>
     </div>
-    <button class="add-sprint">
-        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-    </svg>
-        Add Sprint
-    </button>
+    </div>
+</nav>
+
+
+<!-- Body -->
+<div class="main">
+    <div class="container">
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+
+        <!-- Editing heading -->
+
+        <div class="row-1">
+
+            <div class="col-12 ">
+                <p class="body_title_large " th:text="${project.getName}" />
+            </div>
+
+        </div>
+
+        <!-- Editing body -->
+
+
+        <div class="row">
+
+            <div class="col-2"></div>
+
+
+
+            <div class="col-8 portion_body">
+
+
+                <p class="detail_date " th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
+
+
+
+
+                <div class="horizontal_field project_subtext" th:text="${project.getDescription}" />
+
+            </div>
+
+            <div class="col-2"></div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-2"></div>
+            <div class="col-8">
+
+                <button class="edit" style="padding-top:0rem;">
+                    <a class="button_a" th:href="@{'/edit-project'}">Edit Sprint</a>
+                </button>
+            </div>
+            <div class="col-2"></div>
+
+        </div>
+
+        <br>
+
+        <div class="row row_sprints"  th:each="sprint: ${sprints}">
+
+
+            <div class="col-2"></div>
+
+
+            <div class="col-1 align-items-end ">
+
+
+                <div class="portion_sprintbody project_sprinthead " th:text="${sprint.getLabel}" />
+
+
+
+                <button class="edit">
+                    <a class="button_a" th:href="@{'/edit-sprint?label=' + ${sprint.getLabel}}">EDIT</a>
+                </button>
+
+                <button class="delete delete-button ">DELETE</button>
+
+            </div>
+
+            <div class="col-7 portion_body">
+
+                <div class="sprint-title project_subhead " th:text="${sprint.getName}" />
+                <div class="sprint-date detail_date" th:text="${sprint.getStartDateString} + ' - ' + ${sprint.getEndDateString}" />
+                <div class="sprint-description project_edit_data" th:text="${sprint.getDescription}" />
+
+            </div>
+
+            <div class="col-2"></div>
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-2"></div>
+
+            <div class="col-8">
+                <button class="add">
+                    Add Sprint
+                </button>
+            </div>
+
+            <div class="col-2"></div>
+
+        </div>
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+
+    </div>
 </div>
+
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
 </body>
 </html>
