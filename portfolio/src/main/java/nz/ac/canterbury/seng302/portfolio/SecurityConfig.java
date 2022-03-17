@@ -22,7 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         security
             .addFilterBefore(new JwtAuthenticationFilter(), BasicAuthenticationFilter.class)
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.GET, "/login", "/signup")
+                    .antMatchers(HttpMethod.GET, "/login", "/signup", "/stylesheet.css", "/bootstrap.css")
                     .permitAll()
                     .and()
                 .authorizeRequests()

@@ -1,15 +1,16 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
-
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-
+import org.hibernate.*;
 import nz.ac.canterbury.seng302.identityprovider.authentication.AuthenticationServerInterceptor;
 import nz.ac.canterbury.seng302.identityprovider.authentication.JwtTokenUtil;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.identityprovider.IdentityProviderApplication;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticationServiceGrpc.AuthenticationServiceImplBase;
+
 
 @GrpcService
 public class AuthenticateServerService extends AuthenticationServiceImplBase{
@@ -21,8 +22,8 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
     private final String LAST_NAME_OF_USER = "User";
     private final String FULL_NAME_OF_USER = FIRST_NAME_OF_USER + " " + LAST_NAME_OF_USER;
     private final String ROLE_OF_USER = "student"; // Puce teams may want to change this to "teacher" to test some functionality
-
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
+
 
     /**
      * Attempts to authenticate a user with a given username and password. 
@@ -49,7 +50,6 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
             .setSuccess(false)
             .setToken("");
         }
-
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
@@ -64,3 +64,5 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
         responseObserver.onCompleted();
     }
 }
+
+
