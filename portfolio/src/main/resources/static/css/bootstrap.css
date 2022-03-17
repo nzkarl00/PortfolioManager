@@ -651,6 +651,7 @@ progress {
   margin-left: auto;
 }
 
+
 .header_name {
   font-family: nexaBold !important;
   font-size: 300% !important;
@@ -671,6 +672,16 @@ progress {
   align-self: right !important;
 }
 
+.project_date {
+
+  font-family: nexaLight !important;
+  font-size: 125%;
+  margin-top: 1.25rem;
+  margin-right: 2rem;
+  color: #19DAFF !important;
+
+}
+
 .portion_body {
 
   font-family: nexa !important;
@@ -680,6 +691,18 @@ progress {
 
 }
 
+.horizontal-group {
+    display: flex;
+    padding: 10px 0px;
+    width: 200%;
+}
+
+
+.horizontal-group-element {
+    margin: 5px;
+}
+
+
 .profile_head {
   font-family: nexa !important;
   color: #19DAFF !important;
@@ -687,14 +710,20 @@ progress {
 
 }
 
-.horizontal-group {
-    display: flex;
-    padding: 10px 0px;
-    width: 100%;
+.project_head {
+  font-family: nexaBold !important;
+  color: #19DAFF !important;
+  font-size: 200% !important;
+
 }
 
-.horizontal-group-element {
-    margin: 5px;
+.project_subhead {
+
+  font-family: nexaBold !important;
+  color: #19DAFF !important;
+  font-size: 150% !important;
+  margin-bottom: 0.5rem !important;
+
 }
 
 .profile_subhead {
@@ -705,6 +734,7 @@ progress {
   margin-bottom: 0.5rem !important;
 
 }
+
 
 .profile_data {
 
@@ -717,6 +747,34 @@ progress {
   border-color: #19DAFF !important;
   border-width: 10px !important;
   border-radius: 10px 20px 20px 20px !important;
+
+}
+
+.project_edit_data {
+
+
+  font-family: nexa !important;
+  color: #000000 !important;
+  font-size: 100% !important;
+  background-color: #F7FEFF !important;
+  border-style: solid !important;
+  border-color: #19DAFF !important;
+  border-width: 10px !important;
+  border-radius: 10px 20px 20px 20px !important;
+
+}
+
+.project_data {
+
+  font-family: nexa !important;
+  color: #000000 !important;
+  font-size: 110% !important;
+  background-color: #F7FEFF !important;
+  border-style: solid !important;
+  border-color: #19DAFF !important;
+  border-width: 10px !important;
+  border-radius: 10px 20px 20px 20px !important;
+  width: 100% !important;
 
 }
 
@@ -736,6 +794,75 @@ progress {
 
 }
 
+.cancel {
+
+    background-color: #FF202E !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 150% !important;
+    align: center !important;
+    font-size: 100% !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+.cancel:hover {
+
+    background: #FF655D !important;
+    color: #ffffff !important;
+
+}
+
+.save {
+
+    background-color: #26D20F !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 150% !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-colour: #FFFFFF !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+.save:hover {
+
+    background: #08F722 !important;
+    color: #ffffff !important;
+
+}
+
+
+.body_title_large {
+  font-family: nexaBold !important;
+  font-size: 300% !important;
+  color: #19DAFF !important;
+  margin-bottom: 2rem !important;
+  text-align: center !important;
+
+}
+
+
+.horizontal-group {
+    display: flex !important;
+    padding: 0.5rem;
+    width: 100% !important;
+}
+
+.horizontal-group-element {
+}
+
+.horizontal_field {
+
+    width: 100% !important;
+
+}
+
 .dropdown-circle {
 
   border-radius: 100rem !important;
@@ -747,6 +874,29 @@ progress {
 .dropdown-circle:hover {
 
   background-color: #056BFA !important;
+
+}
+
+.button_a {
+
+    text-decoration: none !important;
+    color: #FFFFFF !important;
+
+}
+.button_a: hover {
+
+    color: #FFFFFF !important;
+
+}
+
+.project_a {
+
+    text-decoration: none !important;
+
+}
+.project_a: hover {
+
+    font-color: #056BFA !important;
 
 }
 
