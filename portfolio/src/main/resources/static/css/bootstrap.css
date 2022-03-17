@@ -687,6 +687,16 @@ progress {
 
 }
 
+.horizontal-group {
+    display: flex;
+    padding: 10px 0px;
+    width: 100%;
+}
+
+.horizontal-group-element {
+    margin: 5px;
+}
+
 .profile_subhead {
 
   font-family: nexaLight !important;
