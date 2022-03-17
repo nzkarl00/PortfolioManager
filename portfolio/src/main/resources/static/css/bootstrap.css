@@ -682,12 +682,49 @@ progress {
 
 }
 
+.detail_date {
+
+
+  content-align: center !important;
+  content-align: center !important;
+  font-family: nexaLight !important;
+  font-size: 125%;
+  color: #19DAFF !important;
+  margin-top: 0rem !important;
+
+}
+
 .portion_body {
 
   font-family: nexa !important;
   background-color: #D9F9FF !important;
   border-radius: 35px  !important;
   padding: 2rem !important;
+
+}
+
+.portion_sprintbody {
+
+  font-family: nexa !important;
+  background-color: #19DAFF !important;
+  border-radius: 25px  !important;
+  padding: 1rem !important;
+  font-align: center !important;
+  content-align: center !important;
+  align: center !important;
+
+}
+
+.portion_sprintbody:hover {
+
+  background-color: #056BFA !important;
+
+}
+
+.hr {
+
+  border: 4px solid #19DAFF;
+  border-radius: 2px;
 
 }
 
@@ -725,6 +762,49 @@ progress {
   margin-bottom: 0.5rem !important;
 
 }
+
+.centered {
+
+    content-align: center !important;
+
+}
+
+.row_sprints {
+
+    margin-bottom: 1rem !important;
+
+}
+
+.project_subsubhead {
+
+  font-family: nexaLight !important;
+  color: #19DAFF !important;
+  font-size: 125% !important;
+  margin-bottom: 0.5rem !important;
+
+}
+
+.project_sprinthead {
+
+  font-family: nexaLight !important;
+  color: #F7FEFF !important;
+  font-size: 100% !important;
+  font-align: center !important;
+  content-align: center !important;
+  align: center !important;
+
+}
+
+
+.project_subtext {
+
+  font-family: nexa !important;
+  color: #19DAFF !important;
+  font-size: 125% !important;
+
+}
+
+
 
 .profile_subhead {
 

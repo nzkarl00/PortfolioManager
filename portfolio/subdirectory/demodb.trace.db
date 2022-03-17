@@ -226,3 +226,21 @@ Caused by: java.lang.NumberFormatException: For input string: "2022/"
 	at org.h2.util.DateTimeUtils.parseTimestamp(DateTimeUtils.java:338)
 	at org.h2.value.ValueTimestamp.parse(ValueTimestamp.java:86)
 	... 99 more
+2022-03-18 10:22:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PROJECT" not found (this database is empty); SQL statement:
+select project0_.id as id1_0_0_, project0_.project_description as project_2_0_0_, project0_.project_end_date as project_3_0_0_, project0_.project_name as project_4_0_0_, project0_.project_start_date as project_5_0_0_ from project project0_ where project0_.id=? [42104-210]
+2022-03-18 10:38:13 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PROJECT" not found (this database is empty); SQL statement:
+select project0_.id as id1_0_0_, project0_.project_description as project_2_0_0_, project0_.project_end_date as project_3_0_0_, project0_.project_name as project_4_0_0_, project0_.project_start_date as project_5_0_0_ from project project0_ where project0_.id=? [42104-210]
+2022-03-18 10:38:24 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PROJECT" not found (this database is empty); SQL statement:
+select project0_.id as id1_0_0_, project0_.project_description as project_2_0_0_, project0_.project_end_date as project_3_0_0_, project0_.project_name as project_4_0_0_, project0_.project_start_date as project_5_0_0_ from project project0_ where project0_.id=? [42104-210]
+2022-03-18 10:40:41 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PROJECT" not found (this database is empty); SQL statement:
+select project0_.id as id1_0_0_, project0_.project_description as project_2_0_0_, project0_.project_end_date as project_3_0_0_, project0_.project_name as project_4_0_0_, project0_.project_start_date as project_5_0_0_ from project project0_ where project0_.id=? [42104-210]
+2022-03-18 10:41:01 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PROJECT" not found (this database is empty); SQL statement:
+select project0_.id as id1_0_0_, project0_.project_description as project_2_0_0_, project0_.project_end_date as project_3_0_0_, project0_.project_name as project_4_0_0_, project0_.project_start_date as project_5_0_0_ from project project0_ where project0_.id=? [42104-210]
+2022-03-18 10:43:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PROJECT" not found (this database is empty); SQL statement:
+select project0_.id as id1_0_0_, project0_.project_description as project_2_0_0_, project0_.project_end_date as project_3_0_0_, project0_.project_name as project_4_0_0_, project0_.project_start_date as project_5_0_0_ from project project0_ where project0_.id=? [42104-210]
