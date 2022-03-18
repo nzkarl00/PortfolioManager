@@ -1,10 +1,57 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title>Sign in</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/css/stylesheet.css}" rel="stylesheet">
 </head>
 <body>
-<p th:text="${loginMessage}" />
+<div class="container">
+    <div class="row"><br><br><br></div>
+    <div class="row-12">
+
+
+
+        <div class="col-8">
+
+            <div class="portion_body">
+                <div class="formContainer">
+
+                    <p class="profile_head">Log In</p>
+
+                    <form th:action="@{/login}" method="post">
+
+                        <label class="profile_subhead py-1">Username:</label>
+                        <input id="username" type="text" th:name="username" th:value="*{username}"><br/>
+
+                        <label class="profile_subhead py-1">Password:</label>
+                        <input id="password" type="text" th:name="password" th:value="*{password}"><br/>
+
+                        <button class="dropdown-circle" type="submit">Login</button>
+                    </form>
+                </div>
+
+                <div class="row"><span>.</span></div>
+                <div class="row"><span>.</span></div>
+                <div class="row"><span>.</span></div>
+                <div class="row"><span>.</span></div>
+                <div class="row"><span>.</span></div>
+                <div class="row"><span>.</span></div>
+                <div class="row"><span>.</span></div>
+                <div class="row"><span>.</span></div>
+
+
+                <p class="profile_subhead py-1" th:text="${loginMessage}" />
+
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+<p class="text-muted py-5">Don't have an account? <a th:href="@{/signup}">Sign up</a><</p>
+</div>
 </body>
 </html>
