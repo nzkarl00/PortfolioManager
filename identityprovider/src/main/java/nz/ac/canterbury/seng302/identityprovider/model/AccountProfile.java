@@ -1,60 +1,61 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 /**
 * This class specifies the attributes and methods associated with a user's account,
 * This entity matches that found in the schema
 */
 @Entity
+@Table(name = "AccountProfile")
 public class AccountProfile {
 
     //Auto-generated ID is assigned to each persons account
-    //Personal details associated with a users account
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
+    //Personal details associated with a users account
     private String username;
+    @Column(name = "passwordHash")
     private String passwordHash;
+    @Column(name = "registerDate")
     private String registerDate;
+    @Column(name = "bio")
     private String bio;
+    @Column(name = "email")
     private String email;
+    @Column(name = "photoPath")
     private String photoPath;
 
     //Necessary for Hibernate to work properly
-    public AccountProfile() {}
+//    public AccountProfile() {}
  
     //Constructor for a new profile
-    public AccountProfile(String username, String passwordHash, String registerDate, String bio, String email, String photoPath) {
+    public AccountProfile(String username, String passwordHash, String registerDate, String bio, String email) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.registerDate = registerDate;
         this.bio = bio;
         this.email = email;
-        if(photoPath != null) {
-            this.photoPath = photoPath;
-        } else {
-            this.photoPath = "identityprovider/src/main/resources/images/default_account_icon.png"; //Path for default photo
-        }
+        this.photoPath = "identityprovider/src/main/resources/images/default_account_icon.png"; //Path for default photo
     }
 
+    /** Given the user's password from the client side, compare with the password stored in the database
+    * @param givenPasswordHash The given password should be hashed before passing it into
+    */
     public Boolean validatePassword(String givenPasswordHash) {
         return (passwordHash == givenPasswordHash);
     }
 
+    //A pretty way to see the user's personal information, for logging purposes
     @Override
     public String toString() {
         String AccountString = "Username: " + username + "\n";
         AccountString += "Date registered: " + registerDate + "\n";
         AccountString += "Personal biography: " + bio + "\n";
         AccountString += "Email: " + email + "\n";
-        AccountString += "Path to photo: " + photoPath + "\n";
+        AccountString += "Path to photo: " + photoPath;
         return AccountString;
     }
 
@@ -80,17 +81,5 @@ public class AccountProfile {
 
     public String getPhotoPath() {
         return photoPath;
-    }
-
-    public void setID(Long newId) {
-        this.id = newId;
-    }
-
-    public void setUsername(String newUsername) {
-        this.username = newUsername;
-    }
-
-    public void setEmail(String newEmail) {
-        this.email = newEmail;
     }
 }

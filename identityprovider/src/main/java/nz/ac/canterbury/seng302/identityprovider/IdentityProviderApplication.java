@@ -22,17 +22,7 @@ public class IdentityProviderApplication {
     @Bean
     public CommandLineRunner demo(AccountProfileRepository repo) {
         return (args) -> {
-           System.out.println("\nTest\nTest\nTest\nTest\nTest\nTest");
-        repo.save((new AccountProfile("toby", "fakePassword", "2022-1-1", "bio", "email", "photopath")));
-        //AccountProfile toby = repo.findByUsername("toby");
-        //log.info(toby.toString());
-        //AccountProfile test = new AccountProfile();
-        //test.setID(Long.valueOf(435));
-        //test.setEmail("test@email");
-        //test.setUsername("newUsername");
-        //System.out.println("ddddddddddddddddddddd\nTest\nTest\nddddddddddddTest\nTest\nTest\nTest");
-        //repo.save(test);
-        //System.out.println("\nTest\nTest\nTest\nTest\nTest\nTest");
+        repo.save((new AccountProfile("toby", "fakePassword", "2022-1-1", "bio", "email")));
         };
     }
 
