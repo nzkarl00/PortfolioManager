@@ -694,6 +694,18 @@ progress {
 
 }
 
+.error_text {
+
+
+  content-align: center !important;
+  content-align: center !important;
+  font-family: nexaLight !important;
+  font-size: 150%;
+  color: #19DAFF !important;
+  margin-top: 0rem !important;
+
+}
+
 .portion_body {
 
   font-family: nexa !important;
@@ -755,6 +767,12 @@ progress {
 .row_sprints {
 
     margin-bottom: 1rem !important;
+
+}
+
+.error_red {
+
+    background-color: #FF202E !important;
 
 }
 
