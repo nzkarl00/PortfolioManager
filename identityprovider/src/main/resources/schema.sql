@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS Account_Name;
 DROP TABLE IF EXISTS Pronouns;
 DROP TABLE IF EXISTS Teacher;*/
 
-CREATE TABLE Account_Profile (
+CREATE TABLE IF NOT EXISTS Account_Profile (
     id INTEGER NOT NULL PRIMARY KEY CHECK (id > 0), /*The user's unique identification number*/
     username VARCHAR(10) UNIQUE NOT NULL, /*The user's username*/
     password_hash VARCHAR(30) NOT NULL, /*The user's encrypted password*/
@@ -13,7 +13,7 @@ CREATE TABLE Account_Profile (
     photo_path VARCHAR(100) /*A path to the user's uploaded profile photo*/
 );
 
-CREATE TABLE Account_Name (
+CREATE TABLE IF NOT EXISTS Account_Name (
     registered_user INTEGER NOT NULL PRIMARY KEY,
     first_name CHAR(20) NOT NULL, /*The user's first name*/
     last_name CHAR(20) NOT NULL, /*The user's last name*/
@@ -22,13 +22,13 @@ CREATE TABLE Account_Name (
     FOREIGN KEY (registered_user) REFERENCES Account_Profile
 );
 
-CREATE TABLE Pronouns (
+CREATE TABLE IF NOT EXISTS Pronouns (
     registered_user INTEGER NOT NULL PRIMARY KEY,
     pronoun CHAR(10), /*User's preferred pronouns, a user may have multiple pronouns, e.g him/her*/
     FOREIGN KEY (registered_user) REFERENCES Account_Profile
 );
 
-CREATE TABLE Teacher (
+CREATE TABLE IF NOT EXISTS Teacher (
     registered_user INTEGER NOT NULL PRIMARY KEY,
     title CHAR(5), /*The user's title, e.g Mr/Mrs*/
     occupation CHAR(10), /*The user's occupation, e.g Lecturer/Tutor*/
