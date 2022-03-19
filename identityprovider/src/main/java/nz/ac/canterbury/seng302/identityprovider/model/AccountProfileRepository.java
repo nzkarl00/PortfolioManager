@@ -2,8 +2,9 @@ package nz.ac.canterbury.seng302.identityprovider.model;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface AccountProfileRepository extends CrudRepository<AccountProfile, Integer> {
+public interface AccountProfileRepository extends CrudRepository<AccountProfile, Long> {
 
-    AccountProfile findByaccountname(String accountname);
-    AccountProfile findByemail(String email);
+    AccountProfile findById(long id);
+    AccountProfile findByUsername(String username);
+    AccountProfile findByEmail(String email);
 }

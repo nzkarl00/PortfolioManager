@@ -1,76 +1,85 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
 * This class specifies the attributes and methods associated with a user's account,
 * This entity matches that found in the schema
 */
 @Entity
+@Table(name = "AccountProfile")
 public class AccountProfile {
+
+    //Auto-generated ID is assigned to each persons account
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer idnumber;
-    private String accountname;
-    private String registerdate;
+    @Column(name = "id")
+    private Long id;
+    //Personal details associated with a users account
+    private String username;
+    @Column(name = "passwordHash")
+    private String passwordHash;
+    @Column(name = "registerDate")
+    private String registerDate;
+    @Column(name = "bio")
     private String bio;
+    @Column(name = "email")
     private String email;
-    private String photopath;
+    @Column(name = "photoPath")
+    private String photoPath;
 
-    protected AccountProfile() {}
-
-    public AccountProfile(String accountname, String registerdate, String bio, String email, String photopath) {
-        this.accountname = accountname;
-        this.registerdate = registerdate;
+    //Necessary for Hibernate to work properly
+//    public AccountProfile() {}
+ 
+    //Constructor for a new profile
+    public AccountProfile(String username, String passwordHash, String registerDate, String bio, String email) {
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.registerDate = registerDate;
         this.bio = bio;
         this.email = email;
-        if(photopath != null) {
-            this.photopath = photopath;
-        } else {
-            this.photopath = ""; //Path for default photo
-        }
-        //new AccountLogin(idnumber, hashPassword);
+        this.photoPath = "identityprovider/src/main/resources/images/default_account_icon.png"; //Path for default photo
     }
 
+    /** Given the user's password from the client side, compare with the password stored in the database
+    * @param givenPasswordHash The given password should be hashed before passing it into
+    */
+    public Boolean validatePassword(String givenPasswordHash) {
+        return (passwordHash == givenPasswordHash);
+    }
+
+    //A pretty way to see the user's personal information, for logging purposes
+    @Override
     public String toString() {
-        String AccountString = "Username: " + accountname + "\n";
-        AccountString += "Date registered: " + registerdate + "\n";
+        String AccountString = "Username: " + username + "\n";
+        AccountString += "Date registered: " + registerDate + "\n";
         AccountString += "Personal biography: " + bio + "\n";
         AccountString += "Email: " + email + "\n";
-        AccountString += "Path to photo: " + photopath + "\n";
-        //AccountString += "Hashed password: " + login.getpasswordhash() + "\n";
+        AccountString += "Path to photo: " + photoPath;
         return AccountString;
     }
 
-    public Integer getidnumber() {
-        return idnumber;
+    public Long getId() {
+        return id;
     }
 
-    public String getaccountname() {
-        return accountname;
+    public String getUsername() {
+        return username;
     }
 
-    public String getregisterdate() {
-        return registerdate;
+    public String getRegisterDate() {
+        return registerDate;
     }
 
-    public String getbio() {
+    public String getBio() {
         return bio;
     }
 
-    public String getemail() {
+    public String getEmail() {
         return email;
     }
-    //Add photopath here
-    public String getphotopath() {
-        return photopath;
+
+    public String getPhotoPath() {
+        return photoPath;
     }
-
-    /*public Boolean validatePassword(int givenHashPassword) {
-        return (login.getpasswordhash() == givenHashPassword);
-    }*/
-
 }
