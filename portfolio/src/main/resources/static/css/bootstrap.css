@@ -742,6 +742,13 @@ progress {
 
 }
 
+.edit_profile {
+  font-family: nexaBold !important;
+  color: #19DAFF !important;
+  font-size: 300% !important;
+
+}
+
 .project_head {
   font-family: nexaBold !important;
   color: #19DAFF !important;
@@ -1005,11 +1012,12 @@ progress {
 
 .horizontal-group {
     display: flex !important;
-    padding: 0.5rem;
+    padding-right: 0.5rem;
     width: 100% !important;
 }
 
 .horizontal-group-element {
+    width: 50% !important;
 }
 
 .horizontal_field {
