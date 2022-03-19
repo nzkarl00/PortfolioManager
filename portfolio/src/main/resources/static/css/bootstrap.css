@@ -736,9 +736,9 @@ progress {
 
 
 .profile_head {
-  font-family: nexa !important;
+  font-family: nexaBold !important;
   color: #19DAFF !important;
-  font-size: 150% !important;
+  font-size: 200% !important;
 
 }
 
@@ -814,10 +814,11 @@ progress {
 
 .profile_subhead {
 
-  font-family: nexaLight !important;
+  font-family: nexa !important;
   color: #19DAFF !important;
-  font-size: 100% !important;
+  font-size: 150% !important;
   margin-bottom: 0.5rem !important;
+  margin-top: 0.5rem !important;
 
 }
 
@@ -971,6 +972,28 @@ progress {
 
 }
 .edit:hover {
+
+    background: #FF48CF !important;
+    color: #ffffff !important;
+
+}
+
+
+.edit_wide {
+
+    background-color: #DF5DC0 !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 150% !important;
+    align: center !important;
+    font-size: 100% !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+.edit_wide:hover {
 
     background: #FF48CF !important;
     color: #ffffff !important;
