@@ -7,51 +7,91 @@
     <link th:href="@{/css/stylesheet.css}" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-    <div class="row"><br><br><br></div>
-    <div class="row-12">
 
 
 
-        <div class="col-8">
-
-            <div class="portion_body">
-                <div class="formContainer">
-
-                    <p class="profile_head">Log In</p>
-
-                    <form th:action="@{/login}" method="post">
-
-                        <label class="profile_subhead py-1">Username:</label>
-                        <input id="username" type="text" th:name="username" th:value="*{username}"><br/>
-
-                        <label class="profile_subhead py-1">Password:</label>
-                        <input id="password" type="text" th:name="password" th:value="*{password}"><br/>
-
-                        <button class="dropdown-circle" type="submit">Login</button>
-                    </form>
-                </div>
-
-                <div class="row"><span>.</span></div>
-                <div class="row"><span>.</span></div>
-                <div class="row"><span>.</span></div>
-                <div class="row"><span>.</span></div>
-                <div class="row"><span>.</span></div>
-                <div class="row"><span>.</span></div>
-                <div class="row"><span>.</span></div>
-                <div class="row"><span>.</span></div>
+<!-- Header -->
+<nav class="navbar sticky-top navbar-light bg-light">
+    <div class="container-fluid ms-auto">
+        <p></p>
+        <p class="nav-item header_name">Login</p>
+        <p></p>
+    </div>
+    </div>
+</nav>
 
 
-                <p class="profile_subhead py-1" th:text="${loginMessage}" />
 
-            </div>
+<!-- Body -->
+<div class="main">
+    <div class="container">
 
+        <div class="row-1">
+            <br><br><br>
         </div>
 
 
+
+        <form class="row" th:action="@{/login}" method="post">
+
+            <div class="col-2"></div>
+
+            <div class="col-7 portion_body">
+
+                <label class="project_subhead py-1">Username:</label>
+                <input class="project_edit_data horizontal_field" id="username" type="text" th:name="username" th:value="*{username}"><br/>
+
+                <label class="project_subhead py-1">Password:</label>
+                <input class="project_edit_data horizontal_field" id="password" type="text" th:name="password" th:value="*{password}"><br/>
+
+            </div>
+
+            <div class="col-1 align-items-end text-center" style="text-align:center;">
+
+                <button class="save" type="submit">LOGIN</button>
+
+
+                <button class="signup" type="button">
+                    <a  class="button_a " th:href="@{/signup}">SIGNUP</a>
+                </button>
+
+            </div>
+
+
+            <div class="col-2"></div>
+
+        </form>
+
+        <br>
+
+        <div class="row">
+
+            <div class="col-2"></div>
+
+            <div class="col-7 text-center ">
+
+
+                <p class=" portion_body_thin loginerror" th:text="${loginMessage}" />
+
+
+            </div>
+
+            <div class="col-3"></div>
+
+
+        </div>
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+
     </div>
 </div>
-<p class="text-muted py-5">Don't have an account? <a th:href="@{/signup}">Sign up</a><</p>
+
 </div>
+
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
 </body>
+</html>
 </html>

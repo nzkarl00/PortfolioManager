@@ -22,7 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         security
             .addFilterBefore(new JwtAuthenticationFilter(), BasicAuthenticationFilter.class)
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.GET, "/login")
+                    .antMatchers(HttpMethod.GET, "/login", "/signup")
                     .permitAll()
                     .and()
                 .authorizeRequests()
@@ -50,5 +50,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception
     {
         web.ignoring().antMatchers("/login");
+        web.ignoring().antMatchers("/signup");
+        web.ignoring().antMatchers("/error");
+        web.ignoring().antMatchers("/css/**");
+        web.ignoring().antMatchers("/js/**");
+        web.ignoring().antMatchers("/Font/**");
+        web.ignoring().antMatchers("/styles/**");
     }
 }
