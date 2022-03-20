@@ -66,16 +66,14 @@
       <div class="col-8 portion_body">
 
         <a class="project_a" href="project_page.html">
-          <h3 class="project_subhead">Project 1</h3>
+          <h3 class="project_subhead" th:text="${project.getName}"/>
         </a>
         <br>
         <div class="profile_data">
-          <p class="bio">Here is a fake project description page. This will contain a summary description of the project that
-            will allow users to know more about the project for easy reference and to prevent accidentally clicking
-            on the wrong project if the titles do not give a thorough explanation of the difference.</p>
+          <p class="bio" th:text="${project.getDescription}"/>
         </div>
 
-        <p class="project_date">Date Information Here</p>
+        <p class="project_date" th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
 
       </div>
 
