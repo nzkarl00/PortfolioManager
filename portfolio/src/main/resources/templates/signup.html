@@ -8,129 +8,30 @@
 </head>
 <body>
 
-
-
-<!-- Header -->
-<nav class="navbar sticky-top navbar-light bg-light">
-    <div class="container-fluid ms-auto">
-        <p></p>
-        <p class="nav-item header_name">Sign Up</p>
-        <p></p>
-    </div>
-    </div>
-</nav>
-
-
-
-<!-- Body -->
-<div class="main">
-    <div class="container">
-
-        <div class="row-1">
-            <br><br><br>
-        </div>
-
-
-
-        <form class="row" th:action="@{/signup}" method="post">
-
-            <div class="col-2"></div>
-
-            <div class="col-7 portion_body">
-                <div>
-                <label class="project_subhead" >Username:</label>
-                <input class="project_edit_data horizontal_field" id="username" type="text" th:name="username" th:value="*{username}"><br/>
-                </div>
-
-
-                <div>
-                        <label class="project_subhead">Password:</label>
-                        <input class="project_edit_data horizontal_field"  id="password" type="password" th:name="password" th:value="*{password}"><br/>
-
-
-
-                </div>
-
-                <div>
-
-                    <label  class="project_subhead">Confirm Password:</label>
-                    <input class="project_edit_data horizontal_field"  id="passwordConfirm" type="password" th:name="passwordConfirm" th:value="*{passwordConfirm}"><br/>
-
-                </div>
-
-                <div class="horizontal-group">
-                    <div class="horizontal-group-element" >
-                        <label class="project_subhead">First Name:    </label>
-                        <input class="project_edit_data" id="firstname" type="text" th:name="firstname" th:value="*{firstname}"><br/>
-                    </div>
-                    <div class="horizontal-group-element" >
-                        <label class="project_subhead">Last Name:     </label>
-                        <input class="project_edit_data" id="lastname" type="text" th:name="latsname" th:value="*{lastname}"><br/>
-                    </div>
-                </div>
-
-
-                <label class="project_subhead">Pronouns:</label>
-                <select class="project_edit_data horizontal_field"  id="pronouns" th:name="pronouns" th:value="*{pronouns}">
-                    <option value="he">He/Him</option>
-                    <option value="she">She/Her</option>
-                    <option value="they">They/Them</option>
-                </select>
-
-                <div>
-                <label class="project_subhead">Email Address:</label>
-                <input class="project_edit_data horizontal_field"   id="email" type="email" th:name="email" th:value="*{email}"><br/>
-                </div>
-
-            </div>
-
-            <div class="col-1 align-items-end text-center" style="text-align:center;">
-
-                <button class="save" type="submit">SIGNUP</button>
-
-
-                <button class="signup" type="button">
-                    <a  class="button_a " th:href="@{/login}">LOGIN</a>
-                </button>
-
-            </div>
-
-
-
-            <div class="col-2"></div>
-
-        </form>
-
-        <br>
-
-        <div class="row">
-
-            <div class="col-2"></div>
-
-            <div class="col-7 text-center ">
-
-
-                <!-- <p class=" portion_body_thin loginerror" th:text="${loginMessage}" /> -->
-
-
-            </div>
-
-            <div class="col-3"></div>
-
-
-        </div>
-
-        <div class="row-1">
-            <br><br><br>
-        </div>
-
-    </div>
+<div class="vertical-center">
+    <form th:action="@{/signup}" method="post">
+    <label class="text-muted py-5">Username:</label>
+    <input id="username" type="text" th:name="username" th:value="*{username}" required><br/>
+    <label class="text-muted py-5">Password:</label>
+    <input id="password" type="password" th:name="password" th:value="*{password}" required><br/>
+    <label class="text-muted py-5">Confirm Password:</label>
+    <input id="passwordConfirm" type="password" th:name="passwordConfirm" th:value="*{passwordConfirm}" required><br/>
+    <label class="text-muted py-5">First Name:</label>
+    <input id="firstname" type="text" th:name="firstname" th:value="*{firstname}" pattern="[A-Za-z]+([ '-][a-zA-Z]+)*" title="No special characters" minlength="2" maxlength="30" required><br/>
+    <label class="text-muted py-5">Last Name:</label>
+    <input id="lastname" type="text" th:name="lastname" th:value="*{lastname}" pattern="[A-Za-z]+([ '-][a-zA-Z]+)*" title="No special characters" minlength="2" maxlength="30" required><br/>
+    <label class="text-muted py-5">Pronouns:</label>
+    <select id="pronouns" th:name="pronouns" th:value="*{pronouns}">
+        <option value="he">He/Him</option>
+        <option value="she">She/Her</option>
+        <option value="they">They/Them</option>
+    </select>
+    <br/>
+    <label class="text-muted py-5">Email Address:</label>
+    <input id="email" type="email" th:name="email" th:value="*{email}" required><br/>
+    <button class="dropdown-circle" type="submit">Sign Up</button>
+    </form>
+    <p class="text-muted py-5" th:text="${testData}" />
 </div>
-
-
-
-
-<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
-
 </body>
 </html>
