@@ -39,10 +39,10 @@
             <div class="col-7 portion_body">
 
                 <label class="project_subhead py-1">Username:</label>
-                <input class="project_edit_data horizontal_field" id="username" type="text" th:name="username" th:value="*{username}"><br/>
+                <input class="project_edit_data horizontal_field" id="username" type="text" th:name="username" th:value="*{username}" required><br/>
 
                 <label class="project_subhead py-1">Password:</label>
-                <input class="project_edit_data horizontal_field" id="password" type="text" th:name="password" th:value="*{password}"><br/>
+                <input class="project_edit_data horizontal_field" id="password" type="text" th:name="password" th:value="*{password}" required><br/>
 
             </div>
 
@@ -71,7 +71,7 @@
             <div class="col-7 text-center ">
 
 
-                <p class=" portion_body_thin loginerror" th:text="${loginMessage}" />
+<!--                <p class=" portion_body_thin loginerror" th:text="${loginMessage}" /> -->
 
 
             </div>
