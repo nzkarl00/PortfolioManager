@@ -1022,6 +1022,28 @@ progress {
 
 }
 
+.signup {
+
+    background-color: #DF5DC0 !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 150% !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-colour: #FFFFFF !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+.signup:hover {
+
+    background: #FF48CF !important;
+    color: #ffffff !important;
+
+}
+
 
 .body_title_large {
   font-family: nexaBold !important;
