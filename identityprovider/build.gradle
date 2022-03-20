@@ -4,9 +4,9 @@ plugins {
     id 'java'
 }
 
-group = 'nz.ac.canterbury.seng302'
+group = 'nz.ac.canterbury.seng302.team700'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = "17"
 
 wrapper {
     gradleVersion = '7.4'

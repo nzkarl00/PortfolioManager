@@ -1,4 +1,4 @@
-# Seng302 Example Project
+# SENG302 - Team 700 "Space Oddities" Application
 
 Basic project template using `gradle`, `Spring Boot`, `Thymeleaf` and `Gitlab CI`.
 
@@ -74,23 +74,22 @@ gradlew bootRun
 By default, the Portfolio will run on local port 9000 (`http://localhost:9000`)
 
 
-## Todo (Sprint 1)
-
-- Add team name into `build.gradle`
-- Update this README title
-- Update this README contributors
-
-## Todo (Sprint 2)
-
-- Update team name into `build.gradle`
-- Update this README title
-- Update this README contributors
-- Set up Gitlab CI server (refer to the student guide on learn)
-- Decide on a LICENSE
-
 ## Contributors
 
 - SENG302 teaching team
+- Lane Edwards-Brown
+- Yiyang Yu
+- Karl Moore
+- Toby Morgan
+- Lachlan Alsop
+- Zoher Hussein
+- Hugo Reeves
+
+## Product License
+
+© Space Oddities [Team-700], University of Cantebury
+
+Licensed under the proprietary license
 
 ## References
 
