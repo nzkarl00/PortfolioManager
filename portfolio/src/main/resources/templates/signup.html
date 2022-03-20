@@ -11,15 +11,15 @@
 <div class="vertical-center">
     <form th:action="@{/signup}" method="post">
     <label class="text-muted py-5">Username:</label>
-    <input id="username" type="text" th:name="username" th:value="*{username}"><br/>
+    <input id="username" type="text" th:name="username" th:value="*{username}" required><br/>
     <label class="text-muted py-5">Password:</label>
-    <input id="password" type="password" th:name="password" th:value="*{password}"><br/>
-    <label class="text-muted py-5">Confirm PasswordA:</label>
-    <input id="passwordConfirm" type="password" th:name="passwordConfirm" th:value="*{passwordConfirm}"><br/>
+    <input id="password" type="password" th:name="password" th:value="*{password}" required><br/>
+    <label class="text-muted py-5">Confirm Password:</label>
+    <input id="passwordConfirm" type="password" th:name="passwordConfirm" th:value="*{passwordConfirm}" required><br/>
     <label class="text-muted py-5">First Name:</label>
-    <input id="firstname" type="text" th:name="firstname" th:value="*{firstname}"><br/>
+    <input id="firstname" type="text" th:name="firstname" th:value="*{firstname}" pattern="[A-Za-z]+([ '-][a-zA-Z]+)*" title="No special characters" minlength="2" maxlength="30" required><br/>
     <label class="text-muted py-5">Last Name:</label>
-    <input id="lastname" type="text" th:name="lastname" th:value="*{lastname}"><br/>
+    <input id="lastname" type="text" th:name="lastname" th:value="*{lastname}" pattern="[A-Za-z]+([ '-][a-zA-Z]+)*" title="No special characters" minlength="2" maxlength="30" required><br/>
     <label class="text-muted py-5">Pronouns:</label>
     <select id="pronouns" th:name="pronouns" th:value="*{pronouns}">
         <option value="he">He/Him</option>
@@ -28,7 +28,7 @@
     </select>
     <br/>
     <label class="text-muted py-5">Email Address:</label>
-    <input id="email" type="email" th:name="email" th:value="*{email}"><br/>
+    <input id="email" type="email" th:name="email" th:value="*{email}" required><br/>
     <button class="dropdown-circle" type="submit">Sign Up</button>
     </form>
     <p class="text-muted py-5" th:text="${testData}" />
