@@ -73,9 +73,6 @@ gradlew bootRun
 
 By default, the Portfolio will run on local port 9000 (`http://localhost:9000`)
 
-## Stuff to do
-
-- Decide on a LICENSE
 
 ## Contributors
 
@@ -87,6 +84,12 @@ By default, the Portfolio will run on local port 9000 (`http://localhost:9000`)
 - Lachlan Alsop
 - Zoher Hussein
 - Hugo Reeves
+
+## Product License
+
+© Space Oddities [Team-700], University of Cantebury
+
+Licensed under the proprietary license
 
 ## References
 
