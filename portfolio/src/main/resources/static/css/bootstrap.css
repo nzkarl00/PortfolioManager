@@ -715,6 +715,18 @@ progress {
 
 }
 
+.login_error {
+
+  font-family: nexaBold !important;
+  font-size: 150% !important;
+  background-color: #FF202E !important;
+  colour: #FFFFFF !important;
+  border-radius: 35px  !important;
+  padding: 0.5rem !important;
+
+}
+
+
 
 .hr {
 
