@@ -7,9 +7,6 @@
     <link th:href="@{/css/stylesheet.css}" rel="stylesheet">
 </head>
 <body>
-
-
-
 <!-- Header -->
 <nav class="navbar sticky-top navbar-light bg-light">
     <div class="container-fluid ms-auto">
@@ -38,14 +35,14 @@
 
             <div class="col-7 portion_body">
                 <div>
-                <label class="project_subhead" >Username:</label>
-                <input class="project_edit_data horizontal_field" id="username" type="text" th:name="username" th:value="*{username}"><br/>
+                    <label class="project_subhead" >Username:</label>
+                    <input class="project_edit_data horizontal_field" id="username" type="text" th:name="username" th:value="*{username}" required><br/>
                 </div>
 
 
                 <div>
-                        <label class="project_subhead">Password:</label>
-                        <input class="project_edit_data horizontal_field"  id="password" type="password" th:name="password" th:value="*{password}"><br/>
+                    <label class="project_subhead">Password:</label>
+                    <input class="project_edit_data horizontal_field"  id="password" type="password" th:name="password" th:value="*{password}" required><br/>
 
 
 
@@ -54,18 +51,18 @@
                 <div>
 
                     <label  class="project_subhead">Confirm Password:</label>
-                    <input class="project_edit_data horizontal_field"  id="passwordConfirm" type="password" th:name="passwordConfirm" th:value="*{passwordConfirm}"><br/>
+                    <input class="project_edit_data horizontal_field"  id="passwordConfirm" type="password" th:name="passwordConfirm" th:value="*{passwordConfirm}" required><br/>
 
                 </div>
 
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
                         <label class="project_subhead">First Name:    </label>
-                        <input class="project_edit_data" id="firstname" type="text" th:name="firstname" th:value="*{firstname}"><br/>
+                        <input id="firstname" type="text" th:name="firstname" th:value="*{firstname}" pattern="[A-Za-z]+([ '-][a-zA-Z]+)*" title="No special characters" minlength="2" maxlength="30" required><br/>
                     </div>
                     <div class="horizontal-group-element" >
                         <label class="project_subhead">Last Name:     </label>
-                        <input class="project_edit_data" id="lastname" type="text" th:name="latsname" th:value="*{lastname}"><br/>
+                        <input id="lastname" type="text" th:name="lastname" th:value="*{lastname}" pattern="[A-Za-z]+([ '-][a-zA-Z]+)*" title="No special characters" minlength="2" maxlength="30" required><br/>
                     </div>
                 </div>
 
@@ -78,8 +75,8 @@
                 </select>
 
                 <div>
-                <label class="project_subhead">Email Address:</label>
-                <input class="project_edit_data horizontal_field"   id="email" type="email" th:name="email" th:value="*{email}"><br/>
+                    <label class="project_subhead">Email Address:</label>
+                    <input class="project_edit_data horizontal_field"   id="email" type="email" th:name="email" th:value="*{email}" required><br/>
                 </div>
 
             </div>
