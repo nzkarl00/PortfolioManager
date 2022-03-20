@@ -715,15 +715,6 @@ progress {
 
 }
 
-.portion_body_thin {
-
-  font-family: nexa !important;
-  background-color: #FF202E !important;
-  border-radius: 35px  !important;
-  padding: 0.5rem !important;
-
-}
-
 
 .hr {
 
@@ -745,9 +736,16 @@ progress {
 
 
 .profile_head {
-  font-family: nexa !important;
+  font-family: nexaBold !important;
   color: #19DAFF !important;
-  font-size: 150% !important;
+  font-size: 200% !important;
+
+}
+
+.edit_profile {
+  font-family: nexaBold !important;
+  color: #19DAFF !important;
+  font-size: 300% !important;
 
 }
 
@@ -816,19 +814,11 @@ progress {
 
 .profile_subhead {
 
-  font-family: nexaLight !important;
+  font-family: nexa !important;
   color: #19DAFF !important;
-  font-size: 100% !important;
+  font-size: 150% !important;
   margin-bottom: 0.5rem !important;
-
-}
-
-.profile_subsubhead {
-
-  font-family: nexaLight !important;
-  color: #19DAFF !important;
-  font-size: 100% !important;
-  margin-bottom: 0.5rem !important;
+  margin-top: 0.5rem !important;
 
 }
 
@@ -988,6 +978,28 @@ progress {
 
 }
 
+
+.edit_wide {
+
+    background-color: #DF5DC0 !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 150% !important;
+    align: center !important;
+    font-size: 100% !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+.edit_wide:hover {
+
+    background: #FF48CF !important;
+    color: #ffffff !important;
+
+}
+
 .save {
 
     background-color: #26D20F !important;
@@ -1011,38 +1023,6 @@ progress {
 }
 
 
-.signup {
-
-    background-color: #DF5DC0 !important;
-    border-radius: 15px !important;
-    border-style: none !important;
-    color: #ffffff !important;
-    width: 150% !important;
-    align: center !important;
-    font-size: 100% !important;
-    font-colour: #FFFFFF !important;
-    padding: 0.5rem !important;
-    margin: 1rem !important;
-    font-family: nexaLight !important;
-
-}
-.signup:hover {
-
-    background: #FF48CF !important;
-    color: #ffffff !important;
-
-}
-
-.loginerror {
-
-    color: #F7FEFF !important;
-    font-size: 150% !important;
-    font-family: nexaBold !important;
-    margin-top: 0.25rem !important;
-
-}
-
-
 .body_title_large {
   font-family: nexaBold !important;
   font-size: 300% !important;
@@ -1055,10 +1035,12 @@ progress {
 
 .horizontal-group {
     display: flex !important;
+    padding-right: 0.5rem;
     width: 100% !important;
 }
 
 .horizontal-group-element {
+    width: 50% !important;
 }
 
 .horizontal_field {
