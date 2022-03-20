@@ -10,9 +10,9 @@ wrapper {
     gradleVersion = '7.4'
 }
 
-group "nz.ac.canterbury.seng302"
+group "nz.ac.canterbury.seng302.team700"
 version "1.0"
-sourceCompatibility = '17'
+sourceCompatibility = "17"
 
 repositories {
     mavenLocal()
@@ -69,4 +69,3 @@ publishing {
         }
     }
 }
-
