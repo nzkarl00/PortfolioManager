@@ -6,6 +6,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 @Entity // this is an entity, assumed to be in a table called Project
 public class Project {
@@ -24,6 +26,15 @@ public class Project {
         this.projectDescription = projectDescription;
         this.projectStartDate = projectStartDate;
         this.projectEndDate = projectEndDate;
+    }
+
+    public Project(String projectName, String projectDescription, LocalDate startDate, LocalDate endDate) {
+        this.projectName = projectName;
+        this.projectDescription = projectDescription;
+        // Convert local date to regular date
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        this.projectStartDate = Date.from(startDate.atStartOfDay(defaultZoneId).toInstant());
+        this.projectEndDate = Date.from(endDate.atStartOfDay(defaultZoneId).toInstant());
     }
 
     public Project(String projectName, String projectDescription, String projectStartDate, String projectEndDate) {
