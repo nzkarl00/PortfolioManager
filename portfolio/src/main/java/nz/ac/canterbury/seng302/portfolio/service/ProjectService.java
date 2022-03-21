@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
 
 // more info here https://codebun.com/spring-boot-crud-application-using-thymeleaf-and-spring-data-jpa/
 
@@ -38,5 +39,19 @@ public class ProjectService {
         {
             throw new Exception("Project not found");
         }
+    }
+
+    /**
+     * Get project by id
+     */
+    public Project createDefaultProject() throws Exception {
+        Project project = new Project(
+            "New Project",
+            "A newly created project. Edit it!",
+            LocalDate.now(),
+            LocalDate.now().plusMonths(3)
+        );
+        repository.save(project);
+        return project;
     }
 }
