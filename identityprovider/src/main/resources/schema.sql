@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS Account_Name (
     registered_user INTEGER NOT NULL PRIMARY KEY,
     first_name CHAR(20) NOT NULL, /*The user's first name*/
     last_name CHAR(20) NOT NULL, /*The user's last name*/
-    middle_other_name CHAR(20), /*The user's middle or other name(s)*/
+    middle_other_name CHAR(30), /*The user's middle or other name(s)*/
     nickname CHAR(20), /*The user's preferred alias*/
     FOREIGN KEY (registered_user) REFERENCES Account_Profile
 );
