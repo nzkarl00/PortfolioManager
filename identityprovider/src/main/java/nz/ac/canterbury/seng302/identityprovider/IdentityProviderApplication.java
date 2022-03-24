@@ -18,7 +18,7 @@ public class IdentityProviderApplication {
         SpringApplication.run(IdentityProviderApplication.class, args);
     }
 
-/*    @Bean
+    @Bean
     public CommandLineRunner demo(AccountProfileRepository repo) {
         return (args) -> {
             //Creates a new account for the user
@@ -39,6 +39,6 @@ public class IdentityProviderApplication {
             //Demonstrating that this is the same user
             log.info(sameUser.toString());
         };
-    }*/
+    }
 
 }
