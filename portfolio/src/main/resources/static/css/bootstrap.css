@@ -842,6 +842,7 @@ progress {
   color: #000000 !important;
   font-size: 110% !important;
   background-color: #F7FEFF !important;
+  overflow-wrap: break-word;
   border-style: solid !important;
   border-color: #19DAFF !important;
   border-width: 10px !important;
