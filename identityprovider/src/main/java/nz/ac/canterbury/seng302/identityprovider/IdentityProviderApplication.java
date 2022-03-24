@@ -8,7 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.boot.CommandLineRunner;
 
-import nz.ac.canterbury.seng302.identityprovider.model.*;
+import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
+import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 
 @SpringBootApplication
 public class IdentityProviderApplication {
@@ -21,23 +22,7 @@ public class IdentityProviderApplication {
     @Bean
     public CommandLineRunner demo(AccountProfileRepository repo) {
         return (args) -> {
-            //Creates a new account for the user
-            AccountProfile user = new AccountProfile("abc123", "abc123", "2022-01-01", "Hello my name is Allen :)", "abc123@uclive.ac.nz", "Allan", "Blue-cod", "Ally", "Mary");
-            
-            //Saves the user to the repository
-            repo.save(user);
-
-            //Finds the user from the repository, using the person's ID
-            AccountProfile savedUser = repo.findById(user.getId());
-
-            //Finds the same user again, this time using the person's username
-            AccountProfile sameUser = repo.findByUsername(user.getUsername());
-            
-            //Prints the user's information to the log
-            log.info(savedUser.toString());
-
-            //Demonstrating that this is the same user
-            log.info(sameUser.toString());
+        repo.save((new AccountProfile("toby", "fakePassword", "2022-1-1", "bio", "email")));
         };
     }
 
