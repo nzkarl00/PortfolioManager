@@ -63,7 +63,7 @@
 
 
 
-            <div class="col-8 portion_body">
+            <div class="col-lg-8 col-md-10 col-sm-12 portion_body">
 
 
                 <p class="detail_date " th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
@@ -82,7 +82,7 @@
         <div class="row">
 
             <div class="col-2"></div>
-            <div class="col-8">
+            <div class="col-lg-8 col-md-10 col-sm-12">
 
                 <button class="edit" style="padding-top:0rem;">
                     <a class="button_a" th:href="@{'/edit-project'}">Edit Sprint</a>
@@ -100,7 +100,7 @@
             <div class="col-2"></div>
 
 
-            <div class="col-1 align-items-end ">
+            <div class="col-lg-1 col-md-2 col-sm-12 col-12 align-items-end ">
 
 
                 <div class="portion_sprintbody project_sprinthead " th:text="${sprint.getLabel}" />
@@ -113,9 +113,12 @@
 
                 <button class="delete delete-button ">DELETE</button>
 
+                <br>
+                <br>
+
             </div>
 
-            <div class="col-7 portion_body">
+            <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
 
                 <div class="sprint-title project_subhead " th:text="${sprint.getName}" />
                 <div class="sprint-date detail_date" th:text="${sprint.getStartDateString} + ' - ' + ${sprint.getEndDateString}" />
@@ -132,7 +135,7 @@
 
             <div class="col-2"></div>
 
-            <div class="col-8">
+            <div class="col-lg-8 col-md-10 col-sm-12">
                 <button class="add">
                     Add Sprint
                 </button>

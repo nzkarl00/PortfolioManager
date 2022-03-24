@@ -34,19 +34,19 @@
 
         <form class="row" th:action="@{/login}" method="post">
 
-            <div class="col-2"></div>
+            <div class="col-lg-2 col-m-1 col-2"></div>
 
-            <div class="col-7 portion_body">
+            <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
 
                 <label class="project_subhead py-1">Username:</label>
                 <input class="project_edit_data horizontal_field" id="username" type="text" th:name="username" th:value="*{username}" required><br/>
 
                 <label class="project_subhead py-1">Password:</label>
-                <input class="project_edit_data horizontal_field" id="password" type="text" th:name="password" th:value="*{password}" required><br/>
+                <input type="password" class="project_edit_data horizontal_field" id="password" th:name="password" th:value="*{password}" required><br/>
 
             </div>
 
-            <div class="col-1 align-items-end text-center" style="text-align:center;">
+            <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end text-center" style="text-align:center;">
 
                 <button class="save" type="submit">LOGIN</button>
 
