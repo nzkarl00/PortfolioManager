@@ -31,7 +31,7 @@ public class DetailsController {
         // Gets the project with id 0 to plonk on the page
         Project project = projectService.getProjectById(0);
         model.addAttribute("project", project);
-        
+
         List<Sprint> sprintList = sprintService.getAllSprints();
         model.addAttribute("sprints", sprintList);
 
