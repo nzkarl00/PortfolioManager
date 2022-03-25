@@ -26,6 +26,9 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.0'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.0'
 
+    // Hashing
+    implementation 'org.mindrot:jbcrypt:0.4'
+
     implementation 'net.devh:grpc-spring-boot-starter:2.13.1.RELEASE' // GRPC server / client dependencies
     implementation 'nz.ac.canterbury.seng302:shared:1.0' // Local package containing .proto files
 
@@ -33,8 +36,10 @@ dependencies {
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.1' // For Parameterized Tests
 
-    // H2 Database dependencies
+
+  // H2 Database dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     runtimeOnly 'com.h2database:h2'

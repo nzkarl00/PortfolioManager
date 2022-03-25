@@ -73,6 +73,12 @@ gradlew bootRun
 
 By default, the Portfolio will run on local port 9000 (`http://localhost:9000`)
 
+### 4 - Interacting
+
+Navigate with your browser to 'http://localhost:9000/login'.
+From here you may either register a user or login to the default user account.
+Default user account credentials: (Username: USER, Password: **Password123!**)
+
 
 ## Contributors
 
