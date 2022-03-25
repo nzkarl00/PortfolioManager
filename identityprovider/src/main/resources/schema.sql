@@ -5,8 +5,8 @@ DROP TABLE IF EXISTS Pronouns;
 DROP TABLE IF EXISTS Teacher;
 
 CREATE TABLE IF NOT EXISTS ACCOUNT_PROFILE (
-    id INTEGER NOT NULL PRIMARY KEY CHECK (id > 0), /*The user's unique identification number*/
-    username VARCHAR(10) UNIQUE NOT NULL, /*The user's username*/
+    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT CHECK (id > 0), /*The user's unique identification number*/
+    username VARCHAR(30) UNIQUE NOT NULL, /*The user's username*/
     password_hash VARCHAR(60) NOT NULL, /*The user's encrypted password*/
     register_date DATE NOT NULL CHECK (register_date >= DATE'2022-01-01'), /*The date the user registered their account, must be after 1/1/2022*/
     bio VARCHAR(1024), /*The user's short autobiography with a maximum length of 1MB of text*/

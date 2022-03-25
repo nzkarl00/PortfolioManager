@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Date;
 
 @GrpcService
 public class AccountServerService extends UserAccountServiceImplBase{
@@ -23,7 +24,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Override
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
         UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
-        repo.save(new AccountProfile(request.getUsername(), request.getPassword(), request.getFirstName(), request.getPersonalPronouns(), request.getEmail()));
+        // TODO: Handle saving of name.
+        repo.save(new AccountProfile(request.getUsername(), request.getPassword(), new Date(), "", request.getEmail(), null));
         reply.setMessage("Created account " + request.getUsername());
         System.out.println("TESTING DATA " + request.getUsername());
         responseObserver.onNext(reply.build());
