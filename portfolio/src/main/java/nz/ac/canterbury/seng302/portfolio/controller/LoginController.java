@@ -4,6 +4,7 @@ import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -114,9 +115,10 @@ public class LoginController {
             Model model
             )
     {
-            if (password != passwordConfirm) {
-                model.addAttribute("passwordError", "Passwords do not match");
-            }
-            return "signup";
+        System.out.println("TESTMESSAGE");
+        UserRegisterResponse registerReply;
+        registerReply = authenticateClientService.register(username, password, firstname, lastname, email, pronouns);
+        model.addAttribute("registerTest", registerReply.getMessage());
+        return "signup";
     }
 }

@@ -18,12 +18,6 @@ public class IdentityProviderApplication {
     public static void main(String[] args) {
         SpringApplication.run(IdentityProviderApplication.class, args);
     }
-
-    /*@Bean
-    public CommandLineRunner demo(AccountProfileRepository repo) {
-        return (args) -> {
-        repo.save((new AccountProfile("toby", "fakePassword", "2022-1-1", "bio", "email")));
-        };
-    }*/
-
 }
+
+
