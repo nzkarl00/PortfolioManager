@@ -1,4 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
+
+
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -25,9 +27,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
         UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
         // TODO: Handle saving of name.
-        repo.save(new AccountProfile(request.getUsername(), request.getPassword(), new Date(), "", request.getEmail(), null));
+        // Hash the password
+        String hashedPassword = Hasher.hashPassword(request.getPassword());
+        repo.save(new AccountProfile(request.getUsername(), hashedPassword, new Date(), "", request.getEmail(), null));
         reply.setMessage("Created account " + request.getUsername());
-        System.out.println("TESTING DATA " + request.getUsername());
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }

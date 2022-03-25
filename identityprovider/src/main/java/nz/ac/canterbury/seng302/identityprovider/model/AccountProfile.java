@@ -15,7 +15,7 @@ public class AccountProfile {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
     //Personal details associated with a users account
     @Column(name = "username", length = 30)
     private String username;
@@ -60,12 +60,16 @@ public class AccountProfile {
         return AccountString;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
     public String getUsername() {
         return username;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
     public Date getRegisterDate() {
@@ -84,7 +88,7 @@ public class AccountProfile {
         return photoPath;
     }
 
-    public void setID(int newId) {
+    public void setID(Long newId) {
         this.id = newId;
     }
 
