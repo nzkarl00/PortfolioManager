@@ -57,15 +57,15 @@
 
     <!-- Portfolio body -->
 
-    <div class="row">
+    <div class="row" th:each="project: ${projects}">
 
       <div class="col-2">
       </div>
 
       <!-- Project Section -->
-      <div class="col-lg-8 col-md-10 col-sm-12 portion_body">
+      <div class="col-lg-8 col-md-10 col-sm-12 portion_body" >
 
-        <a class="project_a" href="project_page.html">
+        <a class="project_a" th:href="@{/details(id=${project.getId})}" >
           <h3 class="project_subhead" th:text="${project.getName}"/>
         </a>
         <br>
@@ -82,7 +82,12 @@
 
       </div>
 
-      <div class="col-4"></div>
+      <div class="col-4">
+
+        <br>
+        <br>
+
+      </div>
 
     </div>
 

@@ -11,6 +11,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -33,10 +34,10 @@ public class DetailsController {
      * @throws Exception
      */
     @GetMapping("/details")
-    public String details(@AuthenticationPrincipal AuthState principal, Model model) throws Exception {
+    public String details(@AuthenticationPrincipal AuthState principal , @RequestParam(value="id") Integer projectId, Model model) throws Exception {
         /* Add project details to the model */
         // Gets the project with id 0 to plonk on the page
-        Project project = projectService.getProjectById(1);
+        Project project = projectService.getProjectById(projectId);
         model.addAttribute("project", project);
 
         List<Sprint> sprintList = sprintService.getAllSprints();

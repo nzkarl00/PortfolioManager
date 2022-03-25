@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
@@ -14,6 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+
+import java.util.List;
 
 @Controller
 public class LandingController {
@@ -32,13 +36,10 @@ public class LandingController {
    * @throws Exception
    */
   @GetMapping("/landing")
-  public String landing(
-      @AuthenticationPrincipal AuthState principal,
-      Model model
-  ) throws Exception {
+  public String landing( @AuthenticationPrincipal AuthState principal, Model model) throws Exception {
 
-    Project project = projectService.getProjectById(1);
-    model.addAttribute("project", project);
+    List<Project> projectList = projectService.getAllProjects();
+    model.addAttribute("projects", projectList);
 
     return "landing";
   }
