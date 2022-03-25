@@ -6,6 +6,7 @@
 */src/generated/
 */bin/
 **/*.mv.db
+**/*.trace.db
 
 .envrc
 */src/main/java/nz/ac/canterbury/seng302/identityprovider/model/database/

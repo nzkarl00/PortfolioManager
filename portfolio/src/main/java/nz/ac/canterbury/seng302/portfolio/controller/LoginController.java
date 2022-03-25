@@ -144,7 +144,7 @@ public class LoginController {
     {
         System.out.println("TESTMESSAGE");
         UserRegisterResponse registerReply;
-        registerReply = authenticateClientService.register(username, password, firstname, lastname, email, pronouns);
+        registerReply = authenticateClientService.register(username, password, firstname, lastname, pronouns, email);
         model.addAttribute("registerTest", registerReply.getMessage());
         return "signup";
     }
