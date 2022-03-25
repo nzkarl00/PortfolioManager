@@ -60,7 +60,15 @@ public class LoginController {
         return "login";
     }
 
-
+    /**
+     * Attempts to create a valid authorisation attempt
+     * @param request HTTP request sent to this endpoint
+     * @param response HTTP response that will be returned by this endpoint
+     * @param username Username of account to log in to IdP with
+     * @param password Password associated with username
+     * @param model The model to be used by the application for web integration
+     * @return redirects to the account or login page based on if the correct details were submitted
+     */
     @PostMapping("/login")
     public String signin(
             HttpServletRequest request,
@@ -93,6 +101,11 @@ public class LoginController {
         return "login";
     }
 
+    /**
+     * Redirects to the signup page
+     * @param model The model to be used by the application for web integration
+     * @return signup page reference
+     */
     @GetMapping("/signup")
     public String signup(
         Model model
@@ -101,6 +114,20 @@ public class LoginController {
         return "signup";
     }
 
+    /**
+     * Attempts to register the user if all information is valid
+     * @param request HTTP request sent to this endpoint
+     * @param response HTTP response that will be returned by this endpoint
+     * @param username Username of account to log in to IdP with
+     * @param password Password associated with username
+     * @param passwordConfirm Password inputted again to ensure user validity
+     * @param firstname User first name
+     * @param lastname User last name
+     * @param pronouns User pronouns
+     * @param email User email
+     * @param model The model to be used by the application for web integration
+     * @return redirects to the signup page
+     */
     @PostMapping("/signup")
     public String createAccount(
             HttpServletRequest request,

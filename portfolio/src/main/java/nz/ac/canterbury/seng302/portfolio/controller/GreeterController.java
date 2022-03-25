@@ -20,6 +20,7 @@ public class GreeterController {
     @Autowired
     private GreeterClientService greeterClientService;
 
+
     @GetMapping("/greeting")
     public String greeting(
             @AuthenticationPrincipal AuthState principal,

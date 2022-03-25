@@ -32,6 +32,11 @@ public class EditSprintController {
         this.sprintDescription = description;
     }
 
+    /**
+     * Redirects to the edit sprint html page
+     * @param model The model to be used by the application for web integration
+     * @return
+     */
     @GetMapping("/edit-sprint")
     public String sprintForm(Model model) {
         /* Add sprint details to the model */
@@ -46,6 +51,16 @@ public class EditSprintController {
         return "editSprint";
     }
 
+    /**
+     * Updates the given sprint with form data
+     * @param principal
+     * @param sprintName Name of the sprint (string)
+     * @param sprintStartDate Start Date of the sprint (string)
+     * @param sprintEndDate End Date of the sprint (string)
+     * @param sprintDescription Description of the sprint (string)
+     * @param model The model to be used by the application for web integration
+     * @return redirects to the edit sprint page
+     */
     @PostMapping("/edit-sprint")
     public String sprintSave(
             @AuthenticationPrincipal AuthState principal,
@@ -61,5 +76,4 @@ public class EditSprintController {
         this.sprintDescription = sprintDescription;
         return "redirect:/edit-sprint";
     }
-
 }

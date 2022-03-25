@@ -21,6 +21,13 @@ public class Project {
 
     protected Project() {}
 
+    /**
+     *
+     * @param projectName
+     * @param projectDescription
+     * @param projectStartDate
+     * @param projectEndDate
+     */
     public Project(String projectName, String projectDescription, Date projectStartDate, Date projectEndDate) {
         this.projectName = projectName;
         this.projectDescription = projectDescription;

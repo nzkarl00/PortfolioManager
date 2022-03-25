@@ -42,7 +42,7 @@ public class ProjectService {
     }
 
     /**
-     * Get project by id
+     * Create a default project
      */
     public Project createDefaultProject() throws Exception {
         Project project = new Project(

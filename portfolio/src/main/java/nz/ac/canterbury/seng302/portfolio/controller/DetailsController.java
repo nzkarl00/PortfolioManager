@@ -25,6 +25,13 @@ public class DetailsController {
     @Autowired
     private SprintService sprintService;
 
+    /**
+     * Returns the html page based on the user's role
+     * @param principal
+     * @param model The model to be used by the application for web integration
+     * @return The html page to direct to
+     * @throws Exception
+     */
     @GetMapping("/details")
     public String details(@AuthenticationPrincipal AuthState principal, Model model) throws Exception {
         /* Add project details to the model */

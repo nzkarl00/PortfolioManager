@@ -24,6 +24,13 @@ public class LandingController {
   @Autowired
   private SprintService sprintService;
 
+  /**
+   * Directs the user to the landing project page
+   * @param principal
+   * @param model The model to be used by the application for web integration
+   * @return redirects to the landing page
+   * @throws Exception
+   */
   @GetMapping("/landing")
   public String landing(
       @AuthenticationPrincipal AuthState principal,
