@@ -1,6 +1,9 @@
-/*insert into account_profile (id, username, passwordHash, registerDate, bio, email) values (999, "tmo89", "password", "2022-01-01", "bio", "email@gmail.com")*/
-/*insert into accountname values(6, 'Toby', 'Morgan', 'Stuart Kempton', 'CrazyPeanut0');*/
-/*insert into pronouns values(7, 'he');*/
-/*insert into pronouns values(8, 'him');*/
-/*insert into pronouns values(9, 'they');*/
-/*insert into pronouns values(10, 'them');*/
+INSERT INTO account_profile VALUES (
+   1,
+   'USER',
+   '$2a$12$Q/X/hcw4ijD3g7R8UJjHVelxtUoBLceA.qiLwtPw3.gYbJJNXXtha',
+   '2022-02-03',
+   '',
+   'user@domain.com',
+   'identityprovider/src/main/resources/images/default_account_icon.png'
+);
