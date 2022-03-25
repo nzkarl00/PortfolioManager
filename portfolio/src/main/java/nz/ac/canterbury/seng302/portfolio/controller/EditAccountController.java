@@ -27,6 +27,11 @@ public class EditAccountController {
     String pronouns = "they/them";
     String email = "fakeemail@joke.co.nz";
 
+    /**
+     * Directs to the account edit, pulling user data to display
+     * @param model The model to be used by the application for web integration
+     * @return The html page to be used
+     */
     @GetMapping("/edit-account")
     public String projectForm(Model model) {
         /* Add project details to the model */
@@ -44,7 +49,20 @@ public class EditAccountController {
         return "editAccount";
     }
 
-
+    /**
+     *
+     * @param principal
+     * @param nickname The nickname input (string)
+     * @param password The password input (string password)
+     * @param passwordConfirm The password second input (string password)
+     * @param bio The bio input (string)
+     * @param firstname The first name input (string)
+     * @param lastname The last name input (string)
+     * @param pronouns The pronouns of the user input (string)
+     * @param email The email of the user input (string)
+     * @param model The model to be used by the application for web integration
+     * @return redirects to the account page
+     */
     @PostMapping("/edit-account")
     public String projectSave(
             @AuthenticationPrincipal AuthState principal,
