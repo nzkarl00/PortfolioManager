@@ -1,13 +1,17 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
+import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
+import java.util.List;
 
 
 /**
@@ -16,8 +20,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class EditProjectController {
     /* Create default project. TODO: use database to check for this*/
-    Project project = new Project("Project 2022", "", "04/Mar/2022",
-                                  "04/Nov/2022");
+
+
+    @Autowired
+    private ProjectRepository repository;
+    @Autowired
+    private ProjectService projectService;
+
 
     /**
      * Redirects top the edit project page
@@ -26,6 +35,8 @@ public class EditProjectController {
      */
     @GetMapping("/edit-project")
     public String projectForm(Model model) {
+        Project project = new Project("Project 2022", "", "04/Mar/2022",
+                "04/Nov/2022");
         /* Add project details to the model */
         model.addAttribute("projectName", project.getName());
         model.addAttribute("projectStartDate", project.getStartDateString());
@@ -56,10 +67,19 @@ public class EditProjectController {
             @RequestParam(value="projectDescription") String projectDescription,
             Model model
     ) {
+        Project project = new Project("Project 2022", "", "04/Mar/2022",
+                "04/Nov/2022");
         project.setName(projectName);
         project.setStartDateString(projectStartDate);
         project.setEndDateString(projectEndDate);
         project.setDescription(projectDescription);
+        System.out.println("Help");
+        repository.save(project);
+        System.out.println("Me");
+        List<Project> project2 = repository.findByProjectName(projectName);
+        List<Project> projectList = projectService.getAllProjects();
+        System.out.println(project2);
+        System.out.println(projectList);
         return "redirect:/edit-project";
     }
 

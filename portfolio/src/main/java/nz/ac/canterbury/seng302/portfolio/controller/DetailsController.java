@@ -36,7 +36,7 @@ public class DetailsController {
     public String details(@AuthenticationPrincipal AuthState principal, Model model) throws Exception {
         /* Add project details to the model */
         // Gets the project with id 0 to plonk on the page
-        Project project = projectService.getProjectById(0);
+        Project project = projectService.getProjectById(1);
         model.addAttribute("project", project);
 
         List<Sprint> sprintList = sprintService.getAllSprints();

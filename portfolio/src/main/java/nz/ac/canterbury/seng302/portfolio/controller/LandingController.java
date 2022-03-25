@@ -37,7 +37,7 @@ public class LandingController {
       Model model
   ) throws Exception {
 
-    Project project = projectService.getProjectById(0);
+    Project project = projectService.getProjectById(1);
     model.addAttribute("project", project);
 
     return "landing";

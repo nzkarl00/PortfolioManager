@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
 import org.springframework.data.repository.CrudRepository;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
