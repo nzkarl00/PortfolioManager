@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
@@ -23,6 +24,9 @@ import java.util.List;
 public class LandingController {
 
 
+
+  @Autowired
+  private ProjectRepository repository;
   @Autowired
   private ProjectService projectService;
   @Autowired
@@ -41,6 +45,40 @@ public class LandingController {
     List<Project> projectList = projectService.getAllProjects();
     model.addAttribute("projects", projectList);
 
+    // Below code is just begging to be added as a method somewhere...
+    String role = principal.getClaimsList().stream()
+            .filter(claim -> claim.getType().equals("role"))
+            .findFirst()
+            .map(ClaimDTO::getValue)
+            .orElse("NOT FOUND");
+
+    if (role.equals("teacher")) {
+      model.addAttribute("display", "");
+    } else {
+      model.addAttribute("display", "display:none;");
+    }
+
     return "landing";
   }
+
+  @PostMapping("/new-project")
+  public String projectSave(
+          @AuthenticationPrincipal AuthState principal,
+          Model model
+  ) {
+    // Below code is just begging to be added as a method somewhere...
+    String role = principal.getClaimsList().stream()
+            .filter(claim -> claim.getType().equals("role"))
+            .findFirst()
+            .map(ClaimDTO::getValue)
+            .orElse("NOT FOUND");
+
+    if (role.equals("teacher")) {
+      Project project = new Project("Project 2022", "", "04/Mar/2022",
+              "04/Nov/2022");
+      repository.save(project);
+    }
+    return "redirect:/landing";
+  }
+
 }
