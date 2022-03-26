@@ -77,7 +77,10 @@ public class LandingController {
       Project project = new Project("Project 2022", "", "04/Mar/2022",
               "04/Nov/2022");
       repository.save(project);
+
+      return "redirect:/edit-project?id=" + project.getId();
     }
+
     return "redirect:/landing";
   }
 

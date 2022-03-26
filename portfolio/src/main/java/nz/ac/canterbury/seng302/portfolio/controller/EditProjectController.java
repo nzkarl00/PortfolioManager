@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
@@ -19,7 +21,6 @@ import java.util.List;
  */
 @Controller
 public class EditProjectController {
-    /* Create default project. TODO: use database to check for this*/
 
 
     @Autowired
@@ -34,18 +35,29 @@ public class EditProjectController {
      * @return the edit project page
      */
     @GetMapping("/edit-project")
-    public String projectForm(Model model) {
-        Project project = new Project("Project 2022", "", "04/Mar/2022",
-                "04/Nov/2022");
+    public String projectForm(@AuthenticationPrincipal AuthState principal , @RequestParam(value="id") Integer projectId, Model model)  throws Exception  {
+
+        System.out.println("please");
+        Project project = projectService.getProjectById(projectId);
         /* Add project details to the model */
         model.addAttribute("projectName", project.getName());
+        model.addAttribute("project", project);
         model.addAttribute("projectStartDate", project.getStartDateString());
         model.addAttribute("projectEndDate", project.getEndDateString());
         model.addAttribute("projectDescription", project.getDescription());
 
+        // Below code is just begging to be added as a method somewhere...
+        String role = principal.getClaimsList().stream()
+                .filter(claim -> claim.getType().equals("role"))
+                .findFirst()
+                .map(ClaimDTO::getValue)
+                .orElse("NOT FOUND");
 
-        /* Return the name of the Thymeleaf template */
-        return "editProject";
+        if (role.equals("teacher")) {
+            return "editProject";
+        } else {
+            return "userProjectDetails";
+        }
     }
 
     /**
@@ -61,26 +73,24 @@ public class EditProjectController {
     @PostMapping("/edit-project")
     public String projectSave(
             @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value="projectId") Integer projectId,
             @RequestParam(value="projectName") String projectName,
             @RequestParam(value="projectStartDate") String projectStartDate,
             @RequestParam(value="projectEndDate") String projectEndDate,
             @RequestParam(value="projectDescription") String projectDescription,
             Model model
-    ) {
-        Project project = new Project("Project 2022", "", "04/Mar/2022",
-                "04/Nov/2022");
+    )  throws Exception  {
+        System.out.println("Hello");
+        Project project = projectService.getProjectById(projectId);
+        System.out.println("World");
         project.setName(projectName);
         project.setStartDateString(projectStartDate);
         project.setEndDateString(projectEndDate);
         project.setDescription(projectDescription);
-        System.out.println("Help");
+        System.out.println("Its");
         repository.save(project);
         System.out.println("Me");
-        List<Project> project2 = repository.findByProjectName(projectName);
-        List<Project> projectList = projectService.getAllProjects();
-        System.out.println(project2);
-        System.out.println(projectList);
-        return "redirect:/edit-project";
+        return "redirect:/details?id=" + projectId;
     }
 
 }

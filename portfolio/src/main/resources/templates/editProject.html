@@ -80,6 +80,9 @@
                     <label class="project_subhead" for="projectDescription">Project Description</label> <br/>
                     <textarea class="description-input project_edit_data horizontal_field bio" id="projectDescription" th:name="projectDescription" th:text="*{projectDescription}"></textarea>
                 </div>
+
+                <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
+
             </div>
 
             <!-- Form Submission -->
@@ -87,7 +90,7 @@
             <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
 
                 <button class="cancel" type="button">
-                    <a class="button_a" th:href="@{'/details'}">CANCEL</a>
+                    <a class="button_a" th:href="@{/details(id=${project.getId})}">CANCEL</a>
                 </button>
                 <button class="save" type="submit">SAVE</button>
             </div>
