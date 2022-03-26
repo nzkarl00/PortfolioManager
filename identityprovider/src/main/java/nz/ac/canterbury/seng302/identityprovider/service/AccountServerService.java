@@ -21,7 +21,7 @@ import java.util.Date;
 public class AccountServerService extends UserAccountServiceImplBase{
 
     @Autowired
-    private AccountService accountService;
+    AccountService accountService;
 
     @Autowired
     AccountProfileRepository repo;
