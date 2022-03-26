@@ -142,10 +142,13 @@ public class LoginController {
             Model model
             )
     {
-        System.out.println("TESTMESSAGE");
+        if (password != passwordConfirm) {
+            model.addAttribute("signupMessage", "Error: Passwords do not match");
+            return "signup";
+        }
         UserRegisterResponse registerReply;
         registerReply = authenticateClientService.register(username, password, firstname, lastname, pronouns, email);
-        model.addAttribute("registerTest", registerReply.getMessage());
+        model.addAttribute("signupMessage", registerReply.getMessage());
         return "signup";
     }
 }

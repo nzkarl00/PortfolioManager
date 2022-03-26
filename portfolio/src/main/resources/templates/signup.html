@@ -34,13 +34,13 @@
             <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
                 <div>
                     <label class="project_subhead" >Username:</label>
-                    <input class="project_edit_data horizontal_field" id="username" type="text" th:name="username" th:value="*{username}" required><br/>
+                    <input class="project_edit_data horizontal_field" id="username" type="text" th:name="username" th:value="*{username}" pattern="[A-Za-z0-9]+([_'-][a-zA-Z]+)*" title="No spaces or special characters" required><br/>
                 </div>
 
 
                 <div>
                     <label class="project_subhead">Password:</label>
-                    <input class="project_edit_data horizontal_field"  id="password" type="password" th:name="password" th:value="*{password}" required><br/>
+                    <input class="project_edit_data horizontal_field"  id="password" type="password" th:name="password" th:value="*{password}" minlength="8" title="Password must be at least 8 characters" required><br/>
 
 
 
@@ -49,7 +49,7 @@
                 <div>
 
                     <label  class="project_subhead">Confirm Password:</label>
-                    <input class="project_edit_data horizontal_field"  id="passwordConfirm" type="password" th:name="passwordConfirm" th:value="*{passwordConfirm}" required><br/>
+                    <input class="project_edit_data horizontal_field"  id="passwordConfirm" type="password" th:name="passwordConfirm" th:value="*{passwordConfirm}" minlength="8" title="Password must be at least 8 characters" required><br/>
 
                 </div>
 
@@ -106,7 +106,7 @@
             <div class="col-7 text-center ">
 
 
-                <!-- <p class="login_error" th:text="${signupMessage}" /> -->
+                <p class="login_error" th:text="${signupMessage}" />
 
 
             </div>
