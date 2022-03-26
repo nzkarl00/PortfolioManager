@@ -21,17 +21,54 @@ import java.util.Date;
 public class AccountServerService extends UserAccountServiceImplBase{
 
     @Autowired
+    private AccountService accountService;
+
+    @Autowired
     AccountProfileRepository repo;
 
     @Override
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
         UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
+        if (usernameExists(request.getUsername())) {
+            reply.setIsSuccess(false).setMessage("Registration failed, username already exists");
+        } else if (emailExists(request.getEmail())) {
+            reply.setIsSuccess(false).setMessage("Registration failed, email already exists");
+        } else {
         // TODO: Handle saving of name.
         // Hash the password
         String hashedPassword = Hasher.hashPassword(request.getPassword());
         repo.save(new AccountProfile(request.getUsername(), hashedPassword, new Date(), "", request.getEmail(), null));
-        reply.setMessage("Created account " + request.getUsername());
+        reply.setMessage("Created account " + request.getUsername()).setIsSuccess(true);
+        }
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
+    }
+
+    /**
+     *
+     * @param username to be checked
+     * @return true if the username exists in the system, false if it does not
+     */
+    public boolean usernameExists(String username) {
+        try {
+            accountService.getAccountByUsername(username);
+            return true;
+        } catch (Exception e){
+            return false;
+        }
+    }
+
+    /**
+     *
+     * @param email to be checked
+     * @return true if the email exists in the system, false if it does not
+     */
+    public boolean emailExists(String email) {
+        try {
+            accountService.getAccountByEmail(email);
+            return true;
+        } catch (Exception e){
+            return false;
+        }
     }
 }

@@ -142,7 +142,7 @@ public class LoginController {
             Model model
             )
     {
-        if (password != passwordConfirm) {
+        if (!password.equals(passwordConfirm)) {
             model.addAttribute("signupMessage", "Error: Passwords do not match");
             return "signup";
         }

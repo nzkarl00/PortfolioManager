@@ -40,6 +40,17 @@ public class AccountService {
         }
     }
 
+    public AccountProfile getAccountByEmail(String email) throws Exception {
+        AccountProfile profile = repository.findByEmail(email);
+        if(profile!=null) {
+            return profile;
+        }
+        else
+        {
+            throw new Exception("Account profile not found");
+        }
+    }
+
     /**
      * Get account by username
      */
