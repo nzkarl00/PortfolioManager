@@ -63,22 +63,28 @@
 
             <div class="col-7 portion_body">
                 <label class="project_subhead" for="sprintName">Sprint Name</label> <br/>
-                <input class="project_edit_data horizontal_field" id="sprintName" type="text" th:name="sprintName" th:value="*{sprintName}">
+                <input class="project_edit_data horizontal_field" id="sprintName" type="text" th:name="sprintName" th:value="*{sprint.getName}">
                 <br/>
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" for="sprintStartDate">Sprint Start Date</label> <br/>
-                        <input class="project_edit_data" id="sprintStartDate" type="text" th:name="sprintStartDate" th:value="*{sprintStartDate}">
+                        <input class="project_edit_data" id="sprintStartDate" type="text" th:name="sprintStartDate" th:value="*{sprint.getStartDateString}">
                     </div>
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" for="sprintEndDate">Sprint End Date</label> <br/>
-                        <input class="project_edit_data" id="sprintEndDate" type="text" th:name="sprintEndDate" th:value="*{sprintEndDate}">
+                        <input class="project_edit_data" id="sprintEndDate" type="text" th:name="sprintEndDate" th:value="*{sprint.getEndDateString}">
                     </div>
                 </div>
                 <div>
                     <label class="project_subhead" for="sprintDescription">Sprint Description</label> <br/>
-                    <textarea class="description-input project_edit_data horizontal_field bio" id="sprintDescription" th:name="sprintDescription" th:text="*{sprintDescription}"></textarea>
+                    <textarea class="description-input project_edit_data horizontal_field bio" id="sprintDescription" th:name="sprintDescription" th:text="*{sprint.getDescription}"></textarea>
                 </div>
+
+
+                <input style="display:none;" th:name="projectId" id="projectId" th:value="${sprint.getParentProjectId}" type="number">
+                <input style="display:none;" th:name="sprintId" id="sprintId" th:value="${sprint.getId}" type="number">
+-->
+
             </div>
 
             <!-- Form Submission -->

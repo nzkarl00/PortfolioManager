@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -73,9 +76,12 @@ public class LandingController {
             .map(ClaimDTO::getValue)
             .orElse("NOT FOUND");
 
+    String thisYear = new SimpleDateFormat("yyyy").format(new Date());
+
+
     if (role.equals("teacher")) {
-      Project project = new Project("Project 2022", "", "04/Mar/2022",
-              "04/Nov/2022");
+      Project project = new Project("Project "+thisYear, "", LocalDate.now(),
+              LocalDate.now().plusMonths(8));
       repository.save(project);
 
       return "redirect:/edit-project?id=" + project.getId();
