@@ -120,6 +120,8 @@
 
     </div>
 </div>
+
+<!-- JS to check that the passwords and passwordConfirm match-->
 <script>
     const password = document.getElementById("password");
     const passwordConfirm = document.getElementById("passwordConfirm");
@@ -135,6 +137,7 @@
     password.onchange = checkPassword;
     passwordConfirm.onkeyup = checkPassword;
 </script>
+
 <!-- JS -->
 <script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
