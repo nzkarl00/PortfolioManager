@@ -42,8 +42,6 @@
                     <label class="project_subhead">Password:</label>
                     <input class="project_edit_data horizontal_field"  id="password" type="password" th:name="password" th:value="*{password}" minlength="8" title="Password must be at least 8 characters" required><br/>
 
-
-
                 </div>
 
                 <div>
@@ -122,9 +120,21 @@
 
     </div>
 </div>
+<script>
+    const password = document.getElementById("password");
+    const passwordConfirm = document.getElementById("passwordConfirm");
 
+    function checkPassword(){
+        if(passwordConfirm.value !== password.value) {
+            passwordConfirm.setCustomValidity("The passwords don't match");
+        } else {
+            passwordConfirm.setCustomValidity('');
+        }
+    }
 
-
+    password.onchange = checkPassword;
+    passwordConfirm.onkeyup = checkPassword;
+</script>
 <!-- JS -->
 <script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
