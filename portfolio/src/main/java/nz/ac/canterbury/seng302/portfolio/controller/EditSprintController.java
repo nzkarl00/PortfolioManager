@@ -102,7 +102,6 @@ public class EditSprintController {
             Model model
     ) throws Exception {
 
-        System.out.println("Hello");
 
         Sprint sprint = sprintService.getSprintById(sprintId);
         Project project = projectService.getProjectById(projectId);
@@ -114,7 +113,13 @@ public class EditSprintController {
         Date checkStartDate = Project.stringToDate(sprintStartDate);
         Date checkEndDate = Project.stringToDate(sprintEndDate);
 
+        if (sprintName == "") {
 
+
+            errorShow = "";
+            errorCode = "Sprint requires a name";
+            return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
+        }
 
         sprint.setName(sprintName);
         sprint.setDescription(sprintDescription);

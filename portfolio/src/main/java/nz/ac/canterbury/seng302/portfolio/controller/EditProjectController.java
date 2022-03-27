@@ -45,7 +45,6 @@ public class EditProjectController {
     @GetMapping("/edit-project")
     public String projectForm(@AuthenticationPrincipal AuthState principal , @RequestParam(value="id") Integer projectId, Model model)  throws Exception  {
 
-        System.out.println("please");
         Project project = projectService.getProjectById(projectId);
         /* Add project details to the model */
         model.addAttribute("projectName", project.getName());
@@ -94,13 +93,19 @@ public class EditProjectController {
             @RequestParam(value="projectDescription") String projectDescription,
             Model model
     )  throws Exception  {
-        System.out.println("Hello");
         Project project = projectService.getProjectById(projectId);
-        System.out.println("World");
         project.setName(projectName);
 
         Date checkStartDate = Project.stringToDate(projectStartDate);
         Date checkEndDate = Project.stringToDate(projectEndDate);
+
+        if (projectName == "") {
+
+            errorShow = "";
+            errorCode = "Project requires a name";
+            return "redirect:/edit-project?id=" + projectId;
+
+        }
 
         for (Sprint temp: sprintService.getSprintByParentId(projectId)) {
 
@@ -138,9 +143,7 @@ public class EditProjectController {
             return "redirect:/edit-project?id=" + projectId;
         }
         project.setDescription(projectDescription);
-        System.out.println("Its");
         repository.save(project);
-        System.out.println("Me");
         return "redirect:/details?id=" + projectId;
     }
 

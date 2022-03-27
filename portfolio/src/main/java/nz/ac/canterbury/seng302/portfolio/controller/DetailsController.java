@@ -174,10 +174,8 @@ public class DetailsController {
 
 
         if (role.equals("teacher")) {
-            Sprint sprint = new Sprint(projectId, "Sprint", "Sprint " + valueId.toString(), "", startDate, endDate);
+            Sprint sprint = new Sprint(projectId, "Sprint " + valueId.toString(), "Sprint " + valueId.toString(), "", startDate, endDate);
             repository.save(sprint);
-            System.out.println(sprint.getEndDateString());
-            System.out.println(sprint.getStartDateString());
             return "redirect:/edit-sprint?id=" + projectId +"&ids=" + sprint.getId();
         }
 
