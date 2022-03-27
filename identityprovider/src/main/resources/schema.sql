@@ -40,6 +40,6 @@ CREATE TABLE IF NOT EXISTS Teacher (
 
 CREATE TABLE IF NOT EXISTS Roles (
     registered_user INTEGER NOT NULL PRIMARY KEY,
-    user_role VARCHAR(20),
+    user_role VARCHAR(20), /* Role of the user */
     FOREIGN KEY (registered_user) REFERENCES Account_Profile
 );
