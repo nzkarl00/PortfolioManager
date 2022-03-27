@@ -12,6 +12,7 @@ import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 
 import java.util.Date;
+import java.util.Optional;
 
 
 @SpringBootApplication
@@ -29,8 +30,6 @@ public class IdentityProviderApplication {
         return (args) -> {
             AccountProfile user = new AccountProfile("abc123", "abc123", new Date(), "Hello my name is Allen :)", "abc123@uclive.ac.nz", "photopath");
             repo.save(user);
-            AccountProfile savedUser = repo.findById(user.getId());
-            System.out.println(savedUser);
         };
     }
 }
