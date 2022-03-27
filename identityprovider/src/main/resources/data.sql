@@ -6,5 +6,27 @@ INSERT INTO account_profile VALUES (
    '',
    'user@domain.com',
    'identityprovider/src/main/resources/images/default_account_icon.png',
-   'student'
+   'STUDENT'
+);
+
+INSERT INTO account_profile VALUES (
+   2,
+   'TESTTEACHER',
+   '$2a$12$Q/X/hcw4ijD3g7R8UJjHVelxtUoBLceA.qiLwtPw3.gYbJJNXXtha',
+   '2022-02-03',
+   '',
+   'teacher@domain.com',
+   'identityprovider/src/main/resources/images/default_account_icon.png',
+   'TEACHER'
+);
+
+INSERT INTO account_profile VALUES (
+    3,
+    'TESTCOURSEADMIN',
+    '$2a$12$Q/X/hcw4ijD3g7R8UJjHVelxtUoBLceA.qiLwtPw3.gYbJJNXXtha',
+    '2022-02-03',
+    '',
+    'courseadmin@domain.com',
+    'identityprovider/src/main/resources/images/default_account_icon.png',
+    'COURSE_ADMINISTRATOR'
 );

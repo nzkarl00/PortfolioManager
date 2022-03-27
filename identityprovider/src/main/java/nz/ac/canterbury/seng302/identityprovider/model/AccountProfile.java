@@ -29,7 +29,7 @@ public class AccountProfile {
     private String email;
     @Column(name = "photoPath", length = 100)
     private String photoPath;
-    @Column(name = "roles", length = 20)
+    @Column(name = "roles", length = 20) // TODO This column is temporary until multi valuing is sorted out
     private String roles;
     //Necessary for Hibernate to work properly
     public AccountProfile() {}
@@ -42,7 +42,7 @@ public class AccountProfile {
         this.registerDate = registerDate;
         this.bio = bio;
         this.email = email;
-        this.roles = "student";
+        this.roles = "STUDENT";
 
         if(photoPath != null) {
             this.photoPath = photoPath;
