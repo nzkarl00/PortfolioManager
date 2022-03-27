@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Controller for the display project details page
@@ -32,6 +33,9 @@ public class DetailsController {
     private ProjectService projectService;
     @Autowired
     private SprintService sprintService;
+
+    String errorShow = "display:none;";
+    String errorCode = "";
 
     /**
      * Returns the html page based on the user's role
@@ -47,9 +51,16 @@ public class DetailsController {
         Project project = projectService.getProjectById(projectId);
         model.addAttribute("project", project);
 
+
+
         List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
         model.addAttribute("sprints", sprintList);
+        model.addAttribute("errorShow", errorShow);
+        model.addAttribute("errorCode", errorCode);
 
+        // Reset for the next display of the page
+        errorShow = "display:none;";
+        errorCode = "";
 
         // Below code is just begging to be added as a method somewhere...
         String role = principal.getClaimsList().stream()
@@ -98,7 +109,6 @@ public class DetailsController {
             i += 1;
 
         }
-
 
         return "redirect:/details?id=" + projectId;
     }
@@ -150,6 +160,14 @@ public class DetailsController {
 
             }
 
+            if (Objects.equals(sprints.get(sprints.size() - 1).getEndDateString(), project.getEndDateString())) {
+
+                errorShow="";
+                errorCode="There is not enough time in your project for another sprint";
+                return "redirect:/details?id=" + projectId;
+
+            }
+
         }
 
         valueId += 1;
@@ -163,7 +181,7 @@ public class DetailsController {
             return "redirect:/edit-sprint?id=" + projectId +"&ids=" + sprint.getId();
         }
 
-        return "redirect:/landing";
+        return "redirect:/details?id=" + projectId;
     }
 
 }

@@ -107,11 +107,10 @@
 .login_error {
 
   font-family: nexaBold !important;
-  font-size: 150% !important;
+  font-size: 125% !important;
   background-color: #FF202E !important;
   colour: #FFFFFF !important;
-  border-radius: 35px  !important;
-  padding: 0.5rem !important;
+  align:center !important;
 
 }
 
@@ -316,6 +315,20 @@
 
 }
 
+
+.login_box {
+
+    background-color: #FF202E !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-family: nexaLight !important;
+    padding-top: 1rem;
+
+}
 
 .delete {
 
