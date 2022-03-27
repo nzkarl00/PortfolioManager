@@ -38,6 +38,8 @@
 
             <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
 
+                <div class="d-inline d-inline text-danger" th:text="${loginMessage}"></div><br>
+
                 <label class="project_subhead py-1">Username:</label>
                 <input class="project_edit_data horizontal_field" id="username" type="text" th:name="username" th:value="*{username}" required><br/>
 
