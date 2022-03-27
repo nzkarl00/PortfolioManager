@@ -22,8 +22,7 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
     }
 
     public UserResponse getUserById(int id) {
-        GetUserByIdRequest.Builder request = GetUserByIdRequest.newBuilder()
-                .setId(id);
+        GetUserByIdRequest.Builder request = GetUserByIdRequest.newBuilder().setId(id);
         return accountServiceStub.getUserAccountById(request.build());
     }
 }

@@ -48,7 +48,9 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 .setEmail(profile.getEmail())
                 .setCreated(Timestamp.getDefaultInstance()) // TODO
                 .setProfileImagePath(profile.getPhotoPath())
-                .setRoles(1, UserRole.TEACHER); // TODO in db
+                .addRoles(UserRole.STUDENT)
+                .addRoles(UserRole.COURSE_ADMINISTRATOR)
+                .addRoles(UserRole.TEACHER); // TODO in db
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }

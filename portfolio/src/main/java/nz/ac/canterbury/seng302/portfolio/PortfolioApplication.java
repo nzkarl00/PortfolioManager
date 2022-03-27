@@ -17,14 +17,11 @@ public class PortfolioApplication {
         SpringApplication.run(PortfolioApplication.class, args);
     }
 
-
-    @Autowired
-    AccountClientService userService;
-
+    /**
     @Bean
     public CommandLineRunner demo() {
         return (args) -> {
             System.out.println(userService.getUserById(1));
         };
-    }
+    }*/
 }

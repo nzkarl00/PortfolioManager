@@ -60,7 +60,7 @@
                 <div>
                     <p class="profile_subhead">Username</p>
                     <div class="profile_data">
-                        <p class="data">GiveMeAnA+</p>
+                        <p class="data"><span th:text="${username}" ></span></p>
                     </div>
                 </div>
 
@@ -68,7 +68,7 @@
                 <div>
                     <p class="profile_subhead">Full name</p>
                     <div class="profile_data">
-                        <p class="data">John Fakename</p>
+                        <p class="data">John Fakename //TODO in db</p>
                     </div>
                 </div>
 
@@ -76,7 +76,7 @@
                 <div>
                     <p class="profile_subhead">Email Address</p>
                     <div class="profile_data">
-                        <p class="data">funnyemail@uclive.ac.nz</p>
+                        <p class="data"><span th:text="${email}" ></span></p>
                     </div>
                 </div>
 
@@ -100,7 +100,7 @@
                 <div>
                     <p class="profile_subhead">Bio</p>
                     <div class="profile_data">
-                        <p class="bio">Hey my name is john and I'm here to say, I like seng302 in a major way.</p>
+                        <p class="bio"><span th:text="${bio}" ></span></p>
                     </div>
                 </div>
 
