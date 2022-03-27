@@ -72,6 +72,9 @@ public class Sprint {
     public String getLabel() {
         return sprintLabel;
     }
+    public void setLabel(String label) {
+        this.sprintLabel = label;
+    }
     public String getDescription(){
         return sprintDescription;
     }

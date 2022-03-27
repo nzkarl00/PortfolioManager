@@ -46,6 +46,14 @@ public class LandingController {
   public String landing( @AuthenticationPrincipal AuthState principal, Model model) throws Exception {
 
     List<Project> projectList = projectService.getAllProjects();
+    if (projectList.size() == 0) {
+      String thisYear = new SimpleDateFormat("yyyy").format(new Date());
+      Project project = new Project("Project "+thisYear, "", LocalDate.now(),
+              LocalDate.now().plusMonths(8));
+      repository.save(project);
+
+    }
+    projectList = projectService.getAllProjects();
     model.addAttribute("projects", projectList);
 
     // Below code is just begging to be added as a method somewhere...

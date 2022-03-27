@@ -17,7 +17,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -47,7 +49,7 @@ public class EditSprintController {
 
         List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
 
-        Sprint sprint = sprintList.get(sprintId-1);
+        Sprint sprint = sprintService.getSprintById(sprintId);
 
         model.addAttribute("sprint", sprint);
 
@@ -90,11 +92,28 @@ public class EditSprintController {
         System.out.println("Hello");
 
         Sprint sprint = sprintService.getSprintById(sprintId);
+        Project project = projectService.getProjectById(projectId);
+
+        Date projStartDate = project.getStartDate();
+        String stringStartDate = project.getStartDateString();
+        String stringEndDate = project.getEndDateString();
+        Date projEndDate = project.getEndDate();
+        Date checkStartDate = Project.stringToDate(sprintStartDate);
+        Date checkEndDate = Project.stringToDate(sprintEndDate);
+
+
 
         sprint.setName(sprintName);
         sprint.setDescription(sprintDescription);
-        sprint.setEndDateStringSprint(sprintEndDate);
-        sprint.setStartDateStringSprint(sprintStartDate);
+        if ((projStartDate.before(checkStartDate) | (Objects.equals(stringStartDate, sprintStartDate))) & (projEndDate.after(checkEndDate) | (Objects.equals(stringEndDate, sprintEndDate)))) {
+            if (checkStartDate.before(checkEndDate)) {
+                sprint.setStartDateStringSprint(sprintStartDate);
+            }
+            if (checkEndDate.after(checkStartDate)) {
+                sprint.setEndDateStringSprint(sprintEndDate);
+            }
+        }
+
 
         repository.save(sprint);
 

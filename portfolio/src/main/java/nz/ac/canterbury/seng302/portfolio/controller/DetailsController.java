@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -87,6 +88,18 @@ public class DetailsController {
             repository.deleteById(sprintId);
         }
 
+        Integer i = 1;
+
+        List<Sprint> sprintLists = sprintService.getSprintByParentId(projectId);
+        for (Sprint temp : sprintLists) {
+
+            temp.setLabel("Sprint " + i);
+            repository.save(temp);
+            i += 1;
+
+        }
+
+
         return "redirect:/details?id=" + projectId;
     }
 
@@ -103,16 +116,51 @@ public class DetailsController {
                 .map(ClaimDTO::getValue)
                 .orElse("NOT FOUND");
 
-        Integer valueId = sprintService.getSprintByParentId(projectId).size();
+        List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
+
+        Integer valueId = 0;
+
+        valueId = sprints.size();
+
+        Project project = projectService.getProjectById(projectId);
+        Date startDate;
+        Date endDate;
+        if (valueId == 0) {
+
+            startDate = project.getStartDate();
+
+            int noOfDays = 21;
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(startDate);
+            calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
+            endDate = calendar.getTime();
+
+        } else {
+
+
+            startDate = sprints.get(sprints.size()-1).getEndDate();
+            int noOfDays = 21;
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(startDate);
+            calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
+            endDate = calendar.getTime();
+            if (endDate.after(project.getEndDate())) {
+
+                endDate = project.getEndDate();
+
+            }
+
+        }
+
         valueId += 1;
 
 
         if (role.equals("teacher")) {
-            Sprint sprint = new Sprint(projectId, "Sprint", valueId.toString(), "", LocalDate.now(), LocalDate.now().plusWeeks(3));
+            Sprint sprint = new Sprint(projectId, "Sprint", "Sprint " + valueId.toString(), "", startDate, endDate);
             repository.save(sprint);
             System.out.println(sprint.getEndDateString());
             System.out.println(sprint.getStartDateString());
-            return "redirect:/edit-sprint?id=" + projectId +"&ids=" + valueId;
+            return "redirect:/edit-sprint?id=" + projectId +"&ids=" + sprint.getId();
         }
 
         return "redirect:/landing";

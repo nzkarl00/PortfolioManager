@@ -13,6 +13,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Date;
 import java.util.List;
 
 
@@ -84,8 +86,16 @@ public class EditProjectController {
         Project project = projectService.getProjectById(projectId);
         System.out.println("World");
         project.setName(projectName);
-        project.setStartDateString(projectStartDate);
-        project.setEndDateString(projectEndDate);
+
+        Date checkStartDate = Project.stringToDate(projectStartDate);
+        Date checkEndDate = Project.stringToDate(projectEndDate);
+
+        if (checkStartDate.before(checkEndDate)) {
+            project.setStartDateString(projectStartDate);
+        }
+        if (checkEndDate.after(checkStartDate)) {
+            project.setEndDateString(projectEndDate);
+        }
         project.setDescription(projectDescription);
         System.out.println("Its");
         repository.save(project);
