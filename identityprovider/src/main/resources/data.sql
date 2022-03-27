@@ -5,5 +5,6 @@ INSERT INTO account_profile VALUES (
    '2022-02-03',
    '',
    'user@domain.com',
-   'identityprovider/src/main/resources/images/default_account_icon.png'
+   'identityprovider/src/main/resources/images/default_account_icon.png',
+   'student'
 );

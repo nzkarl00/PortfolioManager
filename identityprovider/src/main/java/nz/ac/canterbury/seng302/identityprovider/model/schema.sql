@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS Account_Profile (
     bio VARCHAR(1024), /*The user's short autobiography with a maximum length of 1MB of text*/
     email VARCHAR(30) UNIQUE NOT NULL, /*The user's email address*/
     photo_path VARCHAR(100) /*A path to the user's uploaded profile photo*/
+    roles VARCHAR(20) /*The roles present on the user*/
 );
 
 CREATE TABLE IF NOT EXISTS Account_Name (
@@ -27,5 +28,11 @@ CREATE TABLE IF NOT EXISTS Teacher (
                                        registered_user INTEGER NOT NULL PRIMARY KEY,
                                        title CHAR(5), /*The user's title, e.g Mr/Mrs*/
     occupation CHAR(10), /*The user's occupation, e.g Lecturer/Tutor*/
+    FOREIGN KEY (registered_user) REFERENCES Account_Profile
+    );
+
+CREATE TABLE IF NOT EXISTS Roles (
+                                     role_id INTEGER NOT NULL PRIMARY KEY,
+                                     user_role VARCHAR(20),
     FOREIGN KEY (registered_user) REFERENCES Account_Profile
     );

@@ -29,7 +29,8 @@ public class AccountProfile {
     private String email;
     @Column(name = "photoPath", length = 100)
     private String photoPath;
-
+    @Column(name = "roles", length = 20)
+    private String roles;
     //Necessary for Hibernate to work properly
     public AccountProfile() {}
 
@@ -41,6 +42,7 @@ public class AccountProfile {
         this.registerDate = registerDate;
         this.bio = bio;
         this.email = email;
+        this.roles = "student";
 
         if(photoPath != null) {
             this.photoPath = photoPath;
@@ -87,6 +89,8 @@ public class AccountProfile {
     public String getPhotoPath() {
         return photoPath;
     }
+
+    public String getRoles() { return roles; }
 
     public void setID(Long newId) {
         this.id = newId;

@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS AccountProfile CASCADE CONSTRAINTS;
 DROP TABLE IF EXISTS Account_Name;
 DROP TABLE IF EXISTS Pronouns;
 DROP TABLE IF EXISTS Teacher;
+DROP TABLE IF EXISTS Roles;
 
 CREATE TABLE IF NOT EXISTS ACCOUNT_PROFILE (
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT CHECK (id > 0), /*The user's unique identification number*/
@@ -11,7 +12,8 @@ CREATE TABLE IF NOT EXISTS ACCOUNT_PROFILE (
     register_date DATE NOT NULL CHECK (register_date >= DATE'2022-01-01'), /*The date the user registered their account, must be after 1/1/2022*/
     bio VARCHAR(1024), /*The user's short autobiography with a maximum length of 1MB of text*/
     email VARCHAR(30) UNIQUE NOT NULL, /*The user's email address*/
-    photo_path VARCHAR(100) /*A path to the user's uploaded profile photo*/
+    photo_path VARCHAR(100), /*A path to the user's uploaded profile photo*/
+    roles VARCHAR(20) /*The roles present on the user*/
 );
 
 CREATE TABLE IF NOT EXISTS Account_Name (
@@ -33,5 +35,11 @@ CREATE TABLE IF NOT EXISTS Teacher (
     registered_user INTEGER NOT NULL PRIMARY KEY,
     title CHAR(5), /*The user's title, e.g Mr/Mrs*/
     occupation CHAR(10), /*The user's occupation, e.g Lecturer/Tutor*/
+    FOREIGN KEY (registered_user) REFERENCES Account_Profile
+);
+
+CREATE TABLE IF NOT EXISTS Roles (
+    registered_user INTEGER NOT NULL PRIMARY KEY,
+    user_role VARCHAR(20),
     FOREIGN KEY (registered_user) REFERENCES Account_Profile
 );
