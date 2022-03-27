@@ -99,7 +99,7 @@ public class EditProjectController {
         Date checkStartDate = Project.stringToDate(projectStartDate);
         Date checkEndDate = Project.stringToDate(projectEndDate);
 
-        if (projectName == "") {
+        if (projectName.isBlank()) {
 
             errorShow = "";
             errorCode = "Project requires a name";

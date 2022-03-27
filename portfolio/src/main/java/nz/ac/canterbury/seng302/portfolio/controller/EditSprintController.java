@@ -113,7 +113,7 @@ public class EditSprintController {
         Date checkStartDate = Project.stringToDate(sprintStartDate);
         Date checkEndDate = Project.stringToDate(sprintEndDate);
 
-        if (sprintName == "") {
+        if (sprintName.isBlank()) {
 
 
             errorShow = "";
