@@ -29,12 +29,17 @@ import java.util.Objects;
 public class EditSprintController {
 
 
+
     @Autowired
     private ProjectService projectService;
     @Autowired
     private SprintService sprintService;
     @Autowired
     private SprintRepository repository;
+
+
+    String errorShow = "display:none;";
+    String errorCode = "";
 
     /**
      * Redirects to the edit sprint html page
@@ -52,6 +57,14 @@ public class EditSprintController {
         Sprint sprint = sprintService.getSprintById(sprintId);
 
         model.addAttribute("sprint", sprint);
+        model.addAttribute("project", project);
+        model.addAttribute("errorShow", errorShow);
+        model.addAttribute("errorCode", errorCode);
+
+        // Reset for the next display of the page
+        errorShow = "display:none;";
+        errorCode = "";
+
 
         // Below code is just begging to be added as a method somewhere...
         String role = principal.getClaimsList().stream()
@@ -89,7 +102,6 @@ public class EditSprintController {
             Model model
     ) throws Exception {
 
-        System.out.println("Hello");
 
         Sprint sprint = sprintService.getSprintById(sprintId);
         Project project = projectService.getProjectById(projectId);
@@ -101,17 +113,62 @@ public class EditSprintController {
         Date checkStartDate = Project.stringToDate(sprintStartDate);
         Date checkEndDate = Project.stringToDate(sprintEndDate);
 
+        if (sprintName.isBlank()) {
 
+
+            errorShow = "";
+            errorCode = "Sprint requires a name";
+            return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
+        }
 
         sprint.setName(sprintName);
         sprint.setDescription(sprintDescription);
         if ((projStartDate.before(checkStartDate) | (Objects.equals(stringStartDate, sprintStartDate))) & (projEndDate.after(checkEndDate) | (Objects.equals(stringEndDate, sprintEndDate)))) {
             if (checkStartDate.before(checkEndDate)) {
+                for (Sprint temp: sprintService.getSprintByParentId(projectId)) {
+
+                    if (temp.getEndDate().after(checkStartDate) & temp.getStartDate().before(checkStartDate)) {
+
+                        errorShow = "";
+                        errorCode = "Start date overlaps with another sprint";
+                        return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
+
+                    }
+
+                }
                 sprint.setStartDateStringSprint(sprintStartDate);
+            } else {
+
+                errorShow = "";
+                errorCode = "Start and End date overlap";
+                return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
+
             }
             if (checkEndDate.after(checkStartDate)) {
+                for (Sprint temp: sprintService.getSprintByParentId(projectId)) {
+
+                    if (temp.getEndDate().after(checkStartDate) & temp.getStartDate().before(checkStartDate)) {
+
+                        errorShow = "";
+                        errorCode = "End date overlaps with another sprint";
+                        return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
+
+                    }
+
+                }
                 sprint.setEndDateStringSprint(sprintEndDate);
+            } else {
+
+                errorShow = "";
+                errorCode = "Start and End date overlap";
+                return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
             }
+        } else {
+
+            errorShow = "";
+            errorCode = "Sprint is outside of the Project's timeline";
+            return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
+
         }
 
 

@@ -156,7 +156,10 @@
                     Add Sprint
                 </button>
                 </form>
-
+                <br>
+                <button class="login_box "th:style="${errorShow}">
+                <p class="login_error" th:text="${errorCode}"/>
+                </button>
                 <button class="edit ">
                     <a class=" button_a" th:href="@{/landing}">      Return      </a>
                 </button>
