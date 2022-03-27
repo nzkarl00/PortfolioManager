@@ -56,11 +56,11 @@
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
                         <label class="project_subhead">First Name:    </label>
-                        <input class="project_edit_data horizontal_field" id="firstname" type="text" th:name="firstname" th:value="*{firstname}" pattern="[A-Za-z]+([ '-][a-zA-Z]+)*" title="No special characters" minlength="2" maxlength="30" required><br/>
+                        <input class="project_edit_data horizontal_field" id="firstname" type="text" th:name="firstname" th:value="*{firstname}" pattern="[A-Za-z]+([ '-][a-zA-Z]+)*" title="Special characters not allowed, spaces must be surrounded by non-space characters" minlength="2" maxlength="30" required><br/>
                     </div>
                     <div class="horizontal-group-element" >
                         <label class="project_subhead">Last Name:     </label>
-                        <input class="project_edit_data horizontal_field" id="lastname" type="text" th:name="lastname" th:value="*{lastname}" pattern="[A-Za-z]+([ '-][a-zA-Z]+)*" title="No special characters" minlength="2" maxlength="30" required><br/>
+                        <input class="project_edit_data horizontal_field" id="lastname" type="text" th:name="lastname" th:value="*{lastname}" pattern="[A-Za-z]+([ '-][a-zA-Z]+)*" title="Special characters not allowed, spaces must be surrounded by non-space characters" minlength="2" maxlength="30" required><br/>
                     </div>
                 </div>
 
