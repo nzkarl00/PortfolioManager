@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
@@ -20,6 +21,9 @@ public class LoginController {
 
     @Autowired
     private AuthenticateClientService authenticateClientService;
+
+    @Autowired
+    private AccountClientService accountClientService;
 
     /**
      * Attempts to authenticate with the Identity Provider via gRPC.
@@ -147,7 +151,7 @@ public class LoginController {
             return "signup";
         }
         UserRegisterResponse registerReply;
-        registerReply = authenticateClientService.register(username, password, firstname, lastname, pronouns, email);
+        registerReply = accountClientService.register(username, password, firstname, lastname, email, pronouns);
         model.addAttribute("signupMessage", registerReply.getMessage());
         return "signup";
     }

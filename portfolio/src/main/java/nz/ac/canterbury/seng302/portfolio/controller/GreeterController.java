@@ -1,9 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -12,10 +16,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.sql.*;
-
 @Controller
 public class GreeterController {
+
+    @Autowired
+    private AccountClientService accountClientService;
 
     @Autowired
     private GreeterClientService greeterClientService;
@@ -68,7 +73,6 @@ public class GreeterController {
         // Talk to the GreeterService on the IdP to get a message, we'll tell them our favourite colour too
 
 
-
         // Below code is just begging to be added as a method somewhere...
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
@@ -82,16 +86,18 @@ public class GreeterController {
                 .map(ClaimDTO::getValue)
                 .orElse("-100"));
 
-
         String username = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("name"))
                 .findFirst()
                 .map(ClaimDTO::getValue)
                 .orElse("-100");
 
+        UserResponse userReply;
+        userReply = accountClientService.getUserById(id);
 
-        String idpMessage = username + "Hello User";
-        model.addAttribute("idpMessage", idpMessage);
+        model.addAttribute("username", userReply.getUsername());
+        model.addAttribute("email", userReply.getEmail());
+        model.addAttribute("bio", userReply.getBio());
 
         // Generate our own message, based on the information we have available to us
         String portfolioMessage = String.format(
