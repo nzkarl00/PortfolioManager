@@ -51,7 +51,6 @@ public class LandingController {
       Project project = new Project("Project "+thisYear, "", LocalDate.now(),
               LocalDate.now().plusMonths(8));
       repository.save(project);
-
     }
     projectList = projectService.getAllProjects();
     model.addAttribute("projects", projectList);
