@@ -1,26 +1,21 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
-import org.hibernate.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Date;
+import java.util.Optional;
 
 @GrpcService
 public class AccountServerService extends UserAccountServiceImplBase{
 
     @Autowired
-    AccountService accountService;
+    Account accountService;
 
     @Autowired
     AccountProfileRepository repo;
@@ -89,6 +84,19 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 .addRoles(UserRole.STUDENT)
                 .addRoles(UserRole.COURSE_ADMINISTRATOR)
                 .addRoles(UserRole.TEACHER); // TODO in db
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
+        EditUserResponse.Builder reply = EditUserResponse.newBuilder();
+        AccountProfile profile = repo.findById(request.getUserId());
+        if (!request.getEmail().isEmpty()) { profile.setEmail(request.getEmail()); } //TODO please add the correct fields once db is up and running
+        if (!request.getBio().isEmpty()) { profile.setBio(request.getBio()); }
+        repo.save(profile);
+        reply.setIsSuccess(true)
+                .setMessage("we edited somme shit idk");
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }

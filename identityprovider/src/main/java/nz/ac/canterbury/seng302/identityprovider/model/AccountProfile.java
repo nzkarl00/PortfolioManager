@@ -15,7 +15,7 @@ public class AccountProfile {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private int id;
     //Personal details associated with a users account
     @Column(name = "username", length = 30)
     private String username;
@@ -60,7 +60,7 @@ public class AccountProfile {
         return AccountString;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
@@ -88,9 +88,9 @@ public class AccountProfile {
         return photoPath;
     }
 
-    public void setID(Long newId) {
+    public void setID(int newId) {
         this.id = newId;
-    }
+    } // TODO should this be editable, is it not just a primary key?
 
     public void setUsername(String newUsername) {
         this.username = newUsername;
@@ -98,5 +98,9 @@ public class AccountProfile {
 
     public void setEmail(String newEmail) {
         this.email = newEmail;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 }
