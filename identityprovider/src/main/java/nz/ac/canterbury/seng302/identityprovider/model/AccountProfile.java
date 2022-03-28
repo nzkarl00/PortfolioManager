@@ -40,6 +40,8 @@ public class AccountProfile {
     private String nickname;
     @Column(name = "pronouns", length = 10)
     private String pronouns;
+    @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL)
+    private List<Roles> roles;
 
 
     //Necessary for Hibernate to work properly

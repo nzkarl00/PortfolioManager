@@ -45,8 +45,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
         // TODO: Handle saving of name.
         // Hash the password
         String hashedPassword = Hasher.hashPassword(request.getPassword());
-        Long newID = repo.save(new AccountProfile(request.getUsername(), hashedPassword, new Date(), "", request.getEmail(), null, request.getFirstName(), request.getLastName(), request.getPersonalPronouns())).getId();
-        roleRepo.save(new Roles(newID, "student"));
+        AccountProfile newAccount = repo.save(new AccountProfile(request.getUsername(), hashedPassword, new Date(), "", request.getEmail(), null, request.getFirstName(), request.getLastName(), request.getPersonalPronouns()));
+        roleRepo.save(new Roles(newAccount, "student"));
         reply.setMessage("Created account " + request.getUsername()).setIsSuccess(true);
         }
         responseObserver.onNext(reply.build());

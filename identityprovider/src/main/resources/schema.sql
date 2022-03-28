@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS ACCOUNT_PROFILE (
 
 CREATE TABLE IF NOT EXISTS Roles (
     user_role_id INTEGER PRIMARY KEY,
-    registered_user INTEGER NOT NULL,
+    registered_user_id INTEGER NOT NULL,
     user_role VARCHAR(20), /* Role of the user */
-    FOREIGN KEY (registered_user) REFERENCES Account_Profile
+    FOREIGN KEY (registered_user_id) REFERENCES Account_Profile(id)
 );

@@ -10,8 +10,8 @@ public class Roles {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userRoleId")
     private Long userRoleId;
-    @Column(name = "registeredUser")
-    private Long registeredUser;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private AccountProfile registeredUser;
     @Column(name = "roles")
     private String role;
 
@@ -19,7 +19,7 @@ public class Roles {
 
     public Roles() {}
 
-    public Roles(Long registeredUser, String student) {
+    public Roles(AccountProfile registeredUser, String student) {
         this.registeredUser = registeredUser;
         this.role = student;
     }
