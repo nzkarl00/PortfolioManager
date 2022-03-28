@@ -94,6 +94,7 @@ public class GreeterController {
 
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
+        model.addAttribute("date", userReply.getCreated());
         model.addAttribute("username", userReply.getUsername());
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());

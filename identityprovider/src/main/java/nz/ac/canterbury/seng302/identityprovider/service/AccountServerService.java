@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import com.google.protobuf.Descriptors;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -78,8 +79,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 .setNickname("not yet implemented to db")
                 .setBio(profile.getBio())
                 .setPersonalPronouns("not yet implemented to db")
-                .setEmail(profile.getEmail())
-                .setCreated(Timestamp.getDefaultInstance()) // TODO
+                .setEmail(profile.getEmail());
+        long millis = System.currentTimeMillis();
+        reply.setCreated(Timestamp.newBuilder().setSeconds(millis / 1000)
+                        .setNanos((int) ((millis % 1000) * 1000000)).build()) // TODO
                 .setProfileImagePath(profile.getPhotoPath())
                 .addRoles(UserRole.STUDENT)
                 .addRoles(UserRole.COURSE_ADMINISTRATOR)
