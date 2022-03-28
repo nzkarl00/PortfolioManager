@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DateParsing {
+public class DateParser {
 
     /**
      * It takes a UserResponse and outputs a readable date string.
