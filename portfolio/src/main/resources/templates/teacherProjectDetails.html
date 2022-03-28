@@ -82,10 +82,12 @@
         <div class="row">
 
             <div class="col-2"></div>
+
+            <!-- Buttons -->
             <div class="col-lg-8 col-md-10 col-sm-12">
 
                 <button class="edit" style="padding-top:0rem;">
-                    <a class="button_a" th:href="@{'/edit-project'}">Edit Sprint</a>
+                    <a class="button_a" th:href="@{/edit-project(id=${project.getId})}">Edit Project</a>
                 </button>
             </div>
             <div class="col-2"></div>
@@ -97,47 +99,69 @@
         <div class="row row_sprints"  th:each="sprint: ${sprints}">
 
 
-            <div class="col-2"></div>
+                        <div class="col-2"></div>
+
+                        <!-- Buttons -->
+
+                        <div class="col-lg-1 col-md-2 col-sm-12 col-12 align-items-end ">
 
 
-            <div class="col-lg-1 col-md-2 col-sm-12 col-12 align-items-end ">
+                            <div class="portion_sprintbody project_sprinthead " th:text="${sprint.getLabel}" />
+
+                            <button class="edit">
+                                <a class="button_a" th:href="@{'/edit-sprint?id=' + ${sprint.getParentProjectId} + '&ids=' + ${sprint.getId}}">EDIT</a>
+                            </button>
+
+                            <form th:action="@{/delete-sprint}" method="post">
+
+                                <input style="display:none;" th:name="deleteprojectId" id="deleteprojectId" th:value="${project.getId}" type="number">
+
+                                <input style="display:none;" th:name="sprintId" id="sprintId" th:value="${sprint.getId}" type="number">
 
 
-                <div class="portion_sprintbody project_sprinthead " th:text="${sprint.getLabel}" />
+                                <button class="delete delete-button ">DELETE</button>
+                            </form>
+                            <br>
+                            <br>
+
+                        </div>
+
+                                <!-- Sprint info -->
+                                <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
 
 
+                                    <div class="sprint-title project_subhead " th:text="${sprint.getName}" />
 
-                <button class="edit">
-                    <a class="button_a" th:href="@{'/edit-sprint?label=' + ${sprint.getLabel}}">EDIT</a>
-                </button>
+                                    <div class="sprint-date detail_date" th:text="${sprint.getStartDateString} + ' - ' + ${sprint.getEndDateString}" />
 
-                <button class="delete delete-button ">DELETE</button>
+                                    <div class="sprint-description project_edit_data" th:text="${sprint.getDescription}" />
 
-                <br>
-                <br>
+                                </div>
 
-            </div>
+                                <div class="col-2"></div>
 
-            <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
-
-                <div class="sprint-title project_subhead " th:text="${sprint.getName}" />
-                <div class="sprint-date detail_date" th:text="${sprint.getStartDateString} + ' - ' + ${sprint.getEndDateString}" />
-                <div class="sprint-description project_edit_data" th:text="${sprint.getDescription}" />
-
-            </div>
-
-            <div class="col-2"></div>
 
         </div>
-
 
         <div class="row">
 
             <div class="col-2"></div>
 
-            <div class="col-lg-8 col-md-10 col-sm-12">
-                <button class="add">
+            <!-- Buttons -->
+
+            <div class="col-lg-8 col-md-10 col-sm-12" >
+                <form th:action="@{/new-sprint}" method="post">
+                <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
+                <button class="add" type="submit">
                     Add Sprint
+                </button>
+                </form>
+                <br>
+                <button class="login_box "th:style="${errorShow}">
+                <p class="login_error" th:text="${errorCode}"/>
+                </button>
+                <button class="edit ">
+                    <a class=" button_a" th:href="@{/landing}">      Return      </a>
                 </button>
             </div>
 
@@ -152,6 +176,7 @@
     </div>
 </div>
 
+<!-- JS -->
 <script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
 </body>

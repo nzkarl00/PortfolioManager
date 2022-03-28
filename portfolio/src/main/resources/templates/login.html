@@ -31,12 +31,14 @@
         </div>
 
 
-
+        <!-- Login Form -->
         <form class="row" th:action="@{/login}" method="post">
 
             <div class="col-lg-2 col-m-1 col-2"></div>
 
             <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
+
+                <div class="d-inline d-inline text-danger" th:text="${loginMessage}"></div><br>
 
                 <label class="project_subhead py-1">Username:</label>
                 <input class="project_edit_data horizontal_field" id="username" type="text" th:name="username" th:value="*{username}" required><br/>
@@ -45,6 +47,8 @@
                 <input type="password" class="project_edit_data horizontal_field" id="password" th:name="password" th:value="*{password}" required><br/>
 
             </div>
+
+            <!-- Form Submission -->
 
             <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end text-center" style="text-align:center;">
 
@@ -90,6 +94,7 @@
 
 </div>
 
+<!-- JS -->
 <script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
 </body>

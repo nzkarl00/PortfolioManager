@@ -68,6 +68,10 @@ public class AccountProfile {
         return username;
     }
 
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
     public Date getRegisterDate() {
         return registerDate;
     }
@@ -86,7 +90,7 @@ public class AccountProfile {
 
     public void setID(int newId) {
         this.id = newId;
-    }
+    } // TODO should this be editable, is it not just a primary key?
 
     public void setUsername(String newUsername) {
         this.username = newUsername;
@@ -94,5 +98,9 @@ public class AccountProfile {
 
     public void setEmail(String newEmail) {
         this.email = newEmail;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 }

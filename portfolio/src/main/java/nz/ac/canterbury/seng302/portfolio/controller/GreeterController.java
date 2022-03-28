@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Calendar;
+import java.util.Date;
+
 @Controller
 public class GreeterController {
 
@@ -24,6 +27,7 @@ public class GreeterController {
 
     @Autowired
     private GreeterClientService greeterClientService;
+
 
     @GetMapping("/greeting")
     public String greeting(
@@ -70,8 +74,6 @@ public class GreeterController {
             Model model
     ) {
         // Talk to the GreeterService on the IdP to get a message, we'll tell them our favourite colour too
-
-
         // Below code is just begging to be added as a method somewhere...
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))

@@ -80,12 +80,17 @@
                     <label class="project_subhead" for="projectDescription">Project Description</label> <br/>
                     <textarea class="description-input project_edit_data horizontal_field bio" id="projectDescription" th:name="projectDescription" th:text="*{projectDescription}"></textarea>
                 </div>
+
+                <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
+
             </div>
+
+            <!-- Form Submission -->
 
             <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
 
                 <button class="cancel" type="button">
-                    <a class="button_a" th:href="@{'/details'}">CANCEL</a>
+                    <a class="button_a" th:href="@{/details(id=${project.getId})}">CANCEL</a>
                 </button>
                 <button class="save" type="submit">SAVE</button>
             </div>
@@ -94,6 +99,23 @@
             <div class="col-2"></div>
 
         </form>
+<br>
+        <div class="row">
+
+            <div class="col-2"></div>
+
+            <div class="col-lg-7 col-md-8 col-sm-12">
+
+                <button class="login_box "th:style="${errorShow}">
+                    <p class="login_error" th:text="${errorCode}"/>
+                </button>
+
+            </div>
+
+            <div class="col-2"></div>
+
+
+        </div>
 
         <div class="row-1">
             <br><br><br>
@@ -104,7 +126,7 @@
 
 
 
-
+<!-- JS -->
 <script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

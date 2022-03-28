@@ -8,19 +8,32 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import javax.persistence.Column;
 
 @Entity // this is an entity, assumed to be in a table called Project
 public class Project {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name = "id")
     private int id;
+    @Column(name = "project_name")
     private String projectName;
+    @Column(name = "project_description")
     private String projectDescription;
+    @Column(name = "project_start_date")
     private Date projectStartDate;
+    @Column(name = "project_end_date")
     private Date projectEndDate;
 
     protected Project() {}
 
+    /**
+     *
+     * @param projectName
+     * @param projectDescription
+     * @param projectStartDate
+     * @param projectEndDate
+     */
     public Project(String projectName, String projectDescription, Date projectStartDate, Date projectEndDate) {
         this.projectName = projectName;
         this.projectDescription = projectDescription;
@@ -57,7 +70,7 @@ public class Project {
      * @param dateString the string to read as a date in format 01/Jan/2000
      * @return the given date, as a date object
      */
-    static Date stringToDate(String dateString) {
+    public static Date stringToDate(String dateString) {
         Date date = null;
         try {
             date = new SimpleDateFormat("dd/MMM/yyyy").parse(dateString);
@@ -81,6 +94,10 @@ public class Project {
 
     public int getId(){
         return  id;
+    }
+
+    public void setId(int newId) {
+        this.id = newId;
     }
 
     public String getName() {
@@ -130,6 +147,6 @@ public class Project {
     }
 
     public void setEndDateString(String date) {
-        this.projectStartDate = Project.stringToDate(date);
+        this.projectEndDate = Project.stringToDate(date);
     }
 }

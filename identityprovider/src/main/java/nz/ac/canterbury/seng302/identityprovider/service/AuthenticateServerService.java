@@ -2,11 +2,11 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import org.hibernate.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.identityprovider.authentication.AuthenticationServerInterceptor;
+import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.authentication.JwtTokenUtil;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.identityprovider.IdentityProviderApplication;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticationServiceGrpc.AuthenticationServiceImplBase;
@@ -15,41 +15,55 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticationServiceGrp
 @GrpcService
 public class AuthenticateServerService extends AuthenticationServiceImplBase{
 
-    private final int VALID_USER_ID = 1;
-    private final String VALID_USER = "abc123";
-    private final String VALID_PASSWORD = "Password123!";
-    private final String FIRST_NAME_OF_USER = "Valid";
-    private final String LAST_NAME_OF_USER = "User";
-    private final String FULL_NAME_OF_USER = FIRST_NAME_OF_USER + " " + LAST_NAME_OF_USER;
-    private final String ROLE_OF_USER = "student"; // Puce teams may want to change this to "teacher" to test some functionality
+    @Autowired
+    private Account accountService;
+    // TODO: Lookup in Student, Teacher or COURSE_ADMIN repos to see what the users role is.
+    private final String ROLE_OF_USER = "teacher"; // Puce teams may want to change this to "teacher" to test some functionality
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
 
 
     /**
-     * Attempts to authenticate a user with a given username and password. 
+     * Attempts to authenticate a user with a given username and password.
      */
     @Override
     public void authenticate(AuthenticateRequest request, StreamObserver<AuthenticateResponse> responseObserver) {
         AuthenticateResponse.Builder reply = AuthenticateResponse.newBuilder();
-        
-        if (request.getUsername().equals(VALID_USER) && request.getPassword().equals(VALID_PASSWORD)) {
 
-            String token = jwtTokenService.generateTokenForUser(VALID_USER, VALID_USER_ID, FULL_NAME_OF_USER, ROLE_OF_USER);
+        System.out.println("Handling login request for user: " + request.getUsername());
+        // Get the corresponding user from store
+        try {
+            AccountProfile profile = accountService.getAccountByUsername(request.getUsername());
+
+            assert request.getUsername().equals(profile.getUsername());
+
+            if (Hasher.verify(request.getPassword(), profile.getPasswordHash())) {
+                // TODO: Facility to fetch user role
+                String token = jwtTokenService.generateTokenForUser(profile.getUsername(), profile.getId(), "TODO", ROLE_OF_USER);
+                reply
+                    .setEmail(profile.getEmail())
+                    // TODO: Fetch name
+                    .setFirstName("TODO: FETCH NAME")
+                    .setLastName("TODO: FETCH NAME")
+                    .setMessage("Logged in successfully!")
+                    .setSuccess(true)
+                    .setToken(token)
+                    .setUserId(profile.getId())
+                    .setUsername(profile.getUsername());
+            } else {
+                System.out.println("Could not verify password against expected hash.");
+                reply
+                    .setMessage("Log in attempt failed: username or password incorrect")
+                    .setSuccess(false)
+                    .setToken("");
+            }
+        } catch (Exception e) {
             reply
-                .setEmail("validuser@email.com")
-                .setFirstName(FIRST_NAME_OF_USER)
-                .setLastName(LAST_NAME_OF_USER)
-                .setMessage("Logged in successfully!")
-                .setSuccess(true)
-                .setToken(token)
-                .setUserId(1)
-                .setUsername(VALID_USER);
-        } else {
-            reply
-            .setMessage("Log in attempt failed: username or password incorrect")
-            .setSuccess(false)
-            .setToken("");
+                .setMessage("Log in attempt failed: username or password incorrect")
+                .setSuccess(false)
+                .setToken("");
+            System.out.println(e);
         }
+
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }

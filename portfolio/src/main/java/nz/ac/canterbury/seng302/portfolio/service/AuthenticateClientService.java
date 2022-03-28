@@ -12,6 +12,12 @@ public class AuthenticateClientService {
     @GrpcClient("identity-provider-grpc-server")
     private AuthenticationServiceGrpc.AuthenticationServiceBlockingStub authenticationStub;
 
+    /**
+     *
+     * @param username
+     * @param password
+     * @return
+     */
     public AuthenticateResponse authenticate(final String username, final String password)  {
         AuthenticateRequest authRequest = AuthenticateRequest.newBuilder()
                 .setUsername(username)

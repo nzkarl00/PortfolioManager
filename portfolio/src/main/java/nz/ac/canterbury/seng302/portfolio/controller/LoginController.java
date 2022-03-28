@@ -64,7 +64,15 @@ public class LoginController {
         return "login";
     }
 
-
+    /**
+     * Attempts to create a valid authorisation attempt
+     * @param request HTTP request sent to this endpoint
+     * @param response HTTP response that will be returned by this endpoint
+     * @param username Username of account to log in to IdP with
+     * @param password Password associated with username
+     * @param model The model to be used by the application for web integration
+     * @return redirects to the account or login page based on if the correct details were submitted
+     */
     @PostMapping("/login")
     public String signin(
             HttpServletRequest request,
@@ -90,7 +98,7 @@ public class LoginController {
                 5 * 60 * 60, // Expires in 5 hours
                 domain.startsWith("localhost") ? null : domain
             );
-            return "account";
+            return "redirect:/account";
         }
 
         model.addAttribute("loginMessage", loginReply.getMessage());

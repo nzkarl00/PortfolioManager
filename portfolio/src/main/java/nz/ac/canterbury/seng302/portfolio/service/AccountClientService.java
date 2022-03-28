@@ -25,4 +25,17 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         GetUserByIdRequest.Builder request = GetUserByIdRequest.newBuilder().setId(id);
         return accountServiceStub.getUserAccountById(request.build());
     }
+
+    public EditUserResponse editUser(int id, String firstName, String middleName, String lastName, String nickname, String bio, String pronouns, String email) {
+        EditUserRequest.Builder request = EditUserRequest.newBuilder();
+        request.setUserId(id);
+        if (!firstName.isEmpty()) { request.setFirstName(firstName); }
+        if (!middleName.isEmpty()) { request.setMiddleName(middleName); }
+        if (!lastName.isEmpty()) { request.setLastName(lastName); }
+        if (!nickname.isEmpty()) { request.setNickname(nickname); }
+        if (!bio.isEmpty()) { request.setBio(bio); }
+        if (!pronouns.isEmpty()) { request.setPersonalPronouns(pronouns); }
+        if (!email.isEmpty()) { request.setEmail(email); }
+        return accountServiceStub.editUser(request.build());
+    }
 }

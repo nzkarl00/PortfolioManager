@@ -22,16 +22,5 @@ public class IdentityProviderApplication {
     public static void main(String[] args) {
         SpringApplication.run(IdentityProviderApplication.class, args);
     }
-
-
-    @Bean
-    public CommandLineRunner demo(AccountProfileRepository repo) {
-        return (args) -> {
-            AccountProfile user = new AccountProfile("abc123", "abc123", new Date(), "Hello my name is Allen :)", "abc123@uclive.ac.nz", "photopath");
-            repo.save(user);
-            AccountProfile savedUser = repo.findById(user.getId());
-            System.out.println(savedUser);
-        };
-    }
 }
 
