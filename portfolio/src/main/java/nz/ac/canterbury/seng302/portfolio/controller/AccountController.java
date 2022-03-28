@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
+import nz.ac.canterbury.seng302.portfolio.service.DateParsing;
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
@@ -58,30 +59,9 @@ public class AccountController {
             .orElse("-100");
 
         UserResponse userReply;
-        userReply = accountClientService.getUserById(id);
-        Long seconds = userReply.getCreated().getSeconds();
-        Date date = new Date(seconds * 1000); // turn into millis
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "dd LLLL yyyy" );
-        String stringDate = dateFormat.format( date );
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int month = cal.get(Calendar.MONTH);
-        int year = cal.get(Calendar.YEAR);
-        Calendar currentCalendar = Calendar.getInstance();
-        cal.setTime(new Date());
-        int currentMonth = currentCalendar.get(Calendar.MONTH);
-        int currentYear = currentCalendar.get(Calendar.YEAR);
+        userReply = accountClientService.getUserById(id); // Get the user
 
-        int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
-        if (totalMonth > 0){
-            if (totalMonth > 1) {
-                stringDate += " (" + totalMonth + " Months)";
-            } else {
-                stringDate += " (" + totalMonth + " Month)";
-            }
-        }
-
-        model.addAttribute("date",  stringDate);
+        model.addAttribute("date", DateParsing.displayDate(userReply));
         model.addAttribute("username", userReply.getUsername());
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());
