@@ -1,8 +1,5 @@
 DROP TABLE IF EXISTS Account_Profile CASCADE CONSTRAINTS;
 DROP TABLE IF EXISTS AccountProfile CASCADE CONSTRAINTS;
-DROP TABLE IF EXISTS Account_Name;
-DROP TABLE IF EXISTS Pronouns;
-DROP TABLE IF EXISTS Teacher;
 DROP TABLE IF EXISTS Roles;
 
 CREATE TABLE IF NOT EXISTS ACCOUNT_PROFILE (
@@ -13,33 +10,16 @@ CREATE TABLE IF NOT EXISTS ACCOUNT_PROFILE (
     bio VARCHAR(1024), /*The user's short autobiography with a maximum length of 1MB of text*/
     email VARCHAR(30) UNIQUE NOT NULL, /*The user's email address*/
     photo_path VARCHAR(100), /*A path to the user's uploaded profile photo*/
-    roles VARCHAR(20) /*The roles present on the user*/
-);
-
-CREATE TABLE IF NOT EXISTS Account_Name (
-    registered_user INTEGER NOT NULL PRIMARY KEY,
     first_name CHAR(20) NOT NULL, /*The user's first name*/
     last_name CHAR(20) NOT NULL, /*The user's last name*/
-    middle_other_name CHAR(20), /*The user's middle or other name(s)*/
+    middle_name CHAR(20), /*The user's middle or other name(s)*/
     nickname CHAR(20), /*The user's preferred alias*/
-    FOREIGN KEY (registered_user) REFERENCES Account_Profile
-);
-
-CREATE TABLE IF NOT EXISTS Pronouns (
-    registered_user INTEGER NOT NULL PRIMARY KEY,
-    pronoun CHAR(10), /*User's preferred pronouns, a user may have multiple pronouns, e.g him/her*/
-    FOREIGN KEY (registered_user) REFERENCES Account_Profile
-);
-
-CREATE TABLE IF NOT EXISTS Teacher (
-    registered_user INTEGER NOT NULL PRIMARY KEY,
-    title CHAR(5), /*The user's title, e.g Mr/Mrs*/
-    occupation CHAR(10), /*The user's occupation, e.g Lecturer/Tutor*/
-    FOREIGN KEY (registered_user) REFERENCES Account_Profile
+    pronouns CHAR(10) /*User's preferred pronouns, a user may have multiple pronouns, e.g him/her*/
 );
 
 CREATE TABLE IF NOT EXISTS Roles (
-    registered_user INTEGER NOT NULL PRIMARY KEY,
+    user_role_id INTEGER PRIMARY KEY,
+    registered_user INTEGER NOT NULL,
     user_role VARCHAR(20), /* Role of the user */
     FOREIGN KEY (registered_user) REFERENCES Account_Profile
 );

@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.model;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
 * This class specifies the attributes and methods associated with a user's account,
@@ -13,7 +14,7 @@ public class AccountProfile {
 
     //Auto-generated ID is assigned to each persons account
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
     //Personal details associated with a users account
@@ -29,21 +30,34 @@ public class AccountProfile {
     private String email;
     @Column(name = "photoPath", length = 100)
     private String photoPath;
-    @Column(name = "roles", length = 20) // TODO This column is temporary until multi valuing is sorted out
-    private String roles;
+    @Column(name = "firstName", length = 30)
+    private String firstName;
+    @Column(name = "lastName", length = 30)
+    private String lastName;
+    @Column(name = "middleName", length = 30)
+    private String middleName;
+    @Column(name = "nickname", length = 30)
+    private String nickname;
+    @Column(name = "pronouns", length = 10)
+    private String pronouns;
+
+
     //Necessary for Hibernate to work properly
     public AccountProfile() {}
 
     //Constructor for a new profile
-    public AccountProfile(String username, String passwordHash, Date registerDate, String bio, String email, String photoPath) {
+    public AccountProfile(String username, String passwordHash, Date registerDate, String bio, String email, String photoPath, String firstName, String lastName, String pronouns) {
 //        this.id = null;
         this.username = username;
         this.passwordHash = passwordHash;
         this.registerDate = registerDate;
         this.bio = bio;
         this.email = email;
-        this.roles = "STUDENT";
-
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.middleName = "";
+        this.nickname = "";
+        this.pronouns = pronouns;
         if(photoPath != null) {
             this.photoPath = photoPath;
         } else {
@@ -89,8 +103,6 @@ public class AccountProfile {
     public String getPhotoPath() {
         return photoPath;
     }
-
-    public String getRoles() { return roles; }
 
     public void setID(Long newId) {
         this.id = newId;

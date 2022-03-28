@@ -6,7 +6,11 @@ INSERT INTO account_profile VALUES (
    '',
    'user@domain.com',
    'identityprovider/src/main/resources/images/default_account_icon.png',
-   'STUDENT'
+   'testfirstname',
+   'testlastname',
+   'testmiddlename',
+   'testnickname,',
+   'he/him'
 );
 
 INSERT INTO account_profile VALUES (
@@ -17,7 +21,11 @@ INSERT INTO account_profile VALUES (
    '',
    'teacher@domain.com',
    'identityprovider/src/main/resources/images/default_account_icon.png',
-   'TEACHER'
+   'testfirstname',
+   'testlastname',
+   'testmiddlename',
+   'testnickname,',
+   'he/him'
 );
 
 INSERT INTO account_profile VALUES (
@@ -28,5 +36,15 @@ INSERT INTO account_profile VALUES (
     '',
     'courseadmin@domain.com',
     'identityprovider/src/main/resources/images/default_account_icon.png',
-    'COURSE_ADMINISTRATOR'
+    'testfirstname',
+    'testlastname',
+    'testmiddlename',
+    'testnickname,',
+    'he/him'
+);
+
+INSERT INTO roles values (
+    1,
+    1,
+    'student'
 );
