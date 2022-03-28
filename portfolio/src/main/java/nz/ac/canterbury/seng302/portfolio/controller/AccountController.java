@@ -62,7 +62,26 @@ public class AccountController {
         Long seconds = userReply.getCreated().getSeconds();
         Date date = new Date(seconds * 1000); // turn into millis
         SimpleDateFormat dateFormat = new SimpleDateFormat( "dd LLLL yyyy" );
-        model.addAttribute("date",  dateFormat.format( date ));
+        String stringDate = dateFormat.format( date );
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int month = cal.get(Calendar.MONTH);
+        int year = cal.get(Calendar.YEAR);
+        Calendar currentCalendar = Calendar.getInstance();
+        cal.setTime(new Date());
+        int currentMonth = currentCalendar.get(Calendar.MONTH);
+        int currentYear = currentCalendar.get(Calendar.YEAR);
+
+        int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
+        if (totalMonth > 0){
+            if (totalMonth > 1) {
+                stringDate += " (" + totalMonth + " Months)";
+            } else {
+                stringDate += " (" + totalMonth + " Month)";
+            }
+        }
+
+        model.addAttribute("date",  stringDate);
         model.addAttribute("username", userReply.getUsername());
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());
