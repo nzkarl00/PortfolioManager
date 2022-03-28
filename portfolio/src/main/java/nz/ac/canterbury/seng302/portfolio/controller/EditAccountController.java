@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -41,11 +42,7 @@ public class EditAccountController {
     public String projectForm(Model model,
                               @AuthenticationPrincipal AuthState principal) {
 
-        Integer id = Integer.valueOf(principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("nameid"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("-100"));
+        Integer id = AuthStateInformer.getId(principal);
         /* Add project details to the model */
 
         UserResponse userReply;
@@ -92,11 +89,7 @@ public class EditAccountController {
             @RequestParam(value="email") String email,
             Model model
     ) {
-        Integer id = Integer.valueOf(principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("nameid"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("-100"));
+        Integer id = AuthStateInformer.getId(principal);
 
         EditUserResponse response = accountClientService.editUser(id, firstname, "", lastname, nickname, bio, pronouns, email);
         System.out.println(response.getMessage());

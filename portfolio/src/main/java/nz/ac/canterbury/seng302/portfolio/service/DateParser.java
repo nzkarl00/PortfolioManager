@@ -6,6 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * A class for parsing dates,
+ * while this is only one method I'm sure it will grow when we need to process dates for more things
+ */
 public class DateParser {
 
     /**

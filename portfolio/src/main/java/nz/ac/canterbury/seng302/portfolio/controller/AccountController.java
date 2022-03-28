@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -23,37 +24,26 @@ public class AccountController {
     @Autowired
     private GreeterClientService greeterClientService;
 
+    /**
+     * control the displaying of account details
+     * @param principal the auth token
+     * @param favouriteColour idk
+     * @param model
+     * @return string of where to go next
+     */
     @GetMapping("/account")
     public String account(
         @AuthenticationPrincipal AuthState principal,
         @RequestParam(name="name", required=false, defaultValue="Blue") String favouriteColour,
         Model model
     ) {
-        // Talk to the GreeterService on the IdP to get a message, we'll tell them our favourite colour too
-
-
-        // Below code is just begging to be added as a method somewhere...
-        String role = principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("role"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("NOT FOUND");
-
-        Integer id = Integer.valueOf(principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("nameid"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("-100"));
-
-        String username = principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("name"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("-100");
+        Integer id = AuthStateInformer.getId(principal);
+        String role = AuthStateInformer.getRole(principal);
 
         UserResponse userReply;
         userReply = accountClientService.getUserById(id); // Get the user
 
+        // Put the users details into the page
         model.addAttribute("date", DateParser.displayDate(userReply));
         model.addAttribute("username", userReply.getUsername());
         model.addAttribute("email", userReply.getEmail());

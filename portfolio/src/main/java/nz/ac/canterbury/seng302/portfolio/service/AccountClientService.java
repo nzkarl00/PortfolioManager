@@ -21,14 +21,32 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.register(registerRequest);
     }
 
+    /**
+     * Get a user's details from the id of the user
+     * @param id
+     * @return the user's details
+     */
     public UserResponse getUserById(int id) {
         GetUserByIdRequest.Builder request = GetUserByIdRequest.newBuilder().setId(id);
         return accountServiceStub.getUserAccountById(request.build());
     }
 
+    /**
+     * Passes an edit user request to the IDP
+     * @param id
+     * @param firstName
+     * @param middleName
+     * @param lastName
+     * @param nickname
+     * @param bio
+     * @param pronouns
+     * @param email
+     * @return the response from the IDP
+     */
     public EditUserResponse editUser(int id, String firstName, String middleName, String lastName, String nickname, String bio, String pronouns, String email) {
         EditUserRequest.Builder request = EditUserRequest.newBuilder();
         request.setUserId(id);
+        // as all of these fields are optional we have if's for null or empty values
         if (!firstName.isEmpty()) { request.setFirstName(firstName); }
         if (!middleName.isEmpty()) { request.setMiddleName(middleName); }
         if (!lastName.isEmpty()) { request.setLastName(lastName); }
