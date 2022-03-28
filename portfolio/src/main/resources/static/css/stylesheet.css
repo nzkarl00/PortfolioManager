@@ -49,6 +49,7 @@
   margin-top: 1.25rem;
   margin-left: 1.5rem;
   align-self: left !important;
+    color: #FFFFFF !important;
 
 }
 
@@ -58,7 +59,8 @@
   margin-top: 1.25rem;
   margin-right: 2rem;
   margin-left: 2rem;
-  align-self: right !important;
+  align-self: left !important;
+    color: #FFFFFF !important;
 }
 
 .project_date {

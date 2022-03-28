@@ -33,31 +33,31 @@
 
             <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
                 <div>
-                    <label class="project_subhead" >Username:</label>
+                    <label class="project_subhead" >Username*:</label>
                     <input class="project_edit_data horizontal_field" id="username" type="text" th:name="username" th:value="*{username}" pattern="[A-Za-z0-9]+([_'-][a-zA-Z]+)*" title="No spaces or special characters" required><br/>
                 </div>
 
 
                 <div>
-                    <label class="project_subhead">Password:</label>
+                    <label class="project_subhead">Password*:</label>
                     <input class="project_edit_data horizontal_field"  id="password" type="password" th:name="password" th:value="*{password}" minlength="8" title="Password must be at least 8 characters" required><br/>
 
                 </div>
 
                 <div>
 
-                    <label  class="project_subhead">Confirm Password:</label>
+                    <label  class="project_subhead">Confirm Password*:</label>
                     <input class="project_edit_data horizontal_field"  id="passwordConfirm" type="password" th:name="passwordConfirm" th:value="*{passwordConfirm}" minlength="8" title="Password must be at least 8 characters" required><br/>
 
                 </div>
 
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
-                        <label class="project_subhead">First Name:    </label>
+                        <label class="project_subhead">First Name*:    </label>
                         <input class="project_edit_data horizontal_field" id="firstname" type="text" th:name="firstname" th:value="*{firstname}" pattern="[A-Za-z]+([ '-][a-zA-Z]+)*" title="Special characters not allowed, spaces must be surrounded by non-space characters" minlength="2" maxlength="30" required><br/>
                     </div>
                     <div class="horizontal-group-element" >
-                        <label class="project_subhead">Last Name:     </label>
+                        <label class="project_subhead">Last Name*:     </label>
                         <input class="project_edit_data horizontal_field" id="lastname" type="text" th:name="lastname" th:value="*{lastname}" pattern="[A-Za-z]+([ '-][a-zA-Z]+)*" title="Special characters not allowed, spaces must be surrounded by non-space characters" minlength="2" maxlength="30" required><br/>
                     </div>
                 </div>
@@ -71,7 +71,7 @@
                 </select>
 
                 <div>
-                    <label class="project_subhead">Email Address:</label>
+                    <label class="project_subhead">Email Address*:</label>
                     <input class="project_edit_data horizontal_field"   id="email" type="email" th:name="email" th:value="*{email}" required><br/>
                 </div>
 
