@@ -1,18 +1,12 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
-import org.hibernate.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Date;
 import java.util.Optional;
@@ -21,7 +15,7 @@ import java.util.Optional;
 public class AccountServerService extends UserAccountServiceImplBase{
 
     @Autowired
-    AccountService accountService;
+    Account accountService;
 
     @Autowired
     AccountProfileRepository repo;

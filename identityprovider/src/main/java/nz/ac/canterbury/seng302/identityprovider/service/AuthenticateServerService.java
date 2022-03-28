@@ -2,13 +2,11 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import org.hibernate.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.identityprovider.authentication.AuthenticationServerInterceptor;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.authentication.JwtTokenUtil;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.identityprovider.IdentityProviderApplication;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticationServiceGrpc.AuthenticationServiceImplBase;
@@ -18,7 +16,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticationServiceGrp
 public class AuthenticateServerService extends AuthenticationServiceImplBase{
 
     @Autowired
-    private AccountService accountService;
+    private Account accountService;
     // TODO: Lookup in Student, Teacher or COURSE_ADMIN repos to see what the users role is.
     private final String ROLE_OF_USER = "teacher"; // Puce teams may want to change this to "teacher" to test some functionality
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();

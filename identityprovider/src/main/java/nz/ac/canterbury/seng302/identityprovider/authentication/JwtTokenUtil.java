@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
-import nz.ac.canterbury.seng302.identityprovider.service.AccountService;
+import nz.ac.canterbury.seng302.identityprovider.service.Account;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -19,7 +19,7 @@ import javax.crypto.SecretKey;
 public class JwtTokenUtil implements Serializable {
 
 	@Autowired
-	private AccountService accountService;
+	private Account accountService;
 
 	private static final JwtTokenUtil singletonInstance = new JwtTokenUtil();
 

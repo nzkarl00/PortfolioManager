@@ -31,7 +31,7 @@ public class AccountServerServiceTests {
     /**
      * Mocked account service so database checks can be replaced with fixed results
      */
-    private static AccountService as = Mockito.mock(AccountService.class);
+    private static Account as = Mockito.mock(Account.class);
 
     /**
      * Mocked stream observer to parse response as a replacement for the portfolio
