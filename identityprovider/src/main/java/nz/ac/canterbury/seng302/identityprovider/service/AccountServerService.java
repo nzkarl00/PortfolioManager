@@ -79,10 +79,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 .setNickname("not yet implemented to db")
                 .setBio(profile.getBio())
                 .setPersonalPronouns("not yet implemented to db")
-                .setEmail(profile.getEmail());
-        long millis = System.currentTimeMillis();
-        reply.setCreated(Timestamp.newBuilder().setSeconds(millis / 1000)
-                        .setNanos((int) ((millis % 1000) * 1000000)).build()) // TODO
+                .setEmail(profile.getEmail())
+                .setCreated(Timestamp.newBuilder().setSeconds(profile.getRegisterDate().getTime()/1000).build())
                 .setProfileImagePath(profile.getPhotoPath())
                 .addRoles(UserRole.STUDENT)
                 .addRoles(UserRole.COURSE_ADMINISTRATOR)
