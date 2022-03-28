@@ -104,33 +104,4 @@ public class LoginController {
         model.addAttribute("loginMessage", loginReply.getMessage());
         return "login";
     }
-
-    @GetMapping("/signup")
-    public String signup(
-        Model model
-    ) {
-        model.addAttribute("testData", "null");
-        return "signup";
-    }
-
-    @PostMapping("/signup")
-    public String createAccount(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @RequestParam(value="username") String username,
-            @RequestParam(value="password") String password,
-            @RequestParam(value="passwordConfirm") String passwordConfirm,
-            @RequestParam(value="firstname") String firstname,
-            @RequestParam(value="lastname") String lastname,
-            @RequestParam(value="pronouns") String pronouns,
-            @RequestParam(value="email") String email,
-            Model model
-            )
-    {
-        System.out.println("TESTMESSAGE");
-        UserRegisterResponse registerReply;
-        registerReply = accountClientService.register(username, password, firstname, lastname, email, pronouns);
-        model.addAttribute("registerTest", registerReply.getMessage());
-        return "signup";
-    }
 }

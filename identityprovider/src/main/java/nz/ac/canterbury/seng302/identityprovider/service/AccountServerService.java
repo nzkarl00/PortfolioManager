@@ -103,26 +103,4 @@ public class AccountServerService extends UserAccountServiceImplBase{
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
-
-    @Override
-    public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
-        UserResponse.Builder reply = UserResponse.newBuilder();
-        AccountProfile profile = repo.findById(request.getId());
-        reply
-                .setUsername(profile.getUsername())
-                .setFirstName("Not Yet Implemented to db")
-                .setMiddleName("not yet implemented to db")
-                .setLastName("not yet implemetned to db")
-                .setNickname("not yet implemented to db")
-                .setBio(profile.getBio())
-                .setPersonalPronouns("not yet implemented to db")
-                .setEmail(profile.getEmail())
-                .setCreated(Timestamp.getDefaultInstance()) // TODO
-                .setProfileImagePath(profile.getPhotoPath())
-                .addRoles(UserRole.STUDENT)
-                .addRoles(UserRole.COURSE_ADMINISTRATOR)
-                .addRoles(UserRole.TEACHER); // TODO in db
-        responseObserver.onNext(reply.build());
-        responseObserver.onCompleted();
-    }
 }
