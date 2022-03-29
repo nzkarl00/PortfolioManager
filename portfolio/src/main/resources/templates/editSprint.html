@@ -9,31 +9,38 @@
     <!-- Bootstrap core CSS -->
     <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
     <link th:href="@{/css/stylesheet.css}" rel="stylesheet">
+    <!-- For dropdown to work -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
 
 
 <!-- Header -->
 <nav class="navbar sticky-top navbar-light bg-light">
-    <div class="container-fluid ms-auto">
-        <div class="dropdown show">
-            <a class="nav-item navbar-brand btn btn-secondary dropdown-toggle dropdown-circle" href="#" role="button" id="dropProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{/profile_none.png}" width=90em height=90em alt="">
-            </a>
-            <div class="dropdown-menu" aria-labelledby="dropProfile">
-                <a class="dropdown-item" href="#">Logout</a>
-            </div>
-        </div>
+    <div class="container-fluid ms-auto fluid">
 
 
-        <p class="nav-item header_name">Hello User</p>
-
-        <p class="header_date">
-            Date Information Here
+        <p class="nav-item header_date fluid">
+            Member Since: <span th:text="${date}" ></span>
         </p>
+
+        <p class="nav-item header_name"><span th:text="${username}" ></span></p>
+
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle dropdown-circle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{/profile_none.png}" width=90em height=90em alt="">
+            </button>
+            <ul class="dropdown-menu align-middle">
+                <li><a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutConfirmationModal">Logout</a></li>
+            </ul>
+        </div>
     </div>
     </div>
 </nav>
+
 
 
 <!-- Body -->

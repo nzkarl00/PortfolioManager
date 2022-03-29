@@ -3,12 +3,16 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,10 +22,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 @Controller
 public class LandingController {
@@ -34,6 +39,8 @@ public class LandingController {
   private ProjectService projectService;
   @Autowired
   private SprintService sprintService;
+  @Autowired
+  private AccountClientService accountClientService;
 
   /**
    * Directs the user to the landing project page
@@ -54,6 +61,47 @@ public class LandingController {
     }
     projectList = projectService.getAllProjects();
     model.addAttribute("projects", projectList);
+
+    Integer id = Integer.valueOf(principal.getClaimsList().stream()
+            .filter(claim -> claim.getType().equals("nameid"))
+            .findFirst()
+            .map(ClaimDTO::getValue)
+            .orElse("-100"));
+
+    String username = principal.getClaimsList().stream()
+            .filter(claim -> claim.getType().equals("name"))
+            .findFirst()
+            .map(ClaimDTO::getValue)
+            .orElse("-100");
+
+    // Attributes For header
+    UserResponse userReply;
+    userReply = accountClientService.getUserById(id);
+    Long seconds = userReply.getCreated().getSeconds();
+    Date date = new Date(seconds * 1000); // turn into millis
+    SimpleDateFormat dateFormat = new SimpleDateFormat( "dd LLLL yyyy" );
+    String stringDate = " " + dateFormat.format( date );
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(date);
+    int month = cal.get(Calendar.MONTH);
+    int year = cal.get(Calendar.YEAR);
+    Calendar currentCalendar = Calendar.getInstance();
+    cal.setTime(new Date());
+    int currentMonth = currentCalendar.get(Calendar.MONTH);
+    int currentYear = currentCalendar.get(Calendar.YEAR);
+
+    int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
+    if (totalMonth > 0){
+      if (totalMonth > 1) {
+        stringDate += " (" + totalMonth + " Months)";
+      } else {
+        stringDate += " (" + totalMonth + " Month)";
+      }
+    }
+
+    model.addAttribute("date",  stringDate);
+    model.addAttribute("username", userReply.getUsername());
+    // End of Attributes for header
 
     // Below code is just begging to be added as a method somewhere...
     String role = principal.getClaimsList().stream()

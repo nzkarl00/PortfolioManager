@@ -57,12 +57,13 @@ public class AccountController {
             .map(ClaimDTO::getValue)
             .orElse("-100");
 
+        // Attributes For header
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
         Long seconds = userReply.getCreated().getSeconds();
         Date date = new Date(seconds * 1000); // turn into millis
         SimpleDateFormat dateFormat = new SimpleDateFormat( "dd LLLL yyyy" );
-        String stringDate = dateFormat.format( date );
+        String stringDate = " " + dateFormat.format( date );
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         int month = cal.get(Calendar.MONTH);
@@ -83,6 +84,7 @@ public class AccountController {
 
         model.addAttribute("date",  stringDate);
         model.addAttribute("username", userReply.getUsername());
+        // End of Attributes for header
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());
 

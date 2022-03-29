@@ -1,14 +1,18 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
@@ -20,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.text.SimpleDateFormat;
 
 /**
  * Controller for the display project details page
@@ -33,6 +38,8 @@ public class DetailsController {
     private ProjectService projectService;
     @Autowired
     private SprintService sprintService;
+    @Autowired
+    private AccountClientService accountClientService;
 
     String errorShow = "display:none;";
     String errorCode = "";
@@ -50,6 +57,46 @@ public class DetailsController {
         // Gets the project with id 0 to plonk on the page
         Project project = projectService.getProjectById(projectId);
         model.addAttribute("project", project);
+
+        Integer id = Integer.valueOf(principal.getClaimsList().stream()
+                .filter(claim -> claim.getType().equals("nameid"))
+                .findFirst()
+                .map(ClaimDTO::getValue)
+                .orElse("-100"));
+
+        String username = principal.getClaimsList().stream()
+                .filter(claim -> claim.getType().equals("name"))
+                .findFirst()
+                .map(ClaimDTO::getValue)
+                .orElse("-100");
+
+        // Attributes For header
+        UserResponse userReply;
+        userReply = accountClientService.getUserById(id);
+        Long seconds = userReply.getCreated().getSeconds();
+        Date date = new Date(seconds * 1000); // turn into millis
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "dd LLLL yyyy" );
+        String stringDate = " " + dateFormat.format( date );
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int month = cal.get(Calendar.MONTH);
+        int year = cal.get(Calendar.YEAR);
+        Calendar currentCalendar = Calendar.getInstance();
+        cal.setTime(new Date());
+        int currentMonth = currentCalendar.get(Calendar.MONTH);
+        int currentYear = currentCalendar.get(Calendar.YEAR);
+
+        int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
+        if (totalMonth > 0){
+            if (totalMonth > 1) {
+                stringDate += " (" + totalMonth + " Months)";
+            } else {
+                stringDate += " (" + totalMonth + " Month)";
+            }
+        }
+
+        model.addAttribute("date",  stringDate);
+        model.addAttribute("username", userReply.getUsername());
 
 
 

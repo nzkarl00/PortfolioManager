@@ -16,12 +16,4 @@ public class PortfolioApplication {
     public static void main(String[] args) {
         SpringApplication.run(PortfolioApplication.class, args);
     }
-
-    /**
-    @Bean
-    public CommandLineRunner demo() {
-        return (args) -> {
-            System.out.println(userService.getUserById(1));
-        };
-    }*/
 }
