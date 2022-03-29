@@ -16,21 +16,16 @@
 <!-- Header -->
 <nav class="navbar sticky-top navbar-light bg-light">
     <div class="container-fluid ms-auto">
-        <div class="dropdown show">
-            <a class="nav-item navbar-brand btn btn-secondary dropdown-toggle dropdown-circle" href="#" role="button" id="dropProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <p class="nav-item header_name"><span th:text="${username}" ></span></p>
+
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle dropdown-circle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{/profile_none.png}" width=90em height=90em alt="">
-            </a>
-            <div class="dropdown-menu" aria-labelledby="dropProfile">
-                <a class="dropdown-item" href="#">Logout</a>
-            </div>
+            </button>
+            <ul class="dropdown-menu align-middle">
+                <li><a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutConfirmationModal">Logout</a></li>
+            </ul>
         </div>
-
-
-        <p class="nav-item header_name">Hello User</p>
-
-        <p class="header_date">
-            Date Information Here
-        </p>
     </div>
     </div>
 </nav>
@@ -73,7 +68,11 @@
                 </div>
                 <div>
                     <label class="project_subhead" for="pronouns">Pronouns</label> <br/>
-                    <input class="project_edit_data horizontal_field" id="pronouns" type="text" th:name="pronouns" th:value="*{pronouns}">
+                    <select class="project_edit_data horizontal_field"  id="pronouns" th:name="pronouns" th:value="*{pronouns}">
+                        <option value="he">He/Him</option>
+                        <option value="she">She/Her</option>
+                        <option value="they">They/Them</option>
+                    </select>
                 </div>
                 <br>
                 <div>
@@ -82,7 +81,7 @@
                 </div>
                 <br>
                 <label class="project_subhead" for="email">Email</label> <br/>
-                <input class="project_edit_data horizontal_field" id="email" type="text" th:name="email" th:value="*{email}">
+                <input class="project_edit_data horizontal_field" id="email" type="email" th:name="email" th:value="*{email}">
                 <br>
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >

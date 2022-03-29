@@ -1,8 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.*;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,8 +50,6 @@ public class DetailsController {
         // Gets the project with id 0 to plonk on the page
         Project project = projectService.getProjectById(projectId);
         model.addAttribute("project", project);
-
-
 
         List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
         model.addAttribute("sprints", sprintList);

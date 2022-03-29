@@ -112,7 +112,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
         if (!request.getBio().isEmpty()) { profile.setBio(request.getBio()); }
         repo.save(profile);
         reply.setIsSuccess(true)
-                .setMessage("we edited somme shit idk");
+                .setMessage("We edited somme s***t, idk lol");
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }

@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -48,6 +49,8 @@ public class EditAccountController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
 
+        // Put the users details into the page
+        model.addAttribute("date", DateParser.displayDate(userReply));
         model.addAttribute("username", userReply.getUsername());
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());
