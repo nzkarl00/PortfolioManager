@@ -16,7 +16,7 @@ public class AccountProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private int id;
     //Personal details associated with a users account
     @Column(name = "username", length = 30)
     private String username;
@@ -40,8 +40,8 @@ public class AccountProfile {
     private String nickname;
     @Column(name = "pronouns", length = 10)
     private String pronouns;
-    @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL)
-    private List<Roles> roles;
+    @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Role> roles;
 
 
     //Necessary for Hibernate to work properly
@@ -78,7 +78,7 @@ public class AccountProfile {
         return AccountString;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
@@ -106,9 +106,33 @@ public class AccountProfile {
         return photoPath;
     }
 
-    public void setID(Long newId) {
-        this.id = newId;
+    public String getMiddleName() {
+        return middleName;
     }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public String getPronouns() {
+        return pronouns;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setID(int newId) {
+        this.id = newId;
+    } // TODO should this be editable, is it not just a primary key?
 
     public void setUsername(String newUsername) {
         this.username = newUsername;
@@ -116,5 +140,29 @@ public class AccountProfile {
 
     public void setEmail(String newEmail) {
         this.email = newEmail;
+    }
+
+    public void setPronouns(String pronouns) {
+        this.pronouns = pronouns;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 }

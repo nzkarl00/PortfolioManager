@@ -4,11 +4,11 @@ import java.beans.ConstructorProperties;
 
 @Entity
 @Table(name = "Roles")
-public class Roles {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userRoleId")
+    @Column(name = "USER_ROLE_ID")
     private Long userRoleId;
     @Column(name = "user_role")
     private String role;
@@ -18,10 +18,14 @@ public class Roles {
 
 
 
-    public Roles() {}
+    public Role() {}
 
-    public Roles(AccountProfile registeredUser, String student) {
+    public Role(AccountProfile registeredUser, String role) {
         this.registeredUser = registeredUser;
-        this.role = student;
+        this.role = role;
+    }
+
+    public String getRole() {
+        return role;
     }
 }

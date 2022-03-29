@@ -11,13 +11,18 @@ import org.springframework.boot.CommandLineRunner;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 
+import java.util.Date;
+import java.util.Optional;
+
+
 @SpringBootApplication
 public class IdentityProviderApplication {
 
     private static final Logger log = LoggerFactory.getLogger(IdentityProviderApplication.class);
+
     public static void main(String[] args) {
         SpringApplication.run(IdentityProviderApplication.class, args);
     }
-}
 
+}
 

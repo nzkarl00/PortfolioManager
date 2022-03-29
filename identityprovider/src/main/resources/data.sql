@@ -1,3 +1,4 @@
+
 INSERT INTO account_profile VALUES (
    1,
    'USER',
@@ -9,7 +10,7 @@ INSERT INTO account_profile VALUES (
    'testfirstname',
    'testlastname',
    'testmiddlename',
-   'testnickname,',
+   'testnickname',
    'he/him'
 );
 
@@ -24,7 +25,7 @@ INSERT INTO account_profile VALUES (
    'testfirstname',
    'testlastname',
    'testmiddlename',
-   'testnickname,',
+   'testnickname',
    'he/him'
 );
 
@@ -39,7 +40,7 @@ INSERT INTO account_profile VALUES (
     'testfirstname',
     'testlastname',
     'testmiddlename',
-    'testnickname,',
+    'testnickname',
     'he/him'
 );
 
@@ -48,3 +49,4 @@ INSERT INTO roles values (
     'student',
     1
 );
+

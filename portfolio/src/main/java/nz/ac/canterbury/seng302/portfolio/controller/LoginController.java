@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
@@ -20,6 +21,9 @@ public class LoginController {
 
     @Autowired
     private AuthenticateClientService authenticateClientService;
+
+    @Autowired
+    private AccountClientService accountClientService;
 
     /**
      * Attempts to authenticate with the Identity Provider via gRPC.
@@ -94,61 +98,10 @@ public class LoginController {
                 5 * 60 * 60, // Expires in 5 hours
                 domain.startsWith("localhost") ? null : domain
             );
-            return "account";
+            return "redirect:/account";
         }
 
         model.addAttribute("loginMessage", loginReply.getMessage());
         return "login";
-    }
-
-    /**
-     * Redirects to the signup page
-     * @param model The model to be used by the application for web integration
-     * @return signup page reference
-     */
-    @GetMapping("/signup")
-    public String signup(
-        Model model
-    ) {
-        model.addAttribute("testData", "null");
-        return "signup";
-    }
-
-    /**
-     * Attempts to register the user if all information is valid
-     * @param request HTTP request sent to this endpoint
-     * @param response HTTP response that will be returned by this endpoint
-     * @param username Username of account to log in to IdP with
-     * @param password Password associated with username
-     * @param passwordConfirm Password inputted again to ensure user validity
-     * @param firstname User first name
-     * @param lastname User last name
-     * @param pronouns User pronouns
-     * @param email User email
-     * @param model The model to be used by the application for web integration
-     * @return redirects to the signup page
-     */
-    @PostMapping("/signup")
-    public String createAccount(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @RequestParam(value="username") String username,
-            @RequestParam(value="password") String password,
-            @RequestParam(value="passwordConfirm") String passwordConfirm,
-            @RequestParam(value="firstname") String firstname,
-            @RequestParam(value="lastname") String lastname,
-            @RequestParam(value="pronouns") String pronouns,
-            @RequestParam(value="email") String email,
-            Model model
-            )
-    {
-        if (!password.equals(passwordConfirm)) {
-            model.addAttribute("signupMessage", "Error: Passwords do not match");
-            return "signup";
-        }
-        UserRegisterResponse registerReply;
-        registerReply = authenticateClientService.register(username, password, firstname, lastname, pronouns, email);
-        model.addAttribute("signupMessage", registerReply.getMessage());
-        return "signup";
     }
 }
