@@ -18,7 +18,7 @@ public class Project {
     private int id;
     @Column(name = "project_name")
     private String projectName;
-    @Column(name = "project_description")
+    @Column(name = "project_description", length=4096)
     private String projectDescription;
     @Column(name = "project_start_date")
     private Date projectStartDate;

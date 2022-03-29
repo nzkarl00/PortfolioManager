@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import javax.persistence.Column;
 
 @Entity // this is an entity, assumed to be in a table called Sprint
 public class Sprint {
@@ -17,6 +18,7 @@ public class Sprint {
     private int parentProjectId;
     private String sprintName;
     private String sprintLabel;
+    @Column(name = "sprint_description", length=4096)
     private String sprintDescription;
     private Date sprintStartDate;
     private Date sprintEndDate;
