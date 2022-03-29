@@ -45,6 +45,6 @@ INSERT INTO account_profile VALUES (
 
 INSERT INTO roles values (
     1,
-    1,
-    'student'
+    'student',
+    1
 );
