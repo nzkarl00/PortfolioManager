@@ -34,12 +34,8 @@ public class EditAccountController {
     @Autowired
     private AccountClientService accountClientService;
 
-    String nickname = "Fabian"; //TODO these still need db implementation
-    String password = "12345678";
-    String passwordConfirm = "12345678";
-    String firstname = "John";
-    String lastname = "Fakename";
-    String pronouns = "they/them";
+    String password = ""; //TODO these still need db implementation
+    String passwordConfirm = "";
 
     /**
      * Directs to the account edit, pulling user data to display
@@ -67,12 +63,12 @@ public class EditAccountController {
         model.addAttribute("username", userReply.getUsername());
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());
-        model.addAttribute("nickname", nickname);
+        model.addAttribute("nickname", userReply.getNickname());
         model.addAttribute("password", password);
         model.addAttribute("passwordConfirm", passwordConfirm);
-        model.addAttribute("firstname", firstname);
-        model.addAttribute("lastname", lastname);
-        model.addAttribute("pronouns", pronouns);
+        model.addAttribute("firstname", userReply.getFirstName());
+        model.addAttribute("lastname", userReply.getLastName());
+        model.addAttribute("pronouns", userReply.getPersonalPronouns());
 
         /* Return the name of the Thymeleaf template */
         return "editAccount";
