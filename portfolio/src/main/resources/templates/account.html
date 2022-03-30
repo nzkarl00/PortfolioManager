@@ -94,7 +94,7 @@
                 <div>
                     <p class="profile_subhead">Full name</p>
                     <div class="profile_data">
-                        <p class="data">John Fakename //TODO in db</p>
+                        <p class="data"><span th:text="${name}" ></span></p>
                     </div>
                 </div>
 
@@ -110,7 +110,7 @@
                 <div>
                     <p class="profile_subhead">Nickname</p>
                     <div class="profile_data">
-                        <p class="data">Fabian</p>
+                        <p class="data"><span th:text="${nickname}" ></span></p>
                     </div>
                 </div>
 
@@ -118,7 +118,7 @@
                 <div>
                     <p class="profile_subhead">Pronouns</p>
                     <div class="profile_data">
-                        <p class="data">He/They</p>
+                        <p class="data"><span th:text="${pronouns}" ></span></p>
                     </div>
                 </div>
 
@@ -127,6 +127,13 @@
                     <p class="profile_subhead">Bio</p>
                     <div class="profile_data">
                         <p class="bio"><span th:text="${bio}" ></span></p>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="profile_subhead">Roles</p>
+                    <div class="profile_data">
+                        <p class="data"><span th:text="${roles}" ></span></p>
                     </div>
                 </div>
 

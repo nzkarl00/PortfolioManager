@@ -4,8 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +37,25 @@ public class AccountController {
         Model model
     ) {
         Integer id = AuthStateInformer.getId(principal);
-        String role = AuthStateInformer.getRole(principal);
 
         // Attributes For header
         UserResponse userReply;
         userReply = accountClientService.getUserById(id); // Get the user
 
         // Put the users details into the page
-        model.addAttribute("date", DateParser.displayDate(userReply));
+        String roles = "";
+        for (UserRole role : userReply.getRolesList()) {
+            roles += role.toString() + ", ";
+        }
+        roles = roles.substring(0, roles.length() - 2);
+
+        String name = userReply.getFirstName() + " " +  userReply.getLastName();
+        model.addAttribute("roles", roles);
+        model.addAttribute("pronouns", userReply.getPersonalPronouns());
+        model.addAttribute("name",  name);
+        model.addAttribute("nickname",  userReply.getNickname());
         model.addAttribute("username", userReply.getUsername());
+        model.addAttribute("date", DateParser.displayDate(userReply));
         // End of Attributes for header
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());
@@ -55,7 +64,7 @@ public class AccountController {
         String portfolioMessage = String.format(
             "The portfolio service (which is serving you this message) knows you are logged in as '%s' (role='%s'), with ID=%d",
             principal.getName(),
-            role,
+            roles,
             id
         );
         model.addAttribute("portfolioMessage", portfolioMessage);

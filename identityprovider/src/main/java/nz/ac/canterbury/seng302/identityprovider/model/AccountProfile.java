@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.model;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
 * This class specifies the attributes and methods associated with a user's account,
@@ -13,7 +14,7 @@ public class AccountProfile {
 
     //Auto-generated ID is assigned to each persons account
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
     //Personal details associated with a users account
@@ -29,19 +30,36 @@ public class AccountProfile {
     private String email;
     @Column(name = "photoPath", length = 100)
     private String photoPath;
+    @Column(name = "firstName", length = 30)
+    private String firstName;
+    @Column(name = "lastName", length = 30)
+    private String lastName;
+    @Column(name = "middleName", length = 30)
+    private String middleName;
+    @Column(name = "nickname", length = 30)
+    private String nickname;
+    @Column(name = "pronouns", length = 10)
+    private String pronouns;
+    @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Role> roles;
+
 
     //Necessary for Hibernate to work properly
     public AccountProfile() {}
 
     //Constructor for a new profile
-    public AccountProfile(String username, String passwordHash, Date registerDate, String bio, String email, String photoPath) {
+    public AccountProfile(String username, String passwordHash, Date registerDate, String bio, String email, String photoPath, String firstName, String lastName, String pronouns) {
 //        this.id = null;
         this.username = username;
         this.passwordHash = passwordHash;
         this.registerDate = registerDate;
         this.bio = bio;
         this.email = email;
-
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.middleName = "";
+        this.nickname = "";
+        this.pronouns = pronouns;
         if(photoPath != null) {
             this.photoPath = photoPath;
         } else {
@@ -88,6 +106,30 @@ public class AccountProfile {
         return photoPath;
     }
 
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public String getPronouns() {
+        return pronouns;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
     public void setID(int newId) {
         this.id = newId;
     } // TODO should this be editable, is it not just a primary key?
@@ -98,6 +140,26 @@ public class AccountProfile {
 
     public void setEmail(String newEmail) {
         this.email = newEmail;
+    }
+
+    public void setPronouns(String pronouns) {
+        this.pronouns = pronouns;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public void setBio(String bio) {

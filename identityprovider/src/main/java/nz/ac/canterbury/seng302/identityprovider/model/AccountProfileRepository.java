@@ -1,11 +1,13 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import org.springframework.data.repository.CrudRepository;
-import java.util.Optional;
 import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManagerFactory;
 
 @Repository
 public interface AccountProfileRepository extends CrudRepository<AccountProfile, Long> {
+
     AccountProfile findById(int id);
     AccountProfile findByUsername(String username);
     AccountProfile findByEmail(String email);

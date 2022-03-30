@@ -5,14 +5,17 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+import nz.ac.canterbury.seng302.identityprovider.model.Role;
+import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.hibernate.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.transaction.Transactional;
 import java.util.Date;
-import java.util.Optional;
 
 @GrpcService
 public class AccountServerService extends UserAccountServiceImplBase{
@@ -23,12 +26,16 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Autowired
     AccountProfileRepository repo;
 
+    @Autowired
+    RolesRepository roleRepo;
+
     /**
      * the handling and registering of a new user through a UserRegisterRequest
      * @param request the request with user details
      * @param responseObserver the place to send the response back to
      */
     @Override
+    @Transactional
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
         UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
         if (usernameExists(request.getUsername())) {
@@ -39,7 +46,11 @@ public class AccountServerService extends UserAccountServiceImplBase{
         // TODO: Handle saving of name.
         // Hash the password
         String hashedPassword = Hasher.hashPassword(request.getPassword());
-        repo.save(new AccountProfile(request.getUsername(), hashedPassword, new Date(), "", request.getEmail(), null));
+        AccountProfile newAccount = repo.save(
+                new AccountProfile(
+                        request.getUsername(), hashedPassword, new Date(), "", request.getEmail(),
+                        null, request.getFirstName(), request.getLastName(), request.getPersonalPronouns()));
+        roleRepo.save(new Role(newAccount, "student")); // TODO change this from the default
         reply.setMessage("Created account " + request.getUsername()).setIsSuccess(true);
         }
         responseObserver.onNext(reply.build());
@@ -85,18 +96,21 @@ public class AccountServerService extends UserAccountServiceImplBase{
         AccountProfile profile = repo.findById(request.getId());
         reply
                 .setUsername(profile.getUsername())
-                .setFirstName("Not Yet Implemented to db")
-                .setMiddleName("not yet implemented to db")
-                .setLastName("not yet implemetned to db")
-                .setNickname("not yet implemented to db")
+                .setFirstName(profile.getFirstName())
+                .setMiddleName(profile.getMiddleName())
+                .setLastName(profile.getLastName())
+                .setNickname(profile.getNickname())
                 .setBio(profile.getBio())
-                .setPersonalPronouns("not yet implemented to db")
+                .setPersonalPronouns(profile.getPronouns())
                 .setEmail(profile.getEmail())
                 .setCreated(Timestamp.newBuilder().setSeconds(profile.getRegisterDate().getTime()/1000).build())
-                .setProfileImagePath(profile.getPhotoPath())
-                .addRoles(UserRole.STUDENT)
-                .addRoles(UserRole.COURSE_ADMINISTRATOR)
-                .addRoles(UserRole.TEACHER); // TODO in db
+                .setProfileImagePath(profile.getPhotoPath());
+
+        for (Role role : profile.getRoles()) {
+            if (role.getRole().equals("student")) { reply.addRoles(UserRole.STUDENT); }
+            if (role.getRole().equals("teacher")) { reply.addRoles(UserRole.TEACHER); }
+            if (role.getRole().equals("admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
+        }
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
@@ -110,8 +124,13 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
         EditUserResponse.Builder reply = EditUserResponse.newBuilder();
         AccountProfile profile = repo.findById(request.getUserId());
-        if (!request.getEmail().isEmpty()) { profile.setEmail(request.getEmail()); } //TODO please add the correct fields once db is up and running
+        if (!request.getEmail().isEmpty()) { profile.setEmail(request.getEmail()); }
         if (!request.getBio().isEmpty()) { profile.setBio(request.getBio()); }
+        if (!request.getLastName().isEmpty()) { profile.setLastName(request.getLastName()); }
+        if (!request.getFirstName().isEmpty()) { profile.setFirstName(request.getFirstName()); }
+        if (!request.getMiddleName().isEmpty()) { profile.setMiddleName(request.getMiddleName()); }
+        if (!request.getNickname().isEmpty()) { profile.setNickname(request.getNickname()); }
+        if (!request.getPersonalPronouns().isEmpty()) { profile.setPronouns(request.getPersonalPronouns()); }
         repo.save(profile);
         reply.setIsSuccess(true)
                 .setMessage("We edited somme s***t, idk lol");
