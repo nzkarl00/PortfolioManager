@@ -50,3 +50,13 @@ INSERT INTO roles values (
     1
 );
 
+INSERT INTO roles values (
+                             2,
+                             'teach',
+                             2
+                         );
+INSERT INTO roles values (
+                             3,
+                             'admin',
+                             3
+                         );

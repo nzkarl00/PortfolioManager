@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import java.util.stream.Collectors;
+import java.util.List;
 
 @Controller
 public class AccountController {
@@ -44,10 +46,15 @@ public class AccountController {
 
         // Put the users details into the page
         String roles = "";
+        int index = 0;
         for (UserRole role : userReply.getRolesList()) {
-            roles += role.toString() + ", ";
+            if (index == 0) {
+                roles += role.toString();
+            } else {
+                roles += ", " + role.toString();
+            }
+            index++;
         }
-        roles = roles.substring(0, roles.length() - 2);
 
         String name = userReply.getFirstName() + " " +  userReply.getLastName();
         model.addAttribute("roles", roles);

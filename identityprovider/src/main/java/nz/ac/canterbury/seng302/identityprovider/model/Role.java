@@ -8,14 +8,12 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "USER_ROLE_ID")
+    @Column(name = "user_role_id")
     private Long userRoleId;
     @Column(name = "user_role")
     private String role;
     @ManyToOne(fetch = FetchType.EAGER)
     private AccountProfile registeredUser;
-
-
 
     public Role() {}
 
