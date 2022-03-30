@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -48,11 +50,7 @@ public class EditAccountController {
     public String projectForm(Model model,
                               @AuthenticationPrincipal AuthState principal) {
 
-        Integer id = Integer.valueOf(principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("nameid"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("-100"));
+        Integer id = AuthStateInformer.getId(principal);
         /* Add project details to the model */
 
         String username = principal.getClaimsList().stream()
@@ -64,32 +62,8 @@ public class EditAccountController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
 
-        // Attributes For header
-        Long seconds = userReply.getCreated().getSeconds();
-        Date date = new Date(seconds * 1000); // turn into millis
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "dd LLLL yyyy" );
-        String stringDate = " " + dateFormat.format( date );
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int month = cal.get(Calendar.MONTH);
-        int year = cal.get(Calendar.YEAR);
-        Calendar currentCalendar = Calendar.getInstance();
-        cal.setTime(new Date());
-        int currentMonth = currentCalendar.get(Calendar.MONTH);
-        int currentYear = currentCalendar.get(Calendar.YEAR);
-
-        int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
-        if (totalMonth > 0){
-            if (totalMonth > 1) {
-                stringDate += " (" + totalMonth + " Months)";
-            } else {
-                stringDate += " (" + totalMonth + " Month)";
-            }
-        }
-
-        model.addAttribute("date",  stringDate);
-        model.addAttribute("username", userReply.getUsername());
-
+        // Put the users details into the page
+        model.addAttribute("date", DateParser.displayDate(userReply));
         model.addAttribute("username", userReply.getUsername());
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());
@@ -131,11 +105,7 @@ public class EditAccountController {
             @RequestParam(value="email") String email,
             Model model
     ) {
-        Integer id = Integer.valueOf(principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("nameid"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("-100"));
+        Integer id = AuthStateInformer.getId(principal);
 
         EditUserResponse response = accountClientService.editUser(id, firstname, "", lastname, nickname, bio, pronouns, email);
         System.out.println(response.getMessage());

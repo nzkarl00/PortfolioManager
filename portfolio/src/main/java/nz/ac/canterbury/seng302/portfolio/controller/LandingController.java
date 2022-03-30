@@ -3,10 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -30,8 +27,6 @@ import java.util.Date;
 
 @Controller
 public class LandingController {
-
-
 
   @Autowired
   private ProjectRepository repository;
@@ -103,12 +98,7 @@ public class LandingController {
     model.addAttribute("username", userReply.getUsername());
     // End of Attributes for header
 
-    // Below code is just begging to be added as a method somewhere...
-    String role = principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("role"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("NOT FOUND");
+    String role = AuthStateInformer.getRole(principal);
 
     if (role.equals("teacher")) {
       model.addAttribute("display", "");
@@ -124,12 +114,7 @@ public class LandingController {
           @AuthenticationPrincipal AuthState principal,
           Model model
   ) {
-    // Below code is just begging to be added as a method somewhere...
-    String role = principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("role"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("NOT FOUND");
+    String role = AuthStateInformer.getRole(principal);
 
     String thisYear = new SimpleDateFormat("yyyy").format(new Date());
 

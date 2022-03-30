@@ -1,9 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.*;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -58,11 +56,7 @@ public class DetailsController {
         Project project = projectService.getProjectById(projectId);
         model.addAttribute("project", project);
 
-        Integer id = Integer.valueOf(principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("nameid"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("-100"));
+        Integer id = AuthStateInformer.getId(principal);
 
         String username = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("name"))
@@ -97,8 +91,6 @@ public class DetailsController {
 
         model.addAttribute("date",  stringDate);
         model.addAttribute("username", userReply.getUsername());
-
-
 
         List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
         model.addAttribute("sprints", sprintList);

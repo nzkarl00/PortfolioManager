@@ -21,8 +21,6 @@
 <!-- Header -->
 <nav class="navbar sticky-top navbar-light bg-light">
     <div class="container-fluid ms-auto fluid">
-
-
         <p class="nav-item header_date fluid">
             Member Since: <span th:text="${date}" ></span>
         </p>
@@ -79,7 +77,11 @@
                 </div>
                 <div>
                     <label class="project_subhead" for="pronouns">Pronouns</label> <br/>
-                    <input class="project_edit_data horizontal_field" id="pronouns" type="text" th:name="pronouns" th:value="*{pronouns}">
+                    <select class="project_edit_data horizontal_field"  id="pronouns" th:name="pronouns" th:value="*{pronouns}">
+                        <option value="he">He/Him</option>
+                        <option value="she">She/Her</option>
+                        <option value="they">They/Them</option>
+                    </select>
                 </div>
                 <br>
                 <div>
@@ -88,7 +90,7 @@
                 </div>
                 <br>
                 <label class="project_subhead" for="email">Email</label> <br/>
-                <input class="project_edit_data horizontal_field" id="email" type="text" th:name="email" th:value="*{email}">
+                <input class="project_edit_data horizontal_field" id="email" type="email" th:name="email" th:value="*{email}">
                 <br>
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >

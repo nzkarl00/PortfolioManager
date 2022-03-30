@@ -1,24 +1,19 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 @Controller
 public class AccountController {
@@ -29,60 +24,28 @@ public class AccountController {
     @Autowired
     private GreeterClientService greeterClientService;
 
+    /**
+     * control the displaying of account details
+     * @param principal the auth token
+     * @param favouriteColour idk
+     * @param model
+     * @return string of where to go next
+     */
     @GetMapping("/account")
     public String account(
         @AuthenticationPrincipal AuthState principal,
         @RequestParam(name="name", required=false, defaultValue="Blue") String favouriteColour,
         Model model
     ) {
-        // Talk to the GreeterService on the IdP to get a message, we'll tell them our favourite colour too
-
-
-        // Below code is just begging to be added as a method somewhere...
-        String role = principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("role"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("NOT FOUND");
-
-        Integer id = Integer.valueOf(principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("nameid"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("-100"));
-
-        String username = principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("name"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("-100");
+        Integer id = AuthStateInformer.getId(principal);
+        String role = AuthStateInformer.getRole(principal);
 
         // Attributes For header
         UserResponse userReply;
-        userReply = accountClientService.getUserById(id);
-        Long seconds = userReply.getCreated().getSeconds();
-        Date date = new Date(seconds * 1000); // turn into millis
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "dd LLLL yyyy" );
-        String stringDate = " " + dateFormat.format( date );
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int month = cal.get(Calendar.MONTH);
-        int year = cal.get(Calendar.YEAR);
-        Calendar currentCalendar = Calendar.getInstance();
-        cal.setTime(new Date());
-        int currentMonth = currentCalendar.get(Calendar.MONTH);
-        int currentYear = currentCalendar.get(Calendar.YEAR);
+        userReply = accountClientService.getUserById(id); // Get the user
 
-        int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
-        if (totalMonth > 0){
-            if (totalMonth > 1) {
-                stringDate += " (" + totalMonth + " Months)";
-            } else {
-                stringDate += " (" + totalMonth + " Month)";
-            }
-        }
-
-        model.addAttribute("date",  stringDate);
+        // Put the users details into the page
+        model.addAttribute("date", DateParser.displayDate(userReply));
         model.addAttribute("username", userReply.getUsername());
         // End of Attributes for header
         model.addAttribute("email", userReply.getEmail());

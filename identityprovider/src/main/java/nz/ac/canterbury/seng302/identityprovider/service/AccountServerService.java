@@ -23,6 +23,11 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Autowired
     AccountProfileRepository repo;
 
+    /**
+     * the handling and registering of a new user through a UserRegisterRequest
+     * @param request the request with user details
+     * @param responseObserver the place to send the response back to
+     */
     @Override
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
         UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
@@ -69,6 +74,11 @@ public class AccountServerService extends UserAccountServiceImplBase{
         }
     }
 
+    /**
+     * Send back the user details associated with the user id
+     * @param request the request containing the userid
+     * @param responseObserver where to send the response back to
+     */
     @Override
     public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
         UserResponse.Builder reply = UserResponse.newBuilder();
@@ -91,6 +101,11 @@ public class AccountServerService extends UserAccountServiceImplBase{
         responseObserver.onCompleted();
     }
 
+    /**
+     * handle the recieveing and editing of a user based on a EditUserRequest protobuf
+     * @param request the EditUserRequest
+     * @param responseObserver the place to send the message back
+     */
     @Override
     public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
         EditUserResponse.Builder reply = EditUserResponse.newBuilder();
@@ -99,7 +114,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
         if (!request.getBio().isEmpty()) { profile.setBio(request.getBio()); }
         repo.save(profile);
         reply.setIsSuccess(true)
-                .setMessage("we edited somme shit idk");
+                .setMessage("We edited somme s***t, idk lol");
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
