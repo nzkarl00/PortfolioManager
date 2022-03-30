@@ -25,7 +25,8 @@
 
 
         <p class="nav-item header_date fluid">
-            Member Since: <span th:text="${date}" ></span>
+            Member Since: <br>
+            <span th:text="${date}" ></span>
         </p>
 
         <p class="nav-item header_name"><span th:text="${username}" ></span></p>
@@ -35,6 +36,8 @@
                 <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{/profile_none.png}" width=90em height=90em alt="">
             </button>
             <ul class="dropdown-menu align-middle">
+                <li><a class="dropdown-item" th:href="@{'/landing'}">Project</a></li>
+                <li><a class="dropdown-item" th:href="@{'/account'}">Account</a></li>
                 <li><a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutConfirmationModal">Logout</a></li>
             </ul>
         </div>
