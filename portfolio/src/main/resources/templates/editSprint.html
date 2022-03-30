@@ -67,6 +67,97 @@
     </div>
 </div>
 
+<!-- Body -->
+<div class="main">
+    <div class="container">
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+
+        <!-- Editing heading -->
+
+        <div class="row-1">
+
+            <div class="col-12">
+                <p class="body_title_large">Edit Sprint</p>
+            </div>
+
+        </div>
+
+        <!-- Editing body -->
+
+
+        <form class="row" th:action="@{/edit-sprint}" method="post">
+
+            <div class="col-2"></div>
+
+            <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
+                <label class="project_subhead" for="sprintName">Sprint Name</label> <br/>
+                <input class="project_edit_data horizontal_field" id="sprintName" type="text" th:name="sprintName" th:value="*{sprint.getName}">
+                <br/>
+                <div class="horizontal-group">
+                    <div class="horizontal-group-element" >
+                        <label class="project_subhead" for="sprintStartDate">Sprint Start Date</label> <br/>
+                        <input class="project_edit_data" id="sprintStartDate" type="text" th:name="sprintStartDate" th:value="*{sprint.getStartDateString}">
+                    </div>
+                    <div class="horizontal-group-element" >
+                        <label class="project_subhead" for="sprintEndDate">Sprint End Date</label> <br/>
+                        <input class="project_edit_data" id="sprintEndDate" type="text" th:name="sprintEndDate" th:value="*{sprint.getEndDateString}">
+                    </div>
+                </div>
+                <div>
+                    <label class="project_subhead" for="sprintDescription">Sprint Description</label> <br/>
+                    <textarea class="description-input project_edit_data horizontal_field bio" id="sprintDescription" th:name="sprintDescription" th:text="*{sprint.getDescription}"></textarea>
+                </div>
+
+
+                <input style="display:none;" th:name="projectId" id="projectId" th:value="${sprint.getParentProjectId}" type="number">
+                <input style="display:none;" th:name="sprintId" id="sprintId" th:value="${sprint.getId}" type="number">
+
+
+            </div>
+
+            <!-- Form Submission -->
+
+            <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
+
+                <button class="cancel" type="button">
+                    <a class="button_a" th:href="@{/details(id=${project.getId})}">CANCEL</a>
+                </button>
+                <button class="save" type="submit">SAVE</button>
+            </div>
+
+
+            <div class="col-2"></div>
+
+        </form>
+        <br>
+
+        <div class="row">
+
+            <div class="col-2"></div>
+
+            <div class="col-lg-7 col-md-8 col-sm-12">
+
+                <button class="login_box "th:style="${errorShow}">
+                    <p class="login_error" th:text="${errorCode}"/>
+                </button>
+
+            </div>
+
+            <div class="col-2"></div>
+
+
+        </div>
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+
+    </div>
+</div>
+
 
 
 <!-- JS -->
