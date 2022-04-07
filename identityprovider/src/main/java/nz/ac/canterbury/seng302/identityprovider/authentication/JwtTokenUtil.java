@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.identityprovider.service.Account;
+import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
+import nz.ac.canterbury.seng302.identityprovider.model.Role;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -128,20 +130,20 @@ public class JwtTokenUtil implements Serializable {
 	 * @param roleOfUser The user's role, e.g student, teacher, or course administrator
 	 * @return String encoded JWT token
 	 */
-	public String generateTokenForUser(String username, int userId, String nameOfUser, String roleOfUser) {
+	public String generateTokenForUser(AccountProfile profile) {
 		Map<String, Object> claims = new HashMap<>();
 
-        claims.put("unique_name", username);
-        claims.put("nameid", userId);
-        claims.put("name", nameOfUser);
+        claims.put("unique_name", profile.getUsername());
+        claims.put("nameid", profile.getId());
+        claims.put("name", profile.getFirstName() + " " + profile.getLastName());
 
 		// When assigning multiple roles to a user, encode them as a comma separated list
 		// E.g "student,teacher" or "teacher,courseadministrator,student" (Order doesn't matter)
-        claims.put(ROLE_CLAIM_TYPE, roleOfUser);
+        claims.put(ROLE_CLAIM_TYPE, profile.getHighestRole().getRole());
 
 		return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(username)
+                .setSubject(profile.getUsername())
 				.setIssuer("LOCAL AUTHORITY")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
