@@ -41,14 +41,17 @@ public class AccountProfile {
     @Column(name = "pronouns", length = 10)
     private String pronouns;
     @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Role> roles;
+    protected List<Role> roles;
 
 
     //Necessary for Hibernate to work properly
     public AccountProfile() {}
 
     //Constructor for a new profile
-    public AccountProfile(String username, String passwordHash, Date registerDate, String bio, String email, String photoPath, String firstName, String lastName, String pronouns) {
+    public AccountProfile(
+        String username, String passwordHash, Date registerDate, String bio, String email, String photoPath,
+        String firstName, String lastName, String pronouns
+    ) {
 //        this.id = null;
         this.username = username;
         this.passwordHash = passwordHash;
