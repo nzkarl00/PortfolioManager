@@ -20,21 +20,21 @@ public class AccountProfile {
     //Personal details associated with a users account
     @Column(name = "username", length = 30)
     private String username;
-    @Column(name = "passwordHash", length = 60)
+    @Column(name = "password_hash", length = 60)
     private String passwordHash;
-    @Column(name = "registerDate")
+    @Column(name = "register_date")
     private Date registerDate;
     @Column(name = "bio", length = 1024)
     private String bio;
     @Column(name = "email", length = 30)
     private String email;
-    @Column(name = "photoPath", length = 100)
+    @Column(name = "photo_path", length = 100)
     private String photoPath;
-    @Column(name = "firstName", length = 30)
+    @Column(name = "first_name", length = 30)
     private String firstName;
-    @Column(name = "lastName", length = 30)
+    @Column(name = "last_name", length = 30)
     private String lastName;
-    @Column(name = "middleName", length = 30)
+    @Column(name = "middle_name", length = 30)
     private String middleName;
     @Column(name = "nickname", length = 30)
     private String nickname;
