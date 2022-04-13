@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!-- For the FullCalendar to work -->
+    <link th:href="@{/css/fullcalendar.css}" rel="stylesheet">
 </head>
 <body>
 
@@ -87,42 +90,58 @@
 
         </div>
 
-        <!-- Editing body -->
+        <!-- Tab Buttons -->
+        <ul class="nav nav-tabs h4" style="font-family: nexaBold;">
+            <li class="active"><a data-toggle="tab" href="#calendar-tab">Planner</a></li>
+            <li><a data-toggle="tab" href="#project-details-tab">Project Details</a></li>
+        </ul>
 
+        <!-- Tab containers-->
+        <div class="tab-content">
+            <div id="calendar-tab" class="tab-pane fade in active">
+                <br><br>
 
-        <div class="row">
-
-            <div class="col-2"></div>
-
-            <div class="col-8 portion_body">
-
-
-                <p class="detail_date " th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
-
-
-                <div class="horizontal_field project_subtext" th:text="${project.getDescription}" />
-
+                <div id="calendar"></div>
             </div>
 
-            <div class="col-2"></div>
-
-        </div>
-
-        <br>
-
-        <div class="row row_sprints"  th:each="sprint: ${sprints}">
+            <div id="project-details-tab" class="tab-pane fade">
+                <br><br>
+                <!-- Editing body -->
 
 
-            <div class="col-2"></div>
+                <div class="row">
+
+                    <div class="col-2"></div>
+
+                    <div class="col-8 portion_body">
 
 
-            <div class="col-lg-1 col-md-2 col-sm-12 col-12 ">
-            <div class="portion_sprintbody project_sprinthead " th:text="${sprint.getLabel}" />
+                        <p class="detail_date " th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
+
+
+                        <div class="horizontal_field project_subtext" th:text="${project.getDescription}" />
+
+                    </div>
+
+                    <div class="col-2"></div>
+
+                </div>
 
                 <br>
-            </div>
 
-                <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
+                <div class="row row_sprints"  th:each="sprint: ${sprints}">
+
+
+                    <div class="col-2"></div>
+
+
+                    <div class="col-lg-1 col-md-2 col-sm-12 col-12 ">
+                        <div class="portion_sprintbody project_sprinthead " th:text="${sprint.getLabel}" />
+
+                        <br>
+                    </div>
+
+                    <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
 
 
                         <div class="sprint-title project_subhead " th:text="${sprint.getName}" />
@@ -130,31 +149,43 @@
                         <div class="sprint-description project_edit_data" th:text="${sprint.getDescription}" />
 
 
+                    </div>
+
+                    <div class="col-2"></div>
+
                 </div>
 
+                <div class="row-1">
+                    <br>
 
+                    <button class="edit ">
+                        <a class=" button_a" th:href="@{/landing}">      Return      </a>
+                    </button>
+                </div>
+                <div class="row-1">
 
-            <div class="col-2"></div>
+                    <br><br><br>
+                </div>
 
+            </div>
 
-
+            </div>
         </div>
 
-        <div class="row-1">
-            <br>
-
-            <button class="edit ">
-                <a class=" button_a" th:href="@{/landing}">      Return      </a>
-            </button>
-        </div>
-        <div class="row-1">
-
-            <br><br><br>
-        </div>
-
-    </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth'
+        });
+        calendar.render();
+    });
+</script>
+
+
+<!-- JS -->
 <script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

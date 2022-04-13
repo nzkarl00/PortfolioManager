@@ -14,10 +14,11 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- For the FullCalendar to work -->
+    <link th:href="@{/css/fullcalendar.css}" rel="stylesheet">
+
 </head>
 <body>
-
-
 
 <!-- Header -->
 <nav class="navbar sticky-top navbar-light bg-light">
@@ -87,49 +88,52 @@
 
         </div>
 
-        <!-- Editing body -->
+        <!-- Tab Buttons -->
+        <ul class="nav nav-tabs h4" style="font-family: nexaBold;">
+            <li class="active"><a data-toggle="tab" href="#calendar-tab">Planner</a></li>
+            <li><a data-toggle="tab" href="#project-details-tab">Project Details</a></li>
+        </ul>
 
+        <!-- Tab containers-->
+        <div class="tab-content">
+            <div id="calendar-tab" class="tab-pane fade in active">
+                <br><br>
 
-        <div class="row">
-
-            <div class="col-2"></div>
-
-
-
-            <div class="col-lg-8 col-md-10 col-sm-12 portion_body">
-
-
-                <p class="detail_date " th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
-
-
-
-
-                <div class="horizontal_field project_subtext" th:text="${project.getDescription}" />
-
+                <div id="calendar"></div>
             </div>
 
-            <div class="col-2"></div>
+            <div id="project-details-tab" class="tab-pane fade">
+                <br><br>
 
-        </div>
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div class="col-lg-8 col-md-10 col-sm-12 portion_body">
 
-        <div class="row">
+                        <p class="detail_date " th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
 
-            <div class="col-2"></div>
+                            <div class="horizontal_field project_subtext" th:text="${project.getDescription}" /> </div>
 
-            <!-- Buttons -->
-            <div class="col-lg-8 col-md-10 col-sm-12">
+                        <div class="col-2"></div>
 
-                <button class="edit" style="padding-top:0rem;">
-                    <a class="button_a" th:href="@{/edit-project(id=${project.getId})}">Edit Project</a>
-                </button>
-            </div>
-            <div class="col-2"></div>
+                </div>
 
-        </div>
+                <div class="row">
+                    <div class="col-2"></div>
 
-        <br>
+                        <!-- Buttons -->
+                        <div class="col-lg-8 col-md-10 col-sm-12">
 
-        <div class="row row_sprints"  th:each="sprint: ${sprints}">
+                            <button class="edit" style="padding-top:0rem;">
+                                <a class="button_a" th:href="@{/edit-project(id=${project.getId})}">Edit Project</a>
+                            </button>
+                        </div>
+                        <div class="col-2"></div>
+
+                    </div>
+
+                    <br>
+
+                    <div class="row row_sprints"  th:each="sprint: ${sprints}">
 
 
                         <div class="col-2"></div>
@@ -159,58 +163,74 @@
 
                         </div>
 
-                                <!-- Sprint info -->
-                                <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
+                        <!-- Sprint info -->
+                        <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
 
 
-                                    <div class="sprint-title project_subhead " th:text="${sprint.getName}" />
+                            <div class="sprint-title project_subhead " th:text="${sprint.getName}" />
 
-                                    <div class="sprint-date detail_date" th:text="${sprint.getStartDateString} + ' - ' + ${sprint.getEndDateString}" />
+                            <div class="sprint-date detail_date" th:text="${sprint.getStartDateString} + ' - ' + ${sprint.getEndDateString}" />
 
-                                    <div class="sprint-description project_edit_data" th:text="${sprint.getDescription}" />
+                            <div class="sprint-description project_edit_data" th:text="${sprint.getDescription}" />
 
-                                </div>
+                        </div>
 
-                                <div class="col-2"></div>
+                        <div class="col-2"></div>
 
+                    </div>
 
-        </div>
+                    <div class="row">
 
-        <div class="row">
+                        <div class="col-2"></div>
 
-            <div class="col-2"></div>
+                        <!-- Buttons -->
 
-            <!-- Buttons -->
+                        <div class="col-lg-8 col-md-10 col-sm-12" >
+                            <form th:action="@{/new-sprint}" method="post">
+                                <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
+                                <button class="add" type="submit">
+                                    Add Sprint
+                                </button>
+                            </form>
+                            <br>
+                            <button class="login_box "th:style="${errorShow}">
+                                <p class="login_error" th:text="${errorCode}"/>
+                            </button>
+                            <button class="edit ">
+                                <a class=" button_a" th:href="@{/landing}">      Return      </a>
+                            </button>
+                            <br><br>
+                        </div>
 
-            <div class="col-lg-8 col-md-10 col-sm-12" >
-                <form th:action="@{/new-sprint}" method="post">
-                <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
-                <button class="add" type="submit">
-                    Add Sprint
-                </button>
-                </form>
-                <br>
-                <button class="login_box "th:style="${errorShow}">
-                <p class="login_error" th:text="${errorCode}"/>
-                </button>
-                <button class="edit ">
-                    <a class=" button_a" th:href="@{/landing}">      Return      </a>
-                </button>
+                        <div class="col-2"></div>
+
+                    </div>
+
+                    <div class="row-1">
+                        <br><br><br>
+                    </div>
+
+                </div>
+
             </div>
-
-            <div class="col-2"></div>
-
         </div>
-
-        <div class="row-1">
-            <br><br><br>
-        </div>
-
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth'
+        });
+        calendar.render();
+    });
+</script>
+
+
 <!-- JS -->
 <script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
-
+<!-- JS file for FullCalendar -->
+<script th:src="@{/js/fullcalendar.js}"></script>
 </body>
 </html>
