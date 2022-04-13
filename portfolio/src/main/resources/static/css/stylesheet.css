@@ -540,3 +540,10 @@
 .nav-tabs {
     margin-bottom: 0;
 }
+
+.header_project_dates {
+    text-align: center; !important;
+    font-family: nexaLight !important;
+    font-size: 150%;
+    color: #19DAFF !important;
+}
