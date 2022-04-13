@@ -84,6 +84,8 @@
 
             <div class="col-12 ">
                 <p class="body_title_large " th:text="${project.getName}" />
+                <p class="header_project_dates" th:text="'Start Date: ' + ${project.getStartDateString} + ' - ' + 'End Date: ' + ${project.getEndDateString}"/>
+                <br>
             </div>
 
         </div>
