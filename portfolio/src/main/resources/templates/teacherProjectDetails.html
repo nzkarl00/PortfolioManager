@@ -219,16 +219,35 @@
     </div>
 </div>
 
-<script>
+<script type="text/javascript" th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
+
+        // Gets the date project start and end dates and format's it as Date
+        var stringStartDate = new Date([[${project.getStartDate()}]].toString());
+        var stringEndDate = new Date([[${project.getEndDate()}]].toString());
+
+        // Add an extra day to end date since time is set to 00:00:00
+        stringEndDate.setDate(stringEndDate.getDate() + 1);
+
+        // Striped to be formatted as YYYY-MM-DD (needed for FullCalendar)
+        var startDate =  new Date(stringStartDate.getTime() - (stringStartDate.getTimezoneOffset() * 60000 )).toISOString().split("T")[0];
+        var endDate =  new Date(stringEndDate.getTime() -  (stringEndDate.getTimezoneOffset() * 60000 )).toISOString().split("T")[0];
+
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth'
+
+            initialView: 'dayGridMonth',
+
+            // Greys out area's not in use by the project
+            validRange: {
+                start: startDate,
+                end: endDate
+            }
+
         });
         calendar.render();
     });
 </script>
-
 
 <!-- JS -->
 <script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
