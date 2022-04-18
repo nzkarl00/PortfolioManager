@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 
 @GrpcService
 public class AccountServerService extends UserAccountServiceImplBase{
@@ -92,26 +93,9 @@ public class AccountServerService extends UserAccountServiceImplBase{
      */
     @Override
     public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
-        UserResponse.Builder reply = UserResponse.newBuilder();
         AccountProfile profile = repo.findById(request.getId());
-        reply
-                .setUsername(profile.getUsername())
-                .setFirstName(profile.getFirstName())
-                .setMiddleName(profile.getMiddleName())
-                .setLastName(profile.getLastName())
-                .setNickname(profile.getNickname())
-                .setBio(profile.getBio())
-                .setPersonalPronouns(profile.getPronouns())
-                .setEmail(profile.getEmail())
-                .setCreated(Timestamp.newBuilder().setSeconds(profile.getRegisterDate().getTime()/1000).build())
-                .setProfileImagePath(profile.getPhotoPath());
-
-        for (Role role : profile.getRoles()) {
-            if (role.getRole().equals("student")) { reply.addRoles(UserRole.STUDENT); }
-            if (role.getRole().equals("teacher")) { reply.addRoles(UserRole.TEACHER); }
-            if (role.getRole().equals("admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
-        }
-        responseObserver.onNext(reply.build());
+        UserResponse reply = buildUserResponse(profile);
+        responseObserver.onNext(reply);
         responseObserver.onCompleted();
     }
 
@@ -137,4 +121,53 @@ public class AccountServerService extends UserAccountServiceImplBase{
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
+
+    /**
+     * A builder for a UserResponse from a repo profile
+     * @param profile the profile to build the protobuf from
+     * @return the final protobuf to represent the profile given
+     */
+    private UserResponse buildUserResponse(AccountProfile profile) {
+        UserResponse.Builder reply = UserResponse.newBuilder();
+        reply
+            .setUsername(profile.getUsername())
+            .setFirstName(profile.getFirstName())
+            .setMiddleName(profile.getMiddleName())
+            .setLastName(profile.getLastName())
+            .setNickname(profile.getNickname())
+            .setBio(profile.getBio())
+            .setPersonalPronouns(profile.getPronouns())
+            .setEmail(profile.getEmail())
+            .setCreated(Timestamp.newBuilder().setSeconds(profile.getRegisterDate().getTime()/1000).build())
+            .setProfileImagePath(profile.getPhotoPath());
+
+        for (Role role : profile.getRoles()) {
+            if (role.getRole().equals("student")) { reply.addRoles(UserRole.STUDENT); }
+            if (role.getRole().equals("teacher")) { reply.addRoles(UserRole.TEACHER); }
+            if (role.getRole().equals("admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
+        }
+        return reply.build();
+    }
+
+    /**
+     * Send back the all the user details
+     * @param request the GetPaginatedUsersRequest
+     * @param responseObserver the place to send the message back
+     */
+    @Override
+    public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
+        int limit = request.getLimit() + request.getOffset();
+
+        PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
+        List<AccountProfile> users = repo.findAll();
+
+        int i = request.getOffset();
+        while (i < limit && i < users.size()) {
+            reply.addUsers(buildUserResponse(users.get(i)));
+            i++;
+        }
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
 }
