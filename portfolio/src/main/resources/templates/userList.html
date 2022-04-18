@@ -70,8 +70,12 @@
     </div>
 
     <!-- Users -->
-
     <div class="user-table">
+        <!-- Send a forward or backward call to the page -->
+        <a href="user-list?move=back" class="btn btn-primary align-text-left">←</a>
+        <a href="user-list?move=forward" class="btn btn-primary align-text-left">→</a>
+
+        <span th:text="${start}"></span> - <span th:text="${start + 50}"></span>
         <table class="table table-striped">
             <thead>
                 <tr>
