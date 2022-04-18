@@ -20,53 +20,64 @@
 <body>
 <div th:fragment="navbar">
 
-    <!-- Header -->
+    <!-- Navigation Bar -->
     <nav class="navbar sticky-top navbar-light bg-light">
         <div class="container-fluid ms-auto fluid">
 
-
+            <!-- Membership date information -->
             <p class="nav-item header_date fluid">
                 Member Since: <br>
                 <span th:text="${date}" ></span>
             </p>
 
-            <p class="nav-item header_name"><span th:text="${username}" ></span></p>
+            <!-- Username information -->
+            <p class="nav-item header_name">
+                <span th:text="${username}" ></span>
+            </p>
 
+            <!-- Profile picture, that functions as a dropdown menu -->
             <div class="dropdown">
+                <!-- Creating the default of what you see when profile picture drop down is closed -->
                 <button class="btn btn-primary dropdown-toggle dropdown-circle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{/profile_none.png}" width=90em height=90em alt="">
                 </button>
+                <!-- Creating dropdown items when the profile picture dropdown is open/active -->
                 <ul class="dropdown-menu align-middle">
+                    <!-- These buttons take you to other end points -->
                     <li><a class="dropdown-item" th:href="@{'/landing'}">Project</a></li>
                     <li><a class="dropdown-item" th:href="@{'/account'}">Account</a></li>
                     <li><a class="dropdown-item" th:href="@{'/user-list'}">Users</a></li>
+                    <!-- This logout button triggers the Logout Confirmation Modal to pop up -->
                     <li><a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutConfirmationModal">Logout</a></li>
                 </ul>
             </div>
+
         </div>
     </nav>
 
 
-    <!-- Modal -->
+    <!-- Logout Confirmation Modal -->
     <div class="modal fade" id="logoutConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="logoutConfirmationModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="modal-title align-middle">Logout</span>
-            </div>
-            <div class="modal-body d-flex justify-content-center">
-                Are you sure you want to logout?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary align-baseline" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary align-text-bottom">
-                    <a class="button_a" th:href="@{'/logout'}">Confirm Logout</a>
-                </button>
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="modal-title align-middle">Logout</span>
+                </div>
+                <div class="modal-body d-flex justify-content-center">
+                    Are you sure you want to logout?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary align-baseline" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary align-text-bottom">
+                        <!-- Confirm Logout button will take you to /logout end point, and back to /login -->
+                        <a class="button_a" th:href="@{'/logout'}">Confirm Logout</a>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+
 </div>
-    </div>
 
 </body>
 </html>
