@@ -56,4 +56,12 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         if (!email.isEmpty()) { request.setEmail(email); }
         return accountServiceStub.editUser(request.build());
     }
+
+    public PaginatedUsersResponse getPaginatedUsers(int limit, int offset, String orderBy) {
+        GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder();
+        request.setLimit(limit)
+                .setOffset(offset)
+                .setOrderBy(orderBy);
+        return accountServiceStub.getPaginatedUsers(request.build());
+    }
 }

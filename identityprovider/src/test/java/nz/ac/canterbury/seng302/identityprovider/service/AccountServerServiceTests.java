@@ -3,8 +3,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -12,6 +11,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class AccountServerServiceTests {
@@ -130,6 +130,28 @@ public class AccountServerServiceTests {
         ArgumentCaptor<UserRegisterResponse> captor = ArgumentCaptor.forClass(UserRegisterResponse.class);
         verify(testObserver, times(1)).onNext(captor.capture());
         UserRegisterResponse response = captor.getValue();
-        assertEquals(true, response.getIsSuccess());
+        assertTrue(response.getIsSuccess());
+    }
+
+    /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<PaginatedUsersResponse> testPaginatedObserver = mock(StreamObserver.class);
+
+    /**
+     * Tests the grpc call to get paginated users
+     */
+    @Test
+    void getPaginatedUsersTest() {
+        GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder()
+            .setLimit(50)
+            .setOffset(0)
+            .setOrderBy("name");
+        ass.getPaginatedUsers(request.build(), testPaginatedObserver);
+        verify(testPaginatedObserver, times(1)).onCompleted();
+        ArgumentCaptor<PaginatedUsersResponse> captor = ArgumentCaptor.forClass(PaginatedUsersResponse.class);
+        verify(testPaginatedObserver, times(1)).onNext(captor.capture());
+        PaginatedUsersResponse response = captor.getValue();
+        assertTrue(response.getUsersCount() >= 0); //TODO make it actually return data in the repo? can this be done?
     }
 }
