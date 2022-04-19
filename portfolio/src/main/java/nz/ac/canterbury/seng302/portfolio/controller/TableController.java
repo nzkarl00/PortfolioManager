@@ -37,7 +37,7 @@ public class TableController {
     private int start = 0;
     private int step = 50;
     private int currentPage = 0;
-    String sortMode = "name";
+    String sortMode = "first_name";
     Integer ascDesc = 0;
     Boolean isSorted = false;
     List<User> users = new ArrayList<User>();
@@ -70,7 +70,7 @@ public class TableController {
         }
         start = currentPage * step;
 
-        System.out.println(sortMode);
+        System.out.println(sortMode+" cont");
 
         users.clear();
         isSorted = false;
