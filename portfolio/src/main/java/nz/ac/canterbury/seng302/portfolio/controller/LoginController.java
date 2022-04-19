@@ -92,7 +92,7 @@ public class LoginController {
             var domain = request.getHeader("host");
             CookieUtil.create(
                 response,
-                "lens-session-token",
+                "lens-session-token", // cookie in loginReply.getToken() stored here
                     loginReply.getToken(),
                 true,
                 5 * 60 * 60, // Expires in 5 hours
