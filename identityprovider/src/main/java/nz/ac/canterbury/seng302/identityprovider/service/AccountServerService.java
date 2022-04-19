@@ -161,10 +161,25 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
         List<AccountProfile> users = sortUsers(request);
+        List<AccountProfile> usersSorted = null;
+
+        if ((request.getOrderBy() == "roles_desc")) {
+            Boolean isSorted;
+            for (AccountProfile user : users) {
+                isSorted = false;
+                if (usersSorted != null) {
+                }
+                if (!isSorted) {
+                    usersSorted.add(user);
+                }
+            }
+        } else {
+            usersSorted = users;
+        }
 
         int i = request.getOffset();
-        while (i < limit && i < users.size()) {
-            reply.addUsers(buildUserResponse(users.get(i)));
+        while (i < limit && i < usersSorted.size()) {
+            reply.addUsers(buildUserResponse(usersSorted.get(i)));
             i++;
         }
         responseObserver.onNext(reply.build());
@@ -193,5 +208,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 return repo.findAll();
         }
     }
+
+
 
 }
