@@ -59,9 +59,15 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
     public PaginatedUsersResponse getPaginatedUsers(int limit, int offset, String orderBy, int orderMode) {
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder();
+        String order = orderBy;
+        if (orderMode == 0) {
+            order += "_desc";
+        } else {
+            order += "_asc";
+        }
         request.setLimit(limit)
                 .setOffset(offset)
-                .setOrderBy(orderBy);
+                .setOrderBy(order);
         return accountServiceStub.getPaginatedUsers(request.build());
     }
 }

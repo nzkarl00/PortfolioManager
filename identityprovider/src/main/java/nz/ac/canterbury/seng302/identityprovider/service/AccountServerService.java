@@ -13,6 +13,9 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.U
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
 import java.util.Date;
@@ -158,8 +161,15 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
         int limit = request.getLimit() + request.getOffset();
 
+        List<AccountProfile> users;
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
-        List<AccountProfile> users = repo.findAll();
+        switch ( request.getOrderBy() ) {
+            case ("name_desc"):
+                users = repo.findAll(PageRequest.of(0, 1), Sort.by(Sort.Direction.DESC, "username"));
+                break;
+            default:
+                users = repo.findAll(PageRequest.of(0, 1), Sort.by(Sort.Direction.ASC, "username"));
+        }
 
         int i = request.getOffset();
         while (i < limit && i < users.size()) {
@@ -169,5 +179,4 @@ public class AccountServerService extends UserAccountServiceImplBase{
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
-
 }
