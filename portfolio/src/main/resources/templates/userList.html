@@ -39,14 +39,17 @@
         <a href="user-list?move=forward" class="btn btn-primary align-text-left">→</a>
 
         <span th:text="${start}"></span> - <span th:text="${start + 50}"></span>
+
+        <br>
+
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th class="table_head justify-content-center" scope="col" > <form  th:action="@{/order-list(sortColumn=${0})}" method="post" ><button class="table_button" type="input">First Name</button></form></th>
-                    <th class="table_head justify-content-center" scope="col"> <form  th:action="@{/order-list(sortColumn=${1})}" method="post" ><button class="table_button" type="input">Last Name</button></form> </th>
-                    <th class="table_head justify-content-center" scope="col"> <form  th:action="@{/order-list(sortColumn=${2})}" method="post" ><button class="table_button" type="input">Username</button></form> </th>
-                    <th class="table_head justify-content-center" scope="col"> <form  th:action="@{/order-list(sortColumn=${3})}" method="post" ><button class="table_button" type="input">Alias</button></form> </th>
-                    <th class="table_head justify-content-center" scope="col"> <form  th:action="@{/order-list(sortColumn=${4})}" method="post" ><button class="table_button" type="input">Roles</button></form> </th>
+                    <th class="table_head justify-content-center" scope="col" > <form  th:action="@{/order-list(sortColumn=${'first_name'})}" method="post" ><button class="table_button" type="input">First Name</button></form></th>
+                    <th class="table_head justify-content-center" scope="col"> <form  th:action="@{/order-list(sortColumn=${'last_name'})}" method="post" ><button class="table_button" type="input">Last Name</button></form> </th>
+                    <th class="table_head justify-content-center" scope="col"> <form  th:action="@{/order-list(sortColumn=${'username'})}" method="post" ><button class="table_button" type="input">Username</button></form> </th>
+                    <th class="table_head justify-content-center" scope="col"> <form  th:action="@{/order-list(sortColumn=${'nickname'})}" method="post" ><button class="table_button" type="input">Alias</button></form> </th>
+                    <th class="table_head justify-content-center" scope="col"> <form  th:action="@{/order-list(sortColumn=${'roles'})}" method="post" ><button class="table_button" type="input">Roles</button></form> </th>
                 </tr>
             </thead>
             <tbody>

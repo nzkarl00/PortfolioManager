@@ -57,7 +57,7 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.editUser(request.build());
     }
 
-    public PaginatedUsersResponse getPaginatedUsers(int limit, int offset, String orderBy) {
+    public PaginatedUsersResponse getPaginatedUsers(int limit, int offset, String orderBy, int orderMode) {
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder();
         request.setLimit(limit)
                 .setOffset(offset)
