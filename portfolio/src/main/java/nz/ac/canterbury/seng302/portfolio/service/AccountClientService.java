@@ -60,7 +60,7 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
     public PaginatedUsersResponse getPaginatedUsers(int limit, int offset, String orderBy, int orderMode) {
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder();
         String order = orderBy;
-        if (orderMode == 0) {
+        if (orderMode == 1) {
             order += "_desc";
         } else {
             order += "_asc";

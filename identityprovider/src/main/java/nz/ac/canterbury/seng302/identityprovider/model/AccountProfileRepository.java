@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -15,5 +14,18 @@ public interface AccountProfileRepository extends CrudRepository<AccountProfile,
     AccountProfile findByUsername(String username);
     AccountProfile findByEmail(String email);
     List<AccountProfile> findAll();
-    List<AccountProfile> findAll(PageRequest pageRequest, Sort sort);
+    List<AccountProfile> findAllByOrderByUsernameAsc();
+    List<AccountProfile> findAllByOrderByFirstNameAsc();
+
+    List<AccountProfile> findAllByOrderByFirstNameDesc();
+
+    List<AccountProfile> findAllByOrderByLastNameAsc();
+
+    List<AccountProfile> findAllByOrderByLastNameDesc();
+
+    List<AccountProfile> findAllByOrderByNicknameAsc();
+
+    List<AccountProfile> findAllByOrderByNicknameDesc();
+
+    List<AccountProfile> findAllByOrderByUsernameDesc();
 }

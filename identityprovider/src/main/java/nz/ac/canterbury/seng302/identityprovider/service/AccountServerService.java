@@ -13,8 +13,6 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.U
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
@@ -161,15 +159,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
         int limit = request.getLimit() + request.getOffset();
 
-        List<AccountProfile> users;
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
-        switch ( request.getOrderBy() ) {
-            case ("name_desc"):
-                users = repo.findAll(PageRequest.of(0, 1), Sort.by(Sort.Direction.DESC, "username"));
-                break;
-            default:
-                users = repo.findAll(PageRequest.of(0, 1), Sort.by(Sort.Direction.ASC, "username"));
-        }
+        List<AccountProfile> users = sortUsers(request);
 
         int i = request.getOffset();
         while (i < limit && i < users.size()) {
@@ -179,4 +170,28 @@ public class AccountServerService extends UserAccountServiceImplBase{
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
+
+    public List<AccountProfile> sortUsers(GetPaginatedUsersRequest request) {
+        switch (request.getOrderBy()) {
+            case "first_name_asc":
+                return repo.findAllByOrderByFirstNameAsc();
+            case "first_name_desc":
+                return repo.findAllByOrderByFirstNameDesc();
+            case "last_name_asc":
+                return repo.findAllByOrderByLastNameAsc();
+            case "last_name_desc":
+                return repo.findAllByOrderByLastNameDesc();
+            case "nickname_asc":
+                return repo.findAllByOrderByNicknameAsc();
+            case "nickname_desc":
+                return repo.findAllByOrderByNicknameDesc();
+            case "username_asc":
+                return repo.findAllByOrderByUsernameAsc();
+            case "username_desc":
+                return repo.findAllByOrderByUsernameDesc();
+            default:
+                return repo.findAll();
+        }
+    }
+
 }

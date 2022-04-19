@@ -70,6 +70,8 @@ public class TableController {
         }
         start = currentPage * step;
 
+        System.out.println(sortMode);
+
         users.clear();
         isSorted = false;
         Integer id = AuthStateInformer.getId(principal);
