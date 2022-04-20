@@ -146,7 +146,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             .setProfileImagePath(profile.getPhotoPath());
 
         for (Role role : profile.getRoles()) {
-            if (role.getRole().equals("1student")) { reply.addRoles(UserRole.STUDENT); }
+            if (role.getRole().equals("1student")) { reply.addRoles(UserRole.STUDENT); } // Note the {number}{role} structure is due to sorting to allow for the highest priority roles to be shown
             if (role.getRole().equals("2teacher")) { reply.addRoles(UserRole.TEACHER); }
             if (role.getRole().equals("3admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
         }
