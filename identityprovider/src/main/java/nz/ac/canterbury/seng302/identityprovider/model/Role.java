@@ -10,7 +10,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long userRoleId;
-    @Column(name = "user_role")
+    @Column(name = "role")
     private String role;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="parent_account_id", nullable=false)
@@ -25,5 +25,9 @@ public class Role {
 
     public String getRole() {
         return role;
+    }
+
+    public Long getUserRoleId(){
+        return userRoleId;
     }
 }

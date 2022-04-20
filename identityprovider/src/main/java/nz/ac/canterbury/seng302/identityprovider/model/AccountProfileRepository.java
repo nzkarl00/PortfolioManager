@@ -15,6 +15,7 @@ public interface AccountProfileRepository extends CrudRepository<AccountProfile,
     AccountProfile findByEmail(String email);
     List<AccountProfile> findAll();
     List<AccountProfile> findAllByOrderByUsernameAsc();
+
     List<AccountProfile> findAllByOrderByFirstNameAsc();
 
     List<AccountProfile> findAllByOrderByFirstNameDesc();

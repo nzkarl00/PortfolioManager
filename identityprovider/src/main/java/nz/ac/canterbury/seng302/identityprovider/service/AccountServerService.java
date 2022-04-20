@@ -20,6 +20,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @GrpcService
 public class AccountServerService extends UserAccountServiceImplBase{
@@ -54,7 +55,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
                     new AccountProfile(
                             request.getUsername(), hashedPassword, new Date(), "", request.getEmail(),
                             null, request.getFirstName(), request.getLastName(), request.getPersonalPronouns()));
-            roleRepo.save(new Role(newAccount, "student")); // TODO change this from the default
+            roleRepo.save(new Role(newAccount, "1student")); // TODO change this from the default
             reply.setMessage("Created account " + request.getUsername()).setIsSuccess(true);
         }
         responseObserver.onNext(reply.build());
@@ -145,11 +146,27 @@ public class AccountServerService extends UserAccountServiceImplBase{
             .setProfileImagePath(profile.getPhotoPath());
 
         for (Role role : profile.getRoles()) {
-            if (role.getRole().equals("student")) { reply.addRoles(UserRole.STUDENT); }
-            if (role.getRole().equals("teacher")) { reply.addRoles(UserRole.TEACHER); }
-            if (role.getRole().equals("admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
+            if (role.getRole().equals("1student")) { reply.addRoles(UserRole.STUDENT); }
+            if (role.getRole().equals("2teacher")) { reply.addRoles(UserRole.TEACHER); }
+            if (role.getRole().equals("3admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
         }
         return reply.build();
+    }
+
+    /**
+     * Updates the usersSorted list with the correct users in the order given by the sorted roles query
+     * @param usersSorted the list to update
+     * @param roles the order to base the update from
+     */
+    public void updateUsersSorted(List<AccountProfile> usersSorted, List<Role> roles) {
+        ArrayList<Long> userIds = new ArrayList<>();
+        for (Role role: roles) {
+            Long userId = role.getUserRoleId();
+            if (!userIds.contains(userId)){
+                userIds.add(role.getUserRoleId());
+                usersSorted.add(repo.findById(userId.intValue()));
+            }
+        }
     }
 
     /**
@@ -162,54 +179,24 @@ public class AccountServerService extends UserAccountServiceImplBase{
         int limit = request.getLimit() + request.getOffset();
 
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
-        List<AccountProfile> users = sortUsers(request);
         List<AccountProfile> usersSorted = new ArrayList<>();
 
         Boolean isSorted = false;
 
         System.out.println(request.getOrderBy()+" get function");
+
         if (request.getOrderBy().equals("roles_asc")) {
 
-            System.out.println(request.getOrderBy()+" asc function");
-            for (AccountProfile user: users) {
+            List<Role> roles = roleRepo.findAllByOrderByRoleAsc();
+            updateUsersSorted(usersSorted, roles);
 
-                System.out.println(usersSorted.size());
-                if (usersSorted.size() == 0) {
-                    usersSorted.add(user);
-                } else {
-                    isSorted = false;
-                    for (int i = 0; i < usersSorted.size(); i++) {
-                        isSorted = false;
-
-                    }
-                    if (!isSorted) {
-                        usersSorted.add(user);
-                    }
-                }
-
-            }
         } else if (request.getOrderBy().equals("roles_desc")) {
 
-            System.out.println(request.getOrderBy()+" desc function");
-            for (AccountProfile user: users) {
+            List<Role> roles = roleRepo.findAllByOrderByRoleDesc();
+            updateUsersSorted(usersSorted, roles);
 
-                System.out.println(usersSorted.size());
-                if (usersSorted.size() == 0) {
-                    usersSorted.add(user);
-                } else {
-                    isSorted = false;
-                    for (int i = 0; i < usersSorted.size(); i++) {
-                        isSorted = false;
-
-                    }
-                    if (!isSorted) {
-                        usersSorted.add(user);
-                    }
-                }
-
-            }
         } else {
-            usersSorted = users;
+            usersSorted = sortUsers(request);
         }
 
         int i = request.getOffset();

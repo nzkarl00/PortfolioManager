@@ -35,8 +35,6 @@ import java.util.Calendar;
 @Controller
 public class EditSprintController {
 
-
-
     @Autowired
     private ProjectService projectService;
     @Autowired
