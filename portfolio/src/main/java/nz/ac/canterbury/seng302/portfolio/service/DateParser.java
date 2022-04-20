@@ -21,7 +21,7 @@ public class DateParser {
         Long seconds = userReply.getCreated().getSeconds(); //Format the date
         Date date = new Date(seconds * 1000); // turn into millis
         SimpleDateFormat dateFormat = new SimpleDateFormat( "dd LLLL yyyy" ); //Correct string format
-        String stringDate = dateFormat.format( date );
+        String stringDate = " " + dateFormat.format( date );
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         int month = cal.get(Calendar.MONTH); //Month registered variables
@@ -32,13 +32,32 @@ public class DateParser {
         int currentYear = currentCalendar.get(Calendar.YEAR);
 
         int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
+        int totalYear = (currentYear - year);
+
+
 
         if (totalMonth > 0){
-            if (totalMonth > 1){
-                stringDate += " (" + totalMonth + " Months)";
-            } else {
-                stringDate += " (" + totalMonth + " Month)";
+            stringDate += " (";
+
+            if (totalYear > 0){
+                if (totalYear > 1){
+                    stringDate += totalYear + " Years";
+                } else {
+                    stringDate += totalYear + " Year";
+                }
             }
+            while (totalMonth >= 12) {
+                totalMonth -= 12;
+            }
+            if (totalMonth > 1){
+                stringDate += " and " + totalMonth + " Months";
+            } else if (totalMonth == 0) {
+                    // Nothing
+            }   else {
+                stringDate += " and " + totalMonth + " Month";
+            }
+
+            stringDate += ")";
         }
         return stringDate;
     }
