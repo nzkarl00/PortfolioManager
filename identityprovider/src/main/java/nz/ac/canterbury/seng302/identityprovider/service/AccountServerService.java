@@ -11,11 +11,13 @@ import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.hibernate.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
+import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -161,11 +163,54 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
         List<AccountProfile> users = sortUsers(request);
-        List<AccountProfile> usersSorted = null;
+        List<AccountProfile> usersSorted = new ArrayList<>();
+
+        Boolean isSorted = false;
 
         System.out.println(request.getOrderBy()+" get function");
-            usersSorted = users;
+        if (request.getOrderBy().equals("roles_asc")) {
 
+            System.out.println(request.getOrderBy()+" asc function");
+            for (AccountProfile user: users) {
+
+                System.out.println(usersSorted.size());
+                if (usersSorted.size() == 0) {
+                    usersSorted.add(user);
+                } else {
+                    isSorted = false;
+                    for (int i = 0; i < usersSorted.size(); i++) {
+                        isSorted = false;
+
+                    }
+                    if (!isSorted) {
+                        usersSorted.add(user);
+                    }
+                }
+
+            }
+        } else if (request.getOrderBy().equals("roles_desc")) {
+
+            System.out.println(request.getOrderBy()+" desc function");
+            for (AccountProfile user: users) {
+
+                System.out.println(usersSorted.size());
+                if (usersSorted.size() == 0) {
+                    usersSorted.add(user);
+                } else {
+                    isSorted = false;
+                    for (int i = 0; i < usersSorted.size(); i++) {
+                        isSorted = false;
+
+                    }
+                    if (!isSorted) {
+                        usersSorted.add(user);
+                    }
+                }
+
+            }
+        } else {
+            usersSorted = users;
+        }
 
         int i = request.getOffset();
         while (i < limit && i < usersSorted.size()) {
