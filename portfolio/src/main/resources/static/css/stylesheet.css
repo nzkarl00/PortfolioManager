@@ -369,6 +369,20 @@
 
 }
 
+.user_role_table {
+
+    background-color:#19DAFF; !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    padding: 0.3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+
+}
+
 .signup_box_green {
 
     background-color:#08F722; !important;
@@ -598,6 +612,15 @@
     background: none;
     text-decoration: none !important;
     color: #FFFFFF !important;
+}
+
+.button_none {
+
+    border: none !important;
+    font-family: nexa !important;
+    font-size: 100% !important;
+    background: none !important;
+    text-decoration: none !important;
 }
 
 .table_text {

@@ -45,4 +45,11 @@ public class User {
         }
         return output.substring(0, output.length() - 2);
     }
+    public List<String> listRoles() {
+        List<String> output = new ArrayList<>();
+        for (Role role: roles) {
+            output.add(role.toString());
+        }
+        return output;
+    }
 }

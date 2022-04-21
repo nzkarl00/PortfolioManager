@@ -61,7 +61,11 @@
                     <td><span class="table_text" th:text="${user.lastName}"> Last </span></td>
                     <td><span class="table_text" th:text="${user.username}"> Username </span></td>
                     <td><span class="table_text" th:text="${user.nickname}"> Alias </span></td>
-                    <td><span class="table_text" th:text="${user.roles()}"> Roles </span></td>
+                    <td>
+                        <div class="user_role_table" th:each="role : ${user.listRoles()}">
+                            <span class="table_text" th:text="${role.toUpperCase()}">Roles</span> <form  style="display:inline;" th:action="@{/order-list(sortColumn=${'nickname'})}" method="post" ><button class="table_text button_none">&#x2716</button></form>
+                        </div>
+                    </td>
                 </tr>
             </tbody>
         </table>
