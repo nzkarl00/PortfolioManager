@@ -155,8 +155,6 @@ public class EditSprintController {
         Date checkEndDate = Project.stringToDate(sprintEndDate);
 
         if (sprintName.isBlank()) {
-
-
             errorShow = "";
             errorCode = "Sprint requires a name";
             return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
@@ -164,10 +162,11 @@ public class EditSprintController {
 
         sprint.setName(sprintName);
         sprint.setDescription(sprintDescription);
+
         if ((projStartDate.before(checkStartDate) | (Objects.equals(stringStartDate, sprintStartDate))) & (projEndDate.after(checkEndDate) | (Objects.equals(stringEndDate, sprintEndDate)))) {
+
             if (checkStartDate.before(checkEndDate)) {
                 for (Sprint temp: sprintService.getSprintByParentId(projectId)) {
-
                     if (temp.getEndDate().after(checkStartDate) & temp.getStartDate().before(checkStartDate)) {
 
                         errorShow = "";
