@@ -605,6 +605,13 @@
     font-size: 100% !important;
 }
 
+.table_text_arrow {
+    color: #FFFFFF !important;
+    font-family: nexa !important;
+    font-size: 100% !important;
+    display: inline
+}
+
 .tab-pane {
 
     border-left: 1px solid #ddd;

@@ -42,6 +42,24 @@ public class TableController {
     Boolean isSorted = false;
     List<User> users = new ArrayList<User>();
 
+    String firstNameShow = "background-color:#056BFA !important;";
+    String lastNameShow = "";
+    String usernameShow = "";
+    String nicknameShow = "";
+    String rolesShow = "";
+
+    String firstNameUp = "";
+    String firstNameDown = "display:none;";
+    String lastNameUp = "display:none;";
+    String lastNameDown = "display:none;";
+    String usernameUp = "display:none;";
+    String usernameDown = "display:none;";
+    String nicknameUp = "display:none;";
+    String nicknameDown = "display:none;";
+    String rolesUp = "display:none;";
+    String rolesDown = "display:none;";
+
+
     /**
      * The controller mapping of the User table
      * @param principal the auth token
@@ -70,8 +88,6 @@ public class TableController {
         }
         start = currentPage * step;
 
-        System.out.println(sortMode+" cont");
-
         users.clear();
         isSorted = false;
         Integer id = AuthStateInformer.getId(principal);
@@ -82,6 +98,23 @@ public class TableController {
         model.addAttribute("date", DateParser.displayDate(userReply));
         model.addAttribute("start", start);
         model.addAttribute("currentPage", currentPage);
+
+        model.addAttribute("firstNameShow", firstNameShow);
+        model.addAttribute("lastNameShow", lastNameShow);
+        model.addAttribute("usernameShow", usernameShow);
+        model.addAttribute("nicknameShow", nicknameShow);
+        model.addAttribute("rolesShow", rolesShow);
+
+        model.addAttribute("firstNameUp", firstNameUp);
+        model.addAttribute("firstNameDown", firstNameDown);
+        model.addAttribute("lastNameUp", lastNameUp);
+        model.addAttribute("lastNameDown", lastNameDown);
+        model.addAttribute("usernameUp", usernameUp);
+        model.addAttribute("usernameDown", usernameDown);
+        model.addAttribute("nicknameUp", nicknameUp);
+        model.addAttribute("nicknameDown", nicknameDown);
+        model.addAttribute("rolesUp", rolesUp);
+        model.addAttribute("rolesDown", rolesDown);
 
         PaginatedUsersResponse response = accountClientService.getPaginatedUsers(step, start, sortMode, ascDesc);
         List<User> users = new ArrayList<>();
@@ -100,17 +133,68 @@ public class TableController {
             Model model
     ) throws Exception {
 
+
+        String isUp = "";
+        String isDown = "";
+
         if (sortColumn.equals(sortMode)) {
             if (ascDesc == 1) {
                 ascDesc = 0;
+                isUp = "";
+                isDown = "display:none;";
             } else {
                 ascDesc = 1;
+                isDown = "";
+                isUp = "display:none;";
             }
         } else {
             sortMode = sortColumn;
             ascDesc = 0;
+            isUp = "";
+            isDown = "display:none;";
         }
 
-        return "redirect:/user-list";
+        String tempValue = "background-color:#056BFA !important;";
+
+        firstNameShow = "";
+        lastNameShow = "";
+        usernameShow = "";
+        nicknameShow = "";
+        rolesShow = "";
+
+        firstNameUp = "display:none;";
+        firstNameDown = "display:none;";
+        lastNameUp = "display:none;";
+        lastNameDown = "display:none;";
+        usernameUp = "display:none;";
+        usernameDown = "display:none;";
+        nicknameUp = "display:none;";
+        nicknameDown = "display:none;";
+        rolesUp = "display:none;";
+        rolesDown = "display:none;";
+
+        if (sortColumn.equals("roles")) {
+            rolesShow = tempValue;
+            rolesUp = isUp;
+            rolesDown = isDown;
+        } else if (sortColumn.equals("nickname")) {
+            nicknameShow = tempValue;
+            nicknameUp = isUp;
+            nicknameDown = isDown;
+        } else if (sortColumn.equals("username")) {
+            usernameShow = tempValue;
+            usernameUp = isUp;
+            usernameDown = isDown;
+        } else if (sortColumn.equals("last_name")) {
+            lastNameShow = tempValue;
+            lastNameUp = isUp;
+            lastNameDown = isDown;
+        } else if (sortColumn.equals("first_name")) {
+            firstNameShow = tempValue;
+            firstNameUp = isUp;
+            firstNameDown = isDown;
+        }
+
+            return "redirect:/user-list";
     }
 }
