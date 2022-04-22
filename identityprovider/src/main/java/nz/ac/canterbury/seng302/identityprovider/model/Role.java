@@ -2,6 +2,10 @@ package nz.ac.canterbury.seng302.identityprovider.model;
 import javax.persistence.*;
 import java.beans.ConstructorProperties;
 
+/**
+ * The entity representation for the Role and roles table
+ * it is linked to the account profile in a many-to-one relationship
+ */
 @Entity
 @Table(name = "Roles")
 public class Role {
@@ -18,6 +22,11 @@ public class Role {
 
     public Role() {}
 
+    /**
+     * Basic Role constructor
+     * @param registeredUser the account to associate the role with
+     * @param role The string of the role to store, in the form {number}{role} to allow for easy sorting
+     */
     public Role(AccountProfile registeredUser, String role) {
         this.registeredUser = registeredUser;
         this.role = role;
