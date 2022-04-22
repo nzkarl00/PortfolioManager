@@ -39,11 +39,19 @@ public class SignupController {
     public String signup(
         Model model
     ) {
+
+
+
         model.addAttribute("testData", "null");
         model.addAttribute("errorShow", errorShow);
         model.addAttribute("successShow", successShow);
         model.addAttribute("successCode", successCode);
-        System.out.println(successCode);
+
+
+        errorShow = "display:none;";
+        successShow = "display:none;";
+        successCode = "successCode";
+
         return "signup";
     }
 
@@ -94,11 +102,8 @@ public class SignupController {
             successShow = "display:none;";
         }
 
-        model.addAttribute("errorShow", errorShow);
-        model.addAttribute("successShow", successShow);
-        model.addAttribute("successCode", successCode);
 
 
-        return "signup";
+        return "redirect:/signup";
     }
 }
