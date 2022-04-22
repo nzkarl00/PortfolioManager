@@ -57,11 +57,17 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.editUser(request.build());
     }
 
-    public PaginatedUsersResponse getPaginatedUsers(int limit, int offset, String orderBy) {
+    public PaginatedUsersResponse getPaginatedUsers(int limit, int offset, String orderBy, int orderMode) {
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder();
+        String order = orderBy;
+        if (orderMode == 1) {
+            order += "_desc";
+        } else {
+            order += "_asc";
+        }
         request.setLimit(limit)
                 .setOffset(offset)
-                .setOrderBy(orderBy);
+                .setOrderBy(order);
         return accountServiceStub.getPaginatedUsers(request.build());
     }
 }

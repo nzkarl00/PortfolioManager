@@ -165,4 +165,5 @@ public class AccountProfile {
     public void setBio(String bio) {
         this.bio = bio;
     }
+
 }

@@ -37,10 +37,28 @@ public class TableController {
     private int start = 0;
     private int step = 50;
     private int currentPage = 0;
-    Integer sortMode = 0;
+    String sortMode = "first_name";
     Integer ascDesc = 0;
     Boolean isSorted = false;
     List<User> users = new ArrayList<User>();
+
+    String firstNameShow = "background-color:#056BFA !important;";
+    String lastNameShow = "";
+    String usernameShow = "";
+    String nicknameShow = "";
+    String rolesShow = "";
+
+    String firstNameUp = "";
+    String firstNameDown = "display:none;";
+    String lastNameUp = "display:none;";
+    String lastNameDown = "display:none;";
+    String usernameUp = "display:none;";
+    String usernameDown = "display:none;";
+    String nicknameUp = "display:none;";
+    String nicknameDown = "display:none;";
+    String rolesUp = "display:none;";
+    String rolesDown = "display:none;";
+
 
     /**
      * The controller mapping of the User table
@@ -81,7 +99,24 @@ public class TableController {
         model.addAttribute("start", start);
         model.addAttribute("currentPage", currentPage);
 
-        PaginatedUsersResponse response = accountClientService.getPaginatedUsers(step, start, "name");
+        model.addAttribute("firstNameShow", firstNameShow);
+        model.addAttribute("lastNameShow", lastNameShow);
+        model.addAttribute("usernameShow", usernameShow);
+        model.addAttribute("nicknameShow", nicknameShow);
+        model.addAttribute("rolesShow", rolesShow);
+
+        model.addAttribute("firstNameUp", firstNameUp);
+        model.addAttribute("firstNameDown", firstNameDown);
+        model.addAttribute("lastNameUp", lastNameUp);
+        model.addAttribute("lastNameDown", lastNameDown);
+        model.addAttribute("usernameUp", usernameUp);
+        model.addAttribute("usernameDown", usernameDown);
+        model.addAttribute("nicknameUp", nicknameUp);
+        model.addAttribute("nicknameDown", nicknameDown);
+        model.addAttribute("rolesUp", rolesUp);
+        model.addAttribute("rolesDown", rolesDown);
+
+        PaginatedUsersResponse response = accountClientService.getPaginatedUsers(step, start, sortMode, ascDesc);
         List<User> users = new ArrayList<>();
         for (UserResponse userResponse : response.getUsersList()) { // loop through the given response containing UserResponses
             users.add(new User(userResponse)); // pass the UserResponse to the User constructor which builds the appropriate user
@@ -94,113 +129,72 @@ public class TableController {
     @PostMapping("order-list")
     public String sprintDelete(
             @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value="sortColumn") Integer sortColumn,
+            @RequestParam(value="sortColumn") String sortColumn,
             Model model
     ) throws Exception {
 
-        if (sortColumn == sortMode) {
+
+        String isUp = "";
+        String isDown = "";
+
+        if (sortColumn.equals(sortMode)) {
             if (ascDesc == 1) {
                 ascDesc = 0;
+                isUp = "";
+                isDown = "display:none;";
             } else {
                 ascDesc = 1;
+                isDown = "";
+                isUp = "display:none;";
             }
         } else {
             sortMode = sortColumn;
             ascDesc = 0;
+            isUp = "";
+            isDown = "display:none;";
         }
 
-        return "redirect:/user-list";
-    }
+        String tempValue = "background-color:#056BFA !important;";
 
-    private void OrderList (PaginatedUsersResponse response) {
-        for (UserResponse user : response.getUsersList()) {
-            isSorted = false;
-            if (users.size() == 0) {
-                users.add(new User(user));
-            }
-            else {
-                for (int i = 0; i < users.size(); i++) {
-                    if (sortMode == 0) {
-                        if (ascDesc == 0) {
-                            if ((users.get(i).getFirstName().compareTo(user.getFirstName()) > 0)) {
-                                users.add(i, new User(user));
-                                i = users.size();
-                                isSorted = true;
-                            }
-                        } else {
-                            if ((users.get(i).getFirstName().compareTo(user.getFirstName()) <= 0)) {
-                                users.add(i, new User(user));
-                                i = users.size();
-                                isSorted = true;
-                            }
-                        }
-                    }
-                    if (sortMode == 1) {
-                        if (ascDesc == 0) {
-                            if ((users.get(i).getLastName().compareTo(user.getLastName()) > 0)) {
-                                users.add(i, new User(user));
-                                i = users.size();
-                                isSorted = true;
-                            }
-                        } else {
-                            if ((users.get(i).getLastName().compareTo(user.getLastName()) <= 0)) {
-                                users.add(i, new User(user));
-                                i = users.size();
-                                isSorted = true;
-                            }
-                        }
-                    }
-                    if (sortMode == 2) {
-                        if (ascDesc == 0) {
-                            if ((users.get(i).getUsername().compareTo(user.getUsername()) > 0)) {
-                                users.add(i, new User(user));
-                                i = users.size();
-                                isSorted = true;
-                            }
-                        } else {
-                            if ((users.get(i).getUsername().compareTo(user.getUsername()) <= 0)) {
-                                users.add(i, new User(user));
-                                i = users.size();
-                                isSorted = true;
-                            }
-                        }
-                    }
-                    if (sortMode == 3) {
-                        if (ascDesc == 0) {
-                            if ((users.get(i).getNickname().compareTo(user.getNickname()) > 0)) {
-                                users.add(i, new User(user));
-                                i = users.size();
-                                isSorted = true;
-                            }
-                        } else {
-                            if ((users.get(i).getNickname().compareTo(user.getNickname()) <= 0)) {
-                                users.add(i, new User(user));
-                                i = users.size();
-                                isSorted = true;
-                            }
-                        }
-                    }
-                    if (sortMode == 4) {
-                        User newUser = new User(user);
-                        if (ascDesc == 0) {
-                            if ((users.get(i).roles().compareTo(newUser.roles()) > 0)) {
-                                users.add(i, new User(user));
-                                i = users.size();
-                                isSorted = true;
-                            }
-                        } else {
-                            if ((users.get(i).roles().compareTo(newUser.roles()) <= 0)) {
-                                users.add(i, new User(user));
-                                i = users.size();
-                                isSorted = true;
-                            }
-                        }
-                    }
-                }
-                if (!isSorted) {
-                    users.add(new User(user));
-                }
-            }
+        firstNameShow = "";
+        lastNameShow = "";
+        usernameShow = "";
+        nicknameShow = "";
+        rolesShow = "";
+
+        firstNameUp = "display:none;";
+        firstNameDown = "display:none;";
+        lastNameUp = "display:none;";
+        lastNameDown = "display:none;";
+        usernameUp = "display:none;";
+        usernameDown = "display:none;";
+        nicknameUp = "display:none;";
+        nicknameDown = "display:none;";
+        rolesUp = "display:none;";
+        rolesDown = "display:none;";
+
+        if (sortColumn.equals("roles")) {
+            rolesShow = tempValue;
+            rolesUp = isUp;
+            rolesDown = isDown;
+        } else if (sortColumn.equals("nickname")) {
+            nicknameShow = tempValue;
+            nicknameUp = isUp;
+            nicknameDown = isDown;
+        } else if (sortColumn.equals("username")) {
+            usernameShow = tempValue;
+            usernameUp = isUp;
+            usernameDown = isDown;
+        } else if (sortColumn.equals("last_name")) {
+            lastNameShow = tempValue;
+            lastNameUp = isUp;
+            lastNameDown = isDown;
+        } else if (sortColumn.equals("first_name")) {
+            firstNameShow = tempValue;
+            firstNameUp = isUp;
+            firstNameDown = isDown;
         }
+
+            return "redirect:/user-list";
     }
 }

@@ -25,6 +25,11 @@ public class SignupController {
     @Autowired
     private AccountClientService accountClientService;
 
+
+    String errorShow = "display:none;";
+    String successShow = "display:none;";
+    String successCode = "successCode";
+
     /**
      * Redirects to the signup page
      * @param model The model to be used by the application for web integration
@@ -34,7 +39,19 @@ public class SignupController {
     public String signup(
         Model model
     ) {
+
+
+
         model.addAttribute("testData", "null");
+        model.addAttribute("errorShow", errorShow);
+        model.addAttribute("successShow", successShow);
+        model.addAttribute("successCode", successCode);
+
+
+        errorShow = "display:none;";
+        successShow = "display:none;";
+        successCode = "successCode";
+
         return "signup";
     }
 
@@ -67,12 +84,26 @@ public class SignupController {
     )
     {
         if (!password.equals(passwordConfirm)) {
-            model.addAttribute("signupMessage", "Error: Passwords do not match");
+            model.addAttribute("errorCode", "Error: Passwords do not match");
+            errorShow = "";
+            successShow = "";
             return "signup";
         }
         UserRegisterResponse registerReply;
         registerReply = accountClientService.register(username, password, firstname, lastname, pronouns, email);
-        model.addAttribute("signupMessage", registerReply.getMessage());
-        return "signup";
+        successCode = registerReply.getMessage();
+        if (successCode.contains("Created account")) {
+
+            errorShow = "display:none;";
+            successShow = "";
+        } else {
+
+            errorShow = "";
+            successShow = "display:none;";
+        }
+
+
+
+        return "redirect:/signup";
     }
 }
