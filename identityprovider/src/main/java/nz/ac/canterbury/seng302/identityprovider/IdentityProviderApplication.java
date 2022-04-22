@@ -13,12 +13,21 @@ import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 
 import java.util.Date;
 
-
+/**
+ * main app to run the server
+ */
 @SpringBootApplication
 public class IdentityProviderApplication {
 
+    /**
+     * the log to report errors
+     */
     private static final Logger log = LoggerFactory.getLogger(IdentityProviderApplication.class);
 
+    /**
+     * run the main application to init the server
+     * @param args default main param
+     */
     public static void main(String[] args) {
         SpringApplication.run(IdentityProviderApplication.class, args);
     }

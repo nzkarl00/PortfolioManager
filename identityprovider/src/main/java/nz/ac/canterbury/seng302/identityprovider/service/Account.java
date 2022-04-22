@@ -19,12 +19,14 @@ public class Account {
      * Get list of all account profiles
      */
     public List<AccountProfile> getAllAccounts() {
-        List<AccountProfile> list = (List<AccountProfile>) repository.findAll();
-        return list;
+        return repository.findAll();
     }
 
     /**
-     * Get account profile by id
+     * Get account by ID
+     * @param id the int of ID to search for
+     * @return the account profile searched for
+     * @throws Exception tells the user the account profile isn't found
      */
     public AccountProfile getAccountById(Integer id) throws Exception {
 
@@ -38,6 +40,12 @@ public class Account {
         }
     }
 
+    /**
+     * Get the accountprofile by email
+     * @param email the email to get the profile with
+     * @return the account profile associated with the email
+     * @throws Exception tells the user the account profile isn't found
+     */
     public AccountProfile getAccountByEmail(String email) throws Exception {
         AccountProfile profile = repository.findByEmail(email);
         if(profile!=null) {
@@ -51,6 +59,9 @@ public class Account {
 
     /**
      * Get account by username
+     * @param username the username to get the profile by
+     * @return the Account profile from the email
+     * @throws Exception tells the user the account profile isn't found
      */
     public AccountProfile getAccountByUsername(String username) throws Exception {
 
