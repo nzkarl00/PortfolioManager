@@ -98,6 +98,12 @@ public class LoginController {
                 5 * 60 * 60, // Expires in 5 hours
                 domain.startsWith("localhost") ? null : domain
             );
+            String currentCookie = CookieUtil.getValue(request, "lens-session-token");
+
+            System.out.println("[CURRENT COOKIE START]");
+            System.out.println(currentCookie);
+            System.out.println("[CURRENT COOKIE END]");
+
             return "redirect:/account";
         }
 

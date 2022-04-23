@@ -23,7 +23,16 @@ public class AuthenticateClientService {
                 .setUsername(username)
                 .setPassword(password)
                 .build();
-        return authenticationStub.authenticate(authRequest);
+
+        System.out.println("[authRequest START]");
+        System.out.println(authRequest.toString());
+        System.out.println("[authRequest END]");
+
+        System.out.println("[authenticationStub.authenticate(authRequest) START]");
+        System.out.println(authenticationStub.authenticate(authRequest).toString());
+        System.out.println("[authenticationStub.authenticate(authRequest) START]");
+
+        return authenticationStub.authenticate(authRequest); // creates the token for the cookie here
     }
 
     public AuthState checkAuthState() throws StatusRuntimeException {
