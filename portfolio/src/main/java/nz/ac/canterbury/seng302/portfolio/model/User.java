@@ -6,6 +6,9 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * mainly used to parse UserResponse into a more usable class User
+ */
 public class User {
     public String firstName;
     public String lastName;
@@ -13,6 +16,10 @@ public class User {
     public String nickname;
     public List<Role> roles = new ArrayList<>();
 
+    /**
+     * the constructor to parse a UserResponse into a usable class
+     * @param response the UserResponse
+     */
     public User(UserResponse response) {
         firstName = response.getFirstName();
         lastName = response.getLastName();
@@ -38,6 +45,10 @@ public class User {
         return nickname;
     }
 
+    /**
+     * A place-holder to display roles in the user-table
+     * @return a String to represent the user's roles
+     */
     public String roles() {
         String output = "";
         for (Role role: roles) {

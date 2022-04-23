@@ -10,6 +10,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import javax.persistence.Column;
 
+/**
+ * The entity representation for the Project and project table
+ */
 @Entity // this is an entity, assumed to be in a table called Project
 public class Project {
     @Id
@@ -27,13 +30,7 @@ public class Project {
 
     protected Project() {}
 
-    /**
-     *
-     * @param projectName
-     * @param projectDescription
-     * @param projectStartDate
-     * @param projectEndDate
-     */
+    // These three constructors are just used to parse different date types Date, LocalDate, and String
     public Project(String projectName, String projectDescription, Date projectStartDate, Date projectEndDate) {
         this.projectName = projectName;
         this.projectDescription = projectDescription;
@@ -41,13 +38,13 @@ public class Project {
         this.projectEndDate = projectEndDate;
     }
 
-    public Project(String projectName, String projectDescription, LocalDate startDate, LocalDate endDate) {
+    public Project(String projectName, String projectDescription, LocalDate projectStartDate, LocalDate projectEndDate) {
         this.projectName = projectName;
         this.projectDescription = projectDescription;
         // Convert local date to regular date
         ZoneId defaultZoneId = ZoneId.systemDefault();
-        this.projectStartDate = Date.from(startDate.atStartOfDay(defaultZoneId).toInstant());
-        this.projectEndDate = Date.from(endDate.atStartOfDay(defaultZoneId).toInstant());
+        this.projectStartDate = Date.from(projectStartDate.atStartOfDay(defaultZoneId).toInstant());
+        this.projectEndDate = Date.from(projectEndDate.atStartOfDay(defaultZoneId).toInstant());
     }
 
     public Project(String projectName, String projectDescription, String projectStartDate, String projectEndDate) {
