@@ -40,13 +40,10 @@ public class SignupController {
         Model model
     ) {
 
-
-
         model.addAttribute("testData", "null");
         model.addAttribute("errorShow", errorShow);
         model.addAttribute("successShow", successShow);
         model.addAttribute("successCode", successCode);
-
 
         errorShow = "display:none;";
         successShow = "display:none;";
@@ -89,6 +86,7 @@ public class SignupController {
             successShow = "";
             return "signup";
         }
+
         UserRegisterResponse registerReply;
         registerReply = accountClientService.register(username, password, firstname, lastname, pronouns, email);
         successCode = registerReply.getMessage();
@@ -101,8 +99,6 @@ public class SignupController {
             errorShow = "";
             successShow = "display:none;";
         }
-
-
 
         return "redirect:/signup";
     }

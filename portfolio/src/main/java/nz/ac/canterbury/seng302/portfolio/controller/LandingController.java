@@ -25,6 +25,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * responsible for the main/landing page of the project(s)
+ */
 @Controller
 public class LandingController {
 
@@ -48,7 +51,7 @@ public class LandingController {
   public String landing( @AuthenticationPrincipal AuthState principal, Model model) throws Exception {
 
     List<Project> projectList = projectService.getAllProjects();
-    if (projectList.size() == 0) {
+    if (projectList.isEmpty()) {
       String thisYear = new SimpleDateFormat("yyyy").format(new Date());
       Project project = new Project("Project "+thisYear, "", LocalDate.now(),
               LocalDate.now().plusMonths(8));
@@ -57,44 +60,13 @@ public class LandingController {
     projectList = projectService.getAllProjects();
     model.addAttribute("projects", projectList);
 
-    Integer id = Integer.valueOf(principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("nameid"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("-100"));
-
-    String username = principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("name"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("-100");
+    Integer id = AuthStateInformer.getId(principal);
 
     // Attributes For header
     UserResponse userReply;
     userReply = accountClientService.getUserById(id);
-    Long seconds = userReply.getCreated().getSeconds();
-    Date date = new Date(seconds * 1000); // turn into millis
-    SimpleDateFormat dateFormat = new SimpleDateFormat( "dd LLLL yyyy" );
-    String stringDate = " " + dateFormat.format( date );
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(date);
-    int month = cal.get(Calendar.MONTH);
-    int year = cal.get(Calendar.YEAR);
-    Calendar currentCalendar = Calendar.getInstance();
-    cal.setTime(new Date());
-    int currentMonth = currentCalendar.get(Calendar.MONTH);
-    int currentYear = currentCalendar.get(Calendar.YEAR);
 
-    int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
-    if (totalMonth > 0){
-      if (totalMonth > 1) {
-        stringDate += " (" + totalMonth + " Months)";
-      } else {
-        stringDate += " (" + totalMonth + " Month)";
-      }
-    }
-
-    model.addAttribute("date",  stringDate);
+    model.addAttribute("date",  DateParser.displayDate(userReply));
     model.addAttribute("username", userReply.getUsername());
     // End of Attributes for header
 
@@ -109,6 +81,12 @@ public class LandingController {
     return "landing";
   }
 
+  /**
+   * Responsible for adding a new project
+   * @param principal auth token
+   * @param model the model to add attributes to for templating
+   * @return the location to redirect the user to
+   */
   @PostMapping("/new-project")
   public String projectSave(
           @AuthenticationPrincipal AuthState principal,
@@ -117,7 +95,6 @@ public class LandingController {
     String role = AuthStateInformer.getRole(principal);
 
     String thisYear = new SimpleDateFormat("yyyy").format(new Date());
-
 
     if (role.equals("teacher")) {
       Project project = new Project("Project "+thisYear, "", LocalDate.now(),

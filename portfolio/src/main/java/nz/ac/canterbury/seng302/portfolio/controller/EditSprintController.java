@@ -4,10 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,44 +60,13 @@ public class EditSprintController {
 
         Sprint sprint = sprintService.getSprintById(sprintId);
 
-        Integer id = Integer.valueOf(principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("nameid"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("-100"));
-
-        String username = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("name"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("-100");
+        Integer id = AuthStateInformer.getId(principal);
 
         // Attributes For header
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
-        Long seconds = userReply.getCreated().getSeconds();
-        Date date = new Date(seconds * 1000); // turn into millis
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "dd LLLL yyyy" );
-        String stringDate = " " + dateFormat.format( date );
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int month = cal.get(Calendar.MONTH);
-        int year = cal.get(Calendar.YEAR);
-        Calendar currentCalendar = Calendar.getInstance();
-        cal.setTime(new Date());
-        int currentMonth = currentCalendar.get(Calendar.MONTH);
-        int currentYear = currentCalendar.get(Calendar.YEAR);
 
-        int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
-        if (totalMonth > 0){
-            if (totalMonth > 1) {
-                stringDate += " (" + totalMonth + " Months)";
-            } else {
-                stringDate += " (" + totalMonth + " Month)";
-            }
-        }
-
-        model.addAttribute("date",  stringDate);
+        model.addAttribute("date", DateParser.displayDate(userReply));
         model.addAttribute("username", userReply.getUsername());
 
         model.addAttribute("sprint", sprint);
@@ -123,7 +89,7 @@ public class EditSprintController {
 
     /**
      * Updates the given sprint with form data
-     * @param principal
+     * @param principal auth token
      * @param sprintName Name of the sprint (string)
      * @param sprintStartDate Start Date of the sprint (string)
      * @param sprintEndDate End Date of the sprint (string)
@@ -142,7 +108,6 @@ public class EditSprintController {
             @RequestParam(value="sprintDescription") String sprintDescription,
             Model model
     ) throws Exception {
-
 
         Sprint sprint = sprintService.getSprintById(sprintId);
         Project project = projectService.getProjectById(projectId);
@@ -163,11 +128,11 @@ public class EditSprintController {
         sprint.setName(sprintName);
         sprint.setDescription(sprintDescription);
 
-        if ((projStartDate.before(checkStartDate) | (Objects.equals(stringStartDate, sprintStartDate))) & (projEndDate.after(checkEndDate) | (Objects.equals(stringEndDate, sprintEndDate)))) {
+        if ((projStartDate.before(checkStartDate) || (Objects.equals(stringStartDate, sprintStartDate))) && (projEndDate.after(checkEndDate) || (Objects.equals(stringEndDate, sprintEndDate)))) {
 
             if (checkStartDate.before(checkEndDate)) {
                 for (Sprint temp: sprintService.getSprintByParentId(projectId)) {
-                    if (temp.getEndDate().after(checkStartDate) & temp.getStartDate().before(checkStartDate)) {
+                    if (temp.getEndDate().after(checkStartDate) && temp.getStartDate().before(checkStartDate)) {
 
                         errorShow = "";
                         errorCode = "Start date overlaps with another sprint";
@@ -187,7 +152,7 @@ public class EditSprintController {
             if (checkEndDate.after(checkStartDate)) {
                 for (Sprint temp: sprintService.getSprintByParentId(projectId)) {
 
-                    if (temp.getEndDate().after(checkStartDate) & temp.getStartDate().before(checkStartDate)) {
+                    if (temp.getEndDate().after(checkStartDate) && temp.getStartDate().before(checkStartDate)) {
 
                         errorShow = "";
                         errorCode = "End date overlaps with another sprint";

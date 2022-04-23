@@ -28,19 +28,20 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.List;
 
+/**
+ * controller responsible for displaying and processing the user table
+ */
 @Controller
 public class TableController {
 
     @Autowired
     private AccountClientService accountClientService;
 
-    private int start = 0;
-    private int step = 50;
     private int currentPage = 0;
     String sortMode = "first_name";
     Integer ascDesc = 0;
     Boolean isSorted = false;
-    List<User> users = new ArrayList<User>();
+    List<User> users = new ArrayList<>();
 
     String firstNameShow = "background-color:#056BFA !important;";
     String lastNameShow = "";
@@ -82,11 +83,10 @@ public class TableController {
         if (movePage.equals("forward")) {
             currentPage++;
         } else if (movePage.equals("back")) {
-            if (currentPage > 0) {
-                currentPage--;
-            }
+            if (currentPage > 0) { currentPage--; }
         }
-        start = currentPage * step;
+        int step = 50;
+        int start = currentPage * step;
 
         users.clear();
         isSorted = false;
@@ -126,6 +126,14 @@ public class TableController {
     }
 
 
+    /**
+     * Processes the sortColumn request into a sorting mode and column for the controller to call from
+     * @param principal auth token
+     * @param sortColumn the column to sort by
+     * @param model the model to add attributes to, to template from
+     * @return redirection
+     * @throws Exception
+     */
     @PostMapping("order-list")
     public String sprintDelete(
             @AuthenticationPrincipal AuthState principal,
@@ -133,10 +141,10 @@ public class TableController {
             Model model
     ) throws Exception {
 
-
         String isUp = "";
         String isDown = "";
 
+        // if it is currently sorting the column specified, switch the direction of sorting
         if (sortColumn.equals(sortMode)) {
             if (ascDesc == 1) {
                 ascDesc = 0;
