@@ -4,11 +4,25 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
 
+/**
+ * The GRPC client side service class
+ * contains many of the protobuf implementations to allow communication between the idp and portfolio servers
+ */
 public class AccountClientService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     @GrpcClient("identity-provider-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceBlockingStub accountServiceStub;
 
+    /**
+     * makes a UserRegisterRequest to receive a UserRegisterResponse
+     * @param username the user's username
+     * @param password the user's plaintext password
+     * @param firstName the user's firstname
+     * @param lastName the user's lastname
+     * @param personalPronouns the user's preferred pronouns
+     * @param email the user's email
+     * @return the UserRegisterResponse from the request with the params
+     */
     public UserRegisterResponse register(String username, String password, String firstName, String lastName, String personalPronouns, String email) {
         UserRegisterRequest registerRequest = UserRegisterRequest.newBuilder()
                 .setUsername(username)
@@ -33,14 +47,14 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
     /**
      * Passes an edit user request to the IDP
-     * @param id
-     * @param firstName
-     * @param middleName
-     * @param lastName
-     * @param nickname
-     * @param bio
-     * @param pronouns
-     * @param email
+     * @param id the user's account id
+     * @param firstName the user's first name
+     * @param middleName the user's middle name
+     * @param lastName the user's last name
+     * @param nickname the user's nickname
+     * @param bio the user's self description
+     * @param pronouns the user's preferred pronouns
+     * @param email the user's email
      * @return the response from the IDP
      */
     public EditUserResponse editUser(int id, String firstName, String middleName, String lastName, String nickname, String bio, String pronouns, String email) {
@@ -57,6 +71,14 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.editUser(request.build());
     }
 
+    /**
+     * returns a paginated users response from the request details
+     * @param limit the max amount of users to get
+     * @param offset the starting point to get users from
+     * @param orderBy the sorting mode
+     * @param orderMode 1 for descending 0 for ascending
+     * @return the list of UserResponses in the form of a paginatedUsersResponse
+     */
     public PaginatedUsersResponse getPaginatedUsers(int limit, int offset, String orderBy, int orderMode) {
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder();
         String order = orderBy;
