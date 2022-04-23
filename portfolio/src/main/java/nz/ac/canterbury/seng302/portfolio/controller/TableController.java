@@ -94,7 +94,7 @@ public class TableController {
 
 
     @PostMapping("order-list")
-    public String sprintDelete(
+    public String orderUsers(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value="sortColumn") String sortColumn,
             Model model
@@ -110,6 +110,21 @@ public class TableController {
             sortMode = sortColumn;
             ascDesc = 0;
         }
+
+        return "redirect:/user-list";
+    }
+
+    @PostMapping("delete-role")
+    public String roleDelete(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value="roleDelete") String roleDelete,
+            @RequestParam(value="userId") String userName,
+            Model model
+    ) throws Exception {
+
+        Integer userId = accountClientService.getIdByUsername(userName);
+
+        accountClientService.deleteRole(roleDelete, userId);
 
         return "redirect:/user-list";
     }

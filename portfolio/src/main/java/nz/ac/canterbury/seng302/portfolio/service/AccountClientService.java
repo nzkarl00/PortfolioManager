@@ -70,4 +70,12 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
                 .setOrderBy(order);
         return accountServiceStub.getPaginatedUsers(request.build());
     }
+
+    public Integer getIdByUsername(String username) {
+        return 0;
+    }
+
+    public void deleteRole(String role, Integer userId) {
+
+    }
 }
