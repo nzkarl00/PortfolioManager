@@ -118,11 +118,9 @@ public class TableController {
     public String roleDelete(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value="roleDelete") String roleDelete,
-            @RequestParam(value="userId") String userName,
+            @RequestParam(value="userId") Integer userId,
             Model model
     ) throws Exception {
-
-        Integer userId = accountClientService.getIdByUsername(userName);
 
         accountClientService.deleteRole(roleDelete, userId);
 

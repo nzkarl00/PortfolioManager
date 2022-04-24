@@ -11,6 +11,7 @@ public class User {
     public String lastName;
     public String username;
     public String nickname;
+    public Integer id;
     public List<Role> roles = new ArrayList<>();
 
     public User(UserResponse response) {
@@ -18,6 +19,7 @@ public class User {
         lastName = response.getLastName();
         username = response.getUsername();
         nickname = response.getNickname();
+        id = 0;
         List<UserRole> tempRoles = response.getRolesList();
         for (UserRole userRole : tempRoles) {
             Role role = new Role(userRole);

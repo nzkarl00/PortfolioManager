@@ -232,4 +232,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
         }
     }
 
+    public void removeRoleFromUser(ModifyRoleOfUserRequest request) {
+        Long userId = Long.valueOf(request.getUserId());
+        roleRepo.deleteById(userId);
+
+    }
+
 }

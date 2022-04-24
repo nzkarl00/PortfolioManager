@@ -21,6 +21,8 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.register(registerRequest);
     }
 
+
+
     /**
      * Get a user's details from the id of the user
      * @param id
@@ -71,11 +73,20 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.getPaginatedUsers(request.build());
     }
 
-    public Integer getIdByUsername(String username) {
-        return 0;
-    }
-
     public void deleteRole(String role, Integer userId) {
-
+        ModifyRoleOfUserRequest.Builder request = ModifyRoleOfUserRequest.newBuilder();
+        request.setUserId(userId);
+        Integer roleId;
+        if (role.equals("student")) {
+            roleId = 0;
+        } else if (role.equals("teacher")) {
+            roleId = 1;
+        } else if (role.equals("admin")) {
+            roleId = 2;
+        } else {
+            roleId = 0;
+        }
+        request.setRole(UserRole.valueOf(roleId));
+        accountServiceStub.removeRoleFromUser(request.build());
     }
 }
