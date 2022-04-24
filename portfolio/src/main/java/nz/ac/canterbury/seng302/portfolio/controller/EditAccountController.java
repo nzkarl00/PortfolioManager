@@ -49,12 +49,6 @@ public class EditAccountController {
         Integer id = AuthStateInformer.getId(principal);
         /* Add project details to the model */
 
-        String username = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("name"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("-100");
-
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
 
@@ -75,8 +69,8 @@ public class EditAccountController {
     }
 
     /**
-     *
-     * @param principal
+     * the method responsible for sending the edit request to the server
+     * @param principal auth token
      * @param nickname The nickname input (string)
      * @param password The password input (string password)
      * @param passwordConfirm The password second input (string password)
@@ -104,7 +98,6 @@ public class EditAccountController {
         Integer id = AuthStateInformer.getId(principal);
 
         EditUserResponse response = accountClientService.editUser(id, firstname, "", lastname, nickname, bio, pronouns, email);
-        System.out.println(response.getMessage());
         return "redirect:/account";
     }
 
