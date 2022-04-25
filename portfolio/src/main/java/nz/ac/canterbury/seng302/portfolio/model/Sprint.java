@@ -10,6 +10,9 @@ import java.time.ZoneId;
 import java.util.Date;
 import javax.persistence.Column;
 
+/**
+ * The entity representation for the Sprint and sprint table
+ */
 @Entity // this is an entity, assumed to be in a table called Sprint
 public class Sprint {
     @Id
@@ -25,6 +28,7 @@ public class Sprint {
 
     protected Sprint() {}
 
+    // these three constructor just use different types of date parsing from Date, LocalDate, or String into Date
     public Sprint(int parentProjectId, String sprintName, String sprintLabel, String sprintDescription, Date sprintStartDate, Date sprintEndDate) {
         this.parentProjectId = parentProjectId;
         this.sprintName = sprintName;
@@ -98,15 +102,16 @@ public class Sprint {
         return new SimpleDateFormat("dd/MMM/yyyy").format(date);
     }
 
+    // these two setters set the dates with strings
     public void setStartDateStringSprint(String date) {
         this.sprintStartDate = Project.stringToDate(date);
     }
-
 
     public void setEndDateStringSprint(String date) {
         this.sprintEndDate = Project.stringToDate(date);
     }
 
+    // the two setters in here set the date with Dates
     public Date getStartDate() {
         return sprintStartDate;
     }
@@ -119,10 +124,6 @@ public class Sprint {
         this.sprintStartDate = newStartDate;
     }
 
-    public void setStartDateString(String date) {
-        this.sprintStartDate = Project.stringToDate(date);
-    }
-
     public Date getEndDate() {
         return sprintEndDate;
     }
@@ -133,9 +134,5 @@ public class Sprint {
 
     public void setEndDate(Date newEndDate) {
         this.sprintEndDate = newEndDate;
-    }
-
-    public void setEndDateString(String date) {
-        this.sprintStartDate = Project.stringToDate(date);
     }
 }

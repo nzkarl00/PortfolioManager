@@ -114,6 +114,27 @@
 }
 
 
+.signup_error {
+
+  font-family: nexaBold !important;
+  background-color:#FF202E; !important
+  font-size: 125% !important;
+  colour: #FFFFFF !important;
+  align:center !important;
+
+}
+
+.signup_error_green {
+
+  font-family: nexaBold !important;
+  background-color:#08F722; !important
+  font-size: 125% !important;
+  colour: #FFFFFF !important;
+  align:center !important;
+
+}
+
+
 
 .hr {
 
@@ -324,6 +345,33 @@
 .login_box {
 
     background-color: #FF202E !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-family: nexaLight !important;
+    padding-top: 1rem;
+
+}
+.signup_box {
+
+    background-color:#FF202E; !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-family: nexaLight !important;
+    padding-top: 1rem;
+
+}
+
+.signup_box_green {
+
+    background-color:#08F722; !important;
     border-radius: 15px !important;
     border-style: none !important;
     color: #ffffff !important;
@@ -555,6 +603,13 @@
 .table_text {
     font-family: nexa !important;
     font-size: 100% !important;
+}
+
+.table_text_arrow {
+    color: #FFFFFF !important;
+    font-family: nexa !important;
+    font-size: 100% !important;
+    display: inline
 }
 
 .tab-pane {

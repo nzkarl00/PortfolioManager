@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.stream.Collectors;
 import java.util.List;
 
+/**
+ * Responsible for the account details page
+ */
 @Controller
 public class AccountController {
 
@@ -28,14 +31,12 @@ public class AccountController {
     /**
      * control the displaying of account details
      * @param principal the auth token
-     * @param favouriteColour idk
-     * @param model
+     * @param model the model to add attributes to, to template from
      * @return string of where to go next
      */
     @GetMapping("/account")
     public String account(
         @AuthenticationPrincipal AuthState principal,
-        @RequestParam(name="name", required=false, defaultValue="Blue") String favouriteColour,
         Model model
     ) {
         Integer id = AuthStateInformer.getId(principal);
@@ -75,9 +76,6 @@ public class AccountController {
             id
         );
         model.addAttribute("portfolioMessage", portfolioMessage);
-
-        // Also pass on just the favourite colour value on its own to use
-        model.addAttribute("currentFavouriteColour", favouriteColour);
 
         return "account";
     }

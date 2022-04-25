@@ -49,16 +49,20 @@ public class AccountProfile {
     //Necessary for Hibernate to work properly
     public AccountProfile() {}
 
-    //Constructor for a new profile
-    public AccountProfile(String username,
-                          String passwordHash,
-                          Date registerDate,
-                          String bio,
-                          String email,
-                          String photoPath,
-                          String firstName, String lastName,
-                          String pronouns,
-                          String token) {
+    /**
+     * The main constructor with all the required details
+     * @param username users alias
+     * @param passwordHash hashed password with salt
+     * @param registerDate the dateTime the user registered
+     * @param bio the users self-description
+     * @param email the users unique email
+     * @param photoPath the file path for the users photo
+     * @param firstName first name
+     * @param lastName last name
+     * @param pronouns users preferred pronouns
+     * @param token if a user is currently logged in, they will be set a unique token from the domain's cookie
+     */
+    public AccountProfile(String username, String passwordHash, Date registerDate, String bio, String email, String photoPath, String firstName, String lastName, String pronouns, String token) {
 //        this.id = null;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -78,7 +82,10 @@ public class AccountProfile {
         }
     }
 
-    //A pretty way to see the user's personal information, for logging purposes
+    /**
+     * a toString to make logging and debugging easier
+     * @return the string representation of the AccountProfile
+     */
     @Override
     public String toString() {
         String AccountString = "Username: " + username + "\n";

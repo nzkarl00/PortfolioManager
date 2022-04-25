@@ -17,52 +17,15 @@
 
 </head>
 <body>
-<nav class="navbar sticky-top navbar-light bg-light">
-    <div class="container-fluid ms-auto fluid">
 
 
-        <p class="nav-item header_date fluid">
-            Member Since: <br>
-            <span th:text="${date}" ></span>
-        </p>
 
-        <p class="nav-item header_name"><span th:text="${username}" ></span></p>
-
-        <div class="dropdown">
-            <button class="btn btn-primary dropdown-toggle dropdown-circle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{/profile_none.png}" width=90em height=90em alt="">
-            </button>
-            <ul class="dropdown-menu align-middle">
-                <li><a class="dropdown-item" th:href="@{'/landing'}">Project</a></li>
-                <li><a class="dropdown-item" th:href="@{'/account'}">Account</a></li>
-                <li><a class="dropdown-item" th:href="@{'/user-list'}">Users</a></li>
-                <li><a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutConfirmationModal">Logout</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<!-- Navigation Bar -->
+<div th:replace="fragments/validUser.html :: navbar"></div>
 
 
-<!-- Modal -->
-<div class="modal fade" id="logoutConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="logoutConfirmationModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="modal-title align-middle">Logout</span>
-            </div>
-            <div class="modal-body d-flex justify-content-center">
-                Are you sure you want to logout?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary align-baseline" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary align-text-bottom">
-                    <a class="button_a" th:href="@{'/logout'}">Confirm Logout</a>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
+<!-- Body -->
 <div class="container">
 
     <div class="row-1">
@@ -70,16 +33,44 @@
     </div>
 
     <!-- Users -->
-
     <div class="user-table">
+        <!-- Send a forward or backward call to the page -->
+        <a href="user-list?move=back" class="btn btn-primary align-text-left">←</a>
+        <a href="user-list?move=forward" class="btn btn-primary align-text-left">→</a>
+
+        <span class="table_text" th:text="${start}"></span> - <span class="table_text"  th:text="${start + 50}"></span>
+
+        <br>
+        <br>
+
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th class="table_head justify-content-center" scope="col" > <form  th:action="@{/order-list(sortColumn=${0})}" method="post" ><button class="table_button" type="input">First Name</button></form></th>
-                    <th class="table_head justify-content-center" scope="col"> <form  th:action="@{/order-list(sortColumn=${1})}" method="post" ><button class="table_button" type="input">Last Name</button></form> </th>
-                    <th class="table_head justify-content-center" scope="col"> <form  th:action="@{/order-list(sortColumn=${2})}" method="post" ><button class="table_button" type="input">Username</button></form> </th>
-                    <th class="table_head justify-content-center" scope="col"> <form  th:action="@{/order-list(sortColumn=${3})}" method="post" ><button class="table_button" type="input">Alias</button></form> </th>
-                    <th class="table_head justify-content-center" scope="col"> <form  th:action="@{/order-list(sortColumn=${4})}" method="post" ><button class="table_button" type="input">Roles</button></form> </th>
+                    <th class="table_head justify-content-center" th:style="${firstNameShow}" scope="col" >
+                        <form  class="form-inline" th:action="@{/order-list(sortColumn=${'first_name'})}" method="post" ><button class="table_button" type="input">First Name
+                            <p class="table_text_arrow" th:style="${firstNameUp}"> &#x25B2 </p><p class="table_text_arrow" th:style="${firstNameDown}"> &#x25BC </p>
+                        </button></form>
+                    </th>
+                    <th class="table_head justify-content-center" th:style="${lastNameShow}" scope="col">
+                        <form class="form-inline"  th:action="@{/order-list(sortColumn=${'last_name'})}" method="post" ><button class="table_button" type="input">Last Name
+                            <p class="table_text_arrow" th:style="${lastNameUp}"> &#x25B2 </p><p class="table_text_arrow" th:style="${lastNameDown}"> &#x25BC </p>
+                        </button></form>
+                    </th>
+                    <th class="table_head justify-content-center" th:style="${usernameShow}"  scope="col">
+                        <form  class="form-inline" th:action="@{/order-list(sortColumn=${'username'})}" method="post" ><button class="table_button" type="input">Username
+                            <p class="table_text_arrow" th:style="${usernameUp}"> &#x25B2 </p><p class="table_text_arrow" th:style="${usernameDown}"> &#x25BC </p>
+                        </button></form>
+                    </th>
+                    <th class="table_head justify-content-center" th:style="${nicknameShow}" scope="col">
+                        <form class="form-inline"  th:action="@{/order-list(sortColumn=${'nickname'})}" method="post" ><button class="table_button" type="input">Alias
+                            <p class="table_text_arrow" th:style="${nicknameUp}"> &#x25B2 </p><p class="table_text_arrow" th:style="${nicknameDown}"> &#x25BC </p>
+                        </button></form>
+                    </th>
+                    <th class="table_head justify-content-center" th:style="${rolesShow}" scope="col">
+                        <form  class="form-inline" th:action="@{/order-list(sortColumn=${'roles'})}" method="post" ><button class="table_button" type="input">Roles
+                            <p class="table_text_arrow" th:style="${rolesUp}"> &#x25B2 </p><p class="table_text_arrow" th:style="${rolesDown}"> &#x25BC </p>
+                        </button></form>
+                    </th>
                 </tr>
             </thead>
             <tbody>

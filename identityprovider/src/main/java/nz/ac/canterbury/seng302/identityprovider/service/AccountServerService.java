@@ -11,13 +11,21 @@ import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.hibernate.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
+import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
+/**
+ * The GRPC server side service class
+ * contains many of the protobuf implementations to allow communication between the idp and portfolio servers
+ */
 @GrpcService
 public class AccountServerService extends UserAccountServiceImplBase{
 
@@ -51,7 +59,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
                     new AccountProfile(
                             request.getUsername(), hashedPassword, new Date(), "", request.getEmail(),
                             null, request.getFirstName(), request.getLastName(), request.getPersonalPronouns(), null));
-            roleRepo.save(new Role(newAccount, "student")); // TODO change this from the default
+            roleRepo.save(new Role(newAccount, "1student")); // TODO change this from the default
             reply.setMessage("Created account " + request.getUsername()).setIsSuccess(true);
         }
         responseObserver.onNext(reply.build());
@@ -142,11 +150,27 @@ public class AccountServerService extends UserAccountServiceImplBase{
             .setProfileImagePath(profile.getPhotoPath());
 
         for (Role role : profile.getRoles()) {
-            if (role.getRole().equals("student")) { reply.addRoles(UserRole.STUDENT); }
-            if (role.getRole().equals("teacher")) { reply.addRoles(UserRole.TEACHER); }
-            if (role.getRole().equals("admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
+            if (role.getRole().equals("1student")) { reply.addRoles(UserRole.STUDENT); } // Note the {number}{role} structure is due to sorting to allow for the highest priority roles to be shown
+            if (role.getRole().equals("2teacher")) { reply.addRoles(UserRole.TEACHER); }
+            if (role.getRole().equals("3admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
         }
         return reply.build();
+    }
+
+    /**
+     * Updates the usersSorted list with the correct users in the order given by the sorted roles query
+     * @param usersSorted the list to update
+     * @param roles the order to base the update from
+     */
+    public void updateUsersSorted(List<AccountProfile> usersSorted, List<Role> roles) {
+        ArrayList<Long> userIds = new ArrayList<>();
+        for (Role role: roles) {
+            Long userId = role.getUserRoleId();
+            if (!userIds.contains(userId)){
+                userIds.add(role.getUserRoleId());
+                usersSorted.add(repo.findById(userId.intValue()));
+            }
+        }
     }
 
     /**
@@ -159,15 +183,59 @@ public class AccountServerService extends UserAccountServiceImplBase{
         int limit = request.getLimit() + request.getOffset();
 
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
-        List<AccountProfile> users = repo.findAll();
+        List<AccountProfile> usersSorted = new ArrayList<>();
+
+        Boolean isSorted = false;
+
+        if (request.getOrderBy().equals("roles_asc")) {
+
+            List<Role> roles = roleRepo.findAllByOrderByRoleAsc();
+            updateUsersSorted(usersSorted, roles);
+
+        } else if (request.getOrderBy().equals("roles_desc")) {
+
+            List<Role> roles = roleRepo.findAllByOrderByRoleDesc();
+            updateUsersSorted(usersSorted, roles);
+
+        } else {
+            usersSorted = sortUsers(request);
+        }
 
         int i = request.getOffset();
-        while (i < limit && i < users.size()) {
-            reply.addUsers(buildUserResponse(users.get(i)));
+        while (i < limit && i < usersSorted.size()) {
+            reply.addUsers(buildUserResponse(usersSorted.get(i)));
             i++;
         }
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
+    }
+
+    /**
+     * returns the correct sorting of users based on the GRPC request
+     * @param request the GRPC request
+     * @return the list of account profiles sorted as to the grpc request
+     */
+    public List<AccountProfile> sortUsers(GetPaginatedUsersRequest request) {
+        switch (request.getOrderBy()) {
+            case "first_name_asc":
+                return repo.findAllByOrderByFirstNameAsc();
+            case "first_name_desc":
+                return repo.findAllByOrderByFirstNameDesc();
+            case "last_name_asc":
+                return repo.findAllByOrderByLastNameAsc();
+            case "last_name_desc":
+                return repo.findAllByOrderByLastNameDesc();
+            case "nickname_asc":
+                return repo.findAllByOrderByNicknameAsc();
+            case "nickname_desc":
+                return repo.findAllByOrderByNicknameDesc();
+            case "username_asc":
+                return repo.findAllByOrderByUsernameAsc();
+            case "username_desc":
+                return repo.findAllByOrderByUsernameDesc();
+            default:
+                return repo.findAll();
+        }
     }
 
 }
