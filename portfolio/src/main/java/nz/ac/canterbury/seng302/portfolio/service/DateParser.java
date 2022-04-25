@@ -33,13 +33,12 @@ public class DateParser {
         int currentYear = currentCalendar.get(Calendar.YEAR);
 
         int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
-        int totalYear = (currentYear - year);
-
-
+        int totalYear = (currentYear - year - 1);
 
         if (totalMonth > 0){
             stringDate += " (";
 
+            // put the years in if they apply
             if (totalYear > 0){
                 if (totalYear > 1){
                     stringDate += totalYear + " Years";
@@ -47,15 +46,18 @@ public class DateParser {
                     stringDate += totalYear + " Year";
                 }
             }
-            while (totalMonth >= 12) {
-                totalMonth -= 12;
+
+            totalMonth %= 12;
+            // if ther are both months and year fields put an and in
+            if (totalYear > 0 && totalMonth != 0) {
+                stringDate += " and ";
             }
+
+            // put the appropriate month field in
             if (totalMonth > 1){
-                stringDate += " and " + totalMonth + " Months";
-            } else if (totalMonth == 0) {
-                    // Nothing
-            }   else {
-                stringDate += " and " + totalMonth + " Month";
+                stringDate += totalMonth + " Months";
+            } else if (totalMonth == 1) {
+                stringDate += totalMonth + " Month";
             }
 
             stringDate += ")";
