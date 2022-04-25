@@ -80,7 +80,7 @@ public class SignupController {
         Model model
     )
     {
-        if (!password.equals(passwordConfirm)) {
+        if (!password.equals(passwordConfirm)) { //TODO this is depricated, kinda annoying to dev in
             model.addAttribute("errorCode", "Error: Passwords do not match");
             errorShow = "";
             successShow = "";
@@ -91,11 +91,9 @@ public class SignupController {
         registerReply = accountClientService.register(username, password, firstname, lastname, pronouns, email);
         successCode = registerReply.getMessage();
         if (successCode.contains("Created account")) {
-
             errorShow = "display:none;";
             successShow = "";
         } else {
-
             errorShow = "";
             successShow = "display:none;";
         }

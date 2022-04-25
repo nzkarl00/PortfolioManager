@@ -180,4 +180,7 @@ public class AccountProfile {
         this.bio = bio;
     }
 
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
 }
