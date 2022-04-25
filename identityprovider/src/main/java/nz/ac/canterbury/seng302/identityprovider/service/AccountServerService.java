@@ -238,4 +238,28 @@ public class AccountServerService extends UserAccountServiceImplBase{
         }
     }
 
+    /**
+     * Set the user's token, which is the cookie from the domain after login
+     * @param request the grpc request containing the token details
+     * @param responseObserver the observer to send the response to
+     */
+    @Override
+    public void setUserToken(SetUserTokenRequest request, StreamObserver<SetUserTokenResponse> responseObserver) {
+        SetUserTokenResponse.Builder response = SetUserTokenResponse.newBuilder();
+        try {
+            AccountProfile profile = accountService.getAccountById(request.getUserId());
+            profile.setToken("ABC");
+            repo.save(profile);
+            response.setIsSuccess(true)
+                    .setMessage("Token set");
+        } catch (Exception e) {
+            response
+                    .setMessage("Log in attempt failed: username or password incorrect")
+                    .setIsSuccess(false);
+            System.out.println(e);
+        }
+        responseObserver.onNext(response.build());
+        responseObserver.onCompleted();
+    }
+
 }
