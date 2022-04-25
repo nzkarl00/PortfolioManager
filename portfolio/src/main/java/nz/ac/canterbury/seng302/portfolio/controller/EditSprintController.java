@@ -113,70 +113,45 @@ public class EditSprintController {
         Project project = projectService.getProjectById(projectId);
 
         Date projStartDate = project.getStartDate();
-        String stringStartDate = Project.dateToStringHtml(project.getStartDate());
-        String stringEndDate =Project.dateToStringHtml(project.getEndDate());
         Date projEndDate = project.getEndDate();
-        Date checkStartDate = Project.stringToDate(sprintStartDate);
-        Date checkEndDate = Project.stringToDate(sprintEndDate);
+        Date checkStartDate = DateParser.stringToDate(sprintStartDate);
+        Date checkEndDate = DateParser.stringToDate(sprintEndDate);
 
+        errorShow = "";
+
+        String redirect = "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
+
+        // check if sprint name is blank
         if (sprintName.isBlank()) {
-            errorShow = "";
             errorCode = "Sprint requires a name";
-            return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
+            return redirect;
         }
-
         sprint.setName(sprintName);
         sprint.setDescription(sprintDescription);
 
-        if ((projStartDate.before(checkStartDate) || (Objects.equals(stringStartDate, sprintStartDate))) && (projEndDate.after(checkEndDate) || (Objects.equals(stringEndDate, sprintEndDate)))) {
-
-            if (checkStartDate.before(checkEndDate)) {
-                for (Sprint temp: sprintService.getSprintByParentId(projectId)) {
-                    if (temp.getEndDate().after(checkStartDate) && temp.getStartDate().before(checkStartDate)) {
-
-                        errorShow = "";
-                        errorCode = "Start date overlaps with another sprint";
-                        return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
-
-                    }
-
-                }
-                sprint.setStartDateStringSprint(sprintStartDate);
-            } else {
-
-                errorShow = "";
-                errorCode = "Start and End date overlap";
-                return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
-
-            }
-            if (checkEndDate.after(checkStartDate)) {
-                for (Sprint temp: sprintService.getSprintByParentId(projectId)) {
-
-                    if (temp.getEndDate().after(checkStartDate) && temp.getStartDate().before(checkStartDate)) {
-
-                        errorShow = "";
-                        errorCode = "End date overlaps with another sprint";
-                        return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
-
-                    }
-
-                }
-                sprint.setEndDateStringSprint(sprintEndDate);
-            } else {
-
-                errorShow = "";
-                errorCode = "Start and End date overlap";
-                return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
-            }
-        } else {
-
-            errorShow = "";
+        // check if the sprint dates are within the project dates
+        if (!checkStartDate.after(projStartDate) || !checkEndDate.before(projEndDate)) {
             errorCode = "Sprint is outside of the Project's timeline";
-            return "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
-
+            return redirect;
         }
 
+        // check if sprint start is before sprint end
+        if (!checkStartDate.before(checkEndDate)) {
+            errorCode = "Start and End date overlap";
+            return redirect;
+        }
 
+        // moving the harder sprint date checking to a service helper class that can be easily unit tested
+        List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
+        if (Boolean.FALSE.equals(DateParser.sprintDateCheck(sprints, sprint, checkStartDate, checkEndDate))) {
+            errorCode = "Sprint dates overlap with existing sprints";
+            return redirect;
+        }
+
+        // show no errors, update the sprint and save it to the db
+        errorShow = "display:none;";
+        sprint.setStartDate(checkStartDate);
+        sprint.setEndDate(checkEndDate);
         repository.save(sprint);
 
         return "redirect:/details?id=" + projectId;

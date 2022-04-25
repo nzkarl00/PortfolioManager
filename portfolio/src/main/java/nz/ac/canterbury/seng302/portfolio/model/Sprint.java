@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import nz.ac.canterbury.seng302.portfolio.service.DateParser;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -54,8 +56,8 @@ public class Sprint {
         this.sprintName = sprintName;
         this.sprintLabel = sprintLabel;
         this.sprintDescription = sprintDescription;
-        this.sprintStartDate = Project.stringToDate(projectStartDate);
-        this.sprintEndDate = Project.stringToDate(projectEndDate);
+        this.sprintStartDate = DateParser.stringToDate(projectStartDate);
+        this.sprintEndDate = DateParser.stringToDate(projectEndDate);
     }
 
     @Override
@@ -104,11 +106,11 @@ public class Sprint {
 
     // these two setters set the dates with strings
     public void setStartDateStringSprint(String date) {
-        this.sprintStartDate = Project.stringToDate(date);
+        this.sprintStartDate = DateParser.stringToDate(date);
     }
 
     public void setEndDateStringSprint(String date) {
-        this.sprintEndDate = Project.stringToDate(date);
+        this.sprintEndDate = DateParser.stringToDate(date);
     }
 
     // the two setters in here set the date with Dates
@@ -117,11 +119,11 @@ public class Sprint {
     }
 
     public String getStartDateString() {
-        return Project.dateToString(this.sprintStartDate);
+        return DateParser.dateToString(this.sprintStartDate);
     }
 
     public String getStartDateStringHtml() {
-        return Project.dateToStringHtml(this.sprintStartDate);
+        return DateParser.dateToStringHtml(this.sprintStartDate);
     }
 
     public void setStartDate(Date newStartDate) {
@@ -133,11 +135,11 @@ public class Sprint {
     }
 
     public String getEndDateString() {
-        return Project.dateToString(this.sprintEndDate);
+        return DateParser.dateToString(this.sprintEndDate);
     }
 
     public String getEndDateStringHtml() {
-        return Project.dateToStringHtml(this.sprintEndDate);
+        return DateParser.dateToStringHtml(this.sprintEndDate);
     }
 
     public void setEndDate(Date newEndDate) {

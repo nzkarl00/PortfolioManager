@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import nz.ac.canterbury.seng302.portfolio.service.DateParser;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -50,8 +52,8 @@ public class Project {
     public Project(String projectName, String projectDescription, String projectStartDate, String projectEndDate) {
         this.projectName = projectName;
         this.projectDescription = projectDescription;
-        this.projectStartDate = Project.stringToDate(projectStartDate);
-        this.projectEndDate = Project.stringToDate(projectEndDate);
+        this.projectStartDate = DateParser.stringToDate(projectStartDate);
+        this.projectEndDate = DateParser.stringToDate(projectEndDate);
     }
 
     @Override
@@ -59,46 +61,6 @@ public class Project {
         return String.format(
                 "Project[id=%d, projectName='%s', projectStartDate='%s', projectEndDate='%s', projectDescription='%s']",
                 id, projectName, projectStartDate, projectEndDate, projectDescription);
-    }
-
-    /**
-     * Gets the date form of the given date string
-     *
-     * @param dateString the string to read as a date in format 01/Jan/2000
-     * @return the given date, as a date object
-     */
-    public static Date stringToDate(String dateString) {
-        Date date = null;
-        try {
-            date = new SimpleDateFormat("dd/MMM/yyyy").parse(dateString);
-        } catch (Exception e1) {
-            try {
-                date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
-            } catch (Exception e2) {
-                System.err.println("Error parsing date: " + e2.getMessage() + " " + e1.getMessage());
-            }
-        }
-        return date;
-    }
-
-    /**
-     * Gets the string form of the given date in
-     *
-     * @param date the date to convert
-     * @return the given date, as a string in format 01/Jan/2000
-     */
-    public static String dateToString(Date date) {
-        return new SimpleDateFormat("dd/MMM/yyyy").format(date);
-    }
-
-    /**
-     * Gets the string form of the given date in
-     *
-     * @param date the date to convert
-     * @return the given date, as a string in format 01/Jan/2000
-     */
-    public static String dateToStringHtml(Date date) {
-        return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 
     /* Getters/Setters */
@@ -134,7 +96,11 @@ public class Project {
     }
 
     public String getStartDateString() {
-        return Project.dateToString(this.projectStartDate);
+        return DateParser.dateToString(this.projectStartDate);
+    }
+
+    public String getStartDateStringHtml() {
+        return DateParser.dateToStringHtml(this.projectStartDate);
     }
 
     public void setStartDate(Date newStartDate) {
@@ -142,7 +108,7 @@ public class Project {
     }
 
     public void setStartDateString(String date) {
-        this.projectStartDate = Project.stringToDate(date);
+        this.projectStartDate = DateParser.stringToDate(date);
     }
 
     public Date getEndDate() {
@@ -150,7 +116,11 @@ public class Project {
     }
 
     public String getEndDateString() {
-        return Project.dateToString(this.projectEndDate);
+        return DateParser.dateToString(this.projectEndDate);
+    }
+
+    public String getEndDateStringHtml() {
+        return DateParser.dateToStringHtml(this.projectEndDate);
     }
 
     public void setEndDate(Date newEndDate) {
@@ -158,6 +128,6 @@ public class Project {
     }
 
     public void setEndDateString(String date) {
-        this.projectEndDate = Project.stringToDate(date);
+        this.projectEndDate = DateParser.stringToDate(date);
     }
 }
