@@ -113,8 +113,8 @@ public class EditSprintController {
         Project project = projectService.getProjectById(projectId);
 
         Date projStartDate = project.getStartDate();
-        String stringStartDate = project.getStartDateString();
-        String stringEndDate = project.getEndDateString();
+        String stringStartDate = Project.dateToStringHtml(project.getStartDate());
+        String stringEndDate =Project.dateToStringHtml(project.getEndDate());
         Date projEndDate = project.getEndDate();
         Date checkStartDate = Project.stringToDate(sprintStartDate);
         Date checkEndDate = Project.stringToDate(sprintEndDate);
