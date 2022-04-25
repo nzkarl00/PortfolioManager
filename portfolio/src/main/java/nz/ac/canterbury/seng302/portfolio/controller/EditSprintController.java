@@ -55,11 +55,7 @@ public class EditSprintController {
         /* Add sprint details to the model */
 
         Project project = projectService.getProjectById(projectId);
-
-        List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
-
         Sprint sprint = sprintService.getSprintById(sprintId);
-
         Integer id = AuthStateInformer.getId(principal);
 
         // Attributes For header
@@ -68,7 +64,8 @@ public class EditSprintController {
 
         model.addAttribute("date", DateParser.displayDate(userReply));
         model.addAttribute("username", userReply.getUsername());
-
+        model.addAttribute("projectStart", project.getStartDateStringHtml());
+        model.addAttribute("projectEnd", project.getEndDateStringHtml());
         model.addAttribute("sprint", sprint);
         model.addAttribute("project", project);
         model.addAttribute("errorShow", errorShow);
