@@ -57,6 +57,12 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.editUser(request.build());
     }
 
+    public void setToken(String token) {
+        EditUserRequest.Builder request = EditUserRequest.newBuilder();
+        //request.setToken;
+
+    }
+
     public PaginatedUsersResponse getPaginatedUsers(int limit, int offset, String orderBy) {
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder();
         request.setLimit(limit)
