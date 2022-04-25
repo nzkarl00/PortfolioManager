@@ -39,7 +39,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
             if (Hasher.verify(request.getPassword(), profile.getPasswordHash())) {
                 // TODO: Facility to fetch user role
                 // token length is 248
-                String token = jwtTokenService.generateTokenForUser(profile.getUsername(), profile.getId(), "TODO", ROLE_OF_USER);
+                String token = jwtTokenService.generateTokenForUser(profile.getUsername(), profile.getId(), profile.getUsername(), ROLE_OF_USER);
                 reply
                     .setEmail(profile.getEmail())
                     // TODO: Fetch name

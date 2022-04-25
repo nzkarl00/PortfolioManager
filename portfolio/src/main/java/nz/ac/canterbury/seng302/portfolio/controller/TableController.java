@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader;
+import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.model.User;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -38,7 +41,7 @@ public class TableController {
     private AccountClientService accountClientService;
 
     private int currentPage = 0;
-    String sortMode = "first_name";
+    String sortMode = "";
     Integer ascDesc = 0;
     Boolean isSorted = false;
     List<User> users = new ArrayList<>();
@@ -70,6 +73,7 @@ public class TableController {
      */
     @GetMapping("/user-list")
     public String account(
+        HttpServletRequest request,
         @AuthenticationPrincipal AuthState principal,
         Model model,
         @RequestParam("move") Optional<String> move) {
@@ -94,6 +98,21 @@ public class TableController {
 
         UserResponse userReply;
         userReply = accountClientService.getUserById(id); // Get the user
+
+
+        if (sortMode.isEmpty()) { // update the sorting variables if there is a token to do so
+            String sessionToken = CookieUtil.getValue(request, "sortMode");
+            if (sessionToken != null) {
+                System.out.println(sessionToken);
+                sortMode = sessionToken.substring(0, sessionToken.length() - 4);
+                if (sessionToken.endsWith("_asc")) {
+                    ascDesc = 0;
+                } else {
+                    ascDesc = 1;
+                }
+            }
+            columnHeaderHelper(sortMode);
+        }
 
         model.addAttribute("date", DateParser.displayDate(userReply));
         model.addAttribute("start", start);
@@ -136,16 +155,40 @@ public class TableController {
      */
     @PostMapping("order-list")
     public String sprintDelete(
-            @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value="sortColumn") String sortColumn,
-            Model model
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @AuthenticationPrincipal AuthState principal,
+        @RequestParam(value="sortColumn") String sortColumn,
+        Model model
     ) throws Exception {
 
+        columnHeaderHelper(sortColumn);
+
+        String sortAll = sortMode;
+        if (ascDesc == 0) {
+            sortAll += "_asc";
+        } else {
+            sortAll += "_dsc";
+        }
+
+        var domain = request.getHeader("host");
+        CookieUtil.create(
+            response,
+            "sortMode",
+            sortAll,
+            false,
+            7 * 60 * 60 * 24, // 7 days
+            domain.startsWith("localhost") ? null : domain);
+
+        return "redirect:/user-list";
+    }
+
+    private void columnHeaderHelper(String sortString) {
         String isUp = "";
         String isDown = "";
 
         // if it is currently sorting the column specified, switch the direction of sorting
-        if (sortColumn.equals(sortMode)) {
+        if (sortMode.equals(sortString)) {
             if (ascDesc == 1) {
                 ascDesc = 0;
                 isUp = "";
@@ -156,7 +199,7 @@ public class TableController {
                 isUp = "display:none;";
             }
         } else {
-            sortMode = sortColumn;
+            sortMode = sortString;
             ascDesc = 0;
             isUp = "";
             isDown = "display:none;";
@@ -181,28 +224,26 @@ public class TableController {
         rolesUp = "display:none;";
         rolesDown = "display:none;";
 
-        if (sortColumn.equals("roles")) {
+        if (sortString.equals("roles")) {
             rolesShow = tempValue;
             rolesUp = isUp;
             rolesDown = isDown;
-        } else if (sortColumn.equals("nickname")) {
+        } else if (sortString.equals("nickname")) {
             nicknameShow = tempValue;
             nicknameUp = isUp;
             nicknameDown = isDown;
-        } else if (sortColumn.equals("username")) {
+        } else if (sortString.equals("username")) {
             usernameShow = tempValue;
             usernameUp = isUp;
             usernameDown = isDown;
-        } else if (sortColumn.equals("last_name")) {
+        } else if (sortString.equals("last_name")) {
             lastNameShow = tempValue;
             lastNameUp = isUp;
             lastNameDown = isDown;
-        } else if (sortColumn.equals("first_name")) {
+        } else if (sortString.equals("first_name")) {
             firstNameShow = tempValue;
             firstNameUp = isUp;
             firstNameDown = isDown;
         }
-
-            return "redirect:/user-list";
     }
 }

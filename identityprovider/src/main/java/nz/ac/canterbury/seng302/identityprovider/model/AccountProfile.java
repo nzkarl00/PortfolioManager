@@ -42,9 +42,6 @@ public class AccountProfile {
     private String pronouns;
     @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Role> roles;
-    @Column(name = "token", length = 255)
-    private String token;
-
 
     //Necessary for Hibernate to work properly
     public AccountProfile() {}
@@ -74,7 +71,6 @@ public class AccountProfile {
         this.middleName = "";
         this.nickname = "";
         this.pronouns = pronouns;
-        this.token = token;
         if(photoPath != null) {
             this.photoPath = photoPath;
         } else {
@@ -148,8 +144,6 @@ public class AccountProfile {
         return nickname;
     }
 
-    public String getToken() {return token; }
-
     public void setID(int newId) {
         this.id = newId;
     } // TODO should this be editable, is it not just a primary key?
@@ -186,5 +180,4 @@ public class AccountProfile {
         this.bio = bio;
     }
 
-    public void setToken(String token) { this.token = token; }
 }
