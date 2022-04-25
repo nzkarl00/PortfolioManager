@@ -71,8 +71,12 @@ public class Project {
         Date date = null;
         try {
             date = new SimpleDateFormat("dd/MMM/yyyy").parse(dateString);
-        } catch (Exception e) {
-            System.err.println("Error parsing date: " + e.getMessage());
+        } catch (Exception e1) {
+            try {
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+            } catch (Exception e2) {
+                System.err.println("Error parsing date: " + e2.getMessage() + " " + e1.getMessage());
+            }
         }
         return date;
     }
@@ -85,6 +89,16 @@ public class Project {
      */
     static String dateToString(Date date) {
         return new SimpleDateFormat("dd/MMM/yyyy").format(date);
+    }
+
+    /**
+     * Gets the string form of the given date in
+     *
+     * @param date the date to convert
+     * @return the given date, as a string in format 01/Jan/2000
+     */
+    static String dateToStringHtml(Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 
     /* Getters/Setters */

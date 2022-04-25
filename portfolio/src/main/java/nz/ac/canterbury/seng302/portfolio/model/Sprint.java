@@ -120,6 +120,10 @@ public class Sprint {
         return Project.dateToString(this.sprintStartDate);
     }
 
+    public String getStartDateStringHtml() {
+        return Project.dateToStringHtml(this.sprintStartDate);
+    }
+
     public void setStartDate(Date newStartDate) {
         this.sprintStartDate = newStartDate;
     }
@@ -130,6 +134,10 @@ public class Sprint {
 
     public String getEndDateString() {
         return Project.dateToString(this.sprintEndDate);
+    }
+
+    public String getEndDateStringHtml() {
+        return Project.dateToStringHtml(this.sprintEndDate);
     }
 
     public void setEndDate(Date newEndDate) {

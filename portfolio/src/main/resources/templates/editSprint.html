@@ -56,11 +56,11 @@
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" for="sprintStartDate">Sprint Start Date</label> <br/>
-                        <input class="project_edit_data" id="sprintStartDate" type="text" th:name="sprintStartDate" th:value="*{sprint.getStartDateString}">
+                        <input class="project_edit_data" id="sprintStartDate" type="date" th:name="sprintStartDate" th:value="*{sprint.getStartDateStringHtml}">
                     </div>
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" for="sprintEndDate">Sprint End Date</label> <br/>
-                        <input class="project_edit_data" id="sprintEndDate" type="text" th:name="sprintEndDate" th:value="*{sprint.getEndDateString}">
+                        <input class="project_edit_data" id="sprintEndDate" type="date" th:name="sprintEndDate" th:value="*{sprint.getEndDateStringHtml}">
                     </div>
                 </div>
                 <div>
