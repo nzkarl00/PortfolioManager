@@ -231,11 +231,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 return repo.findAll();
         }
     }
-
-    public void removeRoleFromUser(ModifyRoleOfUserRequest request) {
+    @Override
+    public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         Long userId = Long.valueOf(request.getUserId());
         roleRepo.deleteById(userId);
 
     }
-
 }
