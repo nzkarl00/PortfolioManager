@@ -90,6 +90,7 @@ public class Sprint {
     public void setName(String newName) {
         this.sprintName = newName;
     }
+    public void setId(int setId) { id = setId; }
     public void setDescription(String newDescription){
         this.sprintDescription = newDescription;
     }

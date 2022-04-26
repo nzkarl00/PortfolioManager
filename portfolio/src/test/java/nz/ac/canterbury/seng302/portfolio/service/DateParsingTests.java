@@ -12,10 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.aspectj.bridge.Version.getTime;
 import static org.junit.jupiter.api.Assertions.*;
@@ -143,21 +140,71 @@ class DateParsingTests {
         assertEquals(expected, actual);
     }
 
-    // help from https://stackoverflow.com/questions/51053469/unit-tests-how-to-mock-repository-using-mockito
-    @MockBean
-    ProjectRepository projectRepository;
-
-    @MockBean
-    SprintRepository sprintRepository;
-
-    @Before
-    public void setup() {
-        Project project = new Project("project name", "project description", new Date(), new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5)); // 5 months
-        Sprint sprint = new Sprint();
+    Sprint sprint1 = new Sprint(1, "sprint1", "label", "description", new Date(),
+        new Date(new Date().getTime() + 60 * 60 * 24 * 31 * 1)); // now to 1 month in the future
+    Sprint sprint2 = new Sprint(1, "sprint2", "label", "description",
+        new Date(new Date().getTime() + 60 * 60 * 24 * 31 * 1),
+        new Date(new Date().getTime() + 60 * 60 * 24 * 31 * 2)); // 1 month to 2 months in the future
+    Sprint sprint3 = new Sprint(1, "sprint3", "label", "description",
+        new Date(new Date().getTime() + 60 * 60 * 24 * 31 * 2),
+        new Date(new Date().getTime() + 60 * 60 * 24 * 31 * 3)); // 2 month to 3 months in the future
+    Sprint sprint4 = new Sprint(1, "sprint4", "label", "description",
+        new Date(new Date().getTime() + 60 * 60 * 24 * 31 * 3),
+        new Date(new Date().getTime() + 60 * 60 * 24 * 31 * 4)); // 3 month to 4 months in the future
+    Sprint sprint5 = new Sprint(1, "sprint5", "label", "description",
+        new Date(new Date().getTime() + 60 * 60 * 24 * 31 * 4),
+        new Date(new Date().getTime() + 60 * 60 * 24 * 31 * 5)); // 4 month to 5 months in the future
+    ArrayList<Sprint> sprints = new ArrayList<>();
+    {
+        sprint1.setId(1);
+        sprint2.setId(2);
+        sprint3.setId(3);
+        sprint4.setId(4);
+        sprint5.setId(5);
+        sprints.add(sprint1);
+        sprints.add(sprint2);
+        sprints.add(sprint3);
+        sprints.add(sprint4);
+        sprints.add(sprint5);
     }
 
     @Test
     void sprintDateCheckBlueSky() {
+        // testing with the existing working dates
+        assertTrue(DateParser.sprintDateCheck(sprints, sprint1, sprint1.getStartDate(), sprint1.getEndDate()));
+    }
 
+    @Test
+    void sprintDateCheckEndFail() {
+        // Testing this part of the code
+        // (temp.getStartDate().after(checkStartDate) && temp.getStartDate().before(checkEndDate))
+        assertFalse(DateParser.sprintDateCheck(sprints, sprint1, sprint1.getStartDate(),
+            new Date(sprint1.getEndDate().getTime() + 1000 * 60 * 60 * 24 * 5))); // 5 days in the future
+    }
+
+    @Test
+    void sprintDateCheckStartFail() {
+        // Testing this part of the code
+        //(temp.getEndDate().after(checkStartDate) && temp.getEndDate().before(checkEndDate))
+        assertFalse(DateParser.sprintDateCheck(sprints, sprint2, new Date(sprint2.getStartDate().getTime() - 1000 * 60 * 60 * 24 * 5), // 5 days in the past
+            sprint2.getEndDate()));
+    }
+
+    @Test
+    void sprintDateCheckBetweenFail() {
+        // Testing this part of the code
+        // (temp.getStartDate().after(checkStartDate) && temp.getEndDate().before(checkEndDate))
+        assertFalse(DateParser.sprintDateCheck(sprints, sprint1,
+            new Date(sprint2.getStartDate().getTime() - 1000 * 60 * 60 * 24 * 5), // 5 days in the past
+            new Date(sprint2.getEndDate().getTime() + 1000 * 60 * 60 * 24 * 5))); // 5 days in the future
+    }
+
+    @Test
+    void sprintDateCheckInsideFail() {
+        // Testing this part of the code
+        // (temp.getStartDate().before(checkStartDate) && temp.getEndDate().after(checkEndDate))
+        assertFalse(DateParser.sprintDateCheck(sprints, sprint1,
+            new Date(sprint2.getStartDate().getTime() + 1000 * 60 * 60 * 24 * 5), // 5 days in the future
+            new Date(sprint2.getEndDate().getTime() - 1000 * 60 * 60 * 24 * 5))); // 5 days in the past
     }
 }
