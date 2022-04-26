@@ -1,15 +1,21 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import com.google.protobuf.Timestamp;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import static org.aspectj.bridge.Version.getTime;
 import static org.junit.jupiter.api.Assertions.*;
@@ -137,14 +143,21 @@ class DateParsingTests {
         assertEquals(expected, actual);
     }
 
-    @Mock
+    // help from https://stackoverflow.com/questions/51053469/unit-tests-how-to-mock-repository-using-mockito
+    @MockBean
     ProjectRepository projectRepository;
 
-    @Mock
+    @MockBean
     SprintRepository sprintRepository;
+
+    @Before
+    public void setup() {
+        Project project = new Project("project name", "project description", new Date(), new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5)); // 5 months
+        Sprint sprint = new Sprint();
+    }
 
     @Test
     void sprintDateCheckBlueSky() {
-        assertTrue(true);
+
     }
 }

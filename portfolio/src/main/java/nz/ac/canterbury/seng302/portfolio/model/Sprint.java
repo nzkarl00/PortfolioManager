@@ -28,7 +28,7 @@ public class Sprint {
     private Date sprintStartDate;
     private Date sprintEndDate;
 
-    protected Sprint() {}
+    public Sprint() {}
 
     // these three constructor just use different types of date parsing from Date, LocalDate, or String into Date
     public Sprint(int parentProjectId, String sprintName, String sprintLabel, String sprintDescription, Date sprintStartDate, Date sprintEndDate) {

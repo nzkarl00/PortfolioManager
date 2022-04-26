@@ -30,7 +30,7 @@ public class Project {
     @Column(name = "project_end_date")
     private Date projectEndDate;
 
-    protected Project() {}
+    public Project() {}
 
     // These three constructors are just used to parse different date types Date, LocalDate, and String
     public Project(String projectName, String projectDescription, Date projectStartDate, Date projectEndDate) {
