@@ -97,16 +97,15 @@
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" for="newPassword">New Password</label> <br/>
-                        <input class="project_edit_data horizontal_field" id="newPassword" type="password"
+                        <input class="project_edit_data horizontal_field"
+                               id="newPassword" type="password"
                                th:name="newPassword" th:value="*{newPassword}">
                     </div>
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" for="passwordConfirm">Password Confirm</label> <br/>
-                        <input class="project_edit_data horizontal_field form-control" id="passwordConfirm" type="password"
+                        <input class="project_edit_data horizontal_field form-control"
+                               id="passwordConfirm" type="password" onkeyup="checkNewPassword()"
                                th:name="passwordConfirm" th:value="*{passwordConfirm}">
-
-
-
                     </div>
                 </div>
             </div>
@@ -181,21 +180,20 @@
     </div>
 </div>
 
-<!-- JS to check that the passwords and passwordConfirm match-->
+<!-- JS to check that the newPassword and passwordConfirm match-->
 <script>
-    const password = document.getElementById("newPassword");
-    const passwordConfirm = document.getElementById("passwordConfirm");
-
-    function checkPassword(){
-        if(passwordConfirm.value !== password.value) {
+    function checkNewPassword(){
+        var newPassword = document.getElementById("newPassword");
+        var passwordConfirm = document.getElementById("passwordConfirm");
+        if(passwordConfirm.value !== newPassword.value) {
             passwordConfirm.setCustomValidity("The passwords don't match");
+            passwordConfirm.reportValidity();
+            event.preventDefault(); // so the form submission doesn’t go through.
+
         } else {
             passwordConfirm.setCustomValidity('');
         }
     }
-
-    password.onchange = checkPassword;
-    passwordConfirm.onkeyup = checkPassword;
 </script>
 
 <!-- JS -->
