@@ -1,9 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import com.google.protobuf.Timestamp;
+import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
 import org.junit.jupiter.api.Test;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.mockito.Mock;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -132,5 +135,16 @@ class DateParsingTests {
         Date date = new Date(seconds);
         String actual = DateParser.dateToStringHtml(date);
         assertEquals(expected, actual);
+    }
+
+    @Mock
+    ProjectRepository projectRepository;
+
+    @Mock
+    SprintRepository sprintRepository;
+
+    @Test
+    void sprintDateCheckBlueSky() {
+        assertTrue(true);
     }
 }
