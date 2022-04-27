@@ -63,7 +63,7 @@
                     <td><span class="table_text" th:text="${user.nickname}"> Alias </span></td>
                     <td>
                         <div class="user_role_table" th:each="role : ${user.listRoles()}">
-                            <span class="table_text" th:text="${role.toUpperCase()}">Roles</span> <form  style="display:inline;" th:action="@{/delete-role(roleDelete=${role},username=${user.username})}" method="post" ><button class="table_text button_none">&#x2716</button></form>
+                            <span class="table_text" th:text="${role.toUpperCase()}">Roles</span> <form  style="display:inline;" th:if="${role == 'teacher'}" th:action="@{/delete-role(roleDelete=${role},username=${user.username})}" method="post" ><button class="table_text button_none">&#x2716</button></form>
                         </div>
                         <div class="user_role_table btn-group d-md-none m-1 user_button" th:if="${role == 'teacher'}">
                             <button class="table_text button_none "
