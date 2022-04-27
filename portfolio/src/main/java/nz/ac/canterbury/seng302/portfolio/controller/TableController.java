@@ -70,7 +70,6 @@ public class TableController {
         }
         start = currentPage * step;
 
-        System.out.println(sortMode+" cont");
 
         users.clear();
         isSorted = false;
@@ -114,16 +113,50 @@ public class TableController {
         return "redirect:/user-list";
     }
 
+    /**
+     * Will validate the role deletion request, then execute it if applicable
+     * @param principal
+     * @param roleDelete The name of the role to be deleted
+     * @param username The (unique) username of the user that's being deleted
+     * @param model
+     * @return returns the page again
+     * @throws Exception
+     */
     @PostMapping("delete-role")
     public String roleDelete(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value="roleDelete") String roleDelete,
-            @RequestParam(value="userId") Integer userId,
+            @RequestParam(value="username") String username,
             Model model
     ) throws Exception {
-
-        accountClientService.deleteRole(roleDelete, userId);
-
-        return "redirect:/user-list";
+        String role = principal.getClaimsList().stream()
+                .filter(claim -> claim.getType().equals("role"))
+                .findFirst()
+                .map(ClaimDTO::getValue)
+                .orElse("NOT FOUND");
+        /* Return the name of the Thymeleaf template */
+        // detects the role of the current user and performs appropriate action
+        //if (role.equals("teacher")) {
+        if (true) {
+            // Locates the appropriate user
+            User user = null;
+            for (User userTemp : users) {
+                if (userTemp.getUsername().equals(username)) {
+                    user = userTemp;
+                }
+            }
+            // Begins the checks if a user is found
+            if (user != null) {
+                Integer userId = user.getId();
+                if (user.listRoles().size() > 1) {
+                    if (user.listRoles().contains(roleDelete)) {
+                        // Performs deletion if it passes all checks
+                        accountClientService.deleteRole(roleDelete, userId);
+                    }
+                }
+            }
+            return "redirect:/user-list";
+        }
+        return "userList";
     }
 }

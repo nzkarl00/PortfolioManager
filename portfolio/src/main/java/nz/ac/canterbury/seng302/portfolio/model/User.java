@@ -39,6 +39,9 @@ public class User {
     public String getNickname() {
         return nickname;
     }
+    public Integer getId() {
+        return id;
+    }
 
     public String roles() {
         String output = "";
