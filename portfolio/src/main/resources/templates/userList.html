@@ -33,7 +33,7 @@
     </div>
 
     <!-- Users -->
-    <div class="user-table">
+    <ul class="user-table">
         <!-- Send a forward or backward call to the page -->
         <a href="user-list?move=back" class="btn btn-primary align-text-left">←</a>
         <a href="user-list?move=forward" class="btn btn-primary align-text-left">→</a>
@@ -64,6 +64,28 @@
                     <td>
                         <div class="user_role_table" th:each="role : ${user.listRoles()}">
                             <span class="table_text" th:text="${role.toUpperCase()}">Roles</span> <form  style="display:inline;" th:action="@{/delete-role(roleDelete=${role},username=${user.username})}" method="post" ><button class="table_text button_none">&#x2716</button></form>
+                        </div>
+                        <div class="user_role_table btn-group d-md-none m-1 user_button" th:if="${role == 'teacher'}">
+                            <button class="table_text button_none "
+                                    type="button"
+                                    id="dropdownMenuButton"
+                                    data-toggle="dropdown"
+                                    data-boundary="window"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                <span>&#x1F7A7</span>
+                            </button>
+                            <div class="dropdown-menu ">
+                                <a href="#" class="dropdown-item table_text" th:if="${not user.listRoles().contains('student')}">
+                                    <form style="display:inline;" th:action="@{/add-role(roleAdd=${'student'},username=${user.username})}" method="post" ><button class="table_text button_none">Add Student</button></form>
+                                </a>
+                                <a href="#" class="dropdown-item table_text" th:if="${not user.listRoles().contains('teacher')}">
+                                    <form style="display:inline;" th:action="@{/add-role(roleAdd=${'teacher'},username=${user.username})}" method="post" ><button class="table_text button_none">Add Teacher</button></form>
+                                </a>
+                                <a href="#" class="dropdown-item table_text" th:if="${not user.listRoles().contains('admin')}">
+                                    <form style="display:inline;" th:action="@{/add-role(roleAdd=${'admin'},username=${user.username})}" method="post" ><button class="table_text button_none">Add Admin</button></form>
+                                </a>
+                            </div>
                         </div>
                     </td>
                 </tr>

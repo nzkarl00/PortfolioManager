@@ -41,6 +41,7 @@ public class TableController {
     Integer ascDesc = 0;
     Boolean isSorted = false;
     List<User> users = new ArrayList<User>();
+    String role;
 
     /**
      * The controller mapping of the User table
@@ -69,6 +70,15 @@ public class TableController {
             }
         }
         start = currentPage * step;
+
+        role = principal.getClaimsList().stream()
+                .filter(claim -> claim.getType().equals("role"))
+                .findFirst()
+                .map(ClaimDTO::getValue)
+                .orElse("NOT FOUND");
+
+        model.addAttribute("role", role);
+
 
 
         users.clear();
@@ -113,6 +123,18 @@ public class TableController {
         return "redirect:/user-list";
     }
 
+
+    @PostMapping("add-role")
+    public String roleAdd(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value="roleAdd") String roleAdd,
+            @RequestParam(value="username") String username,
+            Model model
+    ) throws Exception {
+
+        return "redirect:/user-list";
+    }
+
     /**
      * Will validate the role deletion request, then execute it if applicable
      * @param principal
@@ -129,11 +151,7 @@ public class TableController {
             @RequestParam(value="username") String username,
             Model model
     ) throws Exception {
-        String role = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("role"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("NOT FOUND");
+
         /* Return the name of the Thymeleaf template */
         // detects the role of the current user and performs appropriate action
         //if (role.equals("teacher")) {
@@ -155,8 +173,7 @@ public class TableController {
                     }
                 }
             }
-            return "redirect:/user-list";
         }
-        return "userList";
+        return "redirect:/user-list";
     }
 }

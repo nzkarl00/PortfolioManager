@@ -369,6 +369,12 @@
 
 }
 
+.user_button:hover {
+
+    background-color:#056BFA; !important;
+    color:#056BFA; !important;
+}
+
 .user_role_table {
 
     background-color:#19DAFF; !important;
