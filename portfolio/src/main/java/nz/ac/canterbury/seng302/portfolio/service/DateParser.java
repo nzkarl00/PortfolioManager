@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class DateParser {
 
+    public static String sprintIdFail;
+
     /**
      * It takes a UserResponse and outputs a readable date string.
      * @param userReply The UserResponse with a date to parse
@@ -123,6 +125,7 @@ public class DateParser {
 
             // make sure you're not comparing to the sprint you are changing
             && temp.getId() != sprint.getId()) {
+                sprintIdFail = temp.getName();
                 return false;
             }
         }

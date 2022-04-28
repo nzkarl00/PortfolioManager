@@ -140,8 +140,8 @@ public class EditSprintController {
 
         // moving the harder sprint date checking to a service helper class that can be easily unit tested
         List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
-        if (Boolean.FALSE.equals(DateParser.sprintDateCheck(sprints, sprint, checkStartDate, checkEndDate))) {
-            errorCode = "Sprint dates overlap with existing sprints";
+        if (!DateParser.sprintDateCheck(sprints, sprint, checkStartDate, checkEndDate)) {
+            errorCode = "Sprint dates overlap with " + DateParser.sprintIdFail;
             return redirect;
         }
 
