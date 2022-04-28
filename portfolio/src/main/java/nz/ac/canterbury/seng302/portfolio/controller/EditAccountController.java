@@ -30,11 +30,6 @@ public class EditAccountController {
     @Autowired
     private AccountClientService accountClientService;
 
-    String password = ""; //TODO these still need db implementation
-    String passwordConfirm = "";
-    String passwordErrorShow = "display:none;";
-    String passwordSuccessShow = "display:none;";
-    String passwordSuccessCode = "successCode";
     String editErrorShow = "display:none;";
     String editSuccessShow = "display:none;";
     String editSuccessCode = "successCode";
@@ -60,21 +55,13 @@ public class EditAccountController {
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());
         model.addAttribute("nickname", userReply.getNickname());
-        model.addAttribute("password", password);
-        model.addAttribute("passwordConfirm", passwordConfirm);
         model.addAttribute("firstname", userReply.getFirstName());
         model.addAttribute("lastname", userReply.getLastName());
         model.addAttribute("pronouns", userReply.getPersonalPronouns());
-        model.addAttribute("passwordErrorShow", passwordErrorShow);
-        model.addAttribute("passwordSuccessShow", passwordSuccessShow);
-        model.addAttribute("passwordSuccessCode", passwordSuccessCode);
         model.addAttribute("editErrorShow", editErrorShow);
         model.addAttribute("editSuccessShow", editSuccessShow);
         model.addAttribute("editSuccessCode", editSuccessCode);
 
-        passwordErrorShow = "display:none;";
-        passwordSuccessShow = "display:none;";
-        passwordSuccessCode = "successCode";
         editErrorShow = "display:none;";
         editSuccessShow = "display:none;";
         editSuccessCode = "successCode";
@@ -87,9 +74,6 @@ public class EditAccountController {
      * the method responsible for sending the edit request to the server
      * @param principal auth token
      * @param nickname The nickname input (string)
-     * @param newPassword The password input (string password)
-     * @param currentPassword the existing password to confirm user validity (string password)
-     * @param passwordConfirm The password second input (string password)
      * @param bio The bio input (string)
      * @param firstname The first name input (string)
      * @param lastname The last name input (string)
@@ -102,9 +86,6 @@ public class EditAccountController {
     public String projectSave(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value="nickname") String nickname,
-            @RequestParam(value="newPassword") String newPassword,
-            @RequestParam(value="currentPassword") String currentPassword,
-            @RequestParam(value="passwordConfirm") String passwordConfirm,
             @RequestParam(value="bio") String bio,
             @RequestParam(value="firstname") String firstname,
             @RequestParam(value="lastname") String lastname,
@@ -114,7 +95,6 @@ public class EditAccountController {
     ) {
         Integer id = AuthStateInformer.getId(principal);
         EditUserResponse editUserResponse = accountClientService.editUser(id, firstname, "", lastname, nickname, bio, pronouns, email);
-        ChangePasswordResponse changePasswordResponse = accountClientService.editPassword(id, currentPassword, newPassword);
 
         editSuccessCode = editUserResponse.getMessage();
         if (editUserResponse.getIsSuccess()) {
@@ -125,18 +105,7 @@ public class EditAccountController {
             editSuccessShow = "display:none;";
         }
 
-        passwordSuccessCode = changePasswordResponse.getMessage();
-        if (!changePasswordResponse.getIsSuccess()) {
-            passwordErrorShow = "";
-            passwordSuccessShow = "display:none;";
-        } else {
-            passwordErrorShow = "display:none;";
-            passwordSuccessShow = "";
-        }
-
         return "redirect:/edit-account";
     }
-
-
 
 }
