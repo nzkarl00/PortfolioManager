@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 /**
- * Controller for the edit project details page
+ * Controller for the edit password page
  */
 @Controller
 public class EditPasswordController {
@@ -31,47 +31,32 @@ public class EditPasswordController {
     String passwordErrorShow = "display:none;";
     String passwordSuccessShow = "display:none;";
     String passwordSuccessCode = "successCode";
-    String editErrorShow = "display:none;";
-    String editSuccessShow = "display:none;";
-    String editSuccessCode = "successCode";
 
-    /** TODO: YIYANG UPDATE THIS
-     * Directs to the account edit, pulling user data to display
+    /**
+     * Directs to the password edit page, adding attributes to display
      * @param model The model to be used by the application for web integration
      * @return The html page to be used
      */
     @GetMapping("/edit-password")
-    public String projectForm(Model model,
+    public String passwordForm(Model model,
                               @AuthenticationPrincipal AuthState principal) {
-
-        Integer id = AuthStateInformer.getId(principal);
-        /* Add project details to the model */
-
-        UserResponse userReply;
-        userReply = accountClientService.getUserById(id);
 
         model.addAttribute("password", password);
         model.addAttribute("passwordConfirm", passwordConfirm);
         model.addAttribute("passwordErrorShow", passwordErrorShow);
         model.addAttribute("passwordSuccessShow", passwordSuccessShow);
         model.addAttribute("passwordSuccessCode", passwordSuccessCode);
-        model.addAttribute("editErrorShow", editErrorShow);
-        model.addAttribute("editSuccessShow", editSuccessShow);
-        model.addAttribute("editSuccessCode", editSuccessCode);
 
         passwordErrorShow = "display:none;";
         passwordSuccessShow = "display:none;";
         passwordSuccessCode = "successCode";
-        editErrorShow = "display:none;";
-        editSuccessShow = "display:none;";
-        editSuccessCode = "successCode";
 
         /* Return the name of the Thymeleaf template */
         return "editPassword";
     }
 
     /**
-     * the method responsible for sending the edit request to the server
+     * the method responsible for sending the edit password request to the server
      * @param principal auth token
      * @param newPassword The password input (string password)
      * @param currentPassword the existing password to confirm user validity (string password)
