@@ -86,7 +86,4 @@ public class EditPasswordController {
 
         return "redirect:/edit-password";
     }
-
-
-
 }
