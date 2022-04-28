@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
+import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,12 @@ public class AccountServerServiceTests {
      */
     @Autowired
     static AccountProfileRepository repo = Mockito.mock(AccountProfileRepository.class);
+
+    /**
+     * Mocked repo so the call to store registered users in the database does nothing instead
+     */
+    @Autowired
+    static RolesRepository roleRepo = Mockito.mock(RolesRepository.class);
 
     /**
      * Mocked account service so database checks can be replaced with fixed results
@@ -81,6 +88,7 @@ public class AccountServerServiceTests {
      */
     @BeforeEach
     void setup() {
+        ass.roleRepo = roleRepo;
         ass.repo = repo;
         ass.accountService = as;
     }
