@@ -102,8 +102,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Override
     public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
         AccountProfile profile = repo.findById(request.getId());
-        UserResponse reply = buildUserResponse(profile);
-        responseObserver.onNext(reply);
+        if (!(profile == null)) {
+            UserResponse reply = buildUserResponse(profile);
+            responseObserver.onNext(reply);
+        }
         responseObserver.onCompleted();
     }
 
@@ -116,17 +118,19 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
         EditUserResponse.Builder reply = EditUserResponse.newBuilder();
         AccountProfile profile = repo.findById(request.getUserId());
-        if (!request.getEmail().isEmpty()) { profile.setEmail(request.getEmail()); }
-        if (!request.getBio().isEmpty()) { profile.setBio(request.getBio()); }
-        if (!request.getLastName().isEmpty()) { profile.setLastName(request.getLastName()); }
-        if (!request.getFirstName().isEmpty()) { profile.setFirstName(request.getFirstName()); }
-        if (!request.getMiddleName().isEmpty()) { profile.setMiddleName(request.getMiddleName()); }
-        if (!request.getNickname().isEmpty()) { profile.setNickname(request.getNickname()); }
-        if (!request.getPersonalPronouns().isEmpty()) { profile.setPronouns(request.getPersonalPronouns()); }
-        repo.save(profile);
-        reply.setIsSuccess(true)
+        if (!(profile == null)) {
+            if (!request.getEmail().isEmpty()) { profile.setEmail(request.getEmail()); }
+            if (!request.getBio().isEmpty()) { profile.setBio(request.getBio()); }
+            if (!request.getLastName().isEmpty()) { profile.setLastName(request.getLastName()); }
+            if (!request.getFirstName().isEmpty()) { profile.setFirstName(request.getFirstName()); }
+            if (!request.getMiddleName().isEmpty()) { profile.setMiddleName(request.getMiddleName()); }
+            if (!request.getNickname().isEmpty()) { profile.setNickname(request.getNickname()); }
+            if (!request.getPersonalPronouns().isEmpty()) { profile.setPronouns(request.getPersonalPronouns()); }
+            repo.save(profile);
+            reply.setIsSuccess(true)
                 .setMessage("We edited somme s***t, idk lol");
-        responseObserver.onNext(reply.build());
+            responseObserver.onNext(reply.build());
+        }
         responseObserver.onCompleted();
     }
 
