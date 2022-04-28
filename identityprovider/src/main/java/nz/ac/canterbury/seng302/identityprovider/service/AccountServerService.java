@@ -291,6 +291,3 @@ public class AccountServerService extends UserAccountServiceImplBase{
         observer.onCompleted();
     }
 }
-
-
-}

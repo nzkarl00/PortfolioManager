@@ -103,8 +103,9 @@ public class TableController {
         if (sortMode.isEmpty()) { // update the sorting variables if there is a token to do so
             String sessionToken = CookieUtil.getValue(request, "sortMode");
             if (sessionToken != null) {
-                System.out.println(sessionToken);
                 sortMode = sessionToken.substring(0, sessionToken.length() - 4);
+              System.out.println("[SESSION COOKIE IS:] " + sessionToken);
+              System.out.println("[SORTMODE IS:] " + sortMode);
                 if (sessionToken.endsWith("_asc")) {
                     ascDesc = 0;
                 } else {

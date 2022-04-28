@@ -42,6 +42,8 @@ public class AccountProfile {
     private String pronouns;
     @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Role> roles;
+    @Column(name = "sort_mode", length = 30)
+    private String sortMode;
 
     //Necessary for Hibernate to work properly
     public AccountProfile() {}
@@ -57,9 +59,9 @@ public class AccountProfile {
      * @param firstName first name
      * @param lastName last name
      * @param pronouns users preferred pronouns
-     * @param token if a user is currently logged in, they will be set a unique token from the domain's cookie
+     * @param sortMode user's table sorting to display and persist
      */
-    public AccountProfile(String username, String passwordHash, Date registerDate, String bio, String email, String photoPath, String firstName, String lastName, String pronouns, String token) {
+    public AccountProfile(String username, String passwordHash, Date registerDate, String bio, String email, String photoPath, String firstName, String lastName, String pronouns, String sortMode) {
 //        this.id = null;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -71,6 +73,7 @@ public class AccountProfile {
         this.middleName = "";
         this.nickname = "";
         this.pronouns = pronouns;
+        this.sortMode = sortMode;
         if(photoPath != null) {
             this.photoPath = photoPath;
         } else {
@@ -144,6 +147,8 @@ public class AccountProfile {
         return nickname;
     }
 
+    public String getSortMode() { return sortMode; }
+
     public void setID(int newId) {
         this.id = newId;
     } // TODO should this be editable, is it not just a primary key?
@@ -183,4 +188,6 @@ public class AccountProfile {
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
+
+  public String setSortMode(String sortMode) { return this.sortMode = sortMode; }
 }
