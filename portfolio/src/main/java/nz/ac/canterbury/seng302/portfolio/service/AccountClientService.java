@@ -98,4 +98,19 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
                 .setOrderBy(order);
         return accountServiceStub.getPaginatedUsers(request.build());
     }
+
+    /**
+     * returns the Change password response based on the given details
+     * @param id thhe id of the user to change
+     * @param currentPassword the current user password
+     * @param newPassword the new user password
+     * @return the grpc response ChangePasswordResponse
+     */
+    public ChangePasswordResponse editPassword(int id, String currentPassword, String newPassword) {
+        ChangePasswordRequest.Builder request = ChangePasswordRequest.newBuilder();
+        request.setUserId(id)
+            .setCurrentPassword(currentPassword)
+            .setNewPassword(newPassword);
+        return accountServiceStub.changeUserPassword(request.build());
+    }
 }

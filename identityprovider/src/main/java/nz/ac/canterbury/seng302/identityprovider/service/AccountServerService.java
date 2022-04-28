@@ -125,7 +125,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
         if (!request.getPersonalPronouns().isEmpty()) { profile.setPronouns(request.getPersonalPronouns()); }
         repo.save(profile);
         reply.setIsSuccess(true)
-                .setMessage("We edited somme s***t, idk lol");
+                .setMessage("User details edited successfully");
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
@@ -262,5 +262,35 @@ public class AccountServerService extends UserAccountServiceImplBase{
         responseObserver.onCompleted();
     }
     */
+
+    /**
+     * Change the user's password specified by the request if the details are appropriate
+     * @param request the grpc request containing the change details
+     * @param observer the observer to send the response to
+     */
+    @Override
+    public void changeUserPassword(ChangePasswordRequest request, StreamObserver<ChangePasswordResponse> observer) {
+        ChangePasswordResponse.Builder response = ChangePasswordResponse.newBuilder();
+        try {
+            AccountProfile profile = accountService.getAccountById(request.getUserId());
+            if (Hasher.verify(request.getCurrentPassword(), profile.getPasswordHash())) {
+                profile.setPasswordHash(Hasher.hashPassword(request.getNewPassword()));
+                repo.save(profile);
+                response.setIsSuccess(true)
+                  .setMessage("Password changed");
+            } else {
+                response.setMessage("Password change failed: current password incorrect")
+                  .setIsSuccess(false);
+            }
+        } catch (Exception e) {
+            response.setMessage(e.getMessage())
+              .setIsSuccess(false);
+            System.out.println(e);
+        }
+        observer.onNext(response.build());
+        observer.onCompleted();
+    }
+}
+
 
 }

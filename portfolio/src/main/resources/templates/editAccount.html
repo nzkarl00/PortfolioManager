@@ -90,16 +90,7 @@
                     <label class="project_subhead" for="bio">Bio</label> <br/>
                     <textarea class="description-input project_edit_data horizontal_field bio" id="bio" th:name="bio" th:text="*{bio}"></textarea>
                 </div>
-                <div class="horizontal-group">
-                    <div class="horizontal-group-element" >
-                        <label class="project_subhead" for="password">Password</label> <br/>
-                        <input class="project_edit_data horizontal_field" id="password" type="text" th:name="password" th:value="*{password}">
-                    </div>
-                    <div class="horizontal-group-element" >
-                        <label class="project_subhead" for="passwordConfirm">Password Confirm</label> <br/>
-                        <input class="project_edit_data horizontal_field" id="passwordConfirm" type="text" th:name="passwordConfirm" th:value="*{passwordConfirm}">
-                    </div>
-                </div>
+
             </div>
 
             <!-- Form Submission -->
@@ -117,13 +108,36 @@
 
         </form>
 
+        <br>
+        <div class="row">
+
+            <div class="col-2"></div>
+
+            <div class="col-7 text-center ">
+
+
+                <button class="signup_box" th:style="${editErrorShow}">
+                    <p class="signup_error" th:text="${editSuccessCode}"/>
+                </button>
+
+                <button class="signup_box_green" th:style="${editSuccessShow}">
+                    <p class="signup_error_green" th:text="${editSuccessCode}"/>
+                </button>
+
+
+            </div>
+
+            <div class="col-3"></div>
+
+
+        </div>
+
         <div class="row-1">
             <br><br><br>
         </div>
 
     </div>
 </div>
-
 
 
 <!-- JS -->
