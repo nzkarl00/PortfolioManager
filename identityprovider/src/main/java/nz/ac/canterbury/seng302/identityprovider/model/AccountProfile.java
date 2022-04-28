@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -178,6 +179,11 @@ public class AccountProfile {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public void addRoleTestingOnly(Role role) {
+        roles = new ArrayList<>(); // note this is just for testing
+        roles.add(role);
     }
 
 }
