@@ -3,16 +3,21 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
+import nz.ac.canterbury.seng302.identityprovider.model.Role;
 import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.mockito.exceptions.base.MockitoException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class AccountServerServiceTests {
@@ -33,7 +38,7 @@ public class AccountServerServiceTests {
      * Mocked repo so the call to store registered users in the database does nothing instead
      */
     @Autowired
-    static RolesRepository roleRepo = Mockito.mock(RolesRepository.class);
+    static RolesRepository roleRepo = mock(RolesRepository.class);
 
     /**
      * Mocked account service so database checks can be replaced with fixed results
@@ -45,7 +50,15 @@ public class AccountServerServiceTests {
      */
     private StreamObserver<UserRegisterResponse> testObserver = mock(StreamObserver.class);
 
-    private static AccountProfile testAccountProfile = new AccountProfile();
+    // setup test account profile and a list of said profiles to mock the repo with
+    private static AccountProfile testAccountProfile = new AccountProfile("test username",
+        "test hash", new Date(), "test bio", "test email",
+        "test/photopath/", "firstname", "lastname", "pronouns");
+    private static ArrayList<AccountProfile> testProfiles = new ArrayList<>();
+
+    // setup test role and a list of said roles to mock the repo with
+    private static Role testRole = new Role(testAccountProfile, "1student");
+    private static ArrayList<Role> testRoles = new ArrayList<>();
 
 
     // Different parameters are required for all of these where they are checked, else the Mockito when/then calls break. That's why there are three.
@@ -151,15 +164,251 @@ public class AccountServerServiceTests {
      */
     @Test
     void getPaginatedUsersTest() {
+        // set up the profile repo findAll result with a valid account profile
+        testProfiles = new ArrayList<>();
+        testProfiles.add(testAccountProfile);
+        testRoles.add(testRole);
+        testAccountProfile.addRoleTestingOnly(testRole);
+
+        // mock the repo response
+        when(repo.findAll()).thenReturn(testProfiles);
+
+        // make the request
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder()
             .setLimit(50)
-            .setOffset(0)
-            .setOrderBy("name");
+            .setOffset(0);
+
+        // run the method we are testing with the mocked observer
         ass.getPaginatedUsers(request.build(), testPaginatedObserver);
+
+        // test we are receiving and processing correctly
+        verify(testPaginatedObserver, times(1)).onCompleted();
+        ArgumentCaptor<PaginatedUsersResponse> captor = ArgumentCaptor.forClass(PaginatedUsersResponse.class);
+        verify(testPaginatedObserver, times(1)).onNext(captor.capture());
+        PaginatedUsersResponse response = captor.getValue();
+
+        // for debugging
+        for (UserResponse userResponse : response.getUsersList()) {
+            System.out.println(userResponse);
+        }
+
+        // make sure we get the user we put in during set up
+        assertEquals(1, response.getUsersCount());
+    }
+
+    /**
+     * Tests the grpc call to get paginated users that don't exist "far down" in the repo
+     */
+    @Test
+    void getPaginatedUsersOutOfRangeTest() {
+        // set up the profile repo findAll result with a valid account profile
+        testProfiles = new ArrayList<>();
+        testProfiles.add(testAccountProfile);
+        testRoles.add(testRole);
+        testAccountProfile.addRoleTestingOnly(testRole);
+
+        // mock the repo response
+        when(repo.findAll()).thenReturn(testProfiles);
+
+        // make the request
+        GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder()
+            .setLimit(50)
+            .setOffset(50);
+
+        // run the method we are testing with the mocked observer
+        ass.getPaginatedUsers(request.build(), testPaginatedObserver);
+
+        // test we are receiving and processing correctly
+        verify(testPaginatedObserver, times(1)).onCompleted();
+        ArgumentCaptor<PaginatedUsersResponse> captor = ArgumentCaptor.forClass(PaginatedUsersResponse.class);
+        verify(testPaginatedObserver, times(1)).onNext(captor.capture());
+        PaginatedUsersResponse response = captor.getValue();
+
+        // for debugging
+        for (UserResponse userResponse : response.getUsersList()) {
+            System.out.println(userResponse);
+        }
+
+        // make sure we get the user we put in during set up
+        assertEquals(0, response.getUsersCount());
+    }
+
+    /**
+     * Tests the grpc call to get paginated users that do exist "far down" in the repo
+     */
+    @Test
+    void getPaginatedUsersInRangeTest() {
+        // set up the profile repo findAll result with valid account profiles
+        testProfiles = new ArrayList<>();
+        for (int i = 0; i < 51; i++) {
+            testProfiles.add(testAccountProfile);
+        }
+        testRoles.add(testRole);
+        testAccountProfile.addRoleTestingOnly(testRole);
+
+        // mock the repo response
+        when(repo.findAll()).thenReturn(testProfiles);
+
+        // make the request
+        GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder()
+            .setLimit(50)
+            .setOffset(50);
+
+        // run the method we are testing with the mocked observer
+        ass.getPaginatedUsers(request.build(), testPaginatedObserver);
+
+        // test we are receiving and processing correctly
         verify(testPaginatedObserver, times(1)).onCompleted();
         ArgumentCaptor<PaginatedUsersResponse> captor = ArgumentCaptor.forClass(PaginatedUsersResponse.class);
         verify(testPaginatedObserver, times(1)).onNext(captor.capture());
         PaginatedUsersResponse response = captor.getValue();
         assertTrue(response.getUsersCount() >= 0); //TODO make it actually return data in the repo? can this be done?
+
+        // for debugging
+        for (UserResponse userResponse : response.getUsersList()) {
+            System.out.println(userResponse);
+        }
+
+        // make sure we get the user we put in during set up
+        assertEquals(1, response.getUsersCount());
+    }
+
+    /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<UserResponse> testUserResponseObserver = mock(StreamObserver.class);
+
+    /**
+     * Tests the grpc call to get a userRepsonse by a userId
+     */
+    @Test
+    void getUserAccountByIdTest() {
+        // set up the profile repo findAll result with a valid account profile
+        testProfiles = new ArrayList<>();
+        testProfiles.add(testAccountProfile);
+        testRoles.add(testRole);
+        testAccountProfile.addRoleTestingOnly(testRole);
+
+        // mock the repo response
+        when(repo.findById(1)).thenReturn(testAccountProfile);
+
+        // make the request
+        GetUserByIdRequest.Builder request = GetUserByIdRequest.newBuilder()
+            .setId(1);
+
+        // run the method we are testing with the mocked observer
+        ass.getUserAccountById(request.build(), testUserResponseObserver);
+
+        // test we are receiving and processing correctly
+        verify(testUserResponseObserver, times(1)).onCompleted();
+        ArgumentCaptor<UserResponse> captor = ArgumentCaptor.forClass(UserResponse.class);
+        verify(testUserResponseObserver, times(1)).onNext(captor.capture());
+        UserResponse response = captor.getValue();
+
+        // make sure we get the user we put in during set up
+        assertEquals("test username", response.getUsername());
+    }
+
+    /**
+     * Tests the grpc call to get a user response by a userId
+     */
+    @Test
+    void getUserAccountByIdUserNull() {
+        // set up the profile repo findAll result with a valid account profile
+        testProfiles = new ArrayList<>();
+        testProfiles.add(testAccountProfile);
+        testRoles.add(testRole);
+        testAccountProfile.addRoleTestingOnly(testRole);
+
+        // mock the repo response
+        when(repo.findById(1)).thenReturn(null);
+
+        // make the request
+        GetUserByIdRequest.Builder request = GetUserByIdRequest.newBuilder()
+            .setId(1);
+
+        // run the method we are testing with the mocked observer
+        ass.getUserAccountById(request.build(), testUserResponseObserver);
+
+        // test we are receiving and processing correctly
+        verify(testUserResponseObserver, times(1)).onCompleted();
+        ArgumentCaptor<UserResponse> captor = ArgumentCaptor.forClass(UserResponse.class);
+        verify(testUserResponseObserver, times(0)).onNext(captor.capture());
+
+        // as nothing has been captured it should throw an error that we haven't caught anything
+        assertThrows(MockitoException.class, captor::getValue);
+    }
+
+    /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<EditUserResponse> testUserEditObserver = mock(StreamObserver.class);
+
+    /**
+     * Tests the grpc call to edit a user using the grpc call to the idp
+     */
+    @Test
+    void editUserTest() {
+        // set up the profile repo findAll result with a valid account profile
+        testProfiles = new ArrayList<>();
+        testProfiles.add(testAccountProfile);
+        testRoles.add(testRole);
+        testAccountProfile.addRoleTestingOnly(testRole);
+
+        // mock the repo response
+        when(repo.findById(1)).thenReturn(testAccountProfile);
+
+        String expected = "test@test.test";
+
+        // make the request
+        EditUserRequest.Builder request = EditUserRequest.newBuilder()
+            .setUserId(1)
+            .setEmail(expected);
+
+        // run the method we are testing with the mocked observer
+        ass.editUser(request.build(), testUserEditObserver);
+
+        verify(testUserEditObserver, times(1)).onCompleted();
+        ArgumentCaptor<EditUserResponse> captor = ArgumentCaptor.forClass(EditUserResponse.class);
+        verify(testUserEditObserver, times(1)).onNext(captor.capture());
+        EditUserResponse response = captor.getValue();
+
+        // test that the user email has changed as expected
+        assertEquals(expected, testAccountProfile.getEmail());
+
+        // change it back for any other tests
+        testAccountProfile.setEmail("test email");
+    }
+
+    /**
+     * Tests the grpc call to edit a user using the grpc call to the idp
+     */
+    @Test
+    void editUserTestUserNull() {
+        // set up the profile repo findAll result with a valid account profile
+        testProfiles = new ArrayList<>();
+        testProfiles.add(testAccountProfile);
+        testRoles.add(testRole);
+        testAccountProfile.addRoleTestingOnly(testRole);
+
+        // mock the repo response
+        when(repo.findById(1)).thenReturn(null);
+
+        String hopes = "test@test.test";
+
+        // make the request
+        EditUserRequest.Builder request = EditUserRequest.newBuilder()
+            .setUserId(1)
+            .setEmail(hopes);
+
+        // run the method we are testing with the mocked observer
+        ass.editUser(request.build(), testUserEditObserver);
+
+        verify(testUserEditObserver, times(1)).onCompleted();
+        ArgumentCaptor<EditUserResponse> captor = ArgumentCaptor.forClass(EditUserResponse.class);
+        verify(testUserEditObserver, times(0)).onNext(captor.capture());
+
+        // as nothing has been captured it should throw an error that we haven't caught anything
+        assertThrows(MockitoException.class, captor::getValue);
     }
 }

@@ -14,7 +14,7 @@ class DateParsingTests {
 
     @Test
     void displayDateCurrentMonth() {
-        String expectedString = "28 April 2022";
+        String expectedString = " 28 April 2022";
         Calendar c = Calendar.getInstance();
         c.set(2022, 3, 28, 0, 0);
         Long seconds = c.getTime().getTime();
@@ -25,7 +25,7 @@ class DateParsingTests {
 
     @Test
     void displayDatePastMonth() {
-        String expectedString = "28 March 2022 (1 Month)";
+        String expectedString = " 28 March 2022 (1 Month)";
         Calendar c = Calendar.getInstance();
         c.set(2022, 2, 28, 0, 0);
         Long seconds = c.getTime().getTime();
@@ -36,7 +36,7 @@ class DateParsingTests {
 
     @Test
     void displayDateLongPastMonth() {
-        String expectedString = "28 December 2021 (4 Months)";
+        String expectedString = " 28 December 2021 (4 Months)";
         Calendar c = Calendar.getInstance();
         c.set(2021, 11, 28, 0, 0);
         Long seconds = c.getTime().getTime();
@@ -47,9 +47,31 @@ class DateParsingTests {
 
     @Test
     void displayDateFutureMonth() {
-        String expectedString = "28 November 2022";
+        String expectedString = " 28 November 2022";
         Calendar c = Calendar.getInstance();
         c.set(2022, 10, 28, 0, 0);
+        Long seconds = c.getTime().getTime();
+        UserResponse.Builder response = UserResponse.newBuilder().setCreated(
+            Timestamp.newBuilder().setSeconds(seconds/1000));
+        assertEquals(expectedString, DateParser.displayDate(response.build()));
+    }
+
+    @Test
+    void displayDateFutureYear() {
+        String expectedString = " 28 December 2020 (1 Year and 4 Months)";
+        Calendar c = Calendar.getInstance();
+        c.set(2020, 11, 28, 0, 0);
+        Long seconds = c.getTime().getTime();
+        UserResponse.Builder response = UserResponse.newBuilder().setCreated(
+            Timestamp.newBuilder().setSeconds(seconds/1000));
+        assertEquals(expectedString, DateParser.displayDate(response.build()));
+    }
+
+    @Test
+    void displayDateFutureYears() {
+        String expectedString = " 28 December 2019 (2 Years and 4 Months)";
+        Calendar c = Calendar.getInstance();
+        c.set(2019, 11, 28, 0, 0);
         Long seconds = c.getTime().getTime();
         UserResponse.Builder response = UserResponse.newBuilder().setCreated(
             Timestamp.newBuilder().setSeconds(seconds/1000));

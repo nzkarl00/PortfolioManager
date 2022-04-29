@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -178,6 +179,14 @@ public class AccountProfile {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    // this has to be bad practice right?
+    // but as I have no idea how to mock the relationship of linked tables
+    // it should be fine for now
+    public void addRoleTestingOnly(Role role) {
+        roles = new ArrayList<>(); // note this is just for testing
+        roles.add(role);
     }
 
     public void setPasswordHash(String passwordHash) {
