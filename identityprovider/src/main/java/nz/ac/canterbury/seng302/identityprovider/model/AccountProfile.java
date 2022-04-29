@@ -189,4 +189,7 @@ public class AccountProfile {
         roles.add(role);
     }
 
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
 }

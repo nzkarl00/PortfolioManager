@@ -22,10 +22,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-/**
- * The GRPC server side service class
- * contains many of the protobuf implementations to allow communication between the idp and portfolio servers
- */
 @GrpcService
 public class AccountServerService extends UserAccountServiceImplBase{
 
@@ -175,6 +171,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         Boolean isSorted = false;
 
+        System.out.println(request.getOrderBy()+" get function");
+
         if (request.getOrderBy().equals("roles_asc")) {
 
             List<Role> roles = roleRepo.findAllByOrderByRoleAsc();
@@ -198,12 +196,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
         responseObserver.onCompleted();
     }
 
-    /**
-     * returns the correct sorting of users based on the GRPC request
-     * @param request the GRPC request
-     * @return the list of account profiles sorted as to the grpc request
-     */
     public List<AccountProfile> sortUsers(GetPaginatedUsersRequest request) {
+        System.out.println(request.getOrderBy()+" sort function");
         switch (request.getOrderBy()) {
             case "first_name_asc":
                 return repo.findAllByOrderByFirstNameAsc();
@@ -226,4 +220,31 @@ public class AccountServerService extends UserAccountServiceImplBase{
         }
     }
 
+    /**
+     * Change the user's password specified by the request if the details are appropriate
+     * @param request the grpc request containing the change details
+     * @param observer the observer to send the response to
+     */
+    @Override
+    public void changeUserPassword(ChangePasswordRequest request, StreamObserver<ChangePasswordResponse> observer) {
+        ChangePasswordResponse.Builder response = ChangePasswordResponse.newBuilder();
+        try {
+            AccountProfile profile = accountService.getAccountById(request.getUserId());
+            if (Hasher.verify(request.getCurrentPassword(), profile.getPasswordHash())) {
+                profile.setPasswordHash(Hasher.hashPassword(request.getNewPassword()));
+                repo.save(profile);
+                response.setIsSuccess(true)
+                    .setMessage("Password changed");
+            } else {
+                response.setMessage("Password change failed: current password incorrect")
+                    .setIsSuccess(false);
+            }
+        } catch (Exception e) {
+            response.setMessage(e.getMessage())
+                .setIsSuccess(false);
+            System.out.println(e);
+        }
+        observer.onNext(response.build());
+        observer.onCompleted();
+    }
 }
