@@ -83,6 +83,7 @@ class AccountProcessingTest {
         // set up the profile repo findAll result with a valid account profile
         testProfiles = new ArrayList<>();
         testProfiles.add(testAccountProfile);
+        testRole.setUserRoleId(1L);
         testRoles.add(testRole);
         testAccountProfile.addRoleTestingOnly(testRole);
 
@@ -90,7 +91,8 @@ class AccountProcessingTest {
         when(repo.findById(1)).thenReturn(testAccountProfile);
 
         ArrayList<AccountProfile> users = new ArrayList<>();
-        AccountProcessing.updateUsersSorted(users, new ArrayList<>(), ass.repo);
+
+        AccountProcessing.updateUsersSorted(users, testRoles, ass.repo);
         assertFalse(users.isEmpty());
         assertEquals(testAccountProfile, users.get(0));
     }
