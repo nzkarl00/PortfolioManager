@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
  * The GRPC client side service class
  * contains many of the protobuf implementations to allow communication between the idp and portfolio servers
  */
-@Component
+// @Component this kills the program, idk what it is for
 public class AccountClientService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     @GrpcClient("identity-provider-grpc-server")
