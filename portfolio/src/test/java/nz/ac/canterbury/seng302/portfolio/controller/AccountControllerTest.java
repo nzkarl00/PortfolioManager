@@ -17,8 +17,7 @@ import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -35,7 +34,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -53,6 +51,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -121,10 +120,14 @@ public class AccountControllerTest {
 
     @Test
     public void getAccountWithValidCredentials() throws Exception {
-        when(authStateInformer.getId(validAuthState)).thenReturn(1);
-        when(accountClientService.getUserById(1)).thenReturn(testUser);
-        mockMvc.perform(get("/account"))
-        .andExpect(status().isOk());
+        try (MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class)) {
+            utilities.when(() -> AuthStateInformer.getId(validAuthState))
+                .thenReturn(1);
+
+            when(accountClientService.getUserById(1)).thenReturn(testUser);
+            mockMvc.perform(get("/account"))
+                .andExpect(status().isOk());
+        }
     }
 
 
