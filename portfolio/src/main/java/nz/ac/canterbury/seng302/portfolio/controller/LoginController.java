@@ -25,9 +25,6 @@ public class LoginController {
     @Autowired
     private AuthenticateClientService authenticateClientService;
 
-    @Autowired
-    private AccountClientService accountClientService;
-
     /**
      * Attempts to authenticate with the Identity Provider via gRPC.
      *

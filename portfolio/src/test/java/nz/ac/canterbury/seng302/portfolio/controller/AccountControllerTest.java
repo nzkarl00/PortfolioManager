@@ -121,7 +121,7 @@ public class AccountControllerTest {
 
     @Test
     public void getAccountWithValidCredentials() throws Exception {
-        //when(authStateInformer.getId(validAuthState)).thenReturn(1);
+        when(authStateInformer.getId(validAuthState)).thenReturn(1);
         when(accountClientService.getUserById(1)).thenReturn(testUser);
         mockMvc.perform(get("/account"))
         .andExpect(status().isOk());
