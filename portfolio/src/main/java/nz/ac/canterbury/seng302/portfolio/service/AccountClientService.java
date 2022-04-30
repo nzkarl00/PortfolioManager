@@ -2,12 +2,14 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 /**
  * The GRPC client side service class
  * contains many of the protobuf implementations to allow communication between the idp and portfolio servers
  */
+@Component
 public class AccountClientService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     @GrpcClient("identity-provider-grpc-server")

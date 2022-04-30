@@ -25,9 +25,6 @@ public class AccountController {
     @Autowired
     private AccountClientService accountClientService;
 
-    @Autowired
-    private GreeterClientService greeterClientService;
-
     /**
      * control the displaying of account details
      * @param principal the auth token
