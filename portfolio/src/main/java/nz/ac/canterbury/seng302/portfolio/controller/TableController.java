@@ -132,6 +132,25 @@ public class TableController {
             Model model
     ) throws Exception {
 
+        if (role.equals("teacher")) {
+            User user = null;
+            for (User userTemp : users) {
+                if (userTemp.getUsername().equals(username)) {
+                    user = userTemp;
+                }
+            }
+            // Begins the checks if a user is found
+            if (user != null) {
+                Integer userId = user.getId();
+                if (user.listRoles().size() > 1) {
+                    if (!user.listRoles().contains(roleAdd)) {
+                        // Performs deletion if it passes all checks
+                        accountClientService.addRole(roleAdd, userId);
+                    }
+                }
+            }
+        }
+
         return "redirect:/user-list";
     }
 

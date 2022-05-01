@@ -89,4 +89,21 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         request.setRole(UserRole.valueOf(roleId));
         accountServiceStub.removeRoleFromUser(request.build());
     }
+
+    public void addRole(String role, Integer userId) {
+        ModifyRoleOfUserRequest.Builder request = ModifyRoleOfUserRequest.newBuilder();
+        request.setUserId(userId);
+        Integer roleId;
+        if (role.equals("student")) {
+            roleId = 0;
+        } else if (role.equals("teacher")) {
+            roleId = 1;
+        } else if (role.equals("admin")) {
+            roleId = 2;
+        } else {
+            roleId = 0;
+        }
+        request.setRole(UserRole.valueOf(roleId));
+        accountServiceStub.addRoleToUser(request.build());
+    }
 }
