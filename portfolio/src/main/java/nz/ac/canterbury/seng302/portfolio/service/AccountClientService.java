@@ -1,8 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import com.google.protobuf.ByteString;
+import io.grpc.Status;
+import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,6 +16,7 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
     @GrpcClient("identity-provider-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceBlockingStub accountServiceStub;
+    private UserAccountServiceGrpc.UserAccountServiceStub photoStub;
 
     /**
      * makes a UserRegisterRequest to receive a UserRegisterResponse
@@ -109,17 +113,34 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.changeUserPassword(request.build());
     }
 
-    public ProfilePhotoUploadMetaData createPhotoMetaData(int id, String fileType) {
-        ProfilePhotoUploadMetadata.Builder metaData = ProfilePhotoUploadMetadata.newBuilder();
-        metaData.setUserId(id)
-                .setFileType(fileType);
-        return metaData(metaData.build());
+    public ProfilePhotoUploadMetadata createPhotoMetaData(int id, String fileType) {
+        ProfilePhotoUploadMetadata metaData = ProfilePhotoUploadMetadata.newBuilder()
+        .setUserId(id)
+        .setFileType(fileType)
+        .build();
+        return metaData;
     }
 
     public FileUploadStatusResponse editPhoto(ProfilePhotoUploadMetadata metaData, ByteString fileContent) {
-        UploadUserProfilePhotoRequest.Builder request = UploadUserProfilePhotoRequest.newBuilder();
-        request.setMetaData(metaData)
-                .setFileContent(fileContent);
-        return accountServiceStub.uploadUserProfilePhoto(request.build());
+        StreamObserver<UploadUserProfilePhotoRequest> requestStreamObserver = photoStub.uploadUserProfilePhoto(new StreamObserver<FileUploadStatusResponse>() {
+            @Override
+            public void onNext(FileUploadStatusResponse value) {
+                System.out.println("Uploading photo section " + value.getMessage() + " " + value.getSerializedSize());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                System.out.println("Upload failed, ERROR: " + Status.fromThrowable(t));
+            }
+
+            @Override
+            public void onCompleted() {
+                System.out.println("Upload complete");
+            }
+        });
+        UploadUserProfilePhotoRequest request = UploadUserProfilePhotoRequest.newBuilder()
+            .setMetaData(metaData)
+            .setFileContent(fileContent)
+            .build();
     }
 }
