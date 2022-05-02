@@ -261,8 +261,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 roleId = role.getUserRoleId();
                 System.out.println(roleId);
                 roleRepo.deleteById(roleId);
-                user.deleteRole(role);
-                repo.save(user);
             }
         }
 
