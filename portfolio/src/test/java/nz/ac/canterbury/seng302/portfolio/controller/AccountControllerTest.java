@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import com.google.protobuf.Timestamp;
 import com.google.rpc.context.AttributeContext;
+import nz.ac.canterbury.seng302.portfolio.authentication.AuthenticationClientInterceptor;
 import nz.ac.canterbury.seng302.portfolio.authentication.JwtAuthenticationFilter;
 import nz.ac.canterbury.seng302.portfolio.authentication.JwtAuthenticationToken;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
@@ -60,6 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = AccountController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class AccountControllerTest {
 
     public AuthState validAuthState = AuthState.newBuilder()
@@ -123,6 +125,7 @@ public class AccountControllerTest {
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class)
                 .setCustomArgumentResolvers(new CustomArgumentResolver())
+                .addInterceptors((HandlerInterceptor) new AuthenticationClientInterceptor())
                 .build();
     }
 

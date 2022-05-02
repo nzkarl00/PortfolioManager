@@ -36,6 +36,7 @@ public class AccountController {
         @AuthenticationPrincipal AuthState principal,
         Model model
     ) {
+        System.out.println(principal);
         Integer id = AuthStateInformer.getId(principal);
 
         // Attributes For header
