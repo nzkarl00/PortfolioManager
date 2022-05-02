@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import com.google.protobuf.ByteString;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
@@ -106,5 +107,19 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
             .setCurrentPassword(currentPassword)
             .setNewPassword(newPassword);
         return accountServiceStub.changeUserPassword(request.build());
+    }
+
+    public ProfilePhotoUploadMetaData createPhotoMetaData(int id, String fileType) {
+        ProfilePhotoUploadMetadata.Builder metaData = ProfilePhotoUploadMetadata.newBuilder();
+        metaData.setUserId(id)
+                .setFileType(fileType);
+        return metaData(metaData.build());
+    }
+
+    public FileUploadStatusResponse editPhoto(ProfilePhotoUploadMetadata metaData, ByteString fileContent) {
+        UploadUserProfilePhotoRequest.Builder request = UploadUserProfilePhotoRequest.newBuilder();
+        request.setMetaData(metaData)
+                .setFileContent(fileContent);
+        return accountServiceStub.uploadUserProfilePhoto(request.build());
     }
 }
