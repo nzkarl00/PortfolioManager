@@ -104,7 +104,13 @@
             <div class="col-7 text-center ">
 
 
-                <p class="login_error" th:text="${signupMessage}" />
+                <button class="signup_box" th:style="${errorShow}">
+                    <p class="signup_error" th:text="${successCode}"/>
+                </button>
+
+                <button class="signup_box_green" th:style="${successShow}">
+                    <p class="signup_error_green" th:text="${successCode}"/>
+                </button>
 
 
             </div>

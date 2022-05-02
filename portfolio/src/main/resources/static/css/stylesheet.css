@@ -114,6 +114,27 @@
 }
 
 
+.signup_error {
+
+  font-family: nexaBold !important;
+  background-color:#FF202E; !important
+  font-size: 125% !important;
+  colour: #FFFFFF !important;
+  align:center !important;
+
+}
+
+.signup_error_green {
+
+  font-family: nexaBold !important;
+  background-color:#08F722; !important
+  font-size: 125% !important;
+  colour: #FFFFFF !important;
+  align:center !important;
+
+}
+
+
 
 .hr {
 
@@ -334,6 +355,33 @@
     padding-top: 1rem;
 
 }
+.signup_box {
+
+    background-color:#FF202E; !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-family: nexaLight !important;
+    padding-top: 1rem;
+
+}
+
+.signup_box_green {
+
+    background-color:#08F722; !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-family: nexaLight !important;
+    padding-top: 1rem;
+
+}
 
 .delete {
 
@@ -526,4 +574,60 @@
 
     font-color: #056BFA !important;
 
+}
+
+.table_head {
+
+  border-radius: 40px 40px 0px 0px !important;
+  align: center !important;
+  content-align: center !important;
+  background-color: #19DAFF !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.table_button {
+
+    align: center !important;
+    content-align: center !important;
+    font-family: nexaBold !important;
+    font-size: 150% !important;
+    color: #19DAFF !important;
+    padding-left: 30%;
+    border: none;
+    background: none;
+    text-decoration: none !important;
+    color: #FFFFFF !important;
+}
+
+.table_text {
+    font-family: nexa !important;
+    font-size: 100% !important;
+}
+
+.table_text_arrow {
+    color: #FFFFFF !important;
+    font-family: nexa !important;
+    font-size: 100% !important;
+    display: inline
+}
+
+.tab-pane {
+
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0px 0px 5px 5px;
+    padding: 10px;
+}
+
+.nav-tabs {
+    margin-bottom: 0;
+}
+
+.header_project_dates {
+    text-align: center; !important;
+    font-family: nexaLight !important;
+    font-size: 150%;
+    color: #19DAFF !important;
 }

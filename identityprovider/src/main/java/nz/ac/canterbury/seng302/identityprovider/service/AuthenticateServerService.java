@@ -52,13 +52,13 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
             } else {
                 System.out.println("Could not verify password against expected hash.");
                 reply
-                    .setMessage("Log in attempt failed: username or password incorrect")
+                    .setMessage("Log in attempt failed: password incorrect")
                     .setSuccess(false)
                     .setToken("");
             }
         } catch (Exception e) {
             reply
-                .setMessage("Log in attempt failed: username or password incorrect")
+                .setMessage("Log in attempt failed: username invalid")
                 .setSuccess(false)
                 .setToken("");
             System.out.println(e);

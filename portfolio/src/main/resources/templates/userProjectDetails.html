@@ -14,58 +14,16 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!-- For the FullCalendar to work -->
+    <link th:href="@{/css/fullcalendar.css}" rel="stylesheet">
 </head>
 <body>
 
 
 
-<!-- Header -->
-<nav class="navbar sticky-top navbar-light bg-light">
-    <div class="container-fluid ms-auto fluid">
-
-
-        <p class="nav-item header_date fluid">
-            Member Since: <br>
-            <span th:text="${date}" ></span>
-        </p>
-
-        <p class="nav-item header_name"><span th:text="${username}" ></span></p>
-
-        <div class="dropdown">
-            <button class="btn btn-primary dropdown-toggle dropdown-circle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{/profile_none.png}" width=90em height=90em alt="">
-            </button>
-            <ul class="dropdown-menu align-middle">
-                <li><a class="dropdown-item" th:href="@{'/landing'}">Project</a></li>
-                <li><a class="dropdown-item" th:href="@{'/account'}">Account</a></li>
-                <li><a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutConfirmationModal">Logout</a></li>
-            </ul>
-        </div>
-    </div>
-    </div>
-</nav>
-
-
-
-<!-- Modal -->
-<div class="modal fade" id="logoutConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="logoutConfirmationModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="modal-title align-middle">Logout</span>
-            </div>
-            <div class="modal-body d-flex justify-content-center">
-                Are you sure you want to logout?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary align-baseline" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary align-text-bottom">
-                    <a class="button_a" th:href="@{'/logout'}">Confirm Logout</a>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Navigation Bar -->
+<div th:replace="fragments/validUser.html :: navbar"></div>
 
 
 
@@ -83,46 +41,64 @@
 
             <div class="col-12 ">
                 <p class="body_title_large " th:text="${project.getName}" />
-            </div>
-
-        </div>
-
-        <!-- Editing body -->
-
-
-        <div class="row">
-
-            <div class="col-2"></div>
-
-            <div class="col-8 portion_body">
-
-
-                <p class="detail_date " th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
-
-
-                <div class="horizontal_field project_subtext" th:text="${project.getDescription}" />
-
-            </div>
-
-            <div class="col-2"></div>
-
-        </div>
-
-        <br>
-
-        <div class="row row_sprints"  th:each="sprint: ${sprints}">
-
-
-            <div class="col-2"></div>
-
-
-            <div class="col-lg-1 col-md-2 col-sm-12 col-12 ">
-            <div class="portion_sprintbody project_sprinthead " th:text="${sprint.getLabel}" />
-
+                <p class="header_project_dates" th:text="'Start Date: ' + ${project.getStartDateString} + ' - ' + 'End Date: ' + ${project.getEndDateString}"/>
                 <br>
             </div>
 
-                <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
+        </div>
+
+        <!-- Tab Buttons -->
+        <ul class="nav nav-tabs h4" style="font-family: nexaBold;">
+            <li class="active"><a data-toggle="tab" href="#calendar-tab">Planner</a></li>
+            <li><a data-toggle="tab" href="#project-details-tab">Project Details</a></li>
+        </ul>
+
+        <!-- Tab containers-->
+        <div class="tab-content">
+            <div id="calendar-tab" class="tab-pane fade in active">
+                <br><br>
+
+                <div id="calendar"></div>
+            </div>
+
+            <div id="project-details-tab" class="tab-pane fade">
+                <br><br>
+                <!-- Editing body -->
+
+
+                <div class="row">
+
+                    <div class="col-2"></div>
+
+                    <div class="col-8 portion_body">
+
+
+                        <p class="detail_date " th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
+
+
+                        <div class="horizontal_field project_subtext" th:text="${project.getDescription}" />
+
+                    </div>
+
+                    <div class="col-2"></div>
+
+                </div>
+
+                <br>
+
+                <div class="row row_sprints"  th:each="sprint: ${sprints}">
+
+
+                    <div class="col-2"></div>
+
+
+                    <div class="col-lg-1 col-md-2 col-sm-12 col-12 ">
+                        <div class="portion_sprintbody project_sprinthead " th:text="${sprint.getLabel}" />
+
+                        <br>
+                    </div>
+
+                    <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
 
 
                         <div class="sprint-title project_subhead " th:text="${sprint.getName}" />
@@ -130,31 +106,62 @@
                         <div class="sprint-description project_edit_data" th:text="${sprint.getDescription}" />
 
 
+                    </div>
+
+                    <div class="col-2"></div>
+
                 </div>
 
+                <div class="row-1">
+                    <br>
 
+                    <button class="edit ">
+                        <a class=" button_a" th:href="@{/landing}">      Return      </a>
+                    </button>
+                </div>
+                <div class="row-1">
 
-            <div class="col-2"></div>
+                    <br><br><br>
+                </div>
 
+            </div>
 
-
+            </div>
         </div>
 
-        <div class="row-1">
-            <br>
-
-            <button class="edit ">
-                <a class=" button_a" th:href="@{/landing}">      Return      </a>
-            </button>
-        </div>
-        <div class="row-1">
-
-            <br><br><br>
-        </div>
-
-    </div>
 </div>
 
+<script type="text/javascript" th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+
+        // Gets the date project start and end dates and format's it as Date
+        var stringStartDate = new Date([[${project.getStartDate()}]].toString());
+        var stringEndDate = new Date([[${project.getEndDate()}]].toString());
+
+        // Add an extra day to end date since time is set to 00:00:00
+        stringEndDate.setDate(stringEndDate.getDate() + 1);
+
+        // Striped to be formatted as YYYY-MM-DD (needed for FullCalendar)
+        var startDate =  new Date(stringStartDate.getTime() - (stringStartDate.getTimezoneOffset() * 60000 )).toISOString().split("T")[0];
+        var endDate =  new Date(stringEndDate.getTime() -  (stringEndDate.getTimezoneOffset() * 60000 )).toISOString().split("T")[0];
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+
+            initialView: 'dayGridMonth',
+
+            // Greys out area's not in use by the project
+            validRange: {
+                start: startDate,
+                end: endDate
+            }
+
+        });
+        calendar.render();
+    });
+</script>
+
+<!-- JS -->
 <script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

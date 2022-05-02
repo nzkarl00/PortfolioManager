@@ -44,7 +44,7 @@ public class DetailsController {
 
     /**
      * Returns the html page based on the user's role
-     * @param principal
+     * @param principal the auth token
      * @param model The model to be used by the application for web integration
      * @return The html page to direct to
      * @throws Exception
@@ -58,38 +58,11 @@ public class DetailsController {
 
         Integer id = AuthStateInformer.getId(principal);
 
-        String username = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("name"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("-100");
-
         // Attributes For header
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
-        Long seconds = userReply.getCreated().getSeconds();
-        Date date = new Date(seconds * 1000); // turn into millis
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "dd LLLL yyyy" );
-        String stringDate = " " + dateFormat.format( date );
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int month = cal.get(Calendar.MONTH);
-        int year = cal.get(Calendar.YEAR);
-        Calendar currentCalendar = Calendar.getInstance();
-        cal.setTime(new Date());
-        int currentMonth = currentCalendar.get(Calendar.MONTH);
-        int currentYear = currentCalendar.get(Calendar.YEAR);
 
-        int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
-        if (totalMonth > 0){
-            if (totalMonth > 1) {
-                stringDate += " (" + totalMonth + " Months)";
-            } else {
-                stringDate += " (" + totalMonth + " Month)";
-            }
-        }
-
-        model.addAttribute("date",  stringDate);
+        model.addAttribute("date",  DateParser.displayDate(userReply));
         model.addAttribute("username", userReply.getUsername());
 
         List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
@@ -117,6 +90,15 @@ public class DetailsController {
         }
     }
 
+    /**
+     * The mapping to delete a sprint
+     * @param principal auth token
+     * @param projectId id param for project to delete sprint from
+     * @param sprintId sprint id under project to delete
+     * @param model the model to add attributes to
+     * @return A location of where to go next
+     * @throws Exception
+     */
     @PostMapping("delete-sprint")
     public String sprintDelete(
             @AuthenticationPrincipal AuthState principal,
@@ -124,15 +106,9 @@ public class DetailsController {
             @RequestParam(value="sprintId") Integer sprintId,
             Model model
     ) throws Exception {
-        // Below code is just begging to be added as a method somewhere...
-        String role = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("role"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("NOT FOUND");
+        String role = AuthStateInformer.getRole(principal);
 
         Sprint sprint = sprintService.getSprintById(sprintId);
-
 
         if (role.equals("teacher")) {
             repository.deleteById(sprintId);
@@ -152,19 +128,21 @@ public class DetailsController {
         return "redirect:/details?id=" + projectId;
     }
 
+    /**
+     * The mapping to create a new sprint for a specified project
+     * @param principal auth token
+     * @param projectId id param for project to create sprint for
+     * @param model the model to add attributes to
+     * @return A location of where to go next
+     * @throws Exception
+     */
     @PostMapping("/new-sprint")
     public String newSprint(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value="projectId") Integer projectId,
             Model model
     ) throws Exception {
-        // Below code is just begging to be added as a method somewhere...
-        String role = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("role"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("NOT FOUND");
-
+        String role = AuthStateInformer.getRole(principal);
         List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
 
         Integer valueId = 0;
@@ -174,22 +152,20 @@ public class DetailsController {
         Project project = projectService.getProjectById(projectId);
         Date startDate;
         Date endDate;
+        Calendar calendar = Calendar.getInstance();
+        int noOfDays = 21;
+        //check to see if the project already has a sprint
         if (valueId == 0) {
-
+            // if not use the project start date to get the new sprint start date
             startDate = project.getStartDate();
 
-            int noOfDays = 21;
-            Calendar calendar = Calendar.getInstance();
             calendar.setTime(startDate);
             calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
             endDate = calendar.getTime();
 
         } else {
-
-
+            // if it does use the last sprint end date for the new sprint start date
             startDate = sprints.get(sprints.size()-1).getEndDate();
-            int noOfDays = 21;
-            Calendar calendar = Calendar.getInstance();
             calendar.setTime(startDate);
             calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
             endDate = calendar.getTime();
