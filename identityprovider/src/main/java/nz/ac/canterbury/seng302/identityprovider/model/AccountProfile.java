@@ -166,5 +166,8 @@ public class AccountProfile {
         this.bio = bio;
     }
 
+    public void deleteRole(Role role) {
+        roles.remove(role);
+    }
 
 }

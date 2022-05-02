@@ -252,22 +252,17 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 break;
 
         }
-        System.out.println(2);
 
         Long roleId = null;
 
-        System.out.println(3);
-
         List<Role> roles = roleRepo.findAllByRegisteredUser(user);
-        System.out.println(roles);
-        System.out.println(4);
         for (Role role: roles) {
-            System.out.println(role.getRole());
-            System.out.println(roleString);
             if (role.getRole().equals(roleString)) {
                 roleId = role.getUserRoleId();
                 System.out.println(roleId);
                 roleRepo.deleteById(roleId);
+                user.deleteRole(role);
+                repo.save(user);
             }
         }
 
