@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 
 import com.google.protobuf.Timestamp;
 import com.google.rpc.context.AttributeContext;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -48,6 +50,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -57,10 +60,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = AccountController.class)
-@AutoConfigureMockMvc(addFilters = false)
 public class AccountControllerTest {
 
-    private AuthState validAuthState = AuthState.newBuilder()
+    public AuthState validAuthState = AuthState.newBuilder()
             .setIsAuthenticated(true)
             .setNameClaimType("name")
             .setRoleClaimType("role")
@@ -87,7 +89,7 @@ public class AccountControllerTest {
             .setPersonalPronouns("test/test")
             .build();
 
-    private HandlerMethodArgumentResolver putAuthenticationPrincipal = new HandlerMethodArgumentResolver() {
+    public class CustomArgumentResolver implements HandlerMethodArgumentResolver {
         @Override
         public boolean supportsParameter(MethodParameter parameter) {
             return parameter.getParameterType().isAssignableFrom(AuthState.class);
@@ -97,7 +99,7 @@ public class AccountControllerTest {
         public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
             return validAuthState;
         }
-    };
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -111,10 +113,16 @@ public class AccountControllerTest {
     @Mock
     private AuthStateInformer authStateInformer = Mockito.mock(AuthStateInformer.class);
 
+    private Principal principal = new JwtAuthenticationToken("token", new User("username", "password", true, true, true, true, new ArrayList<>()), new ArrayList<>());
+
+    //private final JwtTokenUtil jwtTokenUtil = JwtTokenUtil.getInstance();
+    //String token = jwtTokenUtil.generateTokenForUser("username", 1, "name", "student")
+    // I can't get it to import so say hi to that big string
+
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class)
-                .setCustomArgumentResolvers(putAuthenticationPrincipal)
+                .setCustomArgumentResolvers(new CustomArgumentResolver())
                 .build();
     }
 
@@ -125,7 +133,8 @@ public class AccountControllerTest {
                 .thenReturn(1);
 
             when(accountClientService.getUserById(1)).thenReturn(testUser);
-            mockMvc.perform(get("/account"))
+            mockMvc.perform(get("/account")
+                    .principal(principal))
                 .andExpect(status().isOk());
         }
     }
