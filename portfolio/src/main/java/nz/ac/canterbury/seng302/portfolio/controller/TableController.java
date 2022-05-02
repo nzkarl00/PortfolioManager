@@ -59,6 +59,8 @@ public class TableController {
         // Update, a bit of philosophy from the above link
         // and some details from https://stackoverflow.com/questions/5095887/how-do-i-pass-a-url-with-multiple-parameters-into-a-url
         // and https://stackoverflow.com/questions/46216134/thymeleaf-how-to-make-a-button-link-to-another-html-page
+
+        users.clear();
         String movePage = move.orElse("");
 
         // Receive the forward or backward call from the button and iterate current page
@@ -77,11 +79,10 @@ public class TableController {
                 .map(ClaimDTO::getValue)
                 .orElse("NOT FOUND");
 
-        model.addAttribute("role", role);
+        model.addAttribute("userRole", role);
 
 
 
-        users.clear();
         isSorted = false;
         Integer id = AuthStateInformer.getId(principal);
 
@@ -93,7 +94,7 @@ public class TableController {
         model.addAttribute("currentPage", currentPage);
 
         PaginatedUsersResponse response = accountClientService.getPaginatedUsers(step, start, sortMode, ascDesc);
-        List<User> users = new ArrayList<>();
+        users = new ArrayList<>();
         for (UserResponse userResponse : response.getUsersList()) { // loop through the given response containing UserResponses
             users.add(new User(userResponse)); // pass the UserResponse to the User constructor which builds the appropriate user
         }
@@ -131,9 +132,9 @@ public class TableController {
             @RequestParam(value="username") String username,
             Model model
     ) throws Exception {
-
         if (role.equals("teacher")) {
             User user = null;
+            System.out.println(users);
             for (User userTemp : users) {
                 if (userTemp.getUsername().equals(username)) {
                     user = userTemp;
@@ -142,12 +143,17 @@ public class TableController {
             // Begins the checks if a user is found
             if (user != null) {
                 Integer userId = user.getId();
-                if (user.listRoles().size() > 1) {
-                    if (!user.listRoles().contains(roleAdd)) {
-                        // Performs deletion if it passes all checks
-                        accountClientService.addRole(roleAdd, userId);
+                if (!user.listRoles().contains(roleAdd)) {
+                    // Performs deletion if it passes all checks
+                    UserRoleChangeResponse response = accountClientService.addRole(roleAdd, userId);
+                    if (response.getIsSuccess()) {
+                        //successShow = true;
+                        //successMessage =
+                    } else {
+                        //thing
                     }
                 }
+
             }
         }
 
@@ -173,8 +179,7 @@ public class TableController {
 
         /* Return the name of the Thymeleaf template */
         // detects the role of the current user and performs appropriate action
-        //if (role.equals("teacher")) {
-        if (true) {
+        if (role.equals("teacher")) {
             // Locates the appropriate user
             User user = null;
             for (User userTemp : users) {

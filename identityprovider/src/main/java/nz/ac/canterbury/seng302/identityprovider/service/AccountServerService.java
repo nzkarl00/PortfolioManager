@@ -231,10 +231,69 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 return repo.findAll();
         }
     }
+
     @Override
     public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
-        Long userId = Long.valueOf(request.getUserId());
-        roleRepo.deleteById(userId);
+        AccountProfile user = repo.findById(request.getUserId());
+        System.out.println(1);
+        String roleString;
+        switch (request.getRole()) {
+            case STUDENT:
+                roleString = "1student";
+                break;
+            case TEACHER:
+                roleString = "2teacher";
+                break;
+            case COURSE_ADMINISTRATOR:
+                roleString = "3admin";
+                break;
+            default:
+                roleString = "1student";
+                break;
 
+        }
+        System.out.println(2);
+
+        Long roleId = null;
+
+        System.out.println(3);
+
+        List<Role> roles = roleRepo.findAllByRegisteredUser(user);
+        System.out.println(roles);
+        System.out.println(4);
+        for (Role role: roles) {
+            System.out.println(role.getRole());
+            System.out.println(roleString);
+            if (role.getRole().equals(roleString)) {
+                roleId = role.getUserRoleId();
+                System.out.println(roleId);
+                roleRepo.deleteById(roleId);
+            }
+        }
+
+
+    }
+
+    @Override
+    public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
+        AccountProfile user = repo.findById(request.getUserId());
+        String role;
+        switch (request.getRole()) {
+            case STUDENT:
+                role = "1student";
+                break;
+            case TEACHER:
+                role = "2teacher";
+                break;
+            case COURSE_ADMINISTRATOR:
+                role = "3admin";
+                break;
+            default:
+                role = "1student";
+                break;
+        }
+
+        Role roleForRepo = new Role(user, role);
+        roleRepo.save(roleForRepo);
     }
 }

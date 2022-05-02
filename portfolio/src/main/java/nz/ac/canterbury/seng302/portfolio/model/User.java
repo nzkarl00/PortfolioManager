@@ -19,7 +19,7 @@ public class User {
         lastName = response.getLastName();
         username = response.getUsername();
         nickname = response.getNickname();
-        id = 0;
+        id = 1;
         List<UserRole> tempRoles = response.getRolesList();
         for (UserRole userRole : tempRoles) {
             Role role = new Role(userRole);

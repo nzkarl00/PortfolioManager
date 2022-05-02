@@ -10,4 +10,6 @@ public interface RolesRepository extends CrudRepository<Role, Long> {
     Role findByRegisteredUser(int id);
     List<Role> findAllByOrderByRoleAsc();
     List<Role> findAllByOrderByRoleDesc();
+    List<Role> findAllByRegisteredUser(AccountProfile id);
+
 }

@@ -73,37 +73,41 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.getPaginatedUsers(request.build());
     }
 
-    public void deleteRole(String role, Integer userId) {
+    public UserRoleChangeResponse deleteRole(String role, Integer userId) {
         ModifyRoleOfUserRequest.Builder request = ModifyRoleOfUserRequest.newBuilder();
         request.setUserId(userId);
-        Integer roleId;
+        UserRole roleSending;
         if (role.equals("student")) {
-            roleId = 0;
+            roleSending = UserRole.STUDENT;
         } else if (role.equals("teacher")) {
-            roleId = 1;
-        } else if (role.equals("admin")) {
-            roleId = 2;
+            roleSending = UserRole.TEACHER;
+        } else if (role.equals("course_administrator")) {
+            roleSending = UserRole.COURSE_ADMINISTRATOR;
         } else {
-            roleId = 0;
+            roleSending = UserRole.STUDENT;
         }
-        request.setRole(UserRole.valueOf(roleId));
-        accountServiceStub.removeRoleFromUser(request.build());
+
+        request.setRole(roleSending);
+
+        System.out.println("portfolio service");
+        return accountServiceStub.removeRoleFromUser(request.build());
     }
 
-    public void addRole(String role, Integer userId) {
+    public UserRoleChangeResponse addRole(String role, Integer userId) {
         ModifyRoleOfUserRequest.Builder request = ModifyRoleOfUserRequest.newBuilder();
         request.setUserId(userId);
-        Integer roleId;
+        UserRole roleSending;
         if (role.equals("student")) {
-            roleId = 0;
+            roleSending = UserRole.STUDENT;
         } else if (role.equals("teacher")) {
-            roleId = 1;
-        } else if (role.equals("admin")) {
-            roleId = 2;
+            roleSending = UserRole.TEACHER;
+        } else if (role.equals("course_administrator")) {
+            roleSending = UserRole.COURSE_ADMINISTRATOR;
         } else {
-            roleId = 0;
+            roleSending = UserRole.STUDENT;
         }
-        request.setRole(UserRole.valueOf(roleId));
-        accountServiceStub.addRoleToUser(request.build());
+
+        request.setRole(roleSending);
+        return accountServiceStub.addRoleToUser(request.build());
     }
 }

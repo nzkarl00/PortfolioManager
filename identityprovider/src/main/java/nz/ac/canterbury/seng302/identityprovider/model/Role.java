@@ -12,7 +12,7 @@ public class Role {
     private Long userRoleId;
     @Column(name = "role")
     private String role;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name="parent_account_id", nullable=false)
     private AccountProfile registeredUser;
 
