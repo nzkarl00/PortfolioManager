@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="headerfiles">
-
+<head th:fragment="head(title)">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
 
     <!-- Bootstrap core CSS -->
     <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
     <link th:href="@{/css/stylesheet.css}" rel="stylesheet">
 
+    <title th:text="${title}"></title>
     <!-- For dropdown to work -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
