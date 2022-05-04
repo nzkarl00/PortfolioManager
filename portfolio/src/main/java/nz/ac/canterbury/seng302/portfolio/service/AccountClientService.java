@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class AccountClientService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     @GrpcClient("identity-provider-grpc-server")
-    private UserAccountServiceGrpc.UserAccountServiceBlockingStub accountServiceStub;
+    UserAccountServiceGrpc.UserAccountServiceBlockingStub accountServiceStub;
 
     /**
      * makes a UserRegisterRequest to receive a UserRegisterResponse
