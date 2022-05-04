@@ -2,6 +2,8 @@ plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'jacoco'
+    id "org.sonarqube" version "3.3"
 }
 
 group = 'nz.ac.canterbury.seng302.team700'
@@ -70,3 +72,29 @@ task cucumber () {
     }
 }
 
+test {
+  finalizedBy jacocoTestReport
+}
+
+jacoco {
+  toolVersion = "0.8.7"
+}
+
+jacocoTestReport {
+  reports {
+    xml.enabled true
+    xml.destination file("${buildDir}/jacoco/test-report.xml")
+    csv.enabled false
+    html.destination file("${buildDir}/jacoco/html")
+  }
+}
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "team-700-portfolio"
+    property "sonar.projectName", "team 700 - portfolio"
+    property "sonar.sourceEncoding", "UTF-8"
+    property "sonar.host.url", "http://sonarqube.csse.canterbury.ac.nz:9000"
+    property "sonar.login", "$System.env.SONAR_API_KEY"
+  }
+}
