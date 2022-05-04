@@ -40,7 +40,6 @@
             <div class="col-12">
                 <p class="body_title_large">Edit Project</p>
             </div>
-
         </div>
 
         <!-- Editing body -->
@@ -57,11 +56,11 @@
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" for="projectStartDate">Project Start Date</label> <br/>
-                        <input class="project_edit_data" id="projectStartDate" type="text" th:name="projectStartDate" th:value="*{projectStartDate}">
+                        <input class="project_edit_data" id="projectStartDate" type="date" th:name="projectStartDate" th:value="*{projectStartDate}">
                     </div>
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" for="projectEndDate">Project End Date</label> <br/>
-                        <input class="project_edit_data" id="projectEndDate" type="text" th:name="projectEndDate" th:value="*{projectEndDate}">
+                        <input class="project_edit_data" id="projectEndDate" type="date" th:name="projectEndDate" th:value="*{projectEndDate}">
                     </div>
                 </div>
                 <div>
