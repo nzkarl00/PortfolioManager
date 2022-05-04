@@ -109,8 +109,8 @@ public class EditSprintController {
         Sprint sprint = sprintService.getSprintById(sprintId);
         Project project = projectService.getProjectById(projectId);
 
-        Date projStartDate = project.getStartDate();
-        Date projEndDate = project.getEndDate();
+        Date projStartDate = DateParser.stringToDate(project.getStartDateString()); // project.getStartDateString();
+        Date projEndDate = DateParser.stringToDate(project.getEndDateString()); // project.getEndDateString();
         Date checkStartDate = DateParser.stringToDate(sprintStartDate);
         Date checkEndDate = DateParser.stringToDate(sprintEndDate);
 
@@ -128,8 +128,12 @@ public class EditSprintController {
 
         // check if the sprint dates are within the project dates
         if (!checkStartDate.after(projStartDate) || !checkEndDate.before(projEndDate)) {
-            errorCode = "Sprint is outside of the Project's timeline";
-            return redirect;
+
+            // check to is if the sprint isn't equal to the project start and end date
+            if (!checkStartDate.equals(projStartDate) && !checkEndDate.equals(projEndDate)) {
+                errorCode = "Sprint is outside of the Project's timeline";
+                return redirect;
+            }
         }
 
         // check if sprint start is before sprint end

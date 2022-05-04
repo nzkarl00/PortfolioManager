@@ -111,6 +111,7 @@ public class DateParser {
         // check if dates are not in other sprints timelines
 
         for (Sprint temp: sprints) { // loop through all the sprints
+
             // check to see if the looped sprint ends between proposed sprint dates
             if (((temp.getEndDate().after(checkStartDate) && temp.getEndDate().before(checkEndDate))
 
@@ -119,6 +120,9 @@ public class DateParser {
 
             // check to see if the looped sprint is between proposed sprint dates
             || (temp.getStartDate().after(checkStartDate) && temp.getEndDate().before(checkEndDate))
+
+            // check to see if the start date or end date are equal with temp sprint
+            || (checkStartDate.equals(DateParser.stringToDate(temp.getEndDateString())))
 
             // check to see if the looped sprint is enclosing the proposed sprint
             || (temp.getStartDate().before(checkStartDate) && temp.getEndDate().after(checkEndDate)))
