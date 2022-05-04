@@ -140,6 +140,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             .setLastName(profile.getLastName())
             .setNickname(profile.getNickname())
             .setBio(profile.getBio())
+            .setId(profile.getId())
             .setPersonalPronouns(profile.getPronouns())
             .setEmail(profile.getEmail())
             .setCreated(Timestamp.newBuilder().setSeconds(profile.getRegisterDate().getTime()/1000).build())
@@ -150,6 +151,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             if (role.getRole().equals("2teacher")) { reply.addRoles(UserRole.TEACHER); }
             if (role.getRole().equals("3admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
         }
+
         return reply.build();
     }
 
@@ -235,6 +237,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Override
     public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         AccountProfile user = repo.findById(request.getUserId());
+        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
         System.out.println(1);
         String roleString;
         switch (request.getRole()) {
@@ -264,12 +267,15 @@ public class AccountServerService extends UserAccountServiceImplBase{
             }
         }
 
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
 
     }
 
     @Override
     public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         AccountProfile user = repo.findById(request.getUserId());
+        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
         String role;
         switch (request.getRole()) {
             case STUDENT:
@@ -288,5 +294,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         Role roleForRepo = new Role(user, role);
         roleRepo.save(roleForRepo);
+
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
     }
 }

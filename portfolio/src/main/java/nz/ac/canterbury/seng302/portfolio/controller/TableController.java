@@ -146,11 +146,11 @@ public class TableController {
                 if (!user.listRoles().contains(roleAdd)) {
                     // Performs deletion if it passes all checks
                     UserRoleChangeResponse response = accountClientService.addRole(roleAdd, userId);
+                    System.out.println("redirect");
                     if (response.getIsSuccess()) {
-                        //successShow = true;
-                        //successMessage =
+                        return "redirect:/user-list";
                     } else {
-                        //thing
+                        return "redirect:/user-list";
                     }
                 }
 
@@ -194,6 +194,8 @@ public class TableController {
                     if (user.listRoles().contains(roleDelete)) {
                         // Performs deletion if it passes all checks
                         accountClientService.deleteRole(roleDelete, userId);
+                        System.out.println("redirect");
+                        return "redirect:/user-list";
                     }
                 }
             }
