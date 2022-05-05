@@ -140,6 +140,7 @@ public class JwtTokenUtil implements Serializable {
 		// When assigning multiple roles to a user, encode them as a comma separated list
 		// E.g "student,teacher" or "teacher,courseadministrator,student" (Order doesn't matter)
         claims.put(ROLE_CLAIM_TYPE, profile.getHighestRole().getRole());
+        //claims.put(ROLE_CLAIM_TYPE, "teacher");
 
 		return Jwts.builder()
                 .setClaims(claims)
