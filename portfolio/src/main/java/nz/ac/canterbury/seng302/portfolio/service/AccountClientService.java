@@ -8,6 +8,13 @@ import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The GRPC client side service class
  * contains many of the protobuf implementations to allow communication between the idp and portfolio servers
@@ -113,19 +120,24 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.changeUserPassword(request.build());
     }
 
-    public ProfilePhotoUploadMetadata createPhotoMetaData(int id, String fileType) {
+    public ProfilePhotoUploadMetadata createPhotoMetaData(int id, String filepath) {
         ProfilePhotoUploadMetadata metaData = ProfilePhotoUploadMetadata.newBuilder()
         .setUserId(id)
-        .setFileType(fileType)
+        .setFileType(filepath.split(".")[-1])
         .build();
         return metaData;
     }
 
-    public FileUploadStatusResponse editPhoto(ProfilePhotoUploadMetadata metaData, ByteString fileContent) {
-        StreamObserver<UploadUserProfilePhotoRequest> requestStreamObserver = photoStub.uploadUserProfilePhoto(new StreamObserver<FileUploadStatusResponse>() {
+    public ByteString photoToBytes(String filepath) throws IOException {
+        File image = new File(filepath);
+        return ByteString.copyFrom(Files.readAllBytes(image.toPath()));
+    }
+
+    public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(ProfilePhotoUploadMetadata metaData, ByteString fileContent) {
+        StreamObserver<UploadUserProfilePhotoRequest> requestObserver = photoStub.uploadUserProfilePhoto(new StreamObserver<FileUploadStatusResponse>() {
             @Override
-            public void onNext(FileUploadStatusResponse value) {
-                System.out.println("Uploading photo section " + value.getMessage() + " " + value.getSerializedSize());
+            public void onNext(FileUploadStatusResponse uploadStatusResponse) {
+                System.out.println("Uploading photo section " + uploadStatusResponse.getMessage() + " " + uploadStatusResponse.getSerializedSize());
             }
 
             @Override
@@ -138,9 +150,14 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
                 System.out.println("Upload complete");
             }
         });
-        UploadUserProfilePhotoRequest request = UploadUserProfilePhotoRequest.newBuilder()
-            .setMetaData(metaData)
-            .setFileContent(fileContent)
-            .build();
+        List<UploadUserProfilePhotoRequest> requests = new ArrayList<UploadUserProfilePhotoRequest>();
+        int i;
+        for (i=0; i < fileContent.size() / 512; i+= 512) {
+            requests.add(UploadUserProfilePhotoRequest.newBuilder().setFileContent(fileContent.substring(i, i+512)).setMetaData(metaData).build());
+        }
+        for (UploadUserProfilePhotoRequest req : requests) {
+            requestObserver.onNext(req);
+        }
+        requestObserver.onCompleted();
     }
 }
