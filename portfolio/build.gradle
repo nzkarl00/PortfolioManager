@@ -70,7 +70,11 @@ task cucumber () {
 }
 
 test {
-  finalizedBy jacocoTestReport
+      finalizedBy jacocoTestReport
+      testLogging {
+          showExceptions true
+          exceptionFormat "full"
+      }
 }
 
 jacoco {
