@@ -73,7 +73,7 @@ task cucumber () {
 }
 
 test {
-  finalizedBy jacocoTestReport
+    finalizedBy jacocoTestReport
 }
 
 jacoco {
