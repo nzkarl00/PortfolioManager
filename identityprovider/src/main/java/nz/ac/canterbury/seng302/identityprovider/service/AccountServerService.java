@@ -102,8 +102,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Override
     public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
         AccountProfile profile = repo.findById(request.getId());
-        UserResponse reply = buildUserResponse(profile);
-        responseObserver.onNext(reply);
+        if (!(profile == null)) {
+            UserResponse reply = buildUserResponse(profile);
+            responseObserver.onNext(reply);
+        }
         responseObserver.onCompleted();
     }
 
@@ -116,17 +118,19 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
         EditUserResponse.Builder reply = EditUserResponse.newBuilder();
         AccountProfile profile = repo.findById(request.getUserId());
-        if (!request.getEmail().isEmpty()) { profile.setEmail(request.getEmail()); }
-        if (!request.getBio().isEmpty()) { profile.setBio(request.getBio()); }
-        if (!request.getLastName().isEmpty()) { profile.setLastName(request.getLastName()); }
-        if (!request.getFirstName().isEmpty()) { profile.setFirstName(request.getFirstName()); }
-        if (!request.getMiddleName().isEmpty()) { profile.setMiddleName(request.getMiddleName()); }
-        if (!request.getNickname().isEmpty()) { profile.setNickname(request.getNickname()); }
-        if (!request.getPersonalPronouns().isEmpty()) { profile.setPronouns(request.getPersonalPronouns()); }
-        repo.save(profile);
-        reply.setIsSuccess(true)
-                .setMessage("User details edited successfully");
-        responseObserver.onNext(reply.build());
+        if (!(profile == null)) {
+            if (!request.getEmail().isEmpty()) { profile.setEmail(request.getEmail()); }
+            if (!request.getBio().isEmpty()) { profile.setBio(request.getBio()); }
+            if (!request.getLastName().isEmpty()) { profile.setLastName(request.getLastName()); }
+            if (!request.getFirstName().isEmpty()) { profile.setFirstName(request.getFirstName()); }
+            if (!request.getMiddleName().isEmpty()) { profile.setMiddleName(request.getMiddleName()); }
+            if (!request.getNickname().isEmpty()) { profile.setNickname(request.getNickname()); }
+            if (!request.getPersonalPronouns().isEmpty()) { profile.setPronouns(request.getPersonalPronouns()); }
+            repo.save(profile);
+            reply.setIsSuccess(true)
+                .setMessage("We edited somme s***t, idk lol");
+            responseObserver.onNext(reply.build());
+        }
         responseObserver.onCompleted();
     }
 
@@ -158,22 +162,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
     }
 
     /**
-     * Updates the usersSorted list with the correct users in the order given by the sorted roles query
-     * @param usersSorted the list to update
-     * @param roles the order to base the update from
-     */
-    public void updateUsersSorted(List<AccountProfile> usersSorted, List<Role> roles) {
-        ArrayList<Long> userIds = new ArrayList<>();
-        for (Role role: roles) {
-            Long userId = role.getUserRoleId();
-            if (!userIds.contains(userId)){
-                userIds.add(role.getUserRoleId());
-                usersSorted.add(repo.findById(userId.intValue()));
-            }
-        }
-    }
-
-    /**
      * Send back the all the user details
      * @param request the GetPaginatedUsersRequest
      * @param responseObserver the place to send the message back
@@ -190,12 +178,12 @@ public class AccountServerService extends UserAccountServiceImplBase{
         if (request.getOrderBy().equals("roles_asc")) {
 
             List<Role> roles = roleRepo.findAllByOrderByRoleAsc();
-            updateUsersSorted(usersSorted, roles);
+            AccountProcessing.updateUsersSorted(usersSorted, roles, repo);
 
         } else if (request.getOrderBy().equals("roles_desc")) {
 
             List<Role> roles = roleRepo.findAllByOrderByRoleDesc();
-            updateUsersSorted(usersSorted, roles);
+            AccountProcessing.updateUsersSorted(usersSorted, roles, repo);
 
         } else {
             usersSorted = sortUsers(request);

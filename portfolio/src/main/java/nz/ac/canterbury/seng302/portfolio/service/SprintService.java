@@ -25,7 +25,7 @@ public class SprintService {
     }
 
     /**
-     * Get sprint by id
+     * Get sprint by its id.
      */
     public Sprint getSprintById(Integer id) throws Exception {
 
@@ -39,13 +39,13 @@ public class SprintService {
         }
     }
     /**
-     * Get sprint by parent id
+     * Get sprint by parent id, where parent id is the project that is parent for the sprints.
      */
     public List<Sprint> getSprintByParentId(Integer id) throws Exception {
 
-        List<Sprint> sprint = repository.findByParentProjectId(id);
-        if(sprint!=null) {
-            return sprint;
+        List<Sprint> sprints = repository.findByParentProjectId(id);
+        if(sprints!=null) {
+            return sprints;
         }
         else
         {

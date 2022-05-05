@@ -39,4 +39,8 @@ public class Role {
     public Long getUserRoleId(){
         return userRoleId;
     }
+
+    public void setUserRoleId(Long id) {
+        userRoleId = id;
+    }
 }
