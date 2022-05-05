@@ -55,9 +55,4 @@ class AuthStateInformerTest {
         authState = AuthState.newBuilder().addClaims(claimDTO).build();
         assertNotEquals(expected, AuthStateInformer.getUsername(authState));
     }
-
-    @Test
-    void fail() {
-        Assertions.fail();
-    }
 }
