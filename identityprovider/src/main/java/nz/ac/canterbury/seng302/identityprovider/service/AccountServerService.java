@@ -58,7 +58,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             AccountProfile newAccount = repo.save(
                     new AccountProfile(
                             request.getUsername(), hashedPassword, new Date(), "", request.getEmail(),
-                            null, request.getFirstName(), request.getLastName(), request.getPersonalPronouns(), null));
+                            null, request.getFirstName(), request.getLastName(), request.getPersonalPronouns()));
             roleRepo.save(new Role(newAccount, "1student")); // TODO change this from the default
             reply.setMessage("Created account " + request.getUsername()).setIsSuccess(true);
         }
