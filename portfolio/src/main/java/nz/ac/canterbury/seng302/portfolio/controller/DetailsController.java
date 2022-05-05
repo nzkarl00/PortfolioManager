@@ -167,6 +167,8 @@ public class DetailsController {
             // if it does use the last sprint end date for the new sprint start date
             startDate = sprints.get(sprints.size()-1).getEndDate();
             calendar.setTime(startDate);
+            calendar.add(Calendar.DATE, +1); // add one more day to the date so sprints don't overlap with end date
+            startDate = calendar.getTime();
             calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
             endDate = calendar.getTime();
             if (endDate.after(project.getEndDate())) {
