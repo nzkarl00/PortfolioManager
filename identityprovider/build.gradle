@@ -32,7 +32,8 @@ dependencies {
     implementation 'org.mindrot:jbcrypt:0.4'
 
     implementation 'net.devh:grpc-spring-boot-starter:2.13.1.RELEASE' // GRPC server / client dependencies
-    implementation 'nz.ac.canterbury.seng302:shared:1.0' // Local package containing .proto files
+    implementation 'nz.ac.canterbury.seng302:shared:1.0'
+    implementation 'org.testng:testng:7.1.0'// Local package containing .proto files
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
