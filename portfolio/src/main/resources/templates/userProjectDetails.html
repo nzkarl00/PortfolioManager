@@ -131,20 +131,46 @@
 
 </div>
 
+<!-- Javascript for the calendar -->
 <script type="text/javascript" th:inline="javascript">
+
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
 
-        // Gets the date project start and end dates and format's it as Date
-        var stringStartDate = new Date([[${project.getStartDate()}]].toString());
-        var stringEndDate = new Date([[${project.getEndDate()}]].toString());
+        // Gets the date project end date and format's it as Date
+        var endDate = new Date([[${project.getEndDate()}]].toString());
 
         // Add an extra day to end date since time is set to 00:00:00
-        stringEndDate.setDate(stringEndDate.getDate() + 1);
+        endDate.setDate(endDate.getDate() + 1);
 
-        // Striped to be formatted as YYYY-MM-DD (needed for FullCalendar)
-        var startDate =  new Date(stringStartDate.getTime() - (stringStartDate.getTimezoneOffset() * 60000 )).toISOString().split("T")[0];
-        var endDate =  new Date(stringEndDate.getTime() -  (stringEndDate.getTimezoneOffset() * 60000 )).toISOString().split("T")[0];
+        let sprintList = [[${sprints}]];
+        let sprintEvents = [];
+
+        // Colors for the sprints
+        const colors = ['#a3c7d7', '#067d46', '#19DAFF','#f5deb3', '#d470a2', '#9acd32',
+            '#a2add0', '#c9a0dc', '#9f1d35', '#e34234', '#5b92e5', '#66023c',
+            '#483c32', '#0abab5', '#eee600', '#f28500', '#ffcc33', '#a7fc00',
+            '#cdc9c9', '#eee9e9', '#836fff', '#473c8b', '#708090', '#c0c0c0',
+            '#ffd800', '#ff2400', '#e30b5d', '#003153', '#ff5a36', '#e5e4e2',
+            '#cc3333', '#1c39bb', '#1ca9c9', '#002147', '#d3af37', '#30bfbf',
+            '#fdbe02', '#eaa221', '#32cd32', '#c5cbe1'];
+
+        // Loops through sprint list and saves it to be displayed on the calendar
+        for (var sprintIndex = 0; sprintIndex < sprintList.length; sprintIndex++) {
+
+            var sprintEndDate = new Date(sprintList[sprintIndex].endDate.toString());
+            sprintEndDate.setDate(sprintEndDate.getDate() + 1);
+
+            // Information about each sprint
+            sprintEvents.push( {
+                title: sprintList[sprintIndex].label,
+                start: sprintList[sprintIndex].startDate,
+                end: sprintEndDate,
+
+                // Mod so the sprint index doesn't go out of range for colors list
+                color: colors[sprintIndex % colors.length]
+            });
+        }
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
 
@@ -152,13 +178,17 @@
 
             // Greys out area's not in use by the project
             validRange: {
-                start: startDate,
+                start: [[${project.getStartDate()}]],
                 end: endDate
-            }
+            },
+
+            events: sprintEvents,
+            displayEventTime : false
 
         });
         calendar.render();
     });
+
 </script>
 
 <!-- JS -->
