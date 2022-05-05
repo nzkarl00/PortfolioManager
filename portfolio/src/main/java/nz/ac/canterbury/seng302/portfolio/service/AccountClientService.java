@@ -86,6 +86,8 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
      * @return the list of UserResponses in the form of a paginatedUsersResponse
      */
     public PaginatedUsersResponse getPaginatedUsers(int limit, int offset, String orderBy, int orderMode) {
+        System.out.println(orderBy);
+        System.out.println(orderMode);
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder();
         String order = orderBy;
         if (orderMode == 1) {

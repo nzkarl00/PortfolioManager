@@ -1,8 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.rpc.context.AttributeContext;
 import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.UserPreference;
+import nz.ac.canterbury.seng302.portfolio.model.UserPreferenceRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.model.User;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
@@ -13,6 +16,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +43,9 @@ public class TableController {
 
     @Autowired
     private AccountClientService accountClientService;
+
+    @Autowired
+    private UserPreferenceRepository repo;
 
     private int currentPage = 0;
     String sortMode = "";
@@ -100,20 +107,17 @@ public class TableController {
         userReply = accountClientService.getUserById(id); // Get the user
 
 
-        if (sortMode.isEmpty()) { // update the sorting variables if there is a token to do so
-            String sessionToken = CookieUtil.getValue(request, "sortMode");
-            if (sessionToken != null) {
-                sortMode = sessionToken.substring(0, sessionToken.length() - 4);
-              System.out.println("[SESSION COOKIE IS:] " + sessionToken);
-              System.out.println("[SORTMODE IS:] " + sortMode);
-                if (sessionToken.endsWith("_asc")) {
-                    ascDesc = 0;
-                } else {
-                    ascDesc = 1;
-                }
-            }
-            columnHeaderHelper(sortMode);
+        // update the sorting variables if there is a userPreference in the database to do so
+        Optional<UserPreference> preferenceOptional = repo.findById(id);
+        UserPreference preference = preferenceOptional.orElse(null);
+        if (preference != null) {
+            ascDesc = preference.getSortOrder() == 1 ? 0 : 1;
+            columnHeaderHelper(preference.getSortMode());
+            sortMode = preference.getSortMode();
+            ascDesc = preference.getSortOrder();
         }
+        System.out.println(sortMode);
+        System.out.println(ascDesc);
 
         model.addAttribute("date", DateParser.displayDate(userReply));
         model.addAttribute("start", start);
@@ -162,6 +166,9 @@ public class TableController {
         @RequestParam(value="sortColumn") String sortColumn,
         Model model
     ) throws Exception {
+        int id = AuthStateInformer.getId(principal);
+
+        UserPreference preference = repo.findById(id);
 
         columnHeaderHelper(sortColumn);
 
@@ -172,6 +179,15 @@ public class TableController {
             sortAll += "_dsc";
         }
 
+        if (preference == null) {
+            preference = new UserPreference(id, sortMode, ascDesc);
+        } else {
+            preference.setSortMode(sortMode);
+            preference.setSortOrder(ascDesc);
+        }
+        repo.save(preference);
+        /**
+         * TODO maybe delete?
         var domain = request.getHeader("host");
         CookieUtil.create(
             response,
@@ -179,7 +195,7 @@ public class TableController {
             sortAll,
             false,
             7 * 60 * 60 * 24, // 7 days
-            domain.startsWith("localhost") ? null : domain);
+            domain.startsWith("localhost") ? null : domain);*/
 
         return "redirect:/user-list";
     }
