@@ -48,7 +48,7 @@ public class TableController {
     private UserPreferenceRepository repo;
 
     private int currentPage = 0;
-    String sortMode = "";
+    String sortMode = ""; // The column in the user table to sort, e.g. by last name, by alias etc.
     Integer ascDesc = 0;
     Boolean isSorted = false;
     List<User> users = new ArrayList<>();
@@ -112,8 +112,8 @@ public class TableController {
         UserPreference preference = preferenceOptional.orElse(null);
         if (preference != null) {
             ascDesc = preference.getSortOrder() == 1 ? 0 : 1;
-            columnHeaderHelper(preference.getSortMode());
-            sortMode = preference.getSortMode();
+            columnHeaderHelper(preference.getSortCol());
+            sortMode = preference.getSortCol();
             ascDesc = preference.getSortOrder();
         }
         System.out.println(sortMode);
@@ -182,7 +182,7 @@ public class TableController {
         if (preference == null) {
             preference = new UserPreference(id, sortMode, ascDesc);
         } else {
-            preference.setSortMode(sortMode);
+            preference.setSortCol(sortMode);
             preference.setSortOrder(ascDesc);
         }
         repo.save(preference);

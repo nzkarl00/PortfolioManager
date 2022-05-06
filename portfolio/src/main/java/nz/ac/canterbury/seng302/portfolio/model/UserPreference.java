@@ -14,24 +14,24 @@ public class UserPreference {
     @Id
     @Column(name = "registered_user_id")
     private int registeredUserId;
-    @Column(name = "sort_mode")
-    private String sortMode;
+    @Column(name = "sort_column")
+    private String sortCol;
     @Column(name = "sort_order")
     private int sortOrder;
 
     public UserPreference() {}
 
-    public UserPreference(int registeredUserId, String sortMode, int sortOrder) {
+    public UserPreference(int registeredUserId, String sortCol, int sortOrder) {
         this.registeredUserId = registeredUserId;
-        this.sortMode = sortMode;
-        this.sortOrder = sortOrder;
+        this.sortCol = sortCol; // The column in the user table to sort, e.g. by last name, by alias etc.
+        this.sortOrder = sortOrder; // The order to sort, e.g. asc or desc
     }
 
     @Override
     public String toString() {
         return String.format(
-        "User Preference for [registeredUserId=%d] has sort mode of [sortMode='%s']",
-        registeredUserId, sortMode);
+        "User Preference for [registeredUserId=%d] has their user table sorted by [sortCol='%s'] and order [sortOrder='%s']",
+        registeredUserId, sortCol, sortOrder);
     }
 
 
@@ -39,17 +39,17 @@ public class UserPreference {
 
     public void setRegisteredUserId(int registeredUserId) { this.registeredUserId = registeredUserId; }
 
-    public void setSortMode(String sortMode) { this.sortMode = sortMode; }
+    public void setSortCol(String sortCol) { this.sortCol = sortCol; }
+
+    public void setSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
+    }
 
     /* Getters */
 
     public int getRegisteredUserId() { return registeredUserId; }
 
-    public String getSortMode() { return sortMode; }
-
-    public void setSortOrder(int sortOrder) {
-        this.sortOrder = sortOrder;
-    }
+    public String getSortCol() { return sortCol; }
 
     public int getSortOrder() {
         return sortOrder;

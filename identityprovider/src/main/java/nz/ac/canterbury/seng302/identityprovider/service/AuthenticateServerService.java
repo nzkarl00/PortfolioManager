@@ -40,27 +40,27 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
                 //String token = jwtTokenService.generateTokenForUser(profile.getUsername(), profile.getId(), profile.getUsername(), ROLE_OF_USER);
                 String token = jwtTokenService.generateTokenForUser(profile);
                 reply
-                        .setEmail(profile.getEmail())
-                        // TODO: Fetch name
-                        .setFirstName("TODO: FETCH NAME")
-                        .setLastName("TODO: FETCH NAME")
-                        .setMessage("Logged in successfully!")
-                        .setSuccess(true)
-                        .setToken(token)
-                        .setUserId(profile.getId())
-                        .setUsername(profile.getUsername());
+                    .setEmail(profile.getEmail())
+                    // TODO: Fetch name
+                    .setFirstName("TODO: FETCH NAME")
+                    .setLastName("TODO: FETCH NAME")
+                    .setMessage("Logged in successfully!")
+                    .setSuccess(true)
+                    .setToken(token)
+                    .setUserId(profile.getId())
+                    .setUsername(profile.getUsername());
             } else {
                 System.out.println("Could not verify password against expected hash.");
                 reply
-                        .setMessage("Log in attempt failed: password incorrect")
-                        .setSuccess(false)
-                        .setToken("");
+                    .setMessage("Log in attempt failed: password incorrect")
+                    .setSuccess(false)
+                    .setToken("");
             }
         } catch (Exception e) {
             reply
-                    .setMessage("Log in attempt failed: username invalid")
-                    .setSuccess(false)
-                    .setToken("");
+                .setMessage("Log in attempt failed: username invalid")
+                .setSuccess(false)
+                .setToken("");
             System.out.println(e);
         }
 

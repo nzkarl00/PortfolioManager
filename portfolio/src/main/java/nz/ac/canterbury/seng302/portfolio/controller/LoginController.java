@@ -5,8 +5,6 @@ import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -107,23 +105,6 @@ public class LoginController {
                 5 * 60 * 60, // Expires in 5 hours
                 domain.startsWith("localhost") ? null : domain
             );
-
-            Long id = loginReply.getUserId();
-
-            UserResponse userReply = accountClientService.getUserById(id.intValue()); // Get the user
-
-            System.out.println("[CURRENT USERREPLY START]");
-            System.out.println(userReply.toString());
-            System.out.println("[CURRENT USERREPLY END]");
-
-
-            System.out.println("[CURRENT COOKIE & ID START]");
-            System.out.println(loginReply.getToken());
-            System.out.println(id);
-            System.out.println("[CURRENT COOKIE & ID END]");
-
-            //AccountProfile profile = repository.findById(id); refer to account.java
-
             return "redirect:/account";
         }
 
