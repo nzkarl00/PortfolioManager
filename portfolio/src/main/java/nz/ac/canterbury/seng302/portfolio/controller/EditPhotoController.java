@@ -9,13 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 @Controller
 public class EditPhotoController {
@@ -30,7 +29,6 @@ public class EditPhotoController {
 
         // UserResponse userReply = accountClientService.getUserById(id);
         // model.addAttribute("photo", userReply.getPhotoPath());
-        System.out.println("/images/" + id + "/" + id + ".jpg");
         model.addAttribute("photo", "/images/" + id + "/" + id + ".jpg");
         model.addAttribute("message", "");
         return "editPhoto";
@@ -43,6 +41,14 @@ public class EditPhotoController {
         int id = AuthStateInformer.getId(principal);
         FileUploadStatusResponse response = accountClientService.uploadPhoto(id, file.getContentType(), file);
         model.addAttribute("message", response.getMessage());
+        return "redirect:/edit-photo";
+    }
+
+    @RequestMapping(value="/delete-photo", method = RequestMethod.DELETE)
+    public String deletePhoto(Model model,
+                              @AuthenticationPrincipal AuthState principal) {
+        int id = AuthStateInformer.getId(principal);
+        accountClientService.deleteUserProfilePhoto(id);
         return "redirect:/edit-photo";
     }
 }

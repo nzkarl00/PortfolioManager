@@ -128,4 +128,12 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         FileUploadUtil.saveFile(path, String.valueOf(id) + ".jpg", photo);
         return response.build();
     }
+
+    public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int id) {
+        DeleteUserProfilePhotoResponse.Builder response = DeleteUserProfilePhotoResponse.newBuilder();
+        String path = "src/main/resources/static/images/" + id + "/" + id + ".jpg";
+        File file = new File(path);
+        response.setIsSuccess(file.delete());
+        return response.build();
+    }
 }
