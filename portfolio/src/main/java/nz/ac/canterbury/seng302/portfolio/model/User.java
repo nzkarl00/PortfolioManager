@@ -33,16 +33,18 @@ public class User {
 
     public void sortRoles(List<UserRole> tempRoles) {
         List<UserRole> rolesSorted = new ArrayList<>();
-        System.out.println(tempRoles);
-        System.out.println(rolesSorted);
-        rolesSorted.add(tempRoles.get(0));
         for (UserRole role : tempRoles) {
             boolean sorted = false;
             for (Integer i = 0; i < rolesSorted.size(); i++) {
+
                 if (role.getNumber() > rolesSorted.get(i).getNumber()) {
                     rolesSorted.add(i, role);
+                    i = rolesSorted.size();
                     sorted = true;
                 }
+
+                System.out.println(i);
+                System.out.println(rolesSorted.size());
             }
             if (!sorted) {
                 rolesSorted.add(role);
