@@ -215,4 +215,8 @@ public class AccountProfile {
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
+    public void deleteRole(Role role) {
+        roles.remove(role);
+    }
+
 }
