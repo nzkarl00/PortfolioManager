@@ -85,9 +85,7 @@ public class TableController {
 
         // Receive the forward or backward call from the button and iterate current page
         if (movePage.equals("forward")) {
-            if ((users.size() != 0)) {
-                currentPage++;
-            }
+            if ((users.size() != 0)) { currentPage++; }
         } else if (movePage.equals("back")) {
             if (currentPage > 0) { currentPage--; }
         }
