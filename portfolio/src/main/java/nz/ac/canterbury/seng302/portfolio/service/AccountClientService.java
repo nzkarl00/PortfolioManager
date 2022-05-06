@@ -7,12 +7,14 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -119,10 +121,11 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.changeUserPassword(request.build());
     }
 
-    public FileUploadStatusResponse uploadPhoto(int id, String fileType, File photo) {
+    public FileUploadStatusResponse uploadPhoto(int id, String fileType, MultipartFile photo) throws IOException {
+        String fileName = StringUtils.cleanPath(photo.getOriginalFilename());
         FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
-        String dir = System.getProperty("user.dir");
-        System.out.println(dir);
+        String path = "src/main/resources/static/images/" + id;
+        FileUploadUtil.saveFile(path, fileName, photo);
         return response.build();
     }
 }
