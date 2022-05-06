@@ -186,16 +186,6 @@ public class TableController {
             preference.setSortOrder(ascDesc);
         }
         repo.save(preference);
-        /**
-         * TODO maybe delete?
-        var domain = request.getHeader("host");
-        CookieUtil.create(
-            response,
-            "sortMode",
-            sortAll,
-            false,
-            7 * 60 * 60 * 24, // 7 days
-            domain.startsWith("localhost") ? null : domain);*/
 
         return "redirect:/user-list";
     }

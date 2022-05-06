@@ -247,7 +247,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             }
         } catch (Exception e) {
             response.setMessage(e.getMessage())
-                 .setIsSuccess(false);
+                .setIsSuccess(false);
             System.out.println(e);
         }
         observer.onNext(response.build());

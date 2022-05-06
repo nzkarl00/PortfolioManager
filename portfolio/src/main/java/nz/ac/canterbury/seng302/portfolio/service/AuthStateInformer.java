@@ -47,30 +47,4 @@ public class AuthStateInformer {
             .map(ClaimDTO::getValue)
             .orElse("-100");
     }
-
-    /**
-     * return the sort mode of the auth token
-     * @param principal the auth token
-     * @return the sort mode
-     */
-    public static String getSortMode(AuthState principal) {
-        return principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("sortMode"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("-100");
-    }
-
-    /**
-     * return the sort order of the auth token
-     * @param principal the auth token
-     * @return the sort order
-     */
-    public static int getSortOrder(AuthState principal) {
-        return Integer.parseInt(principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("sortOrder"))
-            .findFirst()
-            .map(ClaimDTO::getValue)
-            .orElse("-100"));
-    }
 }

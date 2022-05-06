@@ -71,12 +71,6 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.editUser(request.build());
     }
 
-    public void setToken(String token) {
-        EditUserRequest.Builder request = EditUserRequest.newBuilder();
-        //request.setToken;
-
-    }
-
     /**
      * returns a paginated users response from the request details
      * @param limit the max amount of users to get
@@ -86,8 +80,6 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
      * @return the list of UserResponses in the form of a paginatedUsersResponse
      */
     public PaginatedUsersResponse getPaginatedUsers(int limit, int offset, String orderBy, int orderMode) {
-        System.out.println(orderBy);
-        System.out.println(orderMode);
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder();
         String order = orderBy;
         if (orderMode == 1) {
