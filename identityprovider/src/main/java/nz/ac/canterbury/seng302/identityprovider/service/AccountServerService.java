@@ -22,6 +22,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The GRPC server side service class
+ * contains many of the protobuf implementations to allow communication between the idp and portfolio servers
+ */
 @GrpcService
 public class AccountServerService extends UserAccountServiceImplBase{
 
@@ -213,8 +217,12 @@ public class AccountServerService extends UserAccountServiceImplBase{
         responseObserver.onCompleted();
     }
 
+    /**
+     * returns the correct sorting of users based on the GRPC request
+     * @param request the GRPC request
+     * @return the list of account profiles sorted as to the grpc request
+     */
     public List<AccountProfile> sortUsers(GetPaginatedUsersRequest request) {
-        System.out.println(request.getOrderBy()+" sort function");
         switch (request.getOrderBy()) {
             case "first_name_asc":
                 return repo.findAllByOrderByFirstNameAsc();

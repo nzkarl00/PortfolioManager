@@ -23,7 +23,7 @@ public class AuthenticateClientService {
                 .setUsername(username)
                 .setPassword(password)
                 .build();
-        return authenticationStub.authenticate(authRequest);
+        return authenticationStub.authenticate(authRequest); // creates the token for the cookie here
     }
 
     public AuthState checkAuthState() throws StatusRuntimeException {
