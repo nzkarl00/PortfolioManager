@@ -44,6 +44,7 @@ public class AccountProfile {
     @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     protected List<Role> roles;
 
+
     //Necessary for Hibernate to work properly
     public AccountProfile() {}
 
