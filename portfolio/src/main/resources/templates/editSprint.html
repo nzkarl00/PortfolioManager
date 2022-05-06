@@ -1,20 +1,6 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Edit Sprint</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
-
-    <!-- Bootstrap core CSS -->
-    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
-    <link th:href="@{/css/stylesheet.css}" rel="stylesheet">
-    <!-- For dropdown to work -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-</head>
+<head th:replace="fragments/head.html :: head('Edit Sprint')"></head>
 <body>
 
 
@@ -56,11 +42,11 @@
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" for="sprintStartDate">Sprint Start Date</label> <br/>
-                        <input class="project_edit_data" id="sprintStartDate" type="text" th:name="sprintStartDate" th:value="*{sprint.getStartDateString}">
+                        <input class="project_edit_data" id="sprintStartDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="sprintStartDate" th:value="*{sprint.getStartDateStringHtml}">
                     </div>
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" for="sprintEndDate">Sprint End Date</label> <br/>
-                        <input class="project_edit_data" id="sprintEndDate" type="text" th:name="sprintEndDate" th:value="*{sprint.getEndDateString}">
+                        <input class="project_edit_data" id="sprintEndDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="sprintEndDate" th:value="*{sprint.getEndDateStringHtml}">
                     </div>
                 </div>
                 <div>

@@ -13,11 +13,11 @@ tag-checker:
   only:
     - tags
 
-# junit-porfolio:
-#   stage: test
-#   script:
-#     - cd portfolio
-#     - ./gradlew test
+junit-porfolio:
+  stage: test
+  script:
+    - cd portfolio
+    - ./gradlew test
 
 junit-identityprovider:
   stage: test
@@ -118,3 +118,17 @@ deploy-production-portfolio:
   only:
     - tags
     - master
+
+# sonarqube-report:
+#   stage: sonarqube
+#   variables:
+#     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+#   cache:
+#     key: "${CI_JOB_NAME}"
+#     paths:
+#       - .sonar/cache
+#   script:
+#     - cd identityprovider
+#     - ./gradlew sonarqube
+#     - cd ../portfolio
+#     - ./gradlew sonarqube
