@@ -131,8 +131,6 @@ public class TableController {
             sortMode = preference.getSortCol();
             ascDesc = preference.getSortOrder();
         }
-        System.out.println(sortMode);
-        System.out.println(ascDesc);
 
         model.addAttribute("date", DateParser.displayDate(userReply));
         model.addAttribute("start", start);
