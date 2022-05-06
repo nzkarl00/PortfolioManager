@@ -28,9 +28,31 @@ public class User {
         nickname = response.getNickname();
         id = response.getId();
         List<UserRole> tempRoles = response.getRolesList();
-        for (UserRole userRole : tempRoles) {
-            Role role = new Role(userRole);
-            roles.add(role);
+        sortRoles(tempRoles);
+    }
+
+    public void sortRoles(List<UserRole> tempRoles) {
+        List<UserRole> rolesSorted = new ArrayList<>();
+        System.out.println(tempRoles);
+        System.out.println(rolesSorted);
+        rolesSorted.add(tempRoles.get(0));
+        for (UserRole role : tempRoles) {
+            boolean sorted = false;
+            for (Integer i = 0; i < rolesSorted.size(); i++) {
+                if (role.getNumber() > rolesSorted.get(i).getNumber()) {
+                    rolesSorted.add(i, role);
+                    sorted = true;
+                }
+            }
+            if (!sorted) {
+                rolesSorted.add(role);
+            }
+            sorted = false;
+        }
+        System.out.println(rolesSorted);
+        for (UserRole role: rolesSorted) {
+
+            roles.add(new Role(role));
         }
     }
 
@@ -61,7 +83,9 @@ public class User {
         }
         return output.substring(0, output.length() - 2);
     }
+
     public List<String> listRoles() {
+        System.out.println(roles);
         List<String> output = new ArrayList<>();
         for (Role role: roles) {
             output.add(role.toString());
