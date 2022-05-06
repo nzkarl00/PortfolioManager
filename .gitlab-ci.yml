@@ -70,6 +70,8 @@ deploy-staging-identityprovider:
 
 deploy-staging-portfolio:
   stage: deploy
+  variables:
+    ENV_TARGET: staging-portfolio
   script:
     - cd portfolio
     - ./gradlew bootJar
@@ -77,6 +79,9 @@ deploy-staging-portfolio:
     - mkdir /home/gitlab-runner/staging-portfolio/
     - cp -r ./build/libs /home/gitlab-runner/staging-portfolio
     - cp ../runner/staging-portfolio.sh /home/gitlab-runner/staging-portfolio.sh
+    # To persist environment variables
+    - rm /home/gitlab-runner/production-portfolio-env.sh
+    - bash ../runnner/save-env.sh
     - chmod u+x /home/gitlab-runner/staging-portfolio.sh
     - sudo systemctl restart staging-portfolio
   artifacts:
@@ -105,6 +110,8 @@ deploy-production-identityprovider:
 
 deploy-production-portfolio:
   stage: deploy
+  variables:
+    ENV_TARGET: production-portfolio
   script:
     - cd portfolio
     - ./gradlew bootJar
@@ -112,6 +119,9 @@ deploy-production-portfolio:
     - mkdir /home/gitlab-runner/production-portfolio/
     - cp -r ./build/libs /home/gitlab-runner/production-portfolio
     - cp ../runner/production-portfolio.sh /home/gitlab-runner/production-portfolio.sh
+    # To persist environment variables
+    - rm /home/gitlab-runner/production-portfolio-env.sh
+    - bash ../runnner/save-env.sh
     - chmod u+x /home/gitlab-runner/production-portfolio.sh
     - sudo systemctl restart production-portfolio
   artifacts:
