@@ -13,11 +13,11 @@ tag-checker:
   only:
     - tags
 
-# junit-porfolio:
-#   stage: test
-#   script:
-#     - cd portfolio
-#     - ./gradlew test
+junit-porfolio:
+  stage: test
+  script:
+    - cd portfolio
+    - ./gradlew test
 
 junit-identityprovider:
   stage: test
@@ -129,6 +129,6 @@ sonarqube-report:
       - .sonar/cache
   script:
     - cd identityprovider
-    - ./gradlew sonarqube
+    - ./gradlew --debug sonarqube
     - cd ../portfolio
-    - ./gradlew sonarqube
+    - ./gradlew --debug sonarqube

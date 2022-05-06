@@ -148,6 +148,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             .setLastName(profile.getLastName())
             .setNickname(profile.getNickname())
             .setBio(profile.getBio())
+            .setId(profile.getId())
             .setPersonalPronouns(profile.getPronouns())
             .setEmail(profile.getEmail())
             .setCreated(Timestamp.newBuilder().setSeconds(profile.getRegisterDate().getTime()/1000).build())
@@ -158,7 +159,24 @@ public class AccountServerService extends UserAccountServiceImplBase{
             if (role.getRole().equals("2teacher")) { reply.addRoles(UserRole.TEACHER); }
             if (role.getRole().equals("3admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
         }
+
         return reply.build();
+    }
+
+    /**
+     * Updates the usersSorted list with the correct users in the order given by the sorted roles query
+     * @param usersSorted the list to update
+     * @param roles the order to base the update from
+     */
+    public void updateUsersSorted(List<AccountProfile> usersSorted, List<Role> roles) {
+        ArrayList<Integer> userIds = new ArrayList<>();
+        for (Role role: roles) {
+            Integer userId = role.getRoleAccountId();
+            if (!userIds.contains(userId)){
+                userIds.add(userId);
+                usersSorted.add(repo.findById(userId.intValue()));
+            }
+        }
     }
 
     /**
@@ -178,12 +196,13 @@ public class AccountServerService extends UserAccountServiceImplBase{
         if (request.getOrderBy().equals("roles_asc")) {
 
             List<Role> roles = roleRepo.findAllByOrderByRoleAsc();
-            AccountProcessing.updateUsersSorted(usersSorted, roles, repo);
+            updateUsersSorted(usersSorted, roles);
+            System.out.println(usersSorted.size());
 
         } else if (request.getOrderBy().equals("roles_desc")) {
 
             List<Role> roles = roleRepo.findAllByOrderByRoleDesc();
-            AccountProcessing.updateUsersSorted(usersSorted, roles, repo);
+            updateUsersSorted(usersSorted, roles);
 
         } else {
             usersSorted = sortUsers(request);
@@ -252,5 +271,69 @@ public class AccountServerService extends UserAccountServiceImplBase{
         }
         observer.onNext(response.build());
         observer.onCompleted();
+    }
+    @Override
+    public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
+        AccountProfile user = repo.findById(request.getUserId());
+        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
+        System.out.println(1);
+        String roleString;
+        switch (request.getRole()) {
+            case STUDENT:
+                roleString = "1student";
+                break;
+            case TEACHER:
+                roleString = "2teacher";
+                break;
+            case COURSE_ADMINISTRATOR:
+                roleString = "3admin";
+                break;
+            default:
+                roleString = "1student";
+                break;
+
+        }
+
+        Long roleId = null;
+
+        List<Role> roles = roleRepo.findAllByRegisteredUser(user);
+        for (Role role: roles) {
+            if (role.getRole().equals(roleString)) {
+                roleId = role.getUserRoleId();
+                System.out.println(roleId);
+                roleRepo.deleteById(roleId);
+            }
+        }
+
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+
+    }
+
+    @Override
+    public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
+        AccountProfile user = repo.findById(request.getUserId());
+        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
+        String role;
+        switch (request.getRole()) {
+            case STUDENT:
+                role = "1student";
+                break;
+            case TEACHER:
+                role = "2teacher";
+                break;
+            case COURSE_ADMINISTRATOR:
+                role = "3admin";
+                break;
+            default:
+                role = "1student";
+                break;
+        }
+
+        Role roleForRepo = new Role(user, role);
+        roleRepo.save(roleForRepo);
+
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
     }
 }
