@@ -17,8 +17,6 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
 
     @Autowired
     private Account accountService;
-    // TODO: Lookup in Student, Teacher or COURSE_ADMIN repos to see what the users role is.
-    private final String ROLE_OF_USER = "teacher"; // Puce teams may want to change this to "teacher" to test some functionality
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
 
 
@@ -39,29 +37,30 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
             if (Hasher.verify(request.getPassword(), profile.getPasswordHash())) {
                 // TODO: Facility to fetch user role
                 // token length is 248
-                String token = jwtTokenService.generateTokenForUser(profile.getUsername(), profile.getId(), profile.getUsername(), ROLE_OF_USER);
+                //String token = jwtTokenService.generateTokenForUser(profile.getUsername(), profile.getId(), profile.getUsername(), ROLE_OF_USER);
+                String token = jwtTokenService.generateTokenForUser(profile);
                 reply
-                    .setEmail(profile.getEmail())
-                    // TODO: Fetch name
-                    .setFirstName("TODO: FETCH NAME")
-                    .setLastName("TODO: FETCH NAME")
-                    .setMessage("Logged in successfully!")
-                    .setSuccess(true)
-                    .setToken(token)
-                    .setUserId(profile.getId())
-                    .setUsername(profile.getUsername());
+                        .setEmail(profile.getEmail())
+                        // TODO: Fetch name
+                        .setFirstName("TODO: FETCH NAME")
+                        .setLastName("TODO: FETCH NAME")
+                        .setMessage("Logged in successfully!")
+                        .setSuccess(true)
+                        .setToken(token)
+                        .setUserId(profile.getId())
+                        .setUsername(profile.getUsername());
             } else {
                 System.out.println("Could not verify password against expected hash.");
                 reply
-                    .setMessage("Log in attempt failed: password incorrect")
-                    .setSuccess(false)
-                    .setToken("");
+                        .setMessage("Log in attempt failed: password incorrect")
+                        .setSuccess(false)
+                        .setToken("");
             }
         } catch (Exception e) {
             reply
-                .setMessage("Log in attempt failed: username invalid")
-                .setSuccess(false)
-                .setToken("");
+                    .setMessage("Log in attempt failed: username invalid")
+                    .setSuccess(false)
+                    .setToken("");
             System.out.println(e);
         }
 

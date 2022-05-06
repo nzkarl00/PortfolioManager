@@ -190,9 +190,4 @@ class AccountClientServiceTest {
         ChangePasswordResponse actual = accountClientService.editPassword(2, "password", "oaisdvhiern___SECURE!!!___sahufi");
         assertNotEquals(expected, actual);
     }
-
-    @Test
-    void fail() {
-        Assertions.fail();
-    }
 }

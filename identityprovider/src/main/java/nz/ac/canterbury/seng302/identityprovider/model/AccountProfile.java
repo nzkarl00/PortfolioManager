@@ -42,7 +42,7 @@ public class AccountProfile {
     @Column(name = "pronouns", length = 10)
     private String pronouns;
     @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Role> roles;
+    protected List<Role> roles;
 
     //Necessary for Hibernate to work properly
     public AccountProfile() {}
@@ -59,8 +59,10 @@ public class AccountProfile {
      * @param lastName last name
      * @param pronouns users preferred pronouns
      */
-    public AccountProfile(String username, String passwordHash, Date registerDate, String bio, String email, String photoPath, String firstName, String lastName, String pronouns) {
-//        this.id = null;
+    public AccountProfile(
+        String username, String passwordHash, Date registerDate, String bio, String email, String photoPath,
+        String firstName, String lastName, String pronouns
+    ) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.registerDate = registerDate;
@@ -134,6 +136,27 @@ public class AccountProfile {
 
     public List<Role> getRoles() {
         return roles;
+    }
+
+    public Role getHighestRole() {
+        if (roles.size() == 0) {
+            return null;
+        }
+        Role highestRole = roles.get(0);
+
+        System.out.println(roles);
+        for (int i = 1; i < roles.size(); i++) {
+            System.out.println(i);
+            Role currentRole = roles.get(i);
+            System.out.println(currentRole.getRole());
+            if (currentRole.getRole().equals("admin")) {
+                return currentRole;
+            } else if (currentRole.getRole().equals("teacher")) {
+                highestRole = currentRole;
+            }
+        }
+        System.out.println(highestRole.getRole());
+        return highestRole;
     }
 
     public String getPronouns() {
