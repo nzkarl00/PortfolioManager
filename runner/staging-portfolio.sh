@@ -2,8 +2,6 @@ fuser -k 9501/tcp || true
 
 source staging-portfolio-env.sh
 
-echo $MARIADB_USERNAME
-
 env SPRING_PROFILES_ACTIVE=staging \
 java -jar staging-portfolio/libs/portfolio-0.0.1-SNAPSHOT.jar \
     --server.port=9501 \
