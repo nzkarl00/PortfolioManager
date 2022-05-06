@@ -30,7 +30,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -134,15 +137,29 @@ public class AccountControllerTest {
 
     @Test
     public void getAccountWithValidCredentials() throws Exception {
-        try (MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class)) {
-            utilities.when(() -> AuthStateInformer.getId(validAuthState))
-                .thenReturn(1);
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+            .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
 
-            when(accountClientService.getUserById(1)).thenReturn(testUser);
-            mockMvc.perform(get("/account")
-                    .principal(principal))
-                .andExpect(status().isOk());
-        }
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        // Spring now thinks we are logged in as the user specified in validAuthState, so any request made from now on will be authenticated.
+        // Ready to make a request to any endpoint which requires authentication
+        mockMvc.perform(get("/account"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("123456"));
+
+//        try (MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class)) {
+//            utilities.when(() -> AuthStateInformer.getId(validAuthState))
+//                .thenReturn(1);
+//
+//            when(accountClientService.getUserById(1)).thenReturn(testUser);
+//            mockMvc.perform(get("/account")
+//                    .principal(principal))
+//                .andExpect(status().isOk());
+//        }
     }
 
 
