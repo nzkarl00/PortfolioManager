@@ -145,11 +145,26 @@ public class AccountControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
+        // Expected values in the model
+        String name = testUser.getFirstName() + testUser.getLastName();
+        String nickname = testUser.getNickname();
+        String username = testUser.getUsername();
+        String email = testUser.getEmail();
+        String bio = testUser.getBio();
+
         // Spring now thinks we are logged in as the user specified in validAuthState, so any request made from now on will be authenticated.
         // Ready to make a request to any endpoint which requires authentication
         mockMvc.perform(get("/account"))
-            .andExpect(status().isOk())
-            .andExpect(content().string("123456"));
+            .andExpect(status().isOk()) // Whether to return the status "200 OK"
+            .andExpect(content().string("123456"))
+            .andExpect(view().name("account")) // Whether to return the template "account"
+             //Model test.
+            .andExpect(model().attribute("name", name))
+            .andExpect(model().attribute("nickname", nickname))
+            .andExpect(model().attribute("username", username))
+            .andExpect(model().attribute("email", email))
+            .andExpect(model().attribute("bio", bio));
+
 
 //        try (MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class)) {
 //            utilities.when(() -> AuthStateInformer.getId(validAuthState))
