@@ -43,15 +43,12 @@ public class User {
                     sorted = true;
                 }
 
-                System.out.println(i);
-                System.out.println(rolesSorted.size());
             }
             if (!sorted) {
                 rolesSorted.add(role);
             }
             sorted = false;
         }
-        System.out.println(rolesSorted);
         for (UserRole role: rolesSorted) {
 
             roles.add(new Role(role));
