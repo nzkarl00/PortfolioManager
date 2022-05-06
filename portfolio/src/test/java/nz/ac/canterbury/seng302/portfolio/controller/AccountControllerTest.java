@@ -14,6 +14,7 @@ import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthStateOrBuilder;
+import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,6 +69,8 @@ public class AccountControllerTest {
             .setIsAuthenticated(true)
             .setNameClaimType("name")
             .setRoleClaimType("role")
+            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
+            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
             .setAuthenticationType("AuthenticationTypes.Federation")
             .setName("validtesttoken")
             .build();
