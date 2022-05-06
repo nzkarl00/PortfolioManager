@@ -40,6 +40,10 @@ public class Role {
         return userRoleId;
     }
 
+    public Integer getRoleAccountId(){
+        return registeredUser.getId();
+    }
+
     public void setUserRoleId(Long id) {
         userRoleId = id;
     }

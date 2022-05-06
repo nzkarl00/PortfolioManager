@@ -165,11 +165,11 @@ public class AccountServerService extends UserAccountServiceImplBase{
      * @param roles the order to base the update from
      */
     public void updateUsersSorted(List<AccountProfile> usersSorted, List<Role> roles) {
-        ArrayList<Long> userIds = new ArrayList<>();
+        ArrayList<Integer> userIds = new ArrayList<>();
         for (Role role: roles) {
-            Long userId = role.getUserRoleId();
+            Integer userId = role.getRoleAccountId();
             if (!userIds.contains(userId)){
-                userIds.add(role.getUserRoleId());
+                userIds.add(userId);
                 usersSorted.add(repo.findById(userId.intValue()));
             }
         }
@@ -189,17 +189,16 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         Boolean isSorted = false;
 
-        System.out.println(request.getOrderBy()+" get function");
-
         if (request.getOrderBy().equals("roles_asc")) {
 
             List<Role> roles = roleRepo.findAllByOrderByRoleAsc();
-            AccountProcessing.updateUsersSorted(usersSorted, roles, repo);
+            updateUsersSorted(usersSorted, roles);
+            System.out.println(usersSorted.size());
 
         } else if (request.getOrderBy().equals("roles_desc")) {
 
             List<Role> roles = roleRepo.findAllByOrderByRoleDesc();
-            AccountProcessing.updateUsersSorted(usersSorted, roles, repo);
+            updateUsersSorted(usersSorted, roles);
 
         } else {
             usersSorted = sortUsers(request);

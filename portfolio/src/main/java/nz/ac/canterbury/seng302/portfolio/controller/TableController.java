@@ -45,7 +45,6 @@ public class TableController {
     Boolean isSorted = false;
     List<User> users = new ArrayList<User>();
     String role;
-    List<User> users = new ArrayList<>();
 
     String firstNameShow = "background-color:#056BFA !important;";
     String lastNameShow = "";
@@ -219,7 +218,6 @@ public class TableController {
         }
 
             return "redirect:/user-list";
-        return "redirect:/user-list";
     }
 
 
