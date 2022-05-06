@@ -248,9 +248,4 @@ public class AccountServerService extends UserAccountServiceImplBase{
         observer.onNext(response.build());
         observer.onCompleted();
     }
-
-    @Override
-    public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
-
-    }
 }

@@ -118,4 +118,11 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
             .setNewPassword(newPassword);
         return accountServiceStub.changeUserPassword(request.build());
     }
+
+    public FileUploadStatusResponse uploadPhoto(int id, String fileType, File photo) {
+        FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
+        String dir = System.getProperty("user.dir");
+        System.out.println(dir);
+        return response.build();
+    }
 }

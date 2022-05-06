@@ -32,6 +32,10 @@
             <div class="col-lg-7 col-md-8 col-sm-12  portion_body">
                 <p class="profile_head">Edit Profile Photo</p>
                 <img th:src=${photo} alt="User profile photo" width="500" height="500">
+                <form th:action="@{/upload-photo}" method="post">
+                    <input type="file" id="photo" name="filename" accept="image/*">
+                    <input type="submit">
+                </form>
             </div>
         </div>
     </div>
