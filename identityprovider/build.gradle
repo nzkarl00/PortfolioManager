@@ -34,6 +34,8 @@ dependencies {
     implementation 'net.devh:grpc-spring-boot-starter:2.13.1.RELEASE' // GRPC server / client dependencies
     implementation 'nz.ac.canterbury.seng302:shared:1.0'
     implementation 'org.testng:testng:7.1.0'// Local package containing .proto files
+    // MariaDB
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.4'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
