@@ -88,7 +88,7 @@
                                 <a href="#" class="dropdown-item table_text" th:if="${not user.listRoles().contains('teacher')}">
                                     <form style="display:inline;" th:action="@{/add-role(roleAdd=${'teacher'},username=${user.username})}" method="post" ><button class="table_text button_none">Add Teacher</button></form>
                                 </a>
-                                <a href="#" class="dropdown-item table_text" th:if="${not user.listRoles().contains('course_administrator')}">
+                                <a href="#" class="dropdown-item table_text" th:if="${not user.listRoles().contains('admin')}">
                                     <form style="display:inline;" th:action="@{/add-role(roleAdd=${'course_administrator'},username=${user.username})}" method="post" ><button class="table_text button_none">Add Admin</button></form>
                                 </a>
                             </div>
