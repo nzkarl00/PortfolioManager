@@ -81,15 +81,19 @@ public class TableController {
         // and some details from https://stackoverflow.com/questions/5095887/how-do-i-pass-a-url-with-multiple-parameters-into-a-url
         // and https://stackoverflow.com/questions/46216134/thymeleaf-how-to-make-a-button-link-to-another-html-page
 
-        users.clear();
         String movePage = move.orElse("");
 
         // Receive the forward or backward call from the button and iterate current page
         if (movePage.equals("forward")) {
-            currentPage++;
+            if ((users.size() != 0)) {
+                currentPage++;
+            }
         } else if (movePage.equals("back")) {
             if (currentPage > 0) { currentPage--; }
         }
+
+        users.clear();
+
         start = currentPage * step;
 
         role = principal.getClaimsList().stream()
@@ -230,7 +234,6 @@ public class TableController {
     ) throws Exception {
         if (role.equals("teacher")) {
             User user = null;
-            System.out.println(users);
             for (User userTemp : users) {
                 if (userTemp.getUsername().equals(username)) {
                     user = userTemp;
@@ -240,9 +243,11 @@ public class TableController {
             if (user != null) {
                 Integer userId = user.getId();
                 if (!user.listRoles().contains(roleAdd)) {
+                    if (roleAdd.equals("admin")) {
+                        roleAdd = "course_administrator";
+                    }
                     // Performs deletion if it passes all checks
                     UserRoleChangeResponse response = accountClientService.addRole(roleAdd, userId);
-                    System.out.println("redirect");
                     if (response.getIsSuccess()) {
                         return "redirect:/user-list";
                     } else {
@@ -288,9 +293,12 @@ public class TableController {
                 Integer userId = user.getId();
                 if (user.listRoles().size() > 1) {
                     if (user.listRoles().contains(roleDelete)) {
+                        if (roleDelete.equals("admin")) {
+                            roleDelete = "course_administrator";
+                        }
                         // Performs deletion if it passes all checks
                         accountClientService.deleteRole(roleDelete, userId);
-                        System.out.println("redirect");
+
                         return "redirect:/user-list";
                     }
                 }

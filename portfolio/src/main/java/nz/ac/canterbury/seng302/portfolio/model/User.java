@@ -84,7 +84,6 @@ public class User {
     }
 
     public List<String> listRoles() {
-        System.out.println(roles);
         List<String> output = new ArrayList<>();
         for (Role role: roles) {
             output.add(role.toString());
