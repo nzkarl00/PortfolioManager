@@ -17,8 +17,6 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
 
     @Autowired
     private Account accountService;
-    // TODO: Lookup in Student, Teacher or COURSE_ADMIN repos to see what the users role is.
-    private final String ROLE_OF_USER = "teacher"; // Puce teams may want to change this to "teacher" to test some functionality
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
 
 
@@ -38,7 +36,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
 
             if (Hasher.verify(request.getPassword(), profile.getPasswordHash())) {
                 // TODO: Facility to fetch user role
-                String token = jwtTokenService.generateTokenForUser(profile.getUsername(), profile.getId(), "TODO", ROLE_OF_USER);
+                String token = jwtTokenService.generateTokenForUser(profile);
                 reply
                     .setEmail(profile.getEmail())
                     // TODO: Fetch name

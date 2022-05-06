@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class AccountProfile {
     @Column(name = "pronouns", length = 10)
     private String pronouns;
     @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Role> roles;
+    protected List<Role> roles;
 
 
     //Necessary for Hibernate to work properly
@@ -59,8 +60,10 @@ public class AccountProfile {
      * @param lastName last name
      * @param pronouns users preferred pronouns
      */
-    public AccountProfile(String username, String passwordHash, Date registerDate, String bio, String email, String photoPath, String firstName, String lastName, String pronouns) {
-//        this.id = null;
+    public AccountProfile(
+        String username, String passwordHash, Date registerDate, String bio, String email, String photoPath,
+        String firstName, String lastName, String pronouns
+    ) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.registerDate = registerDate;
@@ -136,6 +139,27 @@ public class AccountProfile {
         return roles;
     }
 
+    public Role getHighestRole() {
+        if (roles.size() == 0) {
+            return null;
+        }
+        Role highestRole = roles.get(0);
+
+        System.out.println(roles);
+        for (int i = 1; i < roles.size(); i++) {
+            System.out.println(i);
+            Role currentRole = roles.get(i);
+            System.out.println(currentRole.getRole());
+            if (currentRole.getRole().equals("admin")) {
+                return currentRole;
+            } else if (currentRole.getRole().equals("teacher")) {
+                highestRole = currentRole;
+            }
+        }
+        System.out.println(highestRole.getRole());
+        return highestRole;
+    }
+
     public String getPronouns() {
         return pronouns;
     }
@@ -180,7 +204,19 @@ public class AccountProfile {
         this.bio = bio;
     }
 
+    // this has to be bad practice right?
+    // but as I have no idea how to mock the relationship of linked tables
+    // it should be fine for now
+    public void addRoleTestingOnly(Role role) {
+        roles = new ArrayList<>(); // note this is just for testing
+        roles.add(role);
+    }
+
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
+    public void deleteRole(Role role) {
+        roles.remove(role);
+    }
+
 }

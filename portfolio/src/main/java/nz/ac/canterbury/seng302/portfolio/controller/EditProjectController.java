@@ -54,8 +54,8 @@ public class EditProjectController {
         /* Add project details to the model */
         model.addAttribute("projectName", project.getName());
         model.addAttribute("project", project);
-        model.addAttribute("projectStartDate", project.getStartDateString());
-        model.addAttribute("projectEndDate", project.getEndDateString());
+        model.addAttribute("projectStartDate", project.getStartDateStringHtml());
+        model.addAttribute("projectEndDate", project.getEndDateStringHtml());
         model.addAttribute("projectDescription", project.getDescription());
         model.addAttribute("errorShow", errorShow);
         model.addAttribute("errorCode", errorCode);
@@ -107,51 +107,45 @@ public class EditProjectController {
         Project project = projectService.getProjectById(projectId);
         project.setName(projectName);
 
-        Date checkStartDate = Project.stringToDate(projectStartDate);
-        Date checkEndDate = Project.stringToDate(projectEndDate);
+        Date checkStartDate = DateParser.stringToDate(projectStartDate);
+        Date checkEndDate = DateParser.stringToDate(projectEndDate);
 
         if (projectName.isBlank()) {
-
             errorShow = "";
             errorCode = "Project requires a name";
             return "redirect:/edit-project?id=" + projectId;
-
         }
+
         // Loop through sprints and check to see if a date change violates the existing sprints dates
         for (Sprint temp: sprintService.getSprintByParentId(projectId)) {
             if (temp.getStartDate().before(checkStartDate)) {
-
                 errorShow = "";
                 errorCode = "Project can't start after the earliest sprint";
                 return "redirect:/edit-project?id=" + projectId;
-
             }
             if (temp.getEndDate().after(checkEndDate)) {
-
                 errorShow = "";
                 errorCode = "Project can't end before the latest sprint";
                 return "redirect:/edit-project?id=" + projectId;
-
             }
-
         }
 
         if (checkStartDate.before(checkEndDate)) {
             project.setStartDateString(projectStartDate);
         } else {
-
             errorShow = "";
             errorCode = "Start and End date overlap";
             return "redirect:/edit-project?id=" + projectId;
         }
+
         if (checkEndDate.after(checkStartDate)) {
             project.setEndDateString(projectEndDate);
         } else {
-
             errorShow = "";
             errorCode = "Start and End date overlap";
             return "redirect:/edit-project?id=" + projectId;
         }
+
         project.setDescription(projectDescription);
         repository.save(project);
         return "redirect:/details?id=" + projectId;

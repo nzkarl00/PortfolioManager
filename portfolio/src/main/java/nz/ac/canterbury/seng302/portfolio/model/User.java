@@ -14,6 +14,7 @@ public class User {
     public String lastName;
     public String username;
     public String nickname;
+    public Integer id;
     public List<Role> roles = new ArrayList<>();
 
     /**
@@ -25,6 +26,7 @@ public class User {
         lastName = response.getLastName();
         username = response.getUsername();
         nickname = response.getNickname();
+        id = response.getId();
         List<UserRole> tempRoles = response.getRolesList();
         for (UserRole userRole : tempRoles) {
             Role role = new Role(userRole);
@@ -44,6 +46,9 @@ public class User {
     public String getNickname() {
         return nickname;
     }
+    public Integer getId() {
+        return id;
+    }
 
     /**
      * A place-holder to display roles in the user-table
@@ -55,5 +60,12 @@ public class User {
             output += role.toString() + ", ";
         }
         return output.substring(0, output.length() - 2);
+    }
+    public List<String> listRoles() {
+        List<String> output = new ArrayList<>();
+        for (Role role: roles) {
+            output.add(role.toString());
+        }
+        return output;
     }
 }

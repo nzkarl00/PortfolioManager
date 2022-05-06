@@ -98,8 +98,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Override
     public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
         AccountProfile profile = repo.findById(request.getId());
-        UserResponse reply = buildUserResponse(profile);
-        responseObserver.onNext(reply);
+        if (!(profile == null)) {
+            UserResponse reply = buildUserResponse(profile);
+            responseObserver.onNext(reply);
+        }
         responseObserver.onCompleted();
     }
 
@@ -112,17 +114,19 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
         EditUserResponse.Builder reply = EditUserResponse.newBuilder();
         AccountProfile profile = repo.findById(request.getUserId());
-        if (!request.getEmail().isEmpty()) { profile.setEmail(request.getEmail()); }
-        if (!request.getBio().isEmpty()) { profile.setBio(request.getBio()); }
-        if (!request.getLastName().isEmpty()) { profile.setLastName(request.getLastName()); }
-        if (!request.getFirstName().isEmpty()) { profile.setFirstName(request.getFirstName()); }
-        if (!request.getMiddleName().isEmpty()) { profile.setMiddleName(request.getMiddleName()); }
-        if (!request.getNickname().isEmpty()) { profile.setNickname(request.getNickname()); }
-        if (!request.getPersonalPronouns().isEmpty()) { profile.setPronouns(request.getPersonalPronouns()); }
-        repo.save(profile);
-        reply.setIsSuccess(true)
-                .setMessage("User details edited successfully");
-        responseObserver.onNext(reply.build());
+        if (!(profile == null)) {
+            if (!request.getEmail().isEmpty()) { profile.setEmail(request.getEmail()); }
+            if (!request.getBio().isEmpty()) { profile.setBio(request.getBio()); }
+            if (!request.getLastName().isEmpty()) { profile.setLastName(request.getLastName()); }
+            if (!request.getFirstName().isEmpty()) { profile.setFirstName(request.getFirstName()); }
+            if (!request.getMiddleName().isEmpty()) { profile.setMiddleName(request.getMiddleName()); }
+            if (!request.getNickname().isEmpty()) { profile.setNickname(request.getNickname()); }
+            if (!request.getPersonalPronouns().isEmpty()) { profile.setPronouns(request.getPersonalPronouns()); }
+            repo.save(profile);
+            reply.setIsSuccess(true)
+                .setMessage("We edited somme s***t, idk lol");
+            responseObserver.onNext(reply.build());
+        }
         responseObserver.onCompleted();
     }
 
@@ -140,6 +144,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             .setLastName(profile.getLastName())
             .setNickname(profile.getNickname())
             .setBio(profile.getBio())
+            .setId(profile.getId())
             .setPersonalPronouns(profile.getPronouns())
             .setEmail(profile.getEmail())
             .setCreated(Timestamp.newBuilder().setSeconds(profile.getRegisterDate().getTime()/1000).build())
@@ -150,6 +155,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             if (role.getRole().equals("2teacher")) { reply.addRoles(UserRole.TEACHER); }
             if (role.getRole().equals("3admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
         }
+
         return reply.build();
     }
 
@@ -159,11 +165,11 @@ public class AccountServerService extends UserAccountServiceImplBase{
      * @param roles the order to base the update from
      */
     public void updateUsersSorted(List<AccountProfile> usersSorted, List<Role> roles) {
-        ArrayList<Long> userIds = new ArrayList<>();
+        ArrayList<Integer> userIds = new ArrayList<>();
         for (Role role: roles) {
-            Long userId = role.getUserRoleId();
+            Integer userId = role.getRoleAccountId();
             if (!userIds.contains(userId)){
-                userIds.add(role.getUserRoleId());
+                userIds.add(userId);
                 usersSorted.add(repo.findById(userId.intValue()));
             }
         }
@@ -183,12 +189,11 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         Boolean isSorted = false;
 
-        System.out.println(request.getOrderBy()+" get function");
-
         if (request.getOrderBy().equals("roles_asc")) {
 
             List<Role> roles = roleRepo.findAllByOrderByRoleAsc();
             updateUsersSorted(usersSorted, roles);
+            System.out.println(usersSorted.size());
 
         } else if (request.getOrderBy().equals("roles_desc")) {
 
@@ -258,5 +263,69 @@ public class AccountServerService extends UserAccountServiceImplBase{
         }
         observer.onNext(response.build());
         observer.onCompleted();
+    }
+    @Override
+    public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
+        AccountProfile user = repo.findById(request.getUserId());
+        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
+        System.out.println(1);
+        String roleString;
+        switch (request.getRole()) {
+            case STUDENT:
+                roleString = "1student";
+                break;
+            case TEACHER:
+                roleString = "2teacher";
+                break;
+            case COURSE_ADMINISTRATOR:
+                roleString = "3admin";
+                break;
+            default:
+                roleString = "1student";
+                break;
+
+        }
+
+        Long roleId = null;
+
+        List<Role> roles = roleRepo.findAllByRegisteredUser(user);
+        for (Role role: roles) {
+            if (role.getRole().equals(roleString)) {
+                roleId = role.getUserRoleId();
+                System.out.println(roleId);
+                roleRepo.deleteById(roleId);
+            }
+        }
+
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+
+    }
+
+    @Override
+    public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
+        AccountProfile user = repo.findById(request.getUserId());
+        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
+        String role;
+        switch (request.getRole()) {
+            case STUDENT:
+                role = "1student";
+                break;
+            case TEACHER:
+                role = "2teacher";
+                break;
+            case COURSE_ADMINISTRATOR:
+                role = "3admin";
+                break;
+            default:
+                role = "1student";
+                break;
+        }
+
+        Role roleForRepo = new Role(user, role);
+        roleRepo.save(roleForRepo);
+
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
     }
 }

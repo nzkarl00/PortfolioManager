@@ -16,7 +16,7 @@ public class Role {
     private Long userRoleId;
     @Column(name = "role")
     private String role;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name="parent_account_id", nullable=false)
     private AccountProfile registeredUser;
 
@@ -38,5 +38,13 @@ public class Role {
 
     public Long getUserRoleId(){
         return userRoleId;
+    }
+
+    public Integer getRoleAccountId(){
+        return registeredUser.getId();
+    }
+
+    public void setUserRoleId(Long id) {
+        userRoleId = id;
     }
 }
