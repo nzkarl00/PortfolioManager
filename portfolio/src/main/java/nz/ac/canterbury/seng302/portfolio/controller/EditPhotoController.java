@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
@@ -29,6 +30,12 @@ public class EditPhotoController {
 
         // UserResponse userReply = accountClientService.getUserById(id);
         // model.addAttribute("photo", userReply.getPhotoPath());
+
+        UserResponse userReply = accountClientService.getUserById(id);
+
+        model.addAttribute("date",  DateParser.displayDate(userReply));
+        model.addAttribute("username", userReply.getUsername());
+
         model.addAttribute("photo", "/images/" + id + "/" + id + ".jpg");
         model.addAttribute("message", "");
         return "editPhoto";

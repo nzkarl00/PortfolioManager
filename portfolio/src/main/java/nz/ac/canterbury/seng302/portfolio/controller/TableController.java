@@ -77,6 +77,7 @@ public class TableController {
         // Update, a bit of philosophy from the above link
         // and some details from https://stackoverflow.com/questions/5095887/how-do-i-pass-a-url-with-multiple-parameters-into-a-url
         // and https://stackoverflow.com/questions/46216134/thymeleaf-how-to-make-a-button-link-to-another-html-page
+
         String movePage = move.orElse("");
 
         // Receive the forward or backward call from the button and iterate current page
@@ -94,6 +95,9 @@ public class TableController {
 
         UserResponse userReply;
         userReply = accountClientService.getUserById(id); // Get the user
+
+        model.addAttribute("date",  DateParser.displayDate(userReply));
+        model.addAttribute("username", userReply.getUsername());
 
         model.addAttribute("date", DateParser.displayDate(userReply));
         model.addAttribute("start", start);

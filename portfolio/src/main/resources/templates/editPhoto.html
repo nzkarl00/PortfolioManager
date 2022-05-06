@@ -19,11 +19,11 @@
                 <img th:src="@{${photo}}" alt="User profile photo" width="500" height="500">
                 <form th:action="@{/upload-photo}" method="post" enctype="multipart/form-data">
                     <input type="file" id="photo" name="filename" accept="image/*">
-                    <input type="submit">
+                    <input type="submit" class="save">
                 </form>
                 <span th:text="${message}"></span>
                 <form action="#" th:action="@{/delete-photo}" th:method="delete">
-                    <button type="submit" class="btn">
+                    <button type="submit" class="cancel">
                         Delete Photo
                     </button>
                 </form>
