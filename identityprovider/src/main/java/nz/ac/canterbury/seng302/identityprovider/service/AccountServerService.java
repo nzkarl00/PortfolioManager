@@ -240,14 +240,14 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 profile.setPasswordHash(Hasher.hashPassword(request.getNewPassword()));
                 repo.save(profile);
                 response.setIsSuccess(true)
-                  .setMessage("Password changed");
+                    .setMessage("Password changed");
             } else {
                 response.setMessage("Password change failed: current password incorrect")
-                  .setIsSuccess(false);
+                    .setIsSuccess(false);
             }
         } catch (Exception e) {
             response.setMessage(e.getMessage())
-              .setIsSuccess(false);
+                 .setIsSuccess(false);
             System.out.println(e);
         }
         observer.onNext(response.build());
