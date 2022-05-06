@@ -51,6 +51,8 @@ branch-build:
 
 deploy-staging-identityprovider:
   stage: deploy
+  variables:
+    SPRING_PROFILES_ACTIVE: staging
   script:
     - cd identityprovider
     - ./gradlew bootJar
