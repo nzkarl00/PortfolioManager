@@ -125,7 +125,7 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         String fileName = StringUtils.cleanPath(photo.getOriginalFilename());
         FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
         String path = "src/main/resources/static/images/" + id;
-        FileUploadUtil.saveFile(path, fileName, photo);
+        FileUploadUtil.saveFile(path, String.valueOf(id) + ".jpg", photo);
         return response.build();
     }
 }

@@ -30,7 +30,8 @@ public class EditPhotoController {
 
         // UserResponse userReply = accountClientService.getUserById(id);
         // model.addAttribute("photo", userReply.getPhotoPath());
-        model.addAttribute("photo", "/images/" + id + "/Cat03.jpg");
+        System.out.println("/images/" + id + "/" + id + ".jpg");
+        model.addAttribute("photo", "/images/" + id + "/" + id + ".jpg");
         model.addAttribute("message", "");
         return "editPhoto";
     }
