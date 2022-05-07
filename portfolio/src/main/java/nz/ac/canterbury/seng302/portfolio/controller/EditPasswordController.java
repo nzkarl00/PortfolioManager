@@ -41,6 +41,12 @@ public class EditPasswordController {
     public String passwordForm(Model model,
                               @AuthenticationPrincipal AuthState principal) {
 
+        int id = AuthStateInformer.getId(principal);
+        UserResponse userReply = accountClientService.getUserById(id);
+
+        model.addAttribute("date",  DateParser.displayDate(userReply));
+        model.addAttribute("username", userReply.getUsername());
+
         model.addAttribute("password", password);
         model.addAttribute("passwordConfirm", passwordConfirm);
         model.addAttribute("passwordErrorShow", passwordErrorShow);
