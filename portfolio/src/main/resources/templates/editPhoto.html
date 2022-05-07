@@ -1,24 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Profile Photo</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
-
-    <!-- Bootstrap core CSS -->
-    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
-    <link th:href="@{/css/stylesheet.css}" rel="stylesheet">
-
-    <!-- For dropdown to work -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head.html :: head('Edit Photo')"></head>
 <body>
 <div th:replace="fragments/validUser.html :: navbar"></div>
+
 <div class="main">
     <div class="container">
 
@@ -34,7 +19,13 @@
                 <img th:src="@{${photo}}" alt="User profile photo" width="500" height="500">
                 <form th:action="@{/upload-photo}" method="post" enctype="multipart/form-data">
                     <input type="file" id="photo" name="filename" accept="image/*" required>
-                    <input type="submit">
+                    <input type="submit" class="save" style="width:200px !important;">
+                </form>
+                <span th:text="${message}"></span>
+                <form action="#" th:action="@{/delete-photo}" th:method="delete">
+                    <button type="submit" class="cancel" style="width:200px !important;">
+                        Delete Photo
+                    </button>
                 </form>
                 <p><span th:text="${message}"></span></p>
             </div>
