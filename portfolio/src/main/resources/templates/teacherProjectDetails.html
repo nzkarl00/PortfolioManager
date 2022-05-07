@@ -211,6 +211,7 @@
             sprintEvents.push( {
                 title: sprintList[sprintIndex].label,
                 start: sprintList[sprintIndex].startDate,
+                allDay: true,  //Can't resize from calendar view without this parameter
                 end: sprintEndDate,
 
                 // Mod so the sprint index doesn't go out of range for colors list
@@ -227,7 +228,11 @@
                 start: [[${project.getStartDate()}]],
                 end: endDate
             },
-
+            editable: true,
+            eventDurationEditable: true,
+            eventStartEditable: true,
+            eventResizableFromStart: true,
+            eventOverlap: false,
             events: sprintEvents,
             displayEventTime : false
 
