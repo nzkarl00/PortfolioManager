@@ -8,6 +8,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.Role;
 import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.hibernate.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;

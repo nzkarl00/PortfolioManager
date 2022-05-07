@@ -107,5 +107,4 @@ public class EditAccountController {
 
         return "redirect:/edit-account";
     }
-
 }
