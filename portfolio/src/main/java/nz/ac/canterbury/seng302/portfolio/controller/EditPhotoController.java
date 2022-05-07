@@ -30,7 +30,6 @@ public class EditPhotoController {
 
         // UserResponse userReply = accountClientService.getUserById(id);
         // model.addAttribute("photo", userReply.getPhotoPath());
-        System.out.println("/images/" + id + "/" + id + ".jpg");
         model.addAttribute("photo", "/images/" + id + "/" + id + ".jpg");
         model.addAttribute("message", "");
         return "editPhoto";
@@ -41,8 +40,12 @@ public class EditPhotoController {
                               @AuthenticationPrincipal AuthState principal,
                               @RequestParam(value="filename") MultipartFile file) throws IOException {
         int id = AuthStateInformer.getId(principal);
-        FileUploadStatusResponse response = accountClientService.uploadPhoto(id, file.getContentType(), file);
-        model.addAttribute("message", response.getMessage());
+        if (file.isEmpty()) {
+            model.addAttribute("message", "file is empty, please add a file to submit");
+        } else {
+            FileUploadStatusResponse response = accountClientService.uploadPhoto(id, file.getContentType(), file);
+            model.addAttribute("message", response.getMessage());
+        }
         return "redirect:/edit-photo";
     }
 }

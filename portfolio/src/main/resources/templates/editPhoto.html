@@ -33,10 +33,10 @@
                 <p class="profile_head">Edit Profile Photo</p>
                 <img th:src="@{${photo}}" alt="User profile photo" width="500" height="500">
                 <form th:action="@{/upload-photo}" method="post" enctype="multipart/form-data">
-                    <input type="file" id="photo" name="filename" accept="image/*">
+                    <input type="file" id="photo" name="filename" accept="image/*" required>
                     <input type="submit">
                 </form>
-                <span th:text="${message}"></span>
+                <p><span th:text="${message}"></span></p>
             </div>
         </div>
     </div>

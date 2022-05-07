@@ -172,8 +172,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         Boolean isSorted = false;
 
-        System.out.println(request.getOrderBy()+" get function");
-
         if (request.getOrderBy().equals("roles_asc")) {
 
             List<Role> roles = roleRepo.findAllByOrderByRoleAsc();
@@ -198,7 +196,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
     }
 
     public List<AccountProfile> sortUsers(GetPaginatedUsersRequest request) {
-        System.out.println(request.getOrderBy()+" sort function");
         switch (request.getOrderBy()) {
             case "first_name_asc":
                 return repo.findAllByOrderByFirstNameAsc();
