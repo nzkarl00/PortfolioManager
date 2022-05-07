@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head.html :: head('Edit Photo')"></head>
+<body>
+<div th:replace="fragments/validUser.html :: navbar"></div>
+
+=======
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -19,6 +26,7 @@
 </head>
 <body>
 <div th:replace="fragments/validUser.html :: navbar"></div>
+>>>>>>> dev
 <div class="main">
     <div class="container">
 
@@ -34,7 +42,13 @@
                 <img th:src="@{${photo}}" alt="User profile photo" width="500" height="500">
                 <form th:action="@{/upload-photo}" method="post" enctype="multipart/form-data">
                     <input type="file" id="photo" name="filename" accept="image/*" required>
-                    <input type="submit">
+                    <input type="submit" class="save" style="width:200px !important;">
+                </form>
+                <span th:text="${message}"></span>
+                <form action="#" th:action="@{/delete-photo}" th:method="delete">
+                    <button type="submit" class="cancel" style="width:200px !important;">
+                        Delete Photo
+                    </button>
                 </form>
                 <p><span th:text="${message}"></span></p>
             </div>

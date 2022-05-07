@@ -115,7 +115,6 @@ public class TableController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id); // Get the user
 
-
         // update the sorting variables if there is a userPreference in the database to do so
         Optional<UserPreference> preferenceOptional = userPreferenceRepo.findById(id);
         UserPreference preference = preferenceOptional.orElse(null);
@@ -127,6 +126,7 @@ public class TableController {
         }
 
         model.addAttribute("date", DateParser.displayDate(userReply));
+        model.addAttribute("username", userReply.getUsername());
         model.addAttribute("start", start);
         model.addAttribute("currentPage", currentPage);
 
