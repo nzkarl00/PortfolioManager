@@ -16,6 +16,19 @@ public class Role {
 
     @Override
     public String toString() {
-        return role.toLowerCase();
+
+        String roleString = role.toLowerCase();
+        if (roleString.equals("course_administrator")) {
+            roleString = "admin";
+        }
+        return roleString;
+    }
+
+    public String toStringPresent() {
+        String roleString = role.toLowerCase();
+        if (roleString.equals("course_administrator")) {
+            roleString = "admin";
+        }
+        return roleString;
     }
 }

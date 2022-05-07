@@ -48,6 +48,8 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.register(registerRequest);
     }
 
+
+
     /**
      * Get a user's details from the id of the user
      * @param id
@@ -119,6 +121,44 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
             .setCurrentPassword(currentPassword)
             .setNewPassword(newPassword);
         return accountServiceStub.changeUserPassword(request.build());
+    }
+
+    public UserRoleChangeResponse deleteRole(String role, Integer userId) {
+        ModifyRoleOfUserRequest.Builder request = ModifyRoleOfUserRequest.newBuilder();
+        request.setUserId(userId);
+        UserRole roleSending;
+        if (role.equals("student")) {
+            roleSending = UserRole.STUDENT;
+        } else if (role.equals("teacher")) {
+            roleSending = UserRole.TEACHER;
+        } else if (role.equals("course_administrator")) {
+            roleSending = UserRole.COURSE_ADMINISTRATOR;
+        } else {
+            roleSending = UserRole.STUDENT;
+        }
+
+        request.setRole(roleSending);
+
+        System.out.println("portfolio service");
+        return accountServiceStub.removeRoleFromUser(request.build());
+    }
+
+    public UserRoleChangeResponse addRole(String role, Integer userId) {
+        ModifyRoleOfUserRequest.Builder request = ModifyRoleOfUserRequest.newBuilder();
+        request.setUserId(userId);
+        UserRole roleSending;
+        if (role.equals("student")) {
+            roleSending = UserRole.STUDENT;
+        } else if (role.equals("teacher")) {
+            roleSending = UserRole.TEACHER;
+        } else if (role.equals("course_administrator")) {
+            roleSending = UserRole.COURSE_ADMINISTRATOR;
+        } else {
+            roleSending = UserRole.STUDENT;
+        }
+
+        request.setRole(roleSending);
+        return accountServiceStub.addRoleToUser(request.build());
     }
 
     public FileUploadStatusResponse uploadPhoto(int id, String fileType, MultipartFile photo) throws IOException {

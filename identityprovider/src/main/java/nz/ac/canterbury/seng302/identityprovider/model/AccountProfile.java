@@ -144,12 +144,11 @@ public class AccountProfile {
             return null;
         }
         Role highestRole = roles.get(0);
-
         for (int i = 1; i < roles.size(); i++) {
             Role currentRole = roles.get(i);
-            if (currentRole.getRole().equals("admin")) {
+            if (currentRole.getRole().equals("3admin")) {
                 return currentRole;
-            } else if (currentRole.getRole().equals("teacher")) {
+            } else if (currentRole.getRole().equals("2teacher")) {
                 highestRole = currentRole;
             }
         }
@@ -211,4 +210,8 @@ public class AccountProfile {
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
+    public void deleteRole(Role role) {
+        roles.remove(role);
+    }
+
 }
