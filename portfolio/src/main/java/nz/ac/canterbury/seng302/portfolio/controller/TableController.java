@@ -104,16 +104,10 @@ public class TableController {
 
         start = currentPage * step;
 
-        role = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("role"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("NOT FOUND");
+        role = AuthStateInformer.getRole(principal);
 
         model.addAttribute("userRole", role);
         step = 50;
-
-
 
         isSorted = false;
         Integer id = AuthStateInformer.getId(principal);

@@ -72,7 +72,7 @@ public class LandingController {
 
     String role = AuthStateInformer.getRole(principal);
 
-    if (role.equals("teacher")) {
+    if (role.equals("teacher") || role.equals("admin")) {
       model.addAttribute("display", "");
     } else {
       model.addAttribute("display", "display:none;");

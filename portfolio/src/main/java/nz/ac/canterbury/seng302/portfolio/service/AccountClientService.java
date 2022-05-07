@@ -123,22 +123,6 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.changeUserPassword(request.build());
     }
 
-    public FileUploadStatusResponse uploadPhoto(int id, String fileType, MultipartFile photo) throws IOException {
-        String fileName = StringUtils.cleanPath(photo.getOriginalFilename());
-        FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
-        String path = "src/main/resources/static/images/" + id;
-        FileUploadUtil.saveFile(path, String.valueOf(id) + ".jpg", photo);
-        return response.build();
-    }
-
-    public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int id) {
-        DeleteUserProfilePhotoResponse.Builder response = DeleteUserProfilePhotoResponse.newBuilder();
-        String path = "src/main/resources/static/images/" + id + "/" + id + ".jpg";
-        File file = new File(path);
-        response.setIsSuccess(file.delete());
-        return response.build();
-    }
-
     public UserRoleChangeResponse deleteRole(String role, Integer userId) {
         ModifyRoleOfUserRequest.Builder request = ModifyRoleOfUserRequest.newBuilder();
         request.setUserId(userId);
@@ -175,5 +159,21 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
         request.setRole(roleSending);
         return accountServiceStub.addRoleToUser(request.build());
+    }
+
+    public FileUploadStatusResponse uploadPhoto(int id, String fileType, MultipartFile photo) throws IOException {
+        String fileName = StringUtils.cleanPath(photo.getOriginalFilename());
+        FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
+        String path = "src/main/resources/static/images/" + id;
+        FileUploadUtil.saveFile(path, String.valueOf(id) + ".jpg", photo);
+        return response.build();
+    }
+
+    public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int id) {
+        DeleteUserProfilePhotoResponse.Builder response = DeleteUserProfilePhotoResponse.newBuilder();
+        String path = "src/main/resources/static/images/" + id + "/" + id + ".jpg";
+        File file = new File(path);
+        response.setIsSuccess(file.delete());
+        return response.build();
     }
 }

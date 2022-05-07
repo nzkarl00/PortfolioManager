@@ -76,8 +76,8 @@ public class EditSprintController {
         errorCode = "";
 
         String role = AuthStateInformer.getRole(principal);
-
-        if (role.equals("teacher")) {
+        
+        if (role.equals("teacher") || role.equals("admin")) {
             return "editSprint";
         } else {
             return "userProjectDetails";
