@@ -77,7 +77,7 @@ public class EditProjectController {
         // Below code is just begging to be added as a method somewhere...
         String role = AuthStateInformer.getRole(principal);
 
-        if (role.equals("teacher")) {
+        if (role.equals("teacher") || role.equals("admin")) {
             return "editProject";
         } else {
             return "userProjectDetails";
