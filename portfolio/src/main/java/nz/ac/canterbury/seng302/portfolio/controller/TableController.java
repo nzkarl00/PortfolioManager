@@ -1,7 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.rpc.context.AttributeContext;
 import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader;
+import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.UserPreference;
+import nz.ac.canterbury.seng302.portfolio.model.UserPreferenceRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.model.User;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
@@ -12,6 +16,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +24,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -37,10 +44,12 @@ public class TableController {
     @Autowired
     private AccountClientService accountClientService;
 
+    @Autowired
+    private UserPreferenceRepository userPreferenceRepo;
     private int start = 0;
     private int step = 50;
     private int currentPage = 0;
-    String sortMode = "first_name";
+    String sortMode = ""; // The column in the user table to sort, e.g. by last name, by alias etc.
     Integer ascDesc = 0;
     Boolean isSorted = false;
     List<User> users = new ArrayList<User>();
@@ -73,6 +82,7 @@ public class TableController {
      */
     @GetMapping("/user-list")
     public String account(
+        HttpServletRequest request,
         @AuthenticationPrincipal AuthState principal,
         Model model,
         @RequestParam("move") Optional<String> move) {
@@ -81,27 +91,23 @@ public class TableController {
         // and some details from https://stackoverflow.com/questions/5095887/how-do-i-pass-a-url-with-multiple-parameters-into-a-url
         // and https://stackoverflow.com/questions/46216134/thymeleaf-how-to-make-a-button-link-to-another-html-page
 
-        users.clear();
         String movePage = move.orElse("");
 
         // Receive the forward or backward call from the button and iterate current page
         if (movePage.equals("forward")) {
-            currentPage++;
+            if ((users.size() != 0)) { currentPage++; }
         } else if (movePage.equals("back")) {
             if (currentPage > 0) { currentPage--; }
         }
+
+        users.clear();
+
         start = currentPage * step;
 
-        role = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("role"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("NOT FOUND");
+        role = AuthStateInformer.getRole(principal);
 
         model.addAttribute("userRole", role);
         step = 50;
-
-
 
         isSorted = false;
         Integer id = AuthStateInformer.getId(principal);
@@ -109,7 +115,17 @@ public class TableController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id); // Get the user
 
-        model.addAttribute("date", DateParser.displayDate(userReply));
+        // update the sorting variables if there is a userPreference in the database to do so
+        Optional<UserPreference> preferenceOptional = userPreferenceRepo.findById(id);
+        UserPreference preference = preferenceOptional.orElse(null);
+        if (preference != null) {
+            ascDesc = preference.getSortOrder() == 1 ? 0 : 1;
+            columnHeaderHelper(preference.getSortCol());
+            sortMode = preference.getSortCol();
+            ascDesc = preference.getSortOrder();
+        }
+
+        NavController.updateModelForNav(principal, model, userReply, id);
         model.addAttribute("start", start);
         model.addAttribute("currentPage", currentPage);
 
@@ -150,16 +166,42 @@ public class TableController {
      */
     @PostMapping("order-list")
     public String orderUsers(
-            @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value="sortColumn") String sortColumn,
-            Model model
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @AuthenticationPrincipal AuthState principal,
+        @RequestParam(value="sortColumn") String sortColumn,
+        Model model
     ) throws Exception {
+        int id = AuthStateInformer.getId(principal);
 
+        UserPreference preference = userPreferenceRepo.findById(id);
+
+        columnHeaderHelper(sortColumn);
+
+        String sortAll = sortMode;
+        if (ascDesc == 0) {
+            sortAll += "_asc";
+        } else {
+            sortAll += "_dsc";
+        }
+
+        if (preference == null) {
+            preference = new UserPreference(id, sortMode, ascDesc);
+        } else {
+            preference.setSortCol(sortMode);
+            preference.setSortOrder(ascDesc);
+        }
+        userPreferenceRepo.save(preference);
+
+        return "redirect:/user-list";
+    }
+
+    private void columnHeaderHelper(String sortString) {
         String isUp = "";
         String isDown = "";
 
         // if it is currently sorting the column specified, switch the direction of sorting
-        if (sortColumn.equals(sortMode)) {
+        if (sortMode.equals(sortString)) {
             if (ascDesc == 1) {
                 ascDesc = 0;
                 isUp = "";
@@ -170,7 +212,7 @@ public class TableController {
                 isUp = "display:none;";
             }
         } else {
-            sortMode = sortColumn;
+            sortMode = sortString;
             ascDesc = 0;
             isUp = "";
             isDown = "display:none;";
@@ -195,31 +237,28 @@ public class TableController {
         rolesUp = "display:none;";
         rolesDown = "display:none;";
 
-        if (sortColumn.equals("roles")) {
+        if (sortString.equals("roles")) {
             rolesShow = tempValue;
             rolesUp = isUp;
             rolesDown = isDown;
-        } else if (sortColumn.equals("nickname")) {
+        } else if (sortString.equals("nickname")) {
             nicknameShow = tempValue;
             nicknameUp = isUp;
             nicknameDown = isDown;
-        } else if (sortColumn.equals("username")) {
+        } else if (sortString.equals("username")) {
             usernameShow = tempValue;
             usernameUp = isUp;
             usernameDown = isDown;
-        } else if (sortColumn.equals("last_name")) {
+        } else if (sortString.equals("last_name")) {
             lastNameShow = tempValue;
             lastNameUp = isUp;
             lastNameDown = isDown;
-        } else if (sortColumn.equals("first_name")) {
+        } else if (sortString.equals("first_name")) {
             firstNameShow = tempValue;
             firstNameUp = isUp;
             firstNameDown = isDown;
         }
-
-            return "redirect:/user-list";
     }
-
 
     @PostMapping("add-role")
     public String roleAdd(
@@ -230,7 +269,6 @@ public class TableController {
     ) throws Exception {
         if (role.equals("teacher")) {
             User user = null;
-            System.out.println(users);
             for (User userTemp : users) {
                 if (userTemp.getUsername().equals(username)) {
                     user = userTemp;
@@ -240,9 +278,11 @@ public class TableController {
             if (user != null) {
                 Integer userId = user.getId();
                 if (!user.listRoles().contains(roleAdd)) {
+                    if (roleAdd.equals("admin")) {
+                        roleAdd = "course_administrator";
+                    }
                     // Performs deletion if it passes all checks
                     UserRoleChangeResponse response = accountClientService.addRole(roleAdd, userId);
-                    System.out.println("redirect");
                     if (response.getIsSuccess()) {
                         return "redirect:/user-list";
                     } else {
@@ -288,9 +328,12 @@ public class TableController {
                 Integer userId = user.getId();
                 if (user.listRoles().size() > 1) {
                     if (user.listRoles().contains(roleDelete)) {
+                        if (roleDelete.equals("admin")) {
+                            roleDelete = "course_administrator";
+                        }
                         // Performs deletion if it passes all checks
                         accountClientService.deleteRole(roleDelete, userId);
-                        System.out.println("redirect");
+
                         return "redirect:/user-list";
                     }
                 }

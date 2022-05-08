@@ -8,6 +8,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.Role;
 import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.hibernate.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
@@ -22,6 +23,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The GRPC server side service class
+ * contains many of the protobuf implementations to allow communication between the idp and portfolio servers
+ */
 @GrpcService
 public class AccountServerService extends UserAccountServiceImplBase{
 
@@ -213,8 +218,12 @@ public class AccountServerService extends UserAccountServiceImplBase{
         responseObserver.onCompleted();
     }
 
+    /**
+     * returns the correct sorting of users based on the GRPC request
+     * @param request the GRPC request
+     * @return the list of account profiles sorted as to the grpc request
+     */
     public List<AccountProfile> sortUsers(GetPaginatedUsersRequest request) {
-        System.out.println(request.getOrderBy()+" sort function");
         switch (request.getOrderBy()) {
             case "first_name_asc":
                 return repo.findAllByOrderByFirstNameAsc();
@@ -268,7 +277,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
-        System.out.println(1);
         String roleString;
         switch (request.getRole()) {
             case STUDENT:
@@ -292,7 +300,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
         for (Role role: roles) {
             if (role.getRole().equals(roleString)) {
                 roleId = role.getUserRoleId();
-                System.out.println(roleId);
                 roleRepo.deleteById(roleId);
             }
         }

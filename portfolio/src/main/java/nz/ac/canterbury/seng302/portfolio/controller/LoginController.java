@@ -5,7 +5,6 @@ import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -97,7 +96,7 @@ public class LoginController {
             var domain = request.getHeader("host");
             CookieUtil.create(
                 response,
-                "lens-session-token",
+                "lens-session-token", // cookie in loginReply.getToken() stored here
                     loginReply.getToken(),
                 true,
                 5 * 60 * 60, // Expires in 5 hours

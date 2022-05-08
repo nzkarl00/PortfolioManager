@@ -13,7 +13,7 @@ tag-checker:
   only:
     - tags
 
-junit-porfolio:
+junit-portfolio:
   stage: test
   script:
     - cd portfolio
@@ -51,6 +51,8 @@ branch-build:
 
 deploy-staging-identityprovider:
   stage: deploy
+  variables:
+    DEPLOY_TARGET: staging-identityprovider
   script:
     - cd identityprovider
     - ./gradlew bootJar
@@ -58,8 +60,12 @@ deploy-staging-identityprovider:
     - mkdir /home/gitlab-runner/staging-identityprovider/
     - cp -r ./build/libs /home/gitlab-runner/staging-identityprovider
     - cp ../runner/staging-identityprovider.sh /home/gitlab-runner/staging-identityprovider.sh
-    - chmod u+x /home/gitlab-runner/staging-identityprovider.sh
-    - sudo systemctl restart staging-identityprovider
+    # To persist environment variables
+    - rm /home/gitlab-runner/$DEPLOY_TARGET-env.sh || true
+    - bash ../runner/save-env.sh
+    - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET.sh
+    - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET-env.sh
+    - sudo systemctl restart $DEPLOY_TARGET
   artifacts:
     paths:
       - identityprovider/build/libs
@@ -68,6 +74,8 @@ deploy-staging-identityprovider:
 
 deploy-staging-portfolio:
   stage: deploy
+  variables:
+    DEPLOY_TARGET: staging-portfolio
   script:
     - cd portfolio
     - ./gradlew bootJar
@@ -75,8 +83,12 @@ deploy-staging-portfolio:
     - mkdir /home/gitlab-runner/staging-portfolio/
     - cp -r ./build/libs /home/gitlab-runner/staging-portfolio
     - cp ../runner/staging-portfolio.sh /home/gitlab-runner/staging-portfolio.sh
-    - chmod u+x /home/gitlab-runner/staging-portfolio.sh
-    - sudo systemctl restart staging-portfolio
+    # To persist environment variables
+    - rm /home/gitlab-runner/$DEPLOY_TARGET-env.sh || true
+    - bash ../runner/save-env.sh
+    - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET.sh
+    - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET-env.sh
+    - sudo systemctl restart $DEPLOY_TARGET
   artifacts:
     paths:
       - portfolio/build/libs
@@ -85,6 +97,8 @@ deploy-staging-portfolio:
 
 deploy-production-identityprovider:
   stage: deploy
+  variables:
+    DEPLOY_TARGET: production-identityprovider
   script:
     - cd identityprovider
     - ./gradlew bootJar
@@ -92,8 +106,12 @@ deploy-production-identityprovider:
     - mkdir /home/gitlab-runner/production-identityprovider/
     - cp -r ./build/libs /home/gitlab-runner/production-identityprovider
     - cp ../runner/production-identityprovider.sh /home/gitlab-runner/production-identityprovider.sh
-    - chmod u+x /home/gitlab-runner/production-identityprovider.sh
-    - sudo systemctl restart production-identityprovider
+    # To persist environment variables
+    - rm /home/gitlab-runner/$DEPLOY_TARGET-env.sh || true
+    - bash ../runner/save-env.sh
+    - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET.sh
+    - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET-env.sh
+    - sudo systemctl restart $DEPLOY_TARGET
   artifacts:
     paths:
       - identityprovider/build/libs
@@ -103,6 +121,8 @@ deploy-production-identityprovider:
 
 deploy-production-portfolio:
   stage: deploy
+  variables:
+    ENV_TARGET: production-portfolio
   script:
     - cd portfolio
     - ./gradlew bootJar
@@ -110,8 +130,12 @@ deploy-production-portfolio:
     - mkdir /home/gitlab-runner/production-portfolio/
     - cp -r ./build/libs /home/gitlab-runner/production-portfolio
     - cp ../runner/production-portfolio.sh /home/gitlab-runner/production-portfolio.sh
-    - chmod u+x /home/gitlab-runner/production-portfolio.sh
-    - sudo systemctl restart production-portfolio
+    # To persist environment variables
+    - rm /home/gitlab-runner/$DEPLOY_TARGET-env.sh || true
+    - bash ../runner/save-env.sh
+    - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET.sh
+    - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET-env.sh
+    - sudo systemctl restart $DEPLOY_TARGET
   artifacts:
     paths:
       - portfolio/build/libs
@@ -119,16 +143,16 @@ deploy-production-portfolio:
     - tags
     - master
 
-sonarqube-report:
-  stage: sonarqube
-  variables:
-    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
-  cache:
-    key: "${CI_JOB_NAME}"
-    paths:
-      - .sonar/cache
-  script:
-    - cd identityprovider
-    - ./gradlew --debug sonarqube
-    - cd ../portfolio
-    - ./gradlew --debug sonarqube
+# sonarqube-report:
+#   stage: sonarqube
+#   variables:
+#     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+#   cache:
+#     key: "${CI_JOB_NAME}"
+#     paths:
+#       - .sonar/cache
+#   script:
+#     - cd identityprovider
+#     - ./gradlew --debug sonarqube
+#     - cd ../portfolio
+#     - ./gradlew --debug sonarqube

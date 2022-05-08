@@ -66,13 +66,12 @@ public class LandingController {
     UserResponse userReply;
     userReply = accountClientService.getUserById(id);
 
-    model.addAttribute("date",  DateParser.displayDate(userReply));
-    model.addAttribute("username", userReply.getUsername());
+    NavController.updateModelForNav(principal, model, userReply, id);
     // End of Attributes for header
 
     String role = AuthStateInformer.getRole(principal);
 
-    if (role.equals("teacher")) {
+    if (role.equals("teacher") || role.equals("admin")) {
       model.addAttribute("display", "");
     } else {
       model.addAttribute("display", "display:none;");

@@ -50,8 +50,7 @@ public class EditAccountController {
         userReply = accountClientService.getUserById(id);
 
         // Put the users details into the page
-        model.addAttribute("date", DateParser.displayDate(userReply));
-        model.addAttribute("username", userReply.getUsername());
+        NavController.updateModelForNav(principal, model, userReply, id);
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());
         model.addAttribute("nickname", userReply.getNickname());
@@ -107,5 +106,4 @@ public class EditAccountController {
 
         return "redirect:/edit-account";
     }
-
 }

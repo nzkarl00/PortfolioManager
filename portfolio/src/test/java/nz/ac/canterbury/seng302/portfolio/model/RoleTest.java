@@ -15,6 +15,6 @@ class RoleTest {
         assertEquals("teacher", role.toString());
 
         role = new Role(UserRole.COURSE_ADMINISTRATOR);
-        assertEquals("course_administrator", role.toString());
+        assertEquals("admin", role.toString());
     }
 }

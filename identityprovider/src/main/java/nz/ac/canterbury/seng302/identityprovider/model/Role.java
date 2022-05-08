@@ -47,4 +47,15 @@ public class Role {
     public void setUserRoleId(Long id) {
         userRoleId = id;
     }
+
+    public String getPlainRole() {
+        switch(role) {
+            case "2teacher":
+                return "teacher";
+            case "3admin":
+                return "admin";
+            default:
+                return "student";
+        }
+    }
 }

@@ -62,8 +62,7 @@ public class EditSprintController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
 
-        model.addAttribute("date", DateParser.displayDate(userReply));
-        model.addAttribute("username", userReply.getUsername());
+        NavController.updateModelForNav(principal, model, userReply, id);
         model.addAttribute("projectStart", project.getStartDateStringHtml());
         model.addAttribute("projectEnd", project.getEndDateStringHtml());
         model.addAttribute("sprint", sprint);
@@ -76,8 +75,8 @@ public class EditSprintController {
         errorCode = "";
 
         String role = AuthStateInformer.getRole(principal);
-
-        if (role.equals("teacher")) {
+        
+        if (role.equals("teacher") || role.equals("admin")) {
             return "editSprint";
         } else {
             return "userProjectDetails";

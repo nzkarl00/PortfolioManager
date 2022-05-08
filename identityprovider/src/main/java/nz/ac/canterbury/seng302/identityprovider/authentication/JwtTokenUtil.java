@@ -124,10 +124,7 @@ public class JwtTokenUtil implements Serializable {
 	/**
 	 * Generate a JWT token for a user, containing some basic information about the user.
 	 *
-	 * @param username Username used to log in (e.g abc123)
-	 * @param userId Internal ID of user assigned by the IdP
-	 * @param nameOfUser The user's name, e.g "John Smith"
-	 * @param roleOfUser The user's role, e.g student, teacher, or course administrator
+	 * @param profile the profile that the token is being made from
 	 * @return String encoded JWT token
 	 */
 	public String generateTokenForUser(AccountProfile profile) {
@@ -139,7 +136,7 @@ public class JwtTokenUtil implements Serializable {
 
 		// When assigning multiple roles to a user, encode them as a comma separated list
 		// E.g "student,teacher" or "teacher,courseadministrator,student" (Order doesn't matter)
-        claims.put(ROLE_CLAIM_TYPE, profile.getHighestRole().getRole());
+        claims.put(ROLE_CLAIM_TYPE, profile.getHighestRole().getPlainRole());
         //claims.put(ROLE_CLAIM_TYPE, "teacher");
 
 		return Jwts.builder()

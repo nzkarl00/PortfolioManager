@@ -1,9 +1,22 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import com.google.protobuf.ByteString;
+import io.grpc.Status;
+import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Component;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The GRPC client side service class
@@ -148,5 +161,21 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
         request.setRole(roleSending);
         return accountServiceStub.addRoleToUser(request.build());
+    }
+
+    public FileUploadStatusResponse uploadPhoto(int id, String fileType, MultipartFile photo) throws IOException {
+        String fileName = StringUtils.cleanPath(photo.getOriginalFilename());
+        FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
+        String path = "src/main/resources/static/images/" + id;
+        FileUploadUtil.saveFile(path, String.valueOf(id) + ".jpg", photo);
+        return response.build();
+    }
+
+    public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int id) {
+        DeleteUserProfilePhotoResponse.Builder response = DeleteUserProfilePhotoResponse.newBuilder();
+        String path = "src/main/resources/static/images/" + id + "/" + id + ".jpg";
+        File file = new File(path);
+        response.setIsSuccess(file.delete());
+        return response.build();
     }
 }

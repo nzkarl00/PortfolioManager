@@ -66,8 +66,7 @@ public class EditProjectController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
 
-        model.addAttribute("date",  DateParser.displayDate(userReply));
-        model.addAttribute("username", userReply.getUsername());
+        NavController.updateModelForNav(principal, model, userReply, id);
         // End of Attributes for header
 
         // Reset for the next display of the page
@@ -77,7 +76,7 @@ public class EditProjectController {
         // Below code is just begging to be added as a method somewhere...
         String role = AuthStateInformer.getRole(principal);
 
-        if (role.equals("teacher")) {
+        if (role.equals("teacher") || role.equals("admin")) {
             return "editProject";
         } else {
             return "userProjectDetails";
