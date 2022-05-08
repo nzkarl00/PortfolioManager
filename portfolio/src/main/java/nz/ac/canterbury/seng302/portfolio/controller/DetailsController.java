@@ -199,4 +199,61 @@ public class DetailsController {
         return "redirect:/details?id=" + projectId;
     }
 
+
+    /**
+     * The mapping to create a new sprint for a specified project
+     * @param principal auth token
+     * @param projectId id param for project to create sprint for
+     * @param model the model to add attributes to
+     * @return A location of where to go next
+     * @throws Exception
+     */
+    @PostMapping("/calender-sprint-edit")
+    public String editDateCalender(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value="projectId") Integer projectId,
+            @RequestParam(value="sprintId") Integer sprintId,
+            @RequestParam(value="startDate") Date startDate,
+            @RequestParam(value="endDate") Date endDate,
+            Model model
+    ) throws Exception {
+
+        String role = AuthStateInformer.getRole(principal);
+        String redirect = "redirect:/details?id=" + projectId;
+
+        if (role.equals("teacher")) {
+            List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
+            Sprint sprint = sprintService.getSprintById(sprintId);
+            Project project = projectService.getProjectById(projectId);
+
+            Date projStartDate = DateParser.stringToDate(project.getStartDateString()); // project.getStartDateString();
+            Date projEndDate = DateParser.stringToDate(project.getEndDateString()); // project.getEndDateString();
+            Date checkStartDate = startDate;
+            Date checkEndDate = endDate;
+
+            // check if the sprint dates are within the project dates
+            if (!checkStartDate.after(projStartDate) || !checkEndDate.before(projEndDate)) {
+                // check to is if the sprint isn't equal to the project start and end date
+                if (!checkStartDate.equals(projStartDate) && !checkEndDate.equals(projEndDate)) {
+                    return redirect;
+                }
+            }
+
+            // check if sprint start is before sprint end
+            if (!checkStartDate.before(checkEndDate)) {
+                return redirect;
+            }
+
+            if (!DateParser.sprintDateCheck(sprints, sprint, checkStartDate, checkEndDate)) {
+                return redirect;
+            }
+
+            sprint.setStartDate(checkStartDate);
+            sprint.setEndDate(checkEndDate);
+            repository.save(sprint);
+        }
+
+        return redirect;
+    }
+
 }
