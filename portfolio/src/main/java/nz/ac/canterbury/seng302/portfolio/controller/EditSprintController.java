@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.type.DateTime;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
@@ -18,6 +19,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.DateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -162,11 +165,12 @@ public class EditSprintController {
     public String sprintSaveFromCalendar(@AuthenticationPrincipal AuthState principal,
      @RequestParam(value="id") Integer projectId,
      @RequestParam(value="sprintId") Integer sprintId,
-     @RequestParam(value="start") String sprintStartDate,
-     @RequestParam(value="end") String sprintEndDate) {
-        System.out.println(sprintId);
-        System.out.println(sprintStartDate);
-        System.out.println(sprintEndDate);
+     @RequestParam(value="start") Date sprintStartDate,
+     @RequestParam(value="end") Date sprintEndDate) throws Exception {
+        Sprint sprint = sprintService.getSprintById(sprintId);
+        sprint.setStartDate(new Date(sprintStartDate.getTime()));
+        sprint.setEndDate(new Date(sprintEndDate.getTime() - Duration.ofDays(1).toMillis()));
+        repository.save(sprint);
         return "redirect:/details?id=" + projectId;
     }
 }
