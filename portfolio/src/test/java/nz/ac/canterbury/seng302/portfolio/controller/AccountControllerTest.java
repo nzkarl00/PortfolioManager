@@ -157,7 +157,9 @@ public class AccountControllerTest {
         mockMvc.perform(get("/account"))
             .andExpect(status().isOk()) // Whether to return the status "200 OK"
             .andExpect(content().string("123456"))
-            .andExpect(view().name("account")) // Whether to return the template "account"
+            .andExpect(MockMvcResultMatchers.view().name("account")) // Whether to return the template "account"
+                .andExpect(MockMvcResultMatchers.model().attributeExists("portfolioMessage"))
+                .andExpect(MockMvcResultMatchers.model().attribute("portfolioMessage", ""))
              //Model test.
             .andExpect(model().attribute("name", name))
             .andExpect(model().attribute("nickname", nickname))
