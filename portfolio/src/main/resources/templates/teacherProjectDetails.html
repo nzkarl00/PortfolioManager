@@ -238,7 +238,7 @@
             displayEventTime : false,
             eventResize: function (eventResizeInfo) {
                 console.log("test");
-                let form = document.createElement('form'); // Creating the form which will be used to post new sprint data
+                let form = document.createElement('form'); // Creating the form which will be used to post new sprint data.
                 form.setAttribute("th:action", "@{/details}");
                 form.setAttribute("method", "post");
                 let formId = document.createElement("input"); // Adding sprint ID field to the form
