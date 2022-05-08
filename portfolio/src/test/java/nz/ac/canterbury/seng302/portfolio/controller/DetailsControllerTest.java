@@ -9,9 +9,9 @@ import com.google.rpc.context.AttributeContext;
 import nz.ac.canterbury.seng302.portfolio.authentication.AuthenticationClientInterceptor;
 import nz.ac.canterbury.seng302.portfolio.authentication.JwtAuthenticationFilter;
 import nz.ac.canterbury.seng302.portfolio.authentication.JwtAuthenticationToken;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,46 +63,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = AccountController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class AccountControllerTest {
+public class DetailsControllerTest {
 
     public AuthState validAuthState = AuthState.newBuilder()
-            .setIsAuthenticated(true)
-            .setNameClaimType("name")
-            .setRoleClaimType("role")
-            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
-            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-            .setAuthenticationType("AuthenticationTypes.Federation")
-            .setName("validtesttoken")
-            .build();
-
-    private AuthState invalidAuthState = AuthState.newBuilder()
-            .setIsAuthenticated(true)
-            .setNameClaimType("name")
-            .setRoleClaimType("role")
-            .setAuthenticationType("AuthenticationTypes.Federation")
-            .setName("invalidtesttoken")
-            .build();
-
-    private UserResponse testUser = UserResponse.newBuilder()
-        .setBio("testbio")
-        .setCreated(Timestamp.newBuilder().setSeconds(10))
-        .setEmail("test@email")
-        .setFirstName("testfirstname")
-        .setLastName("testlastname")
-        .setMiddleName("testmiddlename")
-        .setNickname("testnickname")
-        .setPersonalPronouns("test/test")
-        .addRoles(UserRole.STUDENT)
+        .setIsAuthenticated(true)
+        .setNameClaimType("name")
+        .setRoleClaimType("role")
+        .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
+        .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
+        .setAuthenticationType("AuthenticationTypes.Federation")
+        .setName("validtesttoken")
         .build();
-
-    // Expected values in the model
-    String name = testUser.getFirstName() + " " + testUser.getLastName();
-    String nickname = testUser.getNickname();
-    String username = testUser.getUsername();
-    String email = testUser.getEmail();
-    String bio = testUser.getBio();
-    String roles = "STUDENT";
-    String pronouns = testUser.getPersonalPronouns();
 
     public class CustomArgumentResolver implements HandlerMethodArgumentResolver {
         @Override
@@ -122,18 +93,27 @@ public class AccountControllerTest {
     @MockBean
     AccountClientService accountClientService;
 
+    @MockBean
+    SprintRepository sprintRepo;
+
+    @MockBean
+    ProjectService projectService;
+
+    @MockBean
+    SprintService sprintService;
+
     private Principal principal = new JwtAuthenticationToken("token", new User("username", "password", true, true, true, true, new ArrayList<>()), new ArrayList<>());
 
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class)
-                .setCustomArgumentResolvers(new CustomArgumentResolver())
-                .addInterceptors((HandlerInterceptor) new AuthenticationClientInterceptor())
-                .build();
+            .setCustomArgumentResolvers(new CustomArgumentResolver())
+            .addInterceptors((HandlerInterceptor) new AuthenticationClientInterceptor())
+            .build();
     }
 
     @Test
-    public void getAccountWithValidCredentials() throws Exception {
+    public void getDetailsWithValidCredentials() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(mockedSecurityContext.getAuthentication())
@@ -141,23 +121,5 @@ public class AccountControllerTest {
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
-
-        MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
-        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
-        when(accountClientService.getUserById(1)).thenReturn(testUser);
-
-        // Spring now thinks we are logged in as the user specified in validAuthState, so any request made from now on will be authenticated.
-        // Ready to make a request to any endpoint which requires authentication
-        mockMvc.perform(get("/account"))
-            .andExpect(status().isOk()) // Whether to return the status "200 OK"
-            .andExpect(view().name("account")) // Whether to return the template "account"
-             //Model test.
-            .andExpect(model().attribute("name", name))
-            .andExpect(model().attribute("nickname", nickname))
-            .andExpect(model().attribute("username", username))
-            .andExpect(model().attribute("email", email))
-            .andExpect(model().attribute("roles", roles))
-            .andExpect(model().attribute("pronouns", pronouns))
-            .andExpect(model().attribute("bio", bio));
     }
 }
