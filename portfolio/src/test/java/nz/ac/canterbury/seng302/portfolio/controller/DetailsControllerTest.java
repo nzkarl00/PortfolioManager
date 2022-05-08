@@ -10,6 +10,7 @@ import nz.ac.canterbury.seng302.portfolio.authentication.AuthenticationClientInt
 import nz.ac.canterbury.seng302.portfolio.authentication.JwtAuthenticationFilter;
 import nz.ac.canterbury.seng302.portfolio.authentication.JwtAuthenticationToken;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
@@ -75,6 +76,8 @@ public class DetailsControllerTest {
         .setName("validtesttoken")
         .build();
 
+    public Sprint sprint = new Sprint();
+
     public class CustomArgumentResolver implements HandlerMethodArgumentResolver {
         @Override
         public boolean supportsParameter(MethodParameter parameter) {
@@ -121,5 +124,11 @@ public class DetailsControllerTest {
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
+
+        mockMvc.perform(get("/details"))
+            .andExpect(status().isOk()) // Whether to return the status "200 OK"
+            .andExpect(view().name("account")); // Whether to return the template "account"
+            //Model test.
+            //.andExpect(model().attribute("sprints", sprintList));
     }
 }

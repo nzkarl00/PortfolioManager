@@ -95,40 +95,15 @@ public class AccountControllerTest {
         .addRoles(UserRole.STUDENT)
         .build();
 
-    // Expected values in the model
-    String name = testUser.getFirstName() + " " + testUser.getLastName();
-    String nickname = testUser.getNickname();
-    String username = testUser.getUsername();
-    String email = testUser.getEmail();
-    String bio = testUser.getBio();
-    String roles = "STUDENT";
-    String pronouns = testUser.getPersonalPronouns();
-
-    public class CustomArgumentResolver implements HandlerMethodArgumentResolver {
-        @Override
-        public boolean supportsParameter(MethodParameter parameter) {
-            return parameter.getParameterType().isAssignableFrom(AuthState.class);
-        }
-
-        @Override
-        public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-            return validAuthState;
-        }
-    }
-
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     AccountClientService accountClientService;
 
-    private Principal principal = new JwtAuthenticationToken("token", new User("username", "password", true, true, true, true, new ArrayList<>()), new ArrayList<>());
-
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class)
-                .setCustomArgumentResolvers(new CustomArgumentResolver())
-                .addInterceptors((HandlerInterceptor) new AuthenticationClientInterceptor())
                 .build();
     }
 
@@ -146,6 +121,15 @@ public class AccountControllerTest {
         utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
         when(accountClientService.getUserById(1)).thenReturn(testUser);
 
+        // Expected values in the model
+        String name = testUser.getFirstName() + " " + testUser.getLastName();
+        String nickname = testUser.getNickname();
+        String username = testUser.getUsername();
+        String email = testUser.getEmail();
+        String bio = testUser.getBio();
+        String roles = "STUDENT";
+        String pronouns = testUser.getPersonalPronouns();
+
         // Spring now thinks we are logged in as the user specified in validAuthState, so any request made from now on will be authenticated.
         // Ready to make a request to any endpoint which requires authentication
         mockMvc.perform(get("/account"))
@@ -159,5 +143,18 @@ public class AccountControllerTest {
             .andExpect(model().attribute("roles", roles))
             .andExpect(model().attribute("pronouns", pronouns))
             .andExpect(model().attribute("bio", bio));
+    }
+
+    @Test
+    public void getAccountWithInvalidCredentials() throws Exception {
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+            .thenReturn(new PreAuthenticatedAuthenticationToken(invalidAuthState, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        //expect a 403 as invalid AuthState
+        mockMvc.perform(get("/account")).andExpect(status().isForbidden());
     }
 }
