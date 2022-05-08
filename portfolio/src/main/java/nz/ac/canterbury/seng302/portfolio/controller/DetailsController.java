@@ -62,8 +62,7 @@ public class DetailsController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
 
-        model.addAttribute("date",  DateParser.displayDate(userReply));
-        model.addAttribute("username", userReply.getUsername());
+        NavController.updateModelForNav(principal, model, userReply, id);
 
         List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
         model.addAttribute("sprints", sprintList);

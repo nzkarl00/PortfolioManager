@@ -125,8 +125,7 @@ public class TableController {
             ascDesc = preference.getSortOrder();
         }
 
-        model.addAttribute("date", DateParser.displayDate(userReply));
-        model.addAttribute("username", userReply.getUsername());
+        NavController.updateModelForNav(principal, model, userReply, id);
         model.addAttribute("start", start);
         model.addAttribute("currentPage", currentPage);
 
