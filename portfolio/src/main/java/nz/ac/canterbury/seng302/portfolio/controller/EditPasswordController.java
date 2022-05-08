@@ -44,8 +44,7 @@ public class EditPasswordController {
         int id = AuthStateInformer.getId(principal);
         UserResponse userReply = accountClientService.getUserById(id);
 
-        model.addAttribute("date",  DateParser.displayDate(userReply));
-        model.addAttribute("username", userReply.getUsername());
+        NavController.updateModelForNav(principal, model, userReply, id);
 
         model.addAttribute("password", password);
         model.addAttribute("passwordConfirm", passwordConfirm);

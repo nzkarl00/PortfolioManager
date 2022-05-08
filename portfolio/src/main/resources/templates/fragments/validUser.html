@@ -39,7 +39,7 @@
             <div class="dropdown">
                 <!-- Creating the default of what you see when profile picture drop down is closed -->
                 <button class="btn btn-primary dropdown-toggle dropdown-circle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{/profile_none.png}" width=90em height=90em alt="">
+                    <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{${photo}}" width=90em height=90em alt="">
                 </button>
                 <!-- Creating dropdown items when the profile picture dropdown is open/active -->
                 <ul class="dropdown-menu align-middle">

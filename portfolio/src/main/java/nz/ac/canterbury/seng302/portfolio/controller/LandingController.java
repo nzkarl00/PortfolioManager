@@ -66,8 +66,7 @@ public class LandingController {
     UserResponse userReply;
     userReply = accountClientService.getUserById(id);
 
-    model.addAttribute("date",  DateParser.displayDate(userReply));
-    model.addAttribute("username", userReply.getUsername());
+    NavController.updateModelForNav(principal, model, userReply, id);
     // End of Attributes for header
 
     String role = AuthStateInformer.getRole(principal);
