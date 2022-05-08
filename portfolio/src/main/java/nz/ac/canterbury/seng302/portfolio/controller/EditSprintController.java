@@ -157,4 +157,16 @@ public class EditSprintController {
 
         return "redirect:/details?id=" + projectId;
     }
+
+    @PostMapping("/details")
+    public String sprintSaveFromCalendar(@AuthenticationPrincipal AuthState principal,
+     @RequestParam(value="id") Integer projectId,
+     @RequestParam(value="sprintId") Integer sprintId,
+     @RequestParam(value="start") String sprintStartDate,
+     @RequestParam(value="end") String sprintEndDate) {
+        System.out.println(sprintId);
+        System.out.println(sprintStartDate);
+        System.out.println(sprintEndDate);
+        return "redirect:/details?id=" + projectId;
+    }
 }
