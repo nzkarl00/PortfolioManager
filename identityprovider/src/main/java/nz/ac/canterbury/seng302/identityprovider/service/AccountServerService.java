@@ -346,6 +346,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @GrpcClient("portfolio-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceStub photoStub;
 
+    // TODO turn int and filetype into a hashmap to a stream observer to allow for multiple file writes at the same time
     public String dir = System.getProperty("user.dir");
     private int id;
     private String fileType;
