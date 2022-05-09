@@ -22,16 +22,15 @@ public class UploadService extends UserAccountServiceGrpc.UserAccountServiceImpl
     @GrpcClient("identity-provider-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceStub photoStub;
 
-    public ProfilePhotoUploadMetadata createPhotoMetaData(int id, String filepath) {
-        ProfilePhotoUploadMetadata metaData = ProfilePhotoUploadMetadata.newBuilder()
+    public ProfilePhotoUploadMetadata createPhotoMetaData(int id, String fileType) {
+        return ProfilePhotoUploadMetadata.newBuilder()
                 .setUserId(id)
-                .setFileType(filepath.split(".")[-1])
+                .setFileType(fileType)
                 .build();
-        return metaData;
     }
 
     public void uploadPhoto(int id, MultipartFile file) throws IOException {
-        ProfilePhotoUploadMetadata data = createPhotoMetaData(id, file.getOriginalFilename());
+        ProfilePhotoUploadMetadata data = createPhotoMetaData(id, file.getContentType());
         ByteString bytes = photoToBytes(file);
         uploadUserProfilePhoto(data, bytes);
     }

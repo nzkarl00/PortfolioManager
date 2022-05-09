@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.UploadService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;

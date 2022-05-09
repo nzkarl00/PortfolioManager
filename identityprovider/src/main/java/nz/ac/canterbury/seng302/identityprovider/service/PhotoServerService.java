@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.ProfilePhotoUploadMetadata;
 import nz.ac.canterbury.seng302.shared.identityprovider.UploadUserProfilePhotoRequest;
@@ -19,33 +20,5 @@ public class PhotoServerService extends UserAccountServiceGrpc.UserAccountServic
     @Autowired
     AccountProfileRepository repo;
 
-    @GrpcClient("portfolio-grpc-server")
-    private UserAccountServiceGrpc.UserAccountServiceStub photoStub;
-
-    public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
-        StreamObserver<UploadUserProfilePhotoRequest> requestObserver = new StreamObserver<UploadUserProfilePhotoRequest>() {
-            @Override
-            public void onNext(UploadUserProfilePhotoRequest uploadRequest) {
-                System.out.println(uploadRequest.getFileContent());
-                FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
-                response.setMessage("looking good");
-                responseObserver.onNext(response.build());
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                System.out.println("Upload failed, ERROR: " + Status.fromThrowable(t));
-            }
-
-            @Override
-            public void onCompleted() {
-                System.out.println("Upload complete");
-                FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
-                response.setMessage("looking good");
-                responseObserver.onNext(response.build());
-            }
-        };
-        return requestObserver;
-    }
 
 }
