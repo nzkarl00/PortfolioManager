@@ -28,6 +28,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -49,6 +50,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -73,14 +75,6 @@ class EditAccountControllerTest {
             .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
             .setAuthenticationType("AuthenticationTypes.Federation")
             .setName("validtesttoken")
-            .build();
-
-    private AuthState invalidAuthState = AuthState.newBuilder()
-            .setIsAuthenticated(true)
-            .setNameClaimType("name")
-            .setRoleClaimType("role")
-            .setAuthenticationType("AuthenticationTypes.Federation")
-            .setName("invalidtesttoken")
             .build();
 
     private UserResponse testUser = UserResponse.newBuilder()
@@ -142,5 +136,51 @@ class EditAccountControllerTest {
                 .andExpect(model().attribute("email", email))
                 .andExpect(model().attribute("pronouns", pronouns))
                 .andExpect(model().attribute("bio", bio));
+    }
+
+    @Test
+    public void projectSaveTest() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
+        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
+        when(accountClientService.getUserById(1)).thenReturn(testUser);
+
+        String firstName = "testUser.getFirstName()";
+        String lastName = "testUser.getLastName()";
+        String nickname = "testUser.getNickname()";
+        String email = "testUser.getEmail()";
+        String bio = "testUser.getBio()";
+        String pronouns = "testUser.getPersonalPronouns()";
+        accountClientService.editUser(AuthStateInformer.getId(validAuthState), firstName, "", lastName, nickname, bio,pronouns, email);
+        mockMvc.perform(post("/edit-account"))
+                //.andDo(accountClientService.editUser(AuthStateInformer.getId(validAuthState), firstName, "", lastName, nickname, bio,pronouns, email)
+                .andExpect(status().isOk()) // Whether to return the status "200 OK"
+                .andExpect(view().name("editAccount"))
+                .andExpect(model().attribute("firstname", firstName))
+                .andExpect(model().attribute("lastname", lastName))
+                .andExpect(model().attribute("nickname", nickname))
+                .andExpect(model().attribute("email", email))
+                .andExpect(model().attribute("pronouns", pronouns))
+                .andExpect(model().attribute("bio", bio));
+        // Unsure at this point
+//        mockMvc.perform(post("/edit-account"))
+//                .andExpect(status().isOk()) // Whether to return the status "200 OK"
+//                .andExpect(view().name("editAccount")) // Whether to return the template "account"
+//                //Model test.
+//                .andExpect(model().attribute("firstname", firstName))
+//                .andExpect(model().attribute("lastname", lastName))
+//                .andExpect(model().attribute("nickname", nickname))
+//                .andExpect(model().attribute("email", email))
+//                .andExpect(model().attribute("pronouns", pronouns))
+//                .andExpect(model().attribute("bio", bio));
+//    }
+
     }
 }
