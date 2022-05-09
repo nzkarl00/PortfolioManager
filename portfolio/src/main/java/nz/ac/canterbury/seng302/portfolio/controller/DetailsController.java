@@ -221,7 +221,7 @@ public class DetailsController {
 
         String role = AuthStateInformer.getRole(principal);
         String redirect = "redirect:details?id=" + projectId;
-
+        sprintEndDate = new Date(sprintEndDate.getTime() - Duration.ofDays(1).toMillis());
         if (role.equals("teacher")) {
             List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
             Sprint sprint = sprintService.getSprintById(sprintId);
@@ -260,14 +260,12 @@ public class DetailsController {
                 errorCalendarCode = "A sprint cannot overlap with another sprint";
                 return redirect;
             }
-
-
+            sprint.setStartDate(new Date(sprintStartDate.getTime()));
+            sprint.setEndDate(sprintEndDate);
             errorCalendarShow = "display:none;";
             errorCalendarCode = "";
             successCalendarShow = "";
             successCalendarCode = "Sprint time edited to: " + sprint.getStartDateString() + " - " + sprint.getEndDateString() + "";
-            sprint.setStartDate(new Date(sprintStartDate.getTime()));
-            sprint.setEndDate(new Date(sprintEndDate.getTime() - Duration.ofDays(1).toMillis()));
             repository.save(sprint);
         }
 

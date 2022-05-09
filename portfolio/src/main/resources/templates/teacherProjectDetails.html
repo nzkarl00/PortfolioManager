@@ -198,7 +198,7 @@
 
         // Add an extra day to end date since time is set to 00:00:00
         endDate.setDate(endDate.getDate() + 1);
-
+        let selectedEvent;
         let sprintList = [[${sprints}]];
         let sprintEvents = [];
 
@@ -224,14 +224,23 @@
                 start: sprintList[sprintIndex].startDate,
                 allDay: true,  //Can't resize from calendar view without this parameter
                 end: sprintEndDate,
-
+                durationEditable: false,
                 // Mod so the sprint index doesn't go out of range for colors list
-                color: colors[sprintIndex % colors.length]
+                color: colors[sprintIndex % colors.length],
+                borderColor: 'white'
             });
         }
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
-
+            eventClick: function (info) {
+                if (selectedEvent) {
+                    selectedEvent.setProp("durationEditable", false);
+                    selectedEvent.setProp("borderColor", 'white');
+                }
+                info.event.setProp("durationEditable", true);
+                info.event.setProp("borderColor", 'black');
+                selectedEvent = info.event;
+            },
             initialView: 'dayGridMonth',
 
             // Greys out area's not in use by the project
@@ -239,13 +248,12 @@
                 start: [[${project.getStartDate()}]],
                 end: endDate
             },
-            editable: true,
             eventDurationEditable: true,
-            eventStartEditable: true,
             eventResizableFromStart: true,
-            eventOverlap: true,
+            eventOverlap: false,
             events: sprintEvents,
             displayEventTime : false,
+
             eventResize: function (eventResizeInfo) {
                 console.log("test");
                 let form = document.createElement('form'); // Creating the form which will be used to post new sprint data.
@@ -274,7 +282,6 @@
                 form.submit() // Automatically submit form on move
             }
         });
-        console.log("test2");
         calendar.render();
     });
 
