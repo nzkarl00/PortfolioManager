@@ -17,6 +17,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +42,10 @@ public class DetailsController {
 
     String errorShow = "display:none;";
     String errorCode = "";
+    String successCalendarShow = "display:none;";
+    String successCalendarCode = "";
+    String errorCalendarShow = "display:none;";
+    String errorCalendarCode = "";
 
     /**
      * Returns the html page based on the user's role
@@ -68,10 +73,18 @@ public class DetailsController {
         model.addAttribute("sprints", sprintList);
         model.addAttribute("errorShow", errorShow);
         model.addAttribute("errorCode", errorCode);
+        model.addAttribute("successCalendarShow", successCalendarShow);
+        model.addAttribute("successCalendarCode", successCalendarCode);
+        model.addAttribute("errorCalendarShow", errorCalendarShow);
+        model.addAttribute("errorCalendarCode", errorCalendarCode);
 
         // Reset for the next display of the page
         errorShow = "display:none;";
         errorCode = "";
+        successCalendarShow = "display:none;";
+        successCalendarCode = "";
+        errorCalendarShow = "display:none;";
+        errorCalendarCode = "";
 
         // Below code is just begging to be added as a method somewhere...
         String role = principal.getClaimsList().stream()
@@ -199,23 +212,12 @@ public class DetailsController {
     }
 
 
-    /**
-     * The mapping to create a new sprint for a specified project
-     * @param principal auth token
-     * @param projectId id param for project to create sprint for
-     * @param model the model to add attributes to
-     * @return A location of where to go next
-     * @throws Exception
-     */
-    @PostMapping("/calender-sprint-edit")
-    public String editDateCalender(
-            @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value="projectId") Integer projectId,
-            @RequestParam(value="sprintId") Integer sprintId,
-            @RequestParam(value="startDate") Date startDate,
-            @RequestParam(value="endDate") Date endDate,
-            Model model
-    ) throws Exception {
+    @PostMapping("/details")
+    public String sprintSaveFromCalendar(@AuthenticationPrincipal AuthState principal,
+                                         @RequestParam(value="id") Integer projectId,
+                                         @RequestParam(value="sprintId") Integer sprintId,
+                                         @RequestParam(value="start") Date sprintStartDate,
+                                         @RequestParam(value="end") Date sprintEndDate) throws Exception {
 
         String role = AuthStateInformer.getRole(principal);
         String redirect = "redirect:details?id=" + projectId;
@@ -227,28 +229,45 @@ public class DetailsController {
 
             Date projStartDate = DateParser.stringToDate(project.getStartDateString()); // project.getStartDateString();
             Date projEndDate = DateParser.stringToDate(project.getEndDateString()); // project.getEndDateString();
-            Date checkStartDate = startDate;
-            Date checkEndDate = endDate;
+            Date checkStartDate = sprintStartDate;
+            Date checkEndDate = sprintEndDate;
 
             // check if the sprint dates are within the project dates
             if (!checkStartDate.after(projStartDate) || !checkEndDate.before(projEndDate)) {
                 // check to is if the sprint isn't equal to the project start and end date
                 if (!checkStartDate.equals(projStartDate) && !checkEndDate.equals(projEndDate)) {
+                    successCalendarShow = "display:none;";
+                    successCalendarCode = "";
+                    errorCalendarShow = "";
+                    errorCalendarCode = "Sprints must be between "  + project.getStartDateString() + " - " + project.getEndDateString() + "";
                     return redirect;
                 }
             }
 
             // check if sprint start is before sprint end
             if (!checkStartDate.before(checkEndDate)) {
+                successCalendarShow = "display:none;";
+                successCalendarCode = "";
+                errorCalendarShow = "";
+                errorCalendarCode = "A sprint's start date must be before " + sprint.getEndDateString();
                 return redirect;
             }
 
             if (!DateParser.sprintDateCheck(sprints, sprint, checkStartDate, checkEndDate)) {
+                successCalendarShow = "display:none;";
+                successCalendarCode = "";
+                errorCalendarShow = "";
+                errorCalendarCode = "A sprint cannot overlap with another sprint";
                 return redirect;
             }
 
-            sprint.setStartDate(checkStartDate);
-            sprint.setEndDate(checkEndDate);
+
+            errorCalendarShow = "display:none;";
+            errorCalendarCode = "";
+            successCalendarShow = "";
+            successCalendarCode = "Sprint time edited to: " + sprint.getStartDateString() + " - " + sprint.getEndDateString() + "";
+            sprint.setStartDate(new Date(sprintStartDate.getTime()));
+            sprint.setEndDate(new Date(sprintEndDate.getTime() - Duration.ofDays(1).toMillis()));
             repository.save(sprint);
         }
 
