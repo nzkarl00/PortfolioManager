@@ -26,14 +26,13 @@ public class UploadService extends UserAccountServiceGrpc.UserAccountServiceImpl
     public ProfilePhotoUploadMetadata createPhotoMetaData(int id, String fileType) {
         return ProfilePhotoUploadMetadata.newBuilder()
                 .setUserId(id)
-                .setFileType(fileType)
+                .setFileType(fileType.split("/")[1])
                 .build();
     }
 
     public void uploadPhoto(int id, MultipartFile file) throws IOException {
         ProfilePhotoUploadMetadata data = createPhotoMetaData(id, file.getContentType());
         ByteString bytes = photoToBytes(file);
-        System.out.println(bytes);
         uploadUserProfilePhoto(data, bytes);
     }
 
@@ -62,15 +61,14 @@ public class UploadService extends UserAccountServiceGrpc.UserAccountServiceImpl
 
         StreamObserver<UploadUserProfilePhotoRequest> requestObserver = photoStub.uploadUserProfilePhoto(responseObserver);
         List<UploadUserProfilePhotoRequest> requests = new ArrayList<UploadUserProfilePhotoRequest>();
+        requests.add(UploadUserProfilePhotoRequest.newBuilder().setMetaData(metaData).build());
         int i;
         for (i=0; i < fileContent.size() - 1024 * 50; i+= 1024 * 50) {
             requests.add(UploadUserProfilePhotoRequest.newBuilder()
-                .setMetaData(metaData)
                 .setFileContent(fileContent.substring(i, i+1024 * 50))
                 .build());
         }
         requests.add(UploadUserProfilePhotoRequest.newBuilder()
-            .setMetaData(metaData)
             .setFileContent(fileContent.substring(i)).build());
         for (UploadUserProfilePhotoRequest req : requests) {
             requestObserver.onNext(req);

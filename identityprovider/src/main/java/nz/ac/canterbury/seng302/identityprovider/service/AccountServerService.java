@@ -20,6 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -341,12 +346,39 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @GrpcClient("portfolio-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceStub photoStub;
 
+    public String dir = System.getProperty("user.dir");
+    private int id;
+    private String fileType;
+
     @Override
     public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
         return new StreamObserver<UploadUserProfilePhotoRequest>() {
+
             @Override
             public void onNext(UploadUserProfilePhotoRequest uploadRequest) {
-                System.out.println(uploadRequest);
+                if (!uploadRequest.getMetaData().getFileType().isEmpty()) {
+                    // set up variables based on metadata
+                    id = uploadRequest.getMetaData().getUserId();
+                    fileType = uploadRequest.getMetaData().getFileType();
+                    Path path = Paths.get(dir + "/user-images/" + id + "/" + id + "." + fileType);
+                    try {
+                        Files.deleteIfExists(path);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Path path = Paths.get(dir + "/user-images/" + id + "/" + id + "." + fileType);
+                    try {
+                        if (Files.notExists(path)) {
+                            Files.createDirectories(path.getParent());
+                            Files.createFile(path);
+                        }
+                        Files.write(path, uploadRequest.getFileContent().toByteArray(), StandardOpenOption.APPEND);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
                 response.setMessage("looking good");
                 responseObserver.onNext(response.build());
@@ -361,7 +393,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             public void onCompleted() {
                 System.out.println("Upload complete");
                 FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
-                response.setMessage("looking good");
+                response.setMessage("Done!");
                 responseObserver.onNext(response.build());
                 responseObserver.onCompleted();
             }
