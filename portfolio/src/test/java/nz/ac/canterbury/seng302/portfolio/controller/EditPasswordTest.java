@@ -48,9 +48,7 @@ public class EditPasswordTest {
 
     @Before
     public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class)
-                .setCustomArgumentResolvers(new DetailsControllerTest.CustomArgumentResolver())
-                .addInterceptors((HandlerInterceptor) new AuthenticationClientInterceptor())
+        mockMvc = MockMvcBuilders.standaloneSetup(EditPasswordController.class)
                 .build();
     }
 
