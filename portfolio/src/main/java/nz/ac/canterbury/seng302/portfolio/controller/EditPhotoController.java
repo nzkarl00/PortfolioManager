@@ -23,6 +23,9 @@ public class EditPhotoController {
     @Autowired
     private AccountClientService accountClientService;
 
+    @Autowired
+    private UploadService uploadService;
+
     @GetMapping("/edit-photo")
     public String projectForm(Model model, @AuthenticationPrincipal AuthState principal) {
         Integer id = AuthStateInformer.getId(principal);
@@ -30,7 +33,7 @@ public class EditPhotoController {
 
         // UserResponse userReply = accountClientService.getUserById(id);
         // model.addAttribute("photo", userReply.getPhotoPath());
-        model.addAttribute("photo", "/images/" + id + "/" + id + ".jpg");
+        model.addAttribute("photo", "/images/" + id + "/Cat03.jpg");
         model.addAttribute("message", "");
         return "editPhoto";
     }
@@ -40,12 +43,7 @@ public class EditPhotoController {
                               @AuthenticationPrincipal AuthState principal,
                               @RequestParam(value="filename") MultipartFile file) throws IOException {
         int id = AuthStateInformer.getId(principal);
-        if (file.isEmpty()) {
-            model.addAttribute("message", "file is empty, please add a file to submit");
-        } else {
-            FileUploadStatusResponse response = accountClientService.uploadPhoto(id, file.getContentType(), file);
-            model.addAttribute("message", response.getMessage());
-        }
+        uploadService.uploadPhoto(id, file);
         return "redirect:/edit-photo";
     }
 }

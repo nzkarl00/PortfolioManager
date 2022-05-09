@@ -24,7 +24,7 @@ import java.util.List;
 public class AccountClientService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     @GrpcClient("identity-provider-grpc-server")
-    UserAccountServiceGrpc.UserAccountServiceBlockingStub accountServiceStub;
+    private UserAccountServiceGrpc.UserAccountServiceBlockingStub accountServiceStub;
 
     /**
      * makes a UserRegisterRequest to receive a UserRegisterResponse
@@ -47,8 +47,6 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
                 .build();
         return accountServiceStub.register(registerRequest);
     }
-
-
 
     /**
      * Get a user's details from the id of the user
@@ -159,13 +157,5 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
         request.setRole(roleSending);
         return accountServiceStub.addRoleToUser(request.build());
-    }
-
-    public FileUploadStatusResponse uploadPhoto(int id, String fileType, MultipartFile photo) throws IOException {
-        String fileName = StringUtils.cleanPath(photo.getOriginalFilename());
-        FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
-        String path = "src/main/resources/static/images/" + id;
-        FileUploadUtil.saveFile(path, String.valueOf(id) + ".jpg", photo);
-        return response.build();
     }
 }
