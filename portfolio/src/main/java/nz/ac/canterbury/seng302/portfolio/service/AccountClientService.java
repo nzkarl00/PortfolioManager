@@ -120,12 +120,4 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
             .setNewPassword(newPassword);
         return accountServiceStub.changeUserPassword(request.build());
     }
-
-    public FileUploadStatusResponse uploadPhoto(int id, String fileType, MultipartFile photo) throws IOException {
-        String fileName = StringUtils.cleanPath(photo.getOriginalFilename());
-        FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
-        String path = "src/main/resources/static/images/" + id;
-        FileUploadUtil.saveFile(path, fileName, photo);
-        return response.build();
-    }
 }
