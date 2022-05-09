@@ -75,7 +75,7 @@ public class EditSprintController {
         errorCode = "";
 
         String role = AuthStateInformer.getRole(principal);
-        
+
         if (role.equals("teacher") || role.equals("admin")) {
             return "editSprint";
         } else {
@@ -115,7 +115,7 @@ public class EditSprintController {
 
         errorShow = "";
 
-        String redirect = "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
+        String redirect = "redirect:edit-sprint?id=" + projectId + "&ids=" + sprintId;
 
         // check if sprint name is blank
         if (sprintName.isBlank()) {
@@ -154,6 +154,6 @@ public class EditSprintController {
         sprint.setEndDate(checkEndDate);
         repository.save(sprint);
 
-        return "redirect:/details?id=" + projectId;
+        return "redirect:details?id=" + projectId;
     }
 }

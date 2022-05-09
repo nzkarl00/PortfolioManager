@@ -44,9 +44,9 @@
                 <!-- Creating dropdown items when the profile picture dropdown is open/active -->
                 <ul class="dropdown-menu align-middle">
                     <!-- These buttons take you to other end points -->
-                    <li><a class="dropdown-item" th:href="@{'/landing'}">Project</a></li>
-                    <li><a class="dropdown-item" th:href="@{'/account'}">Account</a></li>
-                    <li><a class="dropdown-item" th:href="@{'/user-list'}">Users</a></li>
+                    <li><a class="dropdown-item" th:href="@{'landing'}">Project</a></li>
+                    <li><a class="dropdown-item" th:href="@{'account'}">Account</a></li>
+                    <li><a class="dropdown-item" th:href="@{'user-list'}">Users</a></li>
                     <!-- This logout button triggers the Logout Confirmation Modal to pop up -->
                     <li><a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutConfirmationModal">Logout</a></li>
                 </ul>
@@ -70,7 +70,7 @@
                     <button type="button" class="btn btn-secondary align-baseline" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary align-text-bottom">
                         <!-- Confirm Logout button will take you to /logout end point, and back to /login -->
-                        <a class="button_a" th:href="@{'/logout'}">Confirm Logout</a>
+                        <a class="button_a" th:href="@{'logout'}">Confirm Logout</a>
                     </button>
                 </div>
             </div>

@@ -145,7 +145,7 @@
                         <!-- Buttons -->
 
                         <div class="col-lg-8 col-md-10 col-sm-12" >
-                            <form th:action="@{/new-sprint}" method="post">
+                            <form th:action="@{new-sprint}" method="post">
                                 <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
                                 <button class="add" type="submit">
                                     Add Sprint
@@ -243,8 +243,8 @@
 </script>
 
 <!-- JS -->
-<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
 <!-- JS file for FullCalendar -->
-<script th:src="@{/js/fullcalendar.js}"></script>
+<script th:src="@{js/fullcalendar.js}"></script>
 </body>
 </html>

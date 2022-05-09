@@ -193,7 +193,7 @@ public class TableController {
         }
         userPreferenceRepo.save(preference);
 
-        return "redirect:/user-list";
+        return "redirect:user-list";
     }
 
     private void columnHeaderHelper(String sortString) {
@@ -284,9 +284,9 @@ public class TableController {
                     // Performs deletion if it passes all checks
                     UserRoleChangeResponse response = accountClientService.addRole(roleAdd, userId);
                     if (response.getIsSuccess()) {
-                        return "redirect:/user-list";
+                        return "redirect:user-list";
                     } else {
-                        return "redirect:/user-list";
+                        return "redirect:user-list";
                     }
                 }
 
@@ -334,11 +334,11 @@ public class TableController {
                         // Performs deletion if it passes all checks
                         accountClientService.deleteRole(roleDelete, userId);
 
-                        return "redirect:/user-list";
+                        return "redirect:user-list";
                     }
                 }
             }
         }
-        return "redirect:/user-list";
+        return "redirect:user-list";
     }
 }

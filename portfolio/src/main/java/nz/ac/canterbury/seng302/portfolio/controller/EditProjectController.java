@@ -112,7 +112,7 @@ public class EditProjectController {
         if (projectName.isBlank()) {
             errorShow = "";
             errorCode = "Project requires a name";
-            return "redirect:/edit-project?id=" + projectId;
+            return "redirect:edit-project?id=" + projectId;
         }
 
         // Loop through sprints and check to see if a date change violates the existing sprints dates
@@ -120,12 +120,12 @@ public class EditProjectController {
             if (temp.getStartDate().before(checkStartDate)) {
                 errorShow = "";
                 errorCode = "Project can't start after the earliest sprint";
-                return "redirect:/edit-project?id=" + projectId;
+                return "redirect:edit-project?id=" + projectId;
             }
             if (temp.getEndDate().after(checkEndDate)) {
                 errorShow = "";
                 errorCode = "Project can't end before the latest sprint";
-                return "redirect:/edit-project?id=" + projectId;
+                return "redirect:edit-project?id=" + projectId;
             }
         }
 
@@ -134,7 +134,7 @@ public class EditProjectController {
         } else {
             errorShow = "";
             errorCode = "Start and End date overlap";
-            return "redirect:/edit-project?id=" + projectId;
+            return "redirect:edit-project?id=" + projectId;
         }
 
         if (checkEndDate.after(checkStartDate)) {
@@ -142,12 +142,12 @@ public class EditProjectController {
         } else {
             errorShow = "";
             errorCode = "Start and End date overlap";
-            return "redirect:/edit-project?id=" + projectId;
+            return "redirect:edit-project?id=" + projectId;
         }
 
         project.setDescription(projectDescription);
         repository.save(project);
-        return "redirect:/details?id=" + projectId;
+        return "redirect:details?id=" + projectId;
     }
 
 }

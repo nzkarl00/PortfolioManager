@@ -89,6 +89,6 @@ public class EditPasswordController {
             passwordSuccessShow = "";
         }
 
-        return "redirect:/edit-password";
+        return "redirect:edit-password";
     }
 }

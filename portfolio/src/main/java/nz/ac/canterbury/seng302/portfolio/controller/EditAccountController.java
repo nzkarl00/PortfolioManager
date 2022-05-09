@@ -104,6 +104,6 @@ public class EditAccountController {
             editSuccessShow = "display:none;";
         }
 
-        return "redirect:/edit-account";
+        return "redirect:edit-account";
     }
 }

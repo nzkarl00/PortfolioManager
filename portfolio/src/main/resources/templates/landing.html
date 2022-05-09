@@ -38,7 +38,7 @@
       <!-- Project Section -->
       <div class="col-lg-8 col-md-10 col-sm-12 portion_body" >
 
-        <a class="project_a" th:href="@{/details(id=${project.getId})}" >
+        <a class="project_a" th:href="@{details(id=${project.getId})}" >
           <h3 class="project_subhead" th:text="${project.getName}"/>
         </a>
         <br>
@@ -70,7 +70,7 @@
 
       <!-- Buttons -->
 
-        <form class="col-lg-8 col-md-10 col-sm-12" th:style="${display}" th:action="@{/new-project}" method="post">
+        <form class="col-lg-8 col-md-10 col-sm-12" th:style="${display}" th:action="@{new-project}" method="post">
 
         <button class="add" type="submit">
           Add Project
@@ -89,6 +89,6 @@
 </div>
 
 <!-- JS -->
-<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

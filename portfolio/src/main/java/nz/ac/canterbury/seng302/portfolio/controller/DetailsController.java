@@ -124,7 +124,7 @@ public class DetailsController {
 
         }
 
-        return "redirect:/details?id=" + projectId;
+        return "redirect:details?id=" + projectId;
     }
 
     /**
@@ -180,7 +180,7 @@ public class DetailsController {
 
                 errorShow="";
                 errorCode="There is not enough time in your project for another sprint";
-                return "redirect:/details?id=" + projectId;
+                return "redirect:details?id=" + projectId;
 
             }
 
@@ -192,10 +192,10 @@ public class DetailsController {
         if (role.equals("teacher")) {
             Sprint sprint = new Sprint(projectId, "Sprint " + valueId.toString(), "Sprint " + valueId.toString(), "", startDate, endDate);
             repository.save(sprint);
-            return "redirect:/edit-sprint?id=" + projectId +"&ids=" + sprint.getId();
+            return "redirect:edit-sprint?id=" + projectId +"&ids=" + sprint.getId();
         }
 
-        return "redirect:/details?id=" + projectId;
+        return "redirect:details?id=" + projectId;
     }
 
 
@@ -218,7 +218,7 @@ public class DetailsController {
     ) throws Exception {
 
         String role = AuthStateInformer.getRole(principal);
-        String redirect = "redirect:/details?id=" + projectId;
+        String redirect = "redirect:details?id=" + projectId;
 
         if (role.equals("teacher")) {
             List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
