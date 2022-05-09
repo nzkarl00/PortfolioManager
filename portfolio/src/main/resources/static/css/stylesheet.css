@@ -16,9 +16,13 @@
 
 
 .navbar {
-  border-radius: 0px 0px 50px 50px !important;
-  background-color: #19DAFF !important;
+      border-radius: 0px 0px 50px 50px !important;
+      background-color: #19DAFF !important;
  }
+
+.navbar .header_date span {
+    margin-left: 0.5em;
+}
 
 .body {
     color: #F7FEFF !important;
@@ -30,13 +34,13 @@
 }
 
 .vertical-center {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  text-align: center;
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      text-align: center;
 }
 
 
