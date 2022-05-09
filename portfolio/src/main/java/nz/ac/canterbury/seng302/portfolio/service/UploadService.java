@@ -17,18 +17,10 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadService {
+public class UploadService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     @GrpcClient("identity-provider-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceStub photoStub;
-
-    public FileUploadStatusResponse uploadPhoto(int id, String fileType, MultipartFile photo) throws IOException {
-        String fileName = StringUtils.cleanPath(photo.getOriginalFilename());
-        FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
-        String path = "src/main/resources/static/images/" + id;
-        FileUploadUtil.saveFile(path, fileName, photo);
-        return response.build();
-    }
 
     public ProfilePhotoUploadMetadata createPhotoMetaData(int id, String filepath) {
         ProfilePhotoUploadMetadata metaData = ProfilePhotoUploadMetadata.newBuilder()
@@ -38,13 +30,18 @@ public class UploadService {
         return metaData;
     }
 
-    public ByteString photoToBytes(String filepath) throws IOException {
-        File image = new File(filepath);
-        return ByteString.copyFrom(Files.readAllBytes(image.toPath()));
+    public void uploadPhoto(int id, MultipartFile file) throws IOException {
+        ProfilePhotoUploadMetadata data = createPhotoMetaData(id, file.getOriginalFilename());
+        ByteString bytes = photoToBytes(file);
+        uploadUserProfilePhoto(data, bytes);
     }
 
-    public StreamObserver<FileUploadStatusResponse> uploadUserProfilePhoto(ProfilePhotoUploadMetadata metaData, ByteString fileContent) {
-        StreamObserver<UploadUserProfilePhotoRequest> requestObserver = photoStub.uploadUserProfilePhoto(new StreamObserver<FileUploadStatusResponse>() {
+    public ByteString photoToBytes(MultipartFile file) throws IOException {
+        return ByteString.copyFrom(file.getBytes());
+    }
+
+    public void uploadUserProfilePhoto(ProfilePhotoUploadMetadata metaData, ByteString fileContent) {
+        StreamObserver<FileUploadStatusResponse> responseObserver = new StreamObserver<FileUploadStatusResponse>() {
             @Override
             public void onNext(FileUploadStatusResponse uploadStatusResponse) {
                 System.out.println("Uploading photo section " + uploadStatusResponse.getMessage() + " " + uploadStatusResponse.getSerializedSize());
@@ -59,7 +56,8 @@ public class UploadService {
             public void onCompleted() {
                 System.out.println("Upload complete");
             }
-        });
+        };
+        StreamObserver<UploadUserProfilePhotoRequest> requestObserver = photoStub.uploadUserProfilePhoto(responseObserver);
         List<UploadUserProfilePhotoRequest> requests = new ArrayList<UploadUserProfilePhotoRequest>();
         int i;
         for (i=0; i < fileContent.size() / 512; i+= 512) {

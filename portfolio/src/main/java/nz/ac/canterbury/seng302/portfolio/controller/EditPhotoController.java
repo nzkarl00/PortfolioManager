@@ -44,8 +44,7 @@ public class EditPhotoController {
                               @AuthenticationPrincipal AuthState principal,
                               @RequestParam(value="filename") MultipartFile file) throws IOException {
         int id = AuthStateInformer.getId(principal);
-        FileUploadStatusResponse response = uploadService.uploadPhoto(id, file.getContentType(), file);
-        model.addAttribute("message", response.getMessage());
+        uploadService.uploadPhoto(id, file);
         return "redirect:/edit-photo";
     }
 }
