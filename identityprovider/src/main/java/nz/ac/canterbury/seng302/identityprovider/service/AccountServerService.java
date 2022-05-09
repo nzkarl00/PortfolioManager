@@ -10,6 +10,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.Role;
 import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.hibernate.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
@@ -25,10 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The GRPC server side service class
@@ -346,10 +344,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @GrpcClient("portfolio-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceStub photoStub;
 
-    // TODO turn int and filetype into a hashmap to a stream observer to allow for multiple file writes at the same time
+    // to allow for multiple stream observers to upload data at the same time
     public String dir = System.getProperty("user.dir");
-    private int id;
-    private String fileType;
+    private HashMap<StreamObserver, Integer> idMap = new HashMap<>();
+    private HashMap<StreamObserver, String> typeMap = new HashMap<>();
 
     @Override
     public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
@@ -357,10 +355,13 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
             @Override
             public void onNext(UploadUserProfilePhotoRequest uploadRequest) {
+                // if there is meta-data update the variables, if not update the file
                 if (!uploadRequest.getMetaData().getFileType().isEmpty()) {
-                    // set up variables based on metadata
-                    id = uploadRequest.getMetaData().getUserId();
-                    fileType = uploadRequest.getMetaData().getFileType();
+                    // set up map variables based on metadata
+                    idMap.put(this, uploadRequest.getMetaData().getUserId());
+                    typeMap.put(this, uploadRequest.getMetaData().getFileType());
+                    int id = idMap.get(this);
+                    String fileType = typeMap.get(this);
                     Path path = Paths.get(dir + "/user-images/" + id + "/" + id + "." + fileType);
                     try {
                         Files.deleteIfExists(path);
@@ -368,12 +369,16 @@ public class AccountServerService extends UserAccountServiceImplBase{
                         e.printStackTrace();
                     }
                 } else {
+                    int id = idMap.get(this);
+                    String fileType = typeMap.get(this);
                     Path path = Paths.get(dir + "/user-images/" + id + "/" + id + "." + fileType);
                     try {
+                        // if the file doesn't exist, make it, and it's path
                         if (Files.notExists(path)) {
                             Files.createDirectories(path.getParent());
                             Files.createFile(path);
                         }
+                        // write the bytes fed from the portfolio to the file location
                         Files.write(path, uploadRequest.getFileContent().toByteArray(), StandardOpenOption.APPEND);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -381,22 +386,32 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 }
 
                 FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
-                response.setMessage("looking good");
+                response.setMessage("Uploading")
+                    .setStatus(FileUploadStatus.PENDING);
                 responseObserver.onNext(response.build());
             }
 
             @Override
             public void onError(Throwable t) {
                 System.out.println("Upload failed, ERROR: " + Status.fromThrowable(t));
+                FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
+                response.setMessage("Upload failed, ERROR: " + Status.fromThrowable(t))
+                    .setStatus(FileUploadStatus.FAILED);
+                responseObserver.onNext(response.build());
+                responseObserver.onCompleted();
             }
 
             @Override
             public void onCompleted() {
                 System.out.println("Upload complete");
                 FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
-                response.setMessage("Done!");
+                response.setMessage("Upload complete")
+                    .setStatus(FileUploadStatus.SUCCESS);
                 responseObserver.onNext(response.build());
                 responseObserver.onCompleted();
+                // free up the hash maps, probably good practice?
+                idMap.remove(this);
+                typeMap.remove(this);
             }
         };
     }
