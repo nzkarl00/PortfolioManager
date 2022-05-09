@@ -222,7 +222,7 @@ public class DetailsController {
         String role = AuthStateInformer.getRole(principal);
         String redirect = "redirect:details?id=" + projectId;
         sprintEndDate = new Date(sprintEndDate.getTime() - Duration.ofDays(1).toMillis());
-        if (role.equals("teacher")) {
+        if (role.equals("teacher") || role.equals("admin")) {
             List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
             Sprint sprint = sprintService.getSprintById(sprintId);
             Project project = projectService.getProjectById(projectId);
