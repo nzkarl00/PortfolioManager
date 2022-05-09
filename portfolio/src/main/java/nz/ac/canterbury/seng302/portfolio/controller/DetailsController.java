@@ -17,6 +17,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +42,8 @@ public class DetailsController {
 
     String errorShow = "display:none;";
     String errorCode = "";
+    String successCalendarShow = "display:none;";
+    String successCalendarCode = "";
 
     /**
      * Returns the html page based on the user's role
@@ -69,10 +72,14 @@ public class DetailsController {
         model.addAttribute("sprints", sprintList);
         model.addAttribute("errorShow", errorShow);
         model.addAttribute("errorCode", errorCode);
+        model.addAttribute("successCalendarShow", successCalendarShow);
+        model.addAttribute("successCalendarCode", successCalendarCode);
 
         // Reset for the next display of the page
         errorShow = "display:none;";
         errorCode = "";
+        successCalendarShow = "display:none;";
+        successCalendarCode = "";
 
         // Below code is just begging to be added as a method somewhere...
         String role = principal.getClaimsList().stream()
@@ -196,6 +203,23 @@ public class DetailsController {
             return "redirect:/edit-sprint?id=" + projectId +"&ids=" + sprint.getId();
         }
 
+        return "redirect:/details?id=" + projectId;
+    }
+
+
+    @PostMapping("/details")
+    public String sprintSaveFromCalendar(@AuthenticationPrincipal AuthState principal,
+                                         @RequestParam(value="id") Integer projectId,
+                                         @RequestParam(value="sprintId") Integer sprintId,
+                                         @RequestParam(value="start") Date sprintStartDate,
+                                         @RequestParam(value="end") Date sprintEndDate) throws Exception {
+        Sprint sprint = sprintService.getSprintById(sprintId);
+        Project project = projectService.getProjectById(projectId);
+        sprint.setStartDate(new Date(sprintStartDate.getTime()));
+        sprint.setEndDate(new Date(sprintEndDate.getTime() - Duration.ofDays(1).toMillis()));
+        successCalendarShow = "";
+        successCalendarCode = "Sprint time edited to: " + sprint.getStartDateString() + " - " + sprint.getEndDateString() + "";
+        repository.save(sprint);
         return "redirect:/details?id=" + projectId;
     }
 
