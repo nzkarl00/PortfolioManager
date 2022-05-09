@@ -346,7 +346,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
         return new StreamObserver<UploadUserProfilePhotoRequest>() {
             @Override
             public void onNext(UploadUserProfilePhotoRequest uploadRequest) {
-                System.out.println(uploadRequest.getFileContent());
+                System.out.println(uploadRequest);
                 FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
                 response.setMessage("looking good");
                 responseObserver.onNext(response.build());
@@ -363,6 +363,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
                 response.setMessage("looking good");
                 responseObserver.onNext(response.build());
+                responseObserver.onCompleted();
             }
         };
     }

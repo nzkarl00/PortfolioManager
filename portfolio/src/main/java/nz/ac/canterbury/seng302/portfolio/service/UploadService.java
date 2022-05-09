@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class UploadService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     @GrpcClient("identity-provider-grpc-server")
@@ -32,6 +33,7 @@ public class UploadService extends UserAccountServiceGrpc.UserAccountServiceImpl
     public void uploadPhoto(int id, MultipartFile file) throws IOException {
         ProfilePhotoUploadMetadata data = createPhotoMetaData(id, file.getContentType());
         ByteString bytes = photoToBytes(file);
+        System.out.println(bytes);
         uploadUserProfilePhoto(data, bytes);
     }
 
@@ -40,6 +42,7 @@ public class UploadService extends UserAccountServiceGrpc.UserAccountServiceImpl
     }
 
     public void uploadUserProfilePhoto(ProfilePhotoUploadMetadata metaData, ByteString fileContent) {
+        final boolean[] send = {true};
         StreamObserver<FileUploadStatusResponse> responseObserver = new StreamObserver<FileUploadStatusResponse>() {
             @Override
             public void onNext(FileUploadStatusResponse uploadStatusResponse) {
@@ -56,12 +59,19 @@ public class UploadService extends UserAccountServiceGrpc.UserAccountServiceImpl
                 System.out.println("Upload complete");
             }
         };
+
         StreamObserver<UploadUserProfilePhotoRequest> requestObserver = photoStub.uploadUserProfilePhoto(responseObserver);
         List<UploadUserProfilePhotoRequest> requests = new ArrayList<UploadUserProfilePhotoRequest>();
         int i;
-        for (i=0; i < fileContent.size() / 512; i+= 512) {
-            requests.add(UploadUserProfilePhotoRequest.newBuilder().setFileContent(fileContent.substring(i, i+512)).setMetaData(metaData).build());
+        for (i=0; i < fileContent.size() - 1024 * 50; i+= 1024 * 50) {
+            requests.add(UploadUserProfilePhotoRequest.newBuilder()
+                .setMetaData(metaData)
+                .setFileContent(fileContent.substring(i, i+1024 * 50))
+                .build());
         }
+        requests.add(UploadUserProfilePhotoRequest.newBuilder()
+            .setMetaData(metaData)
+            .setFileContent(fileContent.substring(i)).build());
         for (UploadUserProfilePhotoRequest req : requests) {
             requestObserver.onNext(req);
         }
