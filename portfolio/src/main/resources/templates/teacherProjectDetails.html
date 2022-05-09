@@ -65,6 +65,9 @@
                 <button class="signup_box_green "th:style="${successCalendarShow}">
                     <p class="signup_error_green" th:text="${successCalendarCode}"/>
                 </button>
+                <button class="signup_box"th:style="${errorCalendarShow}">
+                    <p class="signup_error" th:text="${errorCalendarCode}"/>
+                </button>
             </div>
 
             <div id="project-details-tab" class="tab-pane fade">
@@ -240,7 +243,7 @@
             eventDurationEditable: true,
             eventStartEditable: true,
             eventResizableFromStart: true,
-            eventOverlap: false,
+            eventOverlap: true,
             events: sprintEvents,
             displayEventTime : false,
             eventResize: function (eventResizeInfo) {
