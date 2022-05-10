@@ -14,6 +14,8 @@ import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.Before;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -107,6 +109,18 @@ public class AccountControllerTest {
                 .build();
     }
 
+    static MockedStatic<AuthStateInformer> utilities;
+
+    @BeforeAll
+    public static void open() {
+        utilities = Mockito.mockStatic(AuthStateInformer.class);
+    }
+
+    @AfterAll
+    public static void close() {
+        utilities.close();
+    }
+
     @Test
     public void getAccountWithValidCredentials() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
@@ -116,10 +130,9 @@ public class AccountControllerTest {
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
-
-        MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
-        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
         when(accountClientService.getUserById(1)).thenReturn(testUser);
+
+        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
 
         // Expected values in the model
         String name = testUser.getFirstName() + " " + testUser.getLastName();
@@ -143,21 +156,6 @@ public class AccountControllerTest {
             .andExpect(model().attribute("roles", roles))
             .andExpect(model().attribute("pronouns", pronouns))
             .andExpect(model().attribute("bio", bio));
-
-        utilities.clearInvocations();
-    }
-
-    @Test
-    public void getAccountWithInvalidCredentials() throws Exception {
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(mockedSecurityContext.getAuthentication())
-            .thenReturn(new PreAuthenticatedAuthenticationToken(invalidAuthState, ""));
-
-        // Configuring Spring to use the mocked SecurityContext
-        SecurityContextHolder.setContext(mockedSecurityContext);
-
-        //expect a 403 as invalid AuthState
-        mockMvc.perform(get("/account")).andExpect(status().isForbidden());
     }
 
 }

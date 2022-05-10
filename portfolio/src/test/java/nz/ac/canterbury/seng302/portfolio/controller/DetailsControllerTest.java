@@ -15,6 +15,8 @@ import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.Before;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -150,6 +152,18 @@ public class DetailsControllerTest {
         mockMvc.perform(get("/landing"));
     }
 
+    static MockedStatic<AuthStateInformer> utilities;
+
+    @BeforeAll
+    public static void open() {
+        utilities = Mockito.mockStatic(AuthStateInformer.class);
+    }
+
+    @AfterAll
+    public static void close() {
+        utilities.close();
+    }
+
     @Test
     public void getDetailsWithValidCredentials() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
@@ -160,7 +174,6 @@ public class DetailsControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
         utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
         when(accountClientService.getUserById(1)).thenReturn(testUser);
 
@@ -170,7 +183,6 @@ public class DetailsControllerTest {
             .andExpect(view().name("teacherProjectDetails")); // Whether to return the template "account"
             //Model test.
             //.andExpect(model().attribute("sprints", sprintList));
-
     }
 
     @Test
