@@ -59,7 +59,8 @@
 
 
                 <label class="project_subhead">Pronouns:</label>
-                <select class="project_edit_data horizontal_field"  id="pronouns" th:name="pronouns" th:value="*{pronouns}">
+                <select class="project_edit_data horizontal_field"  id="pronouns" th:name="pronouns" th:value="*{pronouns}" required>
+                    <option hidden disabled selected value> -- select an option -- </option>
                     <option value="He/Him">He/Him</option>
                     <option value="She/Her">She/Her</option>
                     <option value="They/Them">They/Them</option>
