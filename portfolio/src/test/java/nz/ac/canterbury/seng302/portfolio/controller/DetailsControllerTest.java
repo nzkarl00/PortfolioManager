@@ -76,6 +76,26 @@ public class DetailsControllerTest {
         .setName("validtesttoken")
         .build();
 
+    public AuthState validAuthStateTeacher = AuthState.newBuilder()
+        .setIsAuthenticated(true)
+        .setNameClaimType("name")
+        .setRoleClaimType("role")
+        .addClaims(ClaimDTO.newBuilder().setType("role").setValue("TEACHER").build()) // Set the mock user's role
+        .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
+        .setAuthenticationType("AuthenticationTypes.Federation")
+        .setName("validtesttoken")
+        .build();
+
+    public AuthState validAuthStateStudent = AuthState.newBuilder()
+        .setIsAuthenticated(true)
+        .setNameClaimType("name")
+        .setRoleClaimType("role")
+        .addClaims(ClaimDTO.newBuilder().setType("role").setValue("STUDENT").build()) // Set the mock user's role
+        .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
+        .setAuthenticationType("AuthenticationTypes.Federation")
+        .setName("validtesttoken")
+        .build();
+
     public Sprint sprint = new Sprint();
 
     public class CustomArgumentResolver implements HandlerMethodArgumentResolver {
@@ -130,5 +150,24 @@ public class DetailsControllerTest {
             .andExpect(view().name("account")); // Whether to return the template "account"
             //Model test.
             //.andExpect(model().attribute("sprints", sprintList));
+    }
+
+    @Test
+    public void getDetailsWithTeacherCredentials() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+            .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+
+        mockMvc.perform(get("/details"))
+            .andExpect(status().isOk()) // Whether to return the status "200 OK"
+            .andExpect(view().name("account")) // Whether to return the template "account"
+            .andExpect(model().attribute("errorcode", ""))
+            .andExpect(model().attribute("errorShow", "display:none;"))
+            .andExpect(model().attribute("sprints", sprintService.getSprintByParentId(1)));
     }
 }
