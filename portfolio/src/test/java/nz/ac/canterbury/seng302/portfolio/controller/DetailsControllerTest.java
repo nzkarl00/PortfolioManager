@@ -129,7 +129,7 @@ public class DetailsControllerTest {
 
     @Before
     public void setup() throws Exception {
-        mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class)
+        mockMvc = MockMvcBuilders.standaloneSetup(DetailsController.class)
             .setCustomArgumentResolvers(new CustomArgumentResolver())
             .addInterceptors((HandlerInterceptor) new AuthenticationClientInterceptor())
             .build();
