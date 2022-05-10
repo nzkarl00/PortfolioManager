@@ -161,10 +161,8 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
 
     public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int id) {
-        DeleteUserProfilePhotoResponse.Builder response = DeleteUserProfilePhotoResponse.newBuilder();
-        String path = "src/main/resources/static/images/" + id + "/" + id + ".jpg";
-        File file = new File(path);
-        response.setIsSuccess(file.delete());
-        return response.build();
+        DeleteUserProfilePhotoRequest.Builder request = DeleteUserProfilePhotoRequest.newBuilder()
+            .setUserId(id);
+        return accountServiceStub.deleteUserProfilePhoto(request.build());
     }
 }

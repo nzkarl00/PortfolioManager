@@ -431,4 +431,29 @@ public class AccountServerService extends UserAccountServiceImplBase{
         };
     }
 
+    /**
+     * responsible for deleting the user profile photo if the user requests it
+     * @param request the id of the user photo to delete
+     * @param responseObserver where to send the message about the deletion
+     */
+    @Override
+    public void deleteUserProfilePhoto(DeleteUserProfilePhotoRequest request, StreamObserver<DeleteUserProfilePhotoResponse> responseObserver) {
+        AccountProfile profile = repo.findById(request.getUserId());
+        DeleteUserProfilePhotoResponse.Builder response = DeleteUserProfilePhotoResponse.newBuilder();
+        try {
+            Files.deleteIfExists(Paths.get(profile.getPhotoPath()));
+            String dir = System.getProperty("user.dir");
+            dir += "/src/main/resources/images/default_account_icon.jpeg";
+            profile.setPhotoPath(dir);
+            repo.save(profile);
+            response.setIsSuccess(true);
+            response.setMessage("File deleted");
+        } catch (IOException e) {
+            e.printStackTrace();
+            response.setIsSuccess(false);
+            response.setMessage(e.getMessage());
+        }
+        responseObserver.onNext(response.build());
+        responseObserver.onCompleted();
+    }
 }
