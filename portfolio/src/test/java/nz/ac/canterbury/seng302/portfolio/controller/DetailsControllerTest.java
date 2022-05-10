@@ -96,6 +96,19 @@ public class DetailsControllerTest {
         .setName("validtesttoken")
         .build();
 
+
+    private UserResponse testUser = UserResponse.newBuilder()
+            .setBio("testbio")
+            .setCreated(Timestamp.newBuilder().setSeconds(10))
+            .setEmail("test@email")
+            .setFirstName("testfirstname")
+            .setLastName("testlastname")
+            .setMiddleName("testmiddlename")
+            .setNickname("testnickname")
+            .setPersonalPronouns("test/test")
+            .addRoles(UserRole.TEACHER)
+            .build();
+
     public Sprint sprint = new Sprint();
 
     public class CustomArgumentResolver implements HandlerMethodArgumentResolver {
@@ -147,11 +160,17 @@ public class DetailsControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        mockMvc.perform(get("/details?id=1"))
+        MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
+        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
+        when(accountClientService.getUserById(1)).thenReturn(testUser);
+
+
+        mockMvc.perform(get("/details").requestAttr("id", 1))
             .andExpect(status().isOk()) // Whether to return the status "200 OK"
             .andExpect(view().name("teacherProjectDetails")); // Whether to return the template "account"
             //Model test.
             //.andExpect(model().attribute("sprints", sprintList));
+
     }
 
     @Test
@@ -166,7 +185,7 @@ public class DetailsControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
 
 
-        mockMvc.perform(get("/details?id=1"))
+        mockMvc.perform(get("/details").requestAttr("id", 1))
             .andExpect(status().isOk()) // Whether to return the status "200 OK"
             .andExpect(view().name("teacherProjectDetails")) // Whether to return the template "account"
             .andExpect(model().attribute("errorcode", ""))
@@ -186,7 +205,7 @@ public class DetailsControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
 
 
-        mockMvc.perform(get("/details?id=1"))
+        mockMvc.perform(get("/details").requestAttr("id", 1))
             .andExpect(status().isOk()) // Whether to return the status "200 OK"
             .andExpect(view().name("userProjectDetails")) // Whether to return the template "account"
             .andExpect(model().attribute("errorcode", ""))
@@ -207,7 +226,7 @@ public class DetailsControllerTest {
 
         Integer size = sprintService.getSprintByParentId(1).size();
 
-        mockMvc.perform(post("/new-sprint?projectId=1"))
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
                 .andExpect(view().name("teacherProjectDetails"))
                 .andExpect(model().attribute("errorcode", ""))
@@ -226,21 +245,21 @@ public class DetailsControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
 
         // Fill the project dates
-        mockMvc.perform(post("/new-sprint?projectId=1"));
-        mockMvc.perform(post("/new-sprint?projectId=1"));
-        mockMvc.perform(post("/new-sprint?projectId=1"));
-        mockMvc.perform(post("/new-sprint?projectId=1"));
-        mockMvc.perform(post("/new-sprint?projectId=1"));
-        mockMvc.perform(post("/new-sprint?projectId=1"));
-        mockMvc.perform(post("/new-sprint?projectId=1"));
-        mockMvc.perform(post("/new-sprint?projectId=1"));
-        mockMvc.perform(post("/new-sprint?projectId=1"));
-        mockMvc.perform(post("/new-sprint?projectId=1"));
-        mockMvc.perform(post("/new-sprint?projectId=1"));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
 
         Integer size = sprintService.getSprintByParentId(1).size();
 
-        mockMvc.perform(post("/new-sprint?projectId=1"))
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
                 .andExpect(view().name("teacherProjectDetails"))
                 .andExpect(model().attribute("errorcode", "There is not enough time in your project for another sprint"))
@@ -260,7 +279,7 @@ public class DetailsControllerTest {
 
         Integer size = sprintService.getSprintByParentId(1).size();
 
-        mockMvc.perform(post("/new-sprint?projectId=1"))
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
                 .andExpect(view().name("teacherProjectDetails"))
                 .andExpect(model().attribute("errorcode", ""))
@@ -278,11 +297,11 @@ public class DetailsControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        mockMvc.perform(post("/new-sprint?projectId=1"));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
 
         Integer size = sprintService.getSprintByParentId(1).size();
 
-        mockMvc.perform(post("/new-sprint?deleteprojectId=1&sprintId=1"))
+        mockMvc.perform(post("/delete-sprint").requestAttr("deleteprojectId", 1).requestAttr("sprintId",1))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
                 .andExpect(view().name("teacherProjectDetails"))
                 .andExpect(model().attribute("errorcode", ""))
@@ -300,11 +319,11 @@ public class DetailsControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        mockMvc.perform(post("/new-sprint?projectId=1"));
+        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
 
         Integer size = sprintService.getSprintByParentId(1).size();
 
-        mockMvc.perform(post("/new-sprint?deleteprojectId=1&sprintId=1"))
+        mockMvc.perform(post("/delete-sprint").requestAttr("deleteprojectId", 1).requestAttr("sprintId",1))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
                 .andExpect(view().name("userProjectDetails"))
                 .andExpect(model().attribute("errorcode", ""))

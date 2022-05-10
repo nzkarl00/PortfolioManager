@@ -143,6 +143,8 @@ public class AccountControllerTest {
             .andExpect(model().attribute("roles", roles))
             .andExpect(model().attribute("pronouns", pronouns))
             .andExpect(model().attribute("bio", bio));
+
+        utilities.clearInvocations();
     }
 
     @Test
@@ -157,4 +159,5 @@ public class AccountControllerTest {
         //expect a 403 as invalid AuthState
         mockMvc.perform(get("/account")).andExpect(status().isForbidden());
     }
+
 }
