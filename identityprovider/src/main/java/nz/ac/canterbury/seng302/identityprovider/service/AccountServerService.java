@@ -418,7 +418,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 // Save the new file path to user repo
                 AccountProfile profile = repo.findById(userId);
                 if (!(profile == null)) {
-                    profile.setPhotoPath(userId + "." + fileType);
+                    profile.setPhotoPath(imagePath.toString());
                     repo.save(profile);
                 }
 
