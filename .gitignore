@@ -8,5 +8,7 @@
 **/*.mv.db
 **/*.trace.db
 
+identityprovider/user-content/
+
 .envrc
 */src/main/java/nz/ac/canterbury/seng302/identityprovider/model/database/

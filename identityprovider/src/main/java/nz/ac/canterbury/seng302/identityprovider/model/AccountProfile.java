@@ -175,6 +175,10 @@ public class AccountProfile {
         this.email = newEmail;
     }
 
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
+    }
+
     public void setPronouns(String pronouns) {
         this.pronouns = pronouns;
     }

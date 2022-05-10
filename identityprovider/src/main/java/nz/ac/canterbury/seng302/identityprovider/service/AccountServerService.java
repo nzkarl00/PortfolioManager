@@ -18,6 +18,7 @@ import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
@@ -44,9 +45,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Autowired
     RolesRepository roleRepo;
 
-
-//    @GrpcClient("portfolio-grpc-server")
-//    private UserAccountServiceGrpc.UserAccountServiceStub photoStub;
+    @Value("${identityprovider.user-content-directory}")
+    String userContentDirectory;
 
     /**
      * the handling and registering of a new user through a UserRegisterRequest
@@ -345,42 +345,51 @@ public class AccountServerService extends UserAccountServiceImplBase{
         responseObserver.onCompleted();
     }
 
-    // to allow for multiple stream observers to upload data at the same time
-    public String dir = System.getProperty("user.dir");
-    private HashMap<StreamObserver, Integer> idMap = new HashMap<>();
-    private HashMap<StreamObserver, String> typeMap = new HashMap<>();
+    private Path imagesDirectory() {
+        String projectDir = System.getProperty("user.dir");
+        if (userContentDirectory.startsWith(".")) {
+            return Paths.get(projectDir).resolve(userContentDirectory);
+        } else {
+            return Paths.get(userContentDirectory);
+        }
+    }
+
+    private Path userProfilePhotoImagePath(Integer userId, String fileType) {
+        return imagesDirectory().resolve(Paths.get("user-images", userId + "." + fileType));
+    }
 
     @Override
     public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
         return new StreamObserver<UploadUserProfilePhotoRequest>() {
+            private Integer userId;
+            private String fileType;
+            private Path imagePath;
 
             @Override
             public void onNext(UploadUserProfilePhotoRequest uploadRequest) {
+                imagesDirectory();
                 // if there is meta-data update the variables, if not update the file
                 if (!uploadRequest.getMetaData().getFileType().isEmpty()) {
                     // set up map variables based on metadata
-                    idMap.put(this, uploadRequest.getMetaData().getUserId());
-                    typeMap.put(this, uploadRequest.getMetaData().getFileType());
-                    int id = idMap.get(this);
-                    String fileType = typeMap.get(this);
-                    Path path = Paths.get(dir + "/user-images/" + id + "/" + id + "." + fileType);
+                    userId = uploadRequest.getMetaData().getUserId();
+                    fileType = uploadRequest.getMetaData().getFileType();
+                    imagePath = userProfilePhotoImagePath(userId, fileType);
+
                     try {
-                        Files.deleteIfExists(path);
+                        // Delete the file if it already exists.
+                        Files.deleteIfExists(imagePath);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    int id = idMap.get(this);
-                    String fileType = typeMap.get(this);
-                    Path path = Paths.get(dir + "/user-images/" + id + "/" + id + "." + fileType);
                     try {
                         // if the file doesn't exist, make it, and it's path
-                        if (Files.notExists(path)) {
-                            Files.createDirectories(path.getParent());
-                            Files.createFile(path);
+                        if (Files.notExists(imagePath)) {
+                            Files.createDirectories(imagePath.getParent());
+                            Files.createFile(imagePath);
                         }
                         // write the bytes fed from the portfolio to the file location
-                        Files.write(path, uploadRequest.getFileContent().toByteArray(), StandardOpenOption.APPEND);
+                        Files.write(imagePath, uploadRequest.getFileContent().toByteArray(), StandardOpenOption.APPEND);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -405,14 +414,19 @@ public class AccountServerService extends UserAccountServiceImplBase{
             @Override
             public void onCompleted() {
                 System.out.println("Upload complete");
+
+                // Save the new file path to user repo
+                AccountProfile profile = repo.findById(userId);
+                if (!(profile == null)) {
+                    profile.setPhotoPath(userId + "." + fileType);
+                    repo.save(profile);
+                }
+
                 FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
                 response.setMessage("Upload complete")
                     .setStatus(FileUploadStatus.SUCCESS);
                 responseObserver.onNext(response.build());
                 responseObserver.onCompleted();
-                // free up the hash maps, probably good practice?
-                idMap.remove(this);
-                typeMap.remove(this);
             }
         };
     }
