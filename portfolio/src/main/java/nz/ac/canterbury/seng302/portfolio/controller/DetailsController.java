@@ -80,8 +80,10 @@ public class DetailsController {
         /* Return the name of the Thymeleaf template */
         // detects the role of the current user and returns appropriate page
         if (role.equals("teacher") || role.equals("admin")) {
+            model.addAttribute("roleName", "teacher");
             return "teacherProjectDetails";
         } else {
+            model.addAttribute("roleName", "student");
             return "userProjectDetails";
         }
     }

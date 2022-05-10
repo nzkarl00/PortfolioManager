@@ -145,9 +145,9 @@ public class DetailsControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        mockMvc.perform(get("/details"))
+        mockMvc.perform(get("/details?id=1"))
             .andExpect(status().isOk()) // Whether to return the status "200 OK"
-            .andExpect(view().name("account")); // Whether to return the template "account"
+            .andExpect(view().name("teacherProjectDetails")); // Whether to return the template "account"
             //Model test.
             //.andExpect(model().attribute("sprints", sprintList));
     }
@@ -163,11 +163,108 @@ public class DetailsControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
 
 
-        mockMvc.perform(get("/details"))
+        mockMvc.perform(get("/details?id=1"))
             .andExpect(status().isOk()) // Whether to return the status "200 OK"
-            .andExpect(view().name("account")) // Whether to return the template "account"
+            .andExpect(view().name("teacherProjectDetails")) // Whether to return the template "account"
             .andExpect(model().attribute("errorcode", ""))
             .andExpect(model().attribute("errorShow", "display:none;"))
+            .andExpect(model().attribute("roleName", "teacher"))
             .andExpect(model().attribute("sprints", sprintService.getSprintByParentId(1)));
+    }
+
+    @Test
+    public void getDetailsWithStudentCredentials() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+            .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+
+        mockMvc.perform(get("/details?id=1"))
+            .andExpect(status().isOk()) // Whether to return the status "200 OK"
+            .andExpect(view().name("userProjectDetails")) // Whether to return the template "account"
+            .andExpect(model().attribute("errorcode", ""))
+            .andExpect(model().attribute("errorShow", "display:none;"))
+            .andExpect(model().attribute("roleName", "student"))
+            .andExpect(model().attribute("sprints", sprintService.getSprintByParentId(1)));
+    }
+
+    @Test
+    public void postDetailsNewSprintAsTeacher() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        Integer size = sprintService.getSprintByParentId(1).size();
+
+        mockMvc.perform(post("/new-sprint?projectId=1"))
+                .andExpect(status().isOk()) // Whether to return the status "200 OK"
+                .andExpect(view().name("teacherProjectDetails"));
+        assertEquals(size+1, sprintService.getSprintByParentId(1).size());
+    }
+
+    @Test
+    public void postDetailsNewSprintAsStudent() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        Integer size = sprintService.getSprintByParentId(1).size();
+
+        mockMvc.perform(post("/new-sprint?projectId=1"))
+                .andExpect(status().isOk()) // Whether to return the status "200 OK"
+                .andExpect(view().name("teacherProjectDetails"));
+        assertEquals(size, sprintService.getSprintByParentId(1).size());
+    }
+
+    @Test
+    public void postDetailsDeleteSprintAsTeacher() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        mockMvc.perform(post("/new-sprint?projectId=1"));
+
+        Integer size = sprintService.getSprintByParentId(1).size();
+
+        mockMvc.perform(post("/new-sprint?deleteprojectId=1&sprintId=1"))
+                .andExpect(status().isOk()) // Whether to return the status "200 OK"
+                .andExpect(view().name("teacherProjectDetails"));
+        assertEquals(size-1, sprintService.getSprintByParentId(1).size());
+    }
+
+    @Test
+    public void postDetailsDeleteSprintAsStudent() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        mockMvc.perform(post("/new-sprint?projectId=1"));
+
+        Integer size = sprintService.getSprintByParentId(1).size();
+
+        mockMvc.perform(post("/new-sprint?deleteprojectId=1&sprintId=1"))
+                .andExpect(status().isOk()) // Whether to return the status "200 OK"
+                .andExpect(view().name("userProjectDetails"));
+        assertEquals(size, sprintService.getSprintByParentId(1).size());
     }
 }
