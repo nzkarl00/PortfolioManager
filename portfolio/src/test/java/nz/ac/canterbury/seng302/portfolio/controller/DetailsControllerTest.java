@@ -62,7 +62,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = AccountController.class)
+@WebMvcTest(controllers = DetailsController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class DetailsControllerTest {
 
