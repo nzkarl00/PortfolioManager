@@ -19,8 +19,8 @@
                 <p>Preview</p>
                 <div id="preview"></div>
                 <form th:action="@{upload-photo}" method="post" enctype="multipart/form-data">
-<!--                    <input type="file" id="photo" name="filename" accept="image/*" onChange='compress()' required>-->
-                    <input type="file" id="photo" name="filename" accept="image/*" required>
+                    <input type="file" id="photo" name="filename" accept="image/*" onChange='compress()' required>
+                    <!--<input type="file" id="photo" name="filename" accept="image/*" required>-->
                     <input type="submit" class="save" style="width:96% !important;">
                 </form>
                 <span th:text="${message}"></span>

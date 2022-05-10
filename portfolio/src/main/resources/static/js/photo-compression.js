@@ -27,13 +27,21 @@ function compress() {
             console.log("deleting");
             preview.removeChild(preview.lastElementChild);
         }
+
+        let size = 0;
+        if (img.width > img.height) {
+            size = img.height;
+        } else {
+            size = img.width;
+        }
+
         console.log("new");
         const canvas = document.createElement('canvas');
         preview.appendChild(canvas);
         canvas.width = newWidth;
         canvas.height = newHeight;
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+        ctx.drawImage(img, 0, 0, size, size, 0, 0, newWidth, newHeight);
         canvas.toBlob(function (blob) {
           setFiles(input, [new File([blob], input.value.split(/(\\|\/)/g).pop())]);
         }, MIME_TYPE, QUALITY);
@@ -69,13 +77,17 @@ function calculateSize(img, maxWidth, maxHeight) {
   // calculate the width and height, constraining the proportions
   if (width > height) {
     if (width > maxWidth) {
-      height = Math.round((height * maxWidth) / width);
+      height = maxWidth;
       width = maxWidth;
+    } else {
+      height = width;
     }
   } else {
     if (height > maxHeight) {
-      width = Math.round((width * maxHeight) / height);
+      width = maxHeight;
       height = maxHeight;
+    } else {
+      width = height;
     }
   }
   return [width, height];

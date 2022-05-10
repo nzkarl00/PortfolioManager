@@ -41,8 +41,6 @@ public class AccountPhotoController {
         UserResponse userReply = accountClientService.getUserById(id);
 
         NavController.updateModelForNav(principal, model, userReply, id);
-
-        model.addAttribute("photo", "/images/" + id + "/" + id + ".jpg");
         return "editPhoto";
     }
 
