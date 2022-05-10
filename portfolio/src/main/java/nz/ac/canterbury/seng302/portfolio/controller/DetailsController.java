@@ -17,6 +17,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +42,10 @@ public class DetailsController {
 
     String errorShow = "display:none;";
     String errorCode = "";
+    String successCalendarShow = "display:none;";
+    String successCalendarCode = "";
+    String errorCalendarShow = "display:none;";
+    String errorCalendarCode = "";
 
     /**
      * Returns the html page based on the user's role
@@ -62,17 +67,24 @@ public class DetailsController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
 
-        model.addAttribute("date",  DateParser.displayDate(userReply));
-        model.addAttribute("username", userReply.getUsername());
+        NavController.updateModelForNav(principal, model, userReply, id);
 
         List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
         model.addAttribute("sprints", sprintList);
         model.addAttribute("errorShow", errorShow);
         model.addAttribute("errorCode", errorCode);
+        model.addAttribute("successCalendarShow", successCalendarShow);
+        model.addAttribute("successCalendarCode", successCalendarCode);
+        model.addAttribute("errorCalendarShow", errorCalendarShow);
+        model.addAttribute("errorCalendarCode", errorCalendarCode);
 
         // Reset for the next display of the page
         errorShow = "display:none;";
         errorCode = "";
+        successCalendarShow = "display:none;";
+        successCalendarCode = "";
+        errorCalendarShow = "display:none;";
+        errorCalendarCode = "";
 
         // Below code is just begging to be added as a method somewhere...
         String role = principal.getClaimsList().stream()
@@ -125,7 +137,7 @@ public class DetailsController {
 
         }
 
-        return "redirect:/details?id=" + projectId;
+        return "redirect:details?id=" + projectId;
     }
 
     /**
@@ -181,7 +193,7 @@ public class DetailsController {
 
                 errorShow="";
                 errorCode="There is not enough time in your project for another sprint";
-                return "redirect:/details?id=" + projectId;
+                return "redirect:details?id=" + projectId;
 
             }
 
@@ -193,10 +205,71 @@ public class DetailsController {
         if (role.equals("teacher")) {
             Sprint sprint = new Sprint(projectId, "Sprint " + valueId.toString(), "Sprint " + valueId.toString(), "", startDate, endDate);
             repository.save(sprint);
-            return "redirect:/edit-sprint?id=" + projectId +"&ids=" + sprint.getId();
+            return "redirect:edit-sprint?id=" + projectId +"&ids=" + sprint.getId();
         }
 
-        return "redirect:/details?id=" + projectId;
+        return "redirect:details?id=" + projectId;
+    }
+
+
+    @PostMapping("/details")
+    public String sprintSaveFromCalendar(@AuthenticationPrincipal AuthState principal,
+                                         @RequestParam(value="id") Integer projectId,
+                                         @RequestParam(value="sprintId") Integer sprintId,
+                                         @RequestParam(value="start") Date sprintStartDate,
+                                         @RequestParam(value="end") Date sprintEndDate) throws Exception {
+
+        String role = AuthStateInformer.getRole(principal);
+        String redirect = "redirect:details?id=" + projectId;
+        sprintEndDate = new Date(sprintEndDate.getTime() - Duration.ofDays(1).toMillis());
+        if (role.equals("teacher") || role.equals("admin")) {
+            List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
+            Sprint sprint = sprintService.getSprintById(sprintId);
+            Project project = projectService.getProjectById(projectId);
+
+            Date projStartDate = DateParser.stringToDate(project.getStartDateString()); // project.getStartDateString();
+            Date projEndDate = DateParser.stringToDate(project.getEndDateString()); // project.getEndDateString();
+            Date checkStartDate = sprintStartDate;
+            Date checkEndDate = sprintEndDate;
+
+            // check if the sprint dates are within the project dates
+            if (!checkStartDate.after(projStartDate) || !checkEndDate.before(projEndDate)) {
+                // check to is if the sprint isn't equal to the project start and end date
+                if (!checkStartDate.equals(projStartDate) && !checkEndDate.equals(projEndDate)) {
+                    successCalendarShow = "display:none;";
+                    successCalendarCode = "";
+                    errorCalendarShow = "";
+                    errorCalendarCode = "Sprints must be between "  + project.getStartDateString() + " - " + project.getEndDateString() + "";
+                    return redirect;
+                }
+            }
+
+            // check if sprint start is before sprint end
+            if (!checkStartDate.before(checkEndDate)) {
+                successCalendarShow = "display:none;";
+                successCalendarCode = "";
+                errorCalendarShow = "";
+                errorCalendarCode = "A sprint's start date must be before " + sprint.getEndDateString();
+                return redirect;
+            }
+
+            if (!DateParser.sprintDateCheck(sprints, sprint, checkStartDate, checkEndDate)) {
+                successCalendarShow = "display:none;";
+                successCalendarCode = "";
+                errorCalendarShow = "";
+                errorCalendarCode = "A sprint cannot overlap with another sprint";
+                return redirect;
+            }
+            sprint.setStartDate(new Date(sprintStartDate.getTime()));
+            sprint.setEndDate(sprintEndDate);
+            errorCalendarShow = "display:none;";
+            errorCalendarCode = "";
+            successCalendarShow = "";
+            successCalendarCode = "Sprint time edited to: " + sprint.getStartDateString() + " - " + sprint.getEndDateString() + "";
+            repository.save(sprint);
+        }
+
+        return redirect;
     }
 
 }

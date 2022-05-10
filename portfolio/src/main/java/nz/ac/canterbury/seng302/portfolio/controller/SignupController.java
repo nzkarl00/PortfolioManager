@@ -98,6 +98,6 @@ public class SignupController {
             successShow = "display:none;";
         }
 
-        return "redirect:/signup";
+        return "redirect:signup";
     }
 }

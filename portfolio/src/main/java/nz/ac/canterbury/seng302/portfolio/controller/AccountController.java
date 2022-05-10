@@ -57,13 +57,13 @@ public class AccountController {
             index++;
         }
 
+        NavController.updateModelForNav(principal, model, userReply, id);
+
         String name = userReply.getFirstName() + " " +  userReply.getLastName();
         model.addAttribute("roles", roles);
         model.addAttribute("pronouns", userReply.getPersonalPronouns());
         model.addAttribute("name",  name);
         model.addAttribute("nickname",  userReply.getNickname());
-        model.addAttribute("username", userReply.getUsername());
-        model.addAttribute("date", DateParser.displayDate(userReply));
         // End of Attributes for header
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());

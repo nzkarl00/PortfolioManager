@@ -7,8 +7,8 @@
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
 
     <!-- Bootstrap core CSS -->
-    <link th:href="@{~/css/bootstrap.css}" rel="stylesheet">
-    <link th:href="@{~/css/stylesheet.css}" rel="stylesheet">
+    <link th:href="@{css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{css/stylesheet.css}" rel="stylesheet">
     <!-- For dropdown to work -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -16,7 +16,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
     <!-- For the FullCalendar to work -->
-    <link th:href="@{~/css/fullcalendar.css}" rel="stylesheet">
+    <link th:href="@{css/fullcalendar.css}" rel="stylesheet">
 </head>
 <body>
 
@@ -58,6 +58,16 @@
                 <br><br>
 
                 <div id="calendar"></div>
+
+                <br>
+                <br>
+
+                <button class="signup_box_green "th:style="${successCalendarShow}">
+                    <p class="signup_error_green" th:text="${successCalendarCode}"/>
+                </button>
+                <button class="signup_box"th:style="${errorCalendarShow}">
+                    <p class="signup_error" th:text="${errorCalendarCode}"/>
+                </button>
             </div>
 
             <div id="project-details-tab" class="tab-pane fade">
@@ -145,7 +155,7 @@
                         <!-- Buttons -->
 
                         <div class="col-lg-8 col-md-10 col-sm-12" >
-                            <form th:action="@{/new-sprint}" method="post">
+                            <form th:action="@{new-sprint}" method="post">
                                 <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
                                 <button class="add" type="submit">
                                     Add Sprint
@@ -188,7 +198,7 @@
 
         // Add an extra day to end date since time is set to 00:00:00
         endDate.setDate(endDate.getDate() + 1);
-
+        let selectedEvent;
         let sprintList = [[${sprints}]];
         let sprintEvents = [];
 
@@ -209,17 +219,28 @@
 
             // Information about each sprint
             sprintEvents.push( {
+                id: sprintList[sprintIndex].id,
                 title: sprintList[sprintIndex].label,
                 start: sprintList[sprintIndex].startDate,
+                allDay: true,  //Can't resize from calendar view without this parameter
                 end: sprintEndDate,
-
+                durationEditable: false,
                 // Mod so the sprint index doesn't go out of range for colors list
-                color: colors[sprintIndex % colors.length]
+                color: colors[sprintIndex % colors.length],
+                borderColor: 'white'
             });
         }
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
-
+            eventClick: function (info) {
+                if (selectedEvent) {
+                    selectedEvent.setProp("durationEditable", false);
+                    selectedEvent.setProp("borderColor", 'white');
+                }
+                info.event.setProp("durationEditable", true);
+                info.event.setProp("borderColor", 'black');
+                selectedEvent = info.event;
+            },
             initialView: 'dayGridMonth',
 
             // Greys out area's not in use by the project
@@ -227,10 +248,39 @@
                 start: [[${project.getStartDate()}]],
                 end: endDate
             },
-
+            eventDurationEditable: true,
+            eventResizableFromStart: true,
+            eventOverlap: false,
             events: sprintEvents,
-            displayEventTime : false
+            displayEventTime : false,
 
+            eventResize: function (eventResizeInfo) {
+                console.log("test");
+                let form = document.createElement('form'); // Creating the form which will be used to post new sprint data.
+                form.setAttribute("th:action", "@{/details}");
+                form.setAttribute("method", "post");
+                let formId = document.createElement("input"); // Adding sprint ID field to the form
+                formId.setAttribute("type", "hidden");
+                formId.setAttribute("th:name", "sprintId");
+                formId.setAttribute("name", "sprintId");
+                form.appendChild(formId);
+                let formStart = document.createElement("input"); // Adding start date field to the form
+                formStart.setAttribute("type", "hidden");
+                formStart.setAttribute("th:name", "start");
+                formStart.setAttribute("name", "start");
+                form.appendChild(formStart);
+                let formEnd = document.createElement("input"); // Adding end date field to the form
+                formEnd.setAttribute("type", "hidden");
+                formEnd.setAttribute("th:name", "end");
+                formEnd.setAttribute("name", "end");
+                form.appendChild(formEnd);
+                console.log(form.childNodes);
+                form.elements["sprintId"].value = eventResizeInfo.event.id;
+                form.elements["start"].value = eventResizeInfo.event.start;
+                form.elements["end"].value = eventResizeInfo.event.end;
+                document.body.append(form);
+                form.submit() // Automatically submit form on move
+            }
         });
         calendar.render();
     });
@@ -238,8 +288,8 @@
 </script>
 
 <!-- JS -->
-<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
 <!-- JS file for FullCalendar -->
-<script th:src="@{/js/fullcalendar.js}"></script>
+<script th:src="@{js/fullcalendar.js}"></script>
 </body>
 </html>

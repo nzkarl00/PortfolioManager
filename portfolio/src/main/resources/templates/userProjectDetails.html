@@ -7,8 +7,8 @@
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
 
     <!-- Bootstrap core CSS -->
-    <link th:href="@{~/css/bootstrap.css}" rel="stylesheet">
-    <link th:href="@{~/css/stylesheet.css}" rel="stylesheet">
+    <link th:href="@{css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{css/stylesheet.css}" rel="stylesheet">
     <!-- For dropdown to work -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -16,8 +16,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
     <!-- For the FullCalendar to work -->
-    <link th:href="@{~/css/fullcalendar.css}" rel="stylesheet">
-    <script th:src="@{/js/fullcalendar.js}"></script>
+    <link th:href="@{css/fullcalendar.css}" rel="stylesheet">
+    <script th:src="@{js/fullcalendar.js}"></script>
 </head>
 <body>
 
@@ -117,7 +117,7 @@
                     <br>
 
                     <button class="edit ">
-                        <a class=" button_a" th:href="@{/landing}">      Return      </a>
+                        <a class=" button_a" th:href="@{landing}">      Return      </a>
                     </button>
                 </div>
                 <div class="row-1">
@@ -193,7 +193,7 @@
 </script>
 
 <!-- JS -->
-<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
-<script th:src="@{/js/fullcalendar.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{js/fullcalendar.js}"></script>
 </body>
 </html>

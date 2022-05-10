@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.type.DateTime;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
@@ -18,6 +19,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.DateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -62,8 +65,7 @@ public class EditSprintController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
 
-        model.addAttribute("date", DateParser.displayDate(userReply));
-        model.addAttribute("username", userReply.getUsername());
+        NavController.updateModelForNav(principal, model, userReply, id);
         model.addAttribute("projectStart", project.getStartDateStringHtml());
         model.addAttribute("projectEnd", project.getEndDateStringHtml());
         model.addAttribute("sprint", sprint);
@@ -76,7 +78,7 @@ public class EditSprintController {
         errorCode = "";
 
         String role = AuthStateInformer.getRole(principal);
-        
+
         if (role.equals("teacher") || role.equals("admin")) {
             return "editSprint";
         } else {
@@ -116,7 +118,7 @@ public class EditSprintController {
 
         errorShow = "";
 
-        String redirect = "redirect:/edit-sprint?id=" + projectId + "&ids=" + sprintId;
+        String redirect = "redirect:edit-sprint?id=" + projectId + "&ids=" + sprintId;
 
         // check if sprint name is blank
         if (sprintName.isBlank()) {
@@ -155,6 +157,7 @@ public class EditSprintController {
         sprint.setEndDate(checkEndDate);
         repository.save(sprint);
 
-        return "redirect:/details?id=" + projectId;
+        return "redirect:details?id=" + projectId;
     }
+
 }

@@ -115,7 +115,6 @@ public class TableController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id); // Get the user
 
-
         // update the sorting variables if there is a userPreference in the database to do so
         Optional<UserPreference> preferenceOptional = userPreferenceRepo.findById(id);
         UserPreference preference = preferenceOptional.orElse(null);
@@ -126,7 +125,7 @@ public class TableController {
             ascDesc = preference.getSortOrder();
         }
 
-        model.addAttribute("date", DateParser.displayDate(userReply));
+        NavController.updateModelForNav(principal, model, userReply, id);
         model.addAttribute("start", start);
         model.addAttribute("currentPage", currentPage);
 
@@ -194,7 +193,7 @@ public class TableController {
         }
         userPreferenceRepo.save(preference);
 
-        return "redirect:/user-list";
+        return "redirect:user-list";
     }
 
     private void columnHeaderHelper(String sortString) {
@@ -285,9 +284,9 @@ public class TableController {
                     // Performs deletion if it passes all checks
                     UserRoleChangeResponse response = accountClientService.addRole(roleAdd, userId);
                     if (response.getIsSuccess()) {
-                        return "redirect:/user-list";
+                        return "redirect:user-list";
                     } else {
-                        return "redirect:/user-list";
+                        return "redirect:user-list";
                     }
                 }
 
@@ -335,11 +334,11 @@ public class TableController {
                         // Performs deletion if it passes all checks
                         accountClientService.deleteRole(roleDelete, userId);
 
-                        return "redirect:/user-list";
+                        return "redirect:user-list";
                     }
                 }
             }
         }
-        return "redirect:/user-list";
+        return "redirect:user-list";
     }
 }

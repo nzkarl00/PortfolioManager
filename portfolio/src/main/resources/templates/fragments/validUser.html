@@ -7,8 +7,8 @@
     <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
 
     <!-- Bootstrap core CSS -->
-    <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
-    <link th:href="@{/css/stylesheet.css}" rel="stylesheet">
+    <link th:href="@{css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{css/stylesheet.css}" rel="stylesheet">
 
     <!-- For dropdown to work -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -39,14 +39,14 @@
             <div class="dropdown">
                 <!-- Creating the default of what you see when profile picture drop down is closed -->
                 <button class="btn btn-primary dropdown-toggle dropdown-circle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{/profile_none.png}" width=90em height=90em alt="">
+                    <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{${photo}}" width=90em height=90em alt="">
                 </button>
                 <!-- Creating dropdown items when the profile picture dropdown is open/active -->
                 <ul class="dropdown-menu align-middle">
                     <!-- These buttons take you to other end points -->
-                    <li><a class="dropdown-item" th:href="@{'/landing'}">Project</a></li>
-                    <li><a class="dropdown-item" th:href="@{'/account'}">Account</a></li>
-                    <li><a class="dropdown-item" th:href="@{'/user-list'}">Users</a></li>
+                    <li><a class="dropdown-item" th:href="@{'landing'}">Project</a></li>
+                    <li><a class="dropdown-item" th:href="@{'account'}">Account</a></li>
+                    <li><a class="dropdown-item" th:href="@{'user-list'}">Users</a></li>
                     <!-- This logout button triggers the Logout Confirmation Modal to pop up -->
                     <li><a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutConfirmationModal">Logout</a></li>
                 </ul>
@@ -70,7 +70,7 @@
                     <button type="button" class="btn btn-secondary align-baseline" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary align-text-bottom">
                         <!-- Confirm Logout button will take you to /logout end point, and back to /login -->
-                        <a class="button_a" th:href="@{'/logout'}">Confirm Logout</a>
+                        <a class="button_a" th:href="@{'logout'}">Confirm Logout</a>
                     </button>
                 </div>
             </div>

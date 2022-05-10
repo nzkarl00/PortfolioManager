@@ -24,7 +24,7 @@ import java.util.List;
 public class AccountClientService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     @GrpcClient("identity-provider-grpc-server")
-    private UserAccountServiceGrpc.UserAccountServiceBlockingStub accountServiceStub;
+    UserAccountServiceGrpc.UserAccountServiceBlockingStub accountServiceStub;
 
     /**
      * makes a UserRegisterRequest to receive a UserRegisterResponse
@@ -157,5 +157,14 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
         request.setRole(roleSending);
         return accountServiceStub.addRoleToUser(request.build());
+    }
+
+
+    public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int id) {
+        DeleteUserProfilePhotoResponse.Builder response = DeleteUserProfilePhotoResponse.newBuilder();
+        String path = "src/main/resources/static/images/" + id + "/" + id + ".jpg";
+        File file = new File(path);
+        response.setIsSuccess(file.delete());
+        return response.build();
     }
 }

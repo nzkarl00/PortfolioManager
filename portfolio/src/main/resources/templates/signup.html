@@ -22,7 +22,7 @@
 
 
         <!-- Signup Form -->
-        <form class="row" th:action="@{/signup}" method="post">
+        <form class="row" th:action="@{signup}" method="post">
 
             <div class="col-lg-2 col-m-1 col-2"></div>
 
@@ -59,7 +59,8 @@
 
 
                 <label class="project_subhead">Pronouns:</label>
-                <select class="project_edit_data horizontal_field"  id="pronouns" th:name="pronouns" th:value="*{pronouns}">
+                <select class="project_edit_data horizontal_field"  id="pronouns" th:name="pronouns" th:value="*{pronouns}" required>
+                    <option hidden disabled selected value> -- select an option -- </option>
                     <option value="He/Him">He/Him</option>
                     <option value="She/Her">She/Her</option>
                     <option value="They/Them">They/Them</option>
@@ -79,7 +80,7 @@
 
 
                 <button class="signup" type="button">
-                    <a  class="button_a " th:href="@{/login}">LOGIN</a>
+                    <a  class="button_a " th:href="@{login}">LOGIN</a>
                 </button>
 
             </div>
@@ -140,7 +141,7 @@
 </script>
 
 <!-- JS -->
-<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
 
 </body>
 </html>

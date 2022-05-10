@@ -66,8 +66,7 @@ public class LandingController {
     UserResponse userReply;
     userReply = accountClientService.getUserById(id);
 
-    model.addAttribute("date",  DateParser.displayDate(userReply));
-    model.addAttribute("username", userReply.getUsername());
+    NavController.updateModelForNav(principal, model, userReply, id);
     // End of Attributes for header
 
     String role = AuthStateInformer.getRole(principal);
@@ -101,10 +100,10 @@ public class LandingController {
               LocalDate.now().plusMonths(8));
       repository.save(project);
 
-      return "redirect:/edit-project?id=" + project.getId();
+      return "redirect:edit-project?id=" + project.getId();
     }
 
-    return "redirect:/landing";
+    return "redirect:landing";
   }
 
 }

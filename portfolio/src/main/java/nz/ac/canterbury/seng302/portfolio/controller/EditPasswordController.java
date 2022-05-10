@@ -41,6 +41,11 @@ public class EditPasswordController {
     public String passwordForm(Model model,
                               @AuthenticationPrincipal AuthState principal) {
 
+        int id = AuthStateInformer.getId(principal);
+        UserResponse userReply = accountClientService.getUserById(id);
+
+        NavController.updateModelForNav(principal, model, userReply, id);
+
         model.addAttribute("password", password);
         model.addAttribute("passwordConfirm", passwordConfirm);
         model.addAttribute("passwordErrorShow", passwordErrorShow);
@@ -84,6 +89,6 @@ public class EditPasswordController {
             passwordSuccessShow = "";
         }
 
-        return "redirect:/edit-password";
+        return "redirect:edit-password";
     }
 }
