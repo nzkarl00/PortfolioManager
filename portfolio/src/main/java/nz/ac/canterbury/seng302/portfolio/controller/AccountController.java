@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.io.IOException;
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -38,7 +40,7 @@ public class AccountController {
     public String account(
         @AuthenticationPrincipal AuthState principal,
         Model model
-    ) {
+    ) throws IOException {
         Integer id = AuthStateInformer.getId(principal);
 
         // Attributes For header

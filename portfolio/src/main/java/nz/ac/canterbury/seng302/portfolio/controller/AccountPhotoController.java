@@ -31,7 +31,7 @@ public class AccountPhotoController {
     private AccountPhotoService photoService;
 
     @GetMapping("/edit-photo")
-    public String projectForm(Model model, @AuthenticationPrincipal AuthState principal) {
+    public String projectForm(Model model, @AuthenticationPrincipal AuthState principal) throws IOException {
         Integer id = AuthStateInformer.getId(principal);
         /* Add project details to the model */
 

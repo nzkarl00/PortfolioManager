@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.text.html.Option;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -85,7 +86,7 @@ public class TableController {
         HttpServletRequest request,
         @AuthenticationPrincipal AuthState principal,
         Model model,
-        @RequestParam("move") Optional<String> move) {
+        @RequestParam("move") Optional<String> move) throws IOException {
         // Note the pagination was taken from https://www.baeldung.com/spring-thymeleaf-pagination
         // Update, a bit of philosophy from the above link
         // and some details from https://stackoverflow.com/questions/5095887/how-do-i-pass-a-url-with-multiple-parameters-into-a-url
