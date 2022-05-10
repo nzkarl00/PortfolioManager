@@ -44,6 +44,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Autowired
     RolesRepository roleRepo;
 
+
+//    @GrpcClient("portfolio-grpc-server")
+//    private UserAccountServiceGrpc.UserAccountServiceStub photoStub;
+
     /**
      * the handling and registering of a new user through a UserRegisterRequest
      * @param request the request with user details
@@ -340,9 +344,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
-
-    @GrpcClient("portfolio-grpc-server")
-    private UserAccountServiceGrpc.UserAccountServiceStub photoStub;
 
     // to allow for multiple stream observers to upload data at the same time
     public String dir = System.getProperty("user.dir");

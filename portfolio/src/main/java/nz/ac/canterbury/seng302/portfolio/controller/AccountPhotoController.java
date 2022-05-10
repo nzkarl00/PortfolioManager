@@ -2,7 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.UploadService;
+import nz.ac.canterbury.seng302.portfolio.service.AccountPhotoService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
@@ -19,13 +19,13 @@ import java.io.File;
 import java.io.IOException;
 
 @Controller
-public class EditPhotoController {
+public class AccountPhotoController {
 
     @Autowired
     private AccountClientService accountClientService;
 
     @Autowired
-    private UploadService uploadService;
+    private AccountPhotoService photoService;
 
     @GetMapping("/edit-photo")
     public String projectForm(Model model, @AuthenticationPrincipal AuthState principal) {
@@ -44,7 +44,7 @@ public class EditPhotoController {
                               @AuthenticationPrincipal AuthState principal,
                               @RequestParam(value="filename") MultipartFile file) throws IOException {
         int id = AuthStateInformer.getId(principal);
-        uploadService.uploadPhoto(id, file);
-        return "redirect:/edit-photo";
+        photoService.uploadPhoto(id, file);
+        return "redirect:edit-photo";
     }
 }
