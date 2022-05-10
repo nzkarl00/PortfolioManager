@@ -89,6 +89,16 @@ class EditAccountControllerTest {
             .addRoles(UserRole.STUDENT)
             .build();
 
+    private EditUserResponse editedUser = EditUserResponse.newBuilder()
+            .setIsSuccess(true)
+            .setMessage("Finished updating")
+            .build();
+
+    private EditUserResponse editedUserFalse = EditUserResponse.newBuilder()
+            .setIsSuccess(false)
+            .setMessage("update denied")
+            .build();
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -148,39 +158,32 @@ class EditAccountControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
-        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
-        when(accountClientService.getUserById(1)).thenReturn(testUser);
-
         String firstName = "testUser.getFirstName()";
         String lastName = "testUser.getLastName()";
         String nickname = "testUser.getNickname()";
         String email = "testUser.getEmail()";
         String bio = "testUser.getBio()";
         String pronouns = "testUser.getPersonalPronouns()";
-        accountClientService.editUser(AuthStateInformer.getId(validAuthState), firstName, "", lastName, nickname, bio,pronouns, email);
-        mockMvc.perform(post("/edit-account"))
-                //.andDo(accountClientService.editUser(AuthStateInformer.getId(validAuthState), firstName, "", lastName, nickname, bio,pronouns, email)
-                .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                .andExpect(view().name("editAccount"))
-                .andExpect(model().attribute("firstname", firstName))
-                .andExpect(model().attribute("lastname", lastName))
-                .andExpect(model().attribute("nickname", nickname))
-                .andExpect(model().attribute("email", email))
-                .andExpect(model().attribute("pronouns", pronouns))
-                .andExpect(model().attribute("bio", bio));
-        // Unsure at this point
-//        mockMvc.perform(post("/edit-account"))
-//                .andExpect(status().isOk()) // Whether to return the status "200 OK"
-//                .andExpect(view().name("editAccount")) // Whether to return the template "account"
-//                //Model test.
-//                .andExpect(model().attribute("firstname", firstName))
-//                .andExpect(model().attribute("lastname", lastName))
-//                .andExpect(model().attribute("nickname", nickname))
-//                .andExpect(model().attribute("email", email))
-//                .andExpect(model().attribute("pronouns", pronouns))
-//                .andExpect(model().attribute("bio", bio));
-//    }
+
+        MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
+        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
+        when(accountClientService.getUserById(1)).thenReturn(testUser);
+        when(accountClientService.editUser(1, firstName, "", lastName, nickname, bio, pronouns, email)).thenReturn(editedUser);
+
+
+       // accountClientService.editUser(AuthStateInformer.getId(validAuthState), firstName, "", lastName, nickname, bio,pronouns, email);
+        mockMvc.perform(post("/edit-account")
+                        .param("nickname", nickname)
+                        .param("bio", bio)
+                        .param("firstname",firstName)
+                        .param("lastname", lastName)
+                        .param("pronouns", pronouns)
+                        .param("email", email)
+                )
+
+                .andExpect(status().is3xxRedirection()) // Whether to return the status "302 OK"
+                .andExpect(view().name("redirect:edit-account"));
 
     }
+
 }
