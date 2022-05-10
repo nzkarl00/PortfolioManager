@@ -113,6 +113,18 @@ public class DetailsControllerTest {
 
     public Sprint sprint = new Sprint();
 
+    public class CustomArgumentResolver implements HandlerMethodArgumentResolver {
+        @Override
+        public boolean supportsParameter(MethodParameter parameter) {
+            return parameter.getParameterType().isAssignableFrom(AuthState.class);
+        }
+
+        @Override
+        public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+            return validAuthState;
+        }
+    }
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -131,6 +143,8 @@ public class DetailsControllerTest {
     @Before
     public void setup() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(DetailsController.class)
+            .setCustomArgumentResolvers(new CustomArgumentResolver())
+            .addInterceptors((HandlerInterceptor) new AuthenticationClientInterceptor())
             .build();
     }
 
@@ -157,6 +171,7 @@ public class DetailsControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
+        MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
         utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
         when(accountClientService.getUserById(1)).thenReturn(testUser);
 
@@ -307,7 +322,7 @@ public class DetailsControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        mockMvc.perform(post("/new-sprint").requestAttr("projectId", 1));
+        mockMvc.perform(post("/new-sprint").param("projectId", String.valueOf(1)));
 
         Integer size = sprintService.getSprintByParentId(1).size();
 
