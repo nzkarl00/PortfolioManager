@@ -77,7 +77,7 @@ public class AccountProfile {
         if(photoPath != null) {
             this.photoPath = photoPath;
         } else {
-            this.photoPath = "identityprovider/src/main/resources/images/default_account_icon.png"; //Path for default photo
+            this.photoPath = System.getProperty("user.dir") + "/src/main/resources/images/default_account_icon.jpeg"; //Path for default photo
         }
     }
 
