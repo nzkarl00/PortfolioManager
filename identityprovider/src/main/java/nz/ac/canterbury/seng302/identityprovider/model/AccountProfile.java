@@ -74,11 +74,7 @@ public class AccountProfile {
         this.middleName = "";
         this.nickname = "";
         this.pronouns = pronouns;
-        if(photoPath != null) {
-            this.photoPath = photoPath;
-        } else {
-            this.photoPath = System.getProperty("user.dir") + "/src/main/resources/images/default_account_icon.jpeg"; //Path for default photo
-        }
+        this.photoPath = photoPath;
     }
 
     /**
@@ -120,7 +116,8 @@ public class AccountProfile {
     }
 
     public String getPhotoPath() {
-        return photoPath;
+        // TODO: Change this to default and refactor to not use shared profile paths.
+        return photoPath != null ? photoPath : System.getProperty("user.dir") + "/src/main/resources/images/default_account_icon.jpeg";
     }
 
     public String getMiddleName() {

@@ -15,7 +15,6 @@ import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.hibernate.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
-import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -345,7 +344,11 @@ public class AccountServerService extends UserAccountServiceImplBase{
         responseObserver.onCompleted();
     }
 
-    private Path imagesDirectory() {
+    /**
+     * Resolve the directory in which user profile images should be stored.
+     * @return A path to the directory in which user content should be stored
+     */
+    private Path userContentDirectory() {
         String projectDir = System.getProperty("user.dir");
         if (userContentDirectory.startsWith(".")) {
             return Paths.get(projectDir).resolve(userContentDirectory);
@@ -354,8 +357,25 @@ public class AccountServerService extends UserAccountServiceImplBase{
         }
     }
 
-    private Path userProfilePhotoImagePath(Integer userId, String fileType) {
-        return imagesDirectory().resolve(Paths.get("user-images", userId + "." + fileType));
+    /**
+     * Resolve an absolute path to the file in which a user's profile photo is stored.
+     * @param userId The user's ID
+     * @param fileType The file extension, without leading '.'
+     * @return An absolute path to the user's profile photo
+     */
+    private Path userProfilePhotoAbsolutePath(Integer userId, String fileExtension) {
+        return userContentDirectory().resolve(userProfilePhotoRelativePath(userId, fileExtension));
+    }
+
+    /**
+     * Resolve a relative path to the file in which a user's profile photo is stored.
+     * Path is relative to the userContentDirectory
+     * @param userId The user's ID
+     * @param fileType The file extension, without leading '.'
+     * @return An absolute path to the user's profile photo
+     */
+    private Path userProfilePhotoRelativePath(Integer userId, String fileExtension) {
+        return Paths.get("user-images").resolve(userId + "." + fileExtension);
     }
 
     @Override
@@ -367,13 +387,12 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
             @Override
             public void onNext(UploadUserProfilePhotoRequest uploadRequest) {
-                imagesDirectory();
                 // if there is meta-data update the variables, if not update the file
                 if (!uploadRequest.getMetaData().getFileType().isEmpty()) {
                     // set up map variables based on metadata
                     userId = uploadRequest.getMetaData().getUserId();
                     fileType = uploadRequest.getMetaData().getFileType();
-                    imagePath = userProfilePhotoImagePath(userId, fileType);
+                    imagePath = userProfilePhotoAbsolutePath(userId, fileType);
 
                     try {
                         // Delete the file if it already exists.
@@ -418,7 +437,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 // Save the new file path to user repo
                 AccountProfile profile = repo.findById(userId);
                 if (!(profile == null)) {
-                    profile.setPhotoPath(imagePath.toString());
+                    profile.setPhotoPath(userProfilePhotoRelativePath(userId, fileType).toString());
                     repo.save(profile);
                 }
 
