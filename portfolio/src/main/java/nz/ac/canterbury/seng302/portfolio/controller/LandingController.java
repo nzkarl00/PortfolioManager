@@ -39,6 +39,8 @@ public class LandingController {
   private SprintService sprintService;
   @Autowired
   private AccountClientService accountClientService;
+  @Autowired
+  private NavController navController;
 
   /**
    * Directs the user to the landing project page
@@ -65,7 +67,7 @@ public class LandingController {
     // Attributes For header
     UserResponse userReply;
     userReply = accountClientService.getUserById(id);
-    NavController.updateModelForNav(principal, model, userReply, id);
+    navController.updateModelForNav(principal, model, userReply, id);
 
     // End of Attributes for header
 

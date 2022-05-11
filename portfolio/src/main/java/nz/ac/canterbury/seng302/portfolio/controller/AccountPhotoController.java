@@ -30,6 +30,9 @@ public class AccountPhotoController {
     @Autowired
     private AccountPhotoService photoService;
 
+    @Autowired
+    private NavController navController;
+
     @GetMapping("/edit-photo")
     public String projectForm(Model model, @AuthenticationPrincipal AuthState principal) throws IOException {
         Integer id = AuthStateInformer.getId(principal);
@@ -40,7 +43,7 @@ public class AccountPhotoController {
 
         UserResponse userReply = accountClientService.getUserById(id);
 
-        NavController.updateModelForNav(principal, model, userReply, id);
+        navController.updateModelForNav(principal, model, userReply, id);
         return "editPhoto";
     }
 

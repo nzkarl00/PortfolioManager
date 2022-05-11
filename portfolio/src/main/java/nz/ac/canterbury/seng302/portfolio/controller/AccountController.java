@@ -27,6 +27,9 @@ public class AccountController {
     @Autowired
     private AccountClientService accountClientService;
 
+    @Autowired
+    private NavController navController;
+
     /**
      * control the displaying of account details
      * @param principal the auth token
@@ -56,7 +59,7 @@ public class AccountController {
             index++;
         }
 
-        NavController.updateModelForNav(principal, model, userReply, id);
+        navController.updateModelForNav(principal, model, userReply, id);
 
         String name = userReply.getFirstName() + " " +  userReply.getLastName();
         model.addAttribute("roles", roles);

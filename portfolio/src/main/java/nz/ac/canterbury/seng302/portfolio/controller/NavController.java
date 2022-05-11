@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.util.Base64Utils;
 
@@ -19,8 +20,10 @@ import java.nio.file.Paths;
  * by updating the model
  */
 public class NavController {
-    public static void updateModelForNav(AuthState principal, Model model, UserResponse userReply, int id) throws IOException {
-        String idpLocation = "http://localhost:8080"; //TODO make the redirect as intended
+    @Value("${portfolio.idp-url-prefix}")
+    String idpLocation;
+
+    public void updateModelForNav(AuthState principal, Model model, UserResponse userReply, int id) throws IOException {
         String request = idpLocation + "/image/" + id;
         model.addAttribute("photo", request);
         model.addAttribute("username", userReply.getUsername());

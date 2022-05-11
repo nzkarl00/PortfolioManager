@@ -29,6 +29,9 @@ public class GreeterController {
     @Autowired
     private GreeterClientService greeterClientService;
 
+    @Autowired
+    private NavController navController;
+
 
     @GetMapping("/greeting")
     public String greeting(
