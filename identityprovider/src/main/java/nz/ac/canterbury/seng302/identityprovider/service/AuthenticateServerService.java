@@ -27,7 +27,6 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
     public void authenticate(AuthenticateRequest request, StreamObserver<AuthenticateResponse> responseObserver) {
         AuthenticateResponse.Builder reply = AuthenticateResponse.newBuilder();
 
-        System.out.println("Handling login request for user: " + request.getUsername());
         // Get the corresponding user from store
         try {
             AccountProfile profile = accountService.getAccountByUsername(request.getUsername());
@@ -35,7 +34,6 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
             assert request.getUsername().equals(profile.getUsername());
 
             if (Hasher.verify(request.getPassword(), profile.getPasswordHash())) {
-                // TODO: Facility to fetch user role
                 // token length is 248
                 //String token = jwtTokenService.generateTokenForUser(profile.getUsername(), profile.getId(), profile.getUsername(), ROLE_OF_USER);
                 String token = jwtTokenService.generateTokenForUser(profile);
@@ -50,7 +48,6 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
                     .setUserId(profile.getId())
                     .setUsername(profile.getUsername());
             } else {
-                System.out.println("Could not verify password against expected hash.");
                 reply
                     .setMessage("Log in attempt failed: password incorrect")
                     .setSuccess(false)
@@ -61,7 +58,6 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
                 .setMessage("Log in attempt failed: username invalid")
                 .setSuccess(false)
                 .setToken("");
-            System.out.println(e);
         }
 
         responseObserver.onNext(reply.build());

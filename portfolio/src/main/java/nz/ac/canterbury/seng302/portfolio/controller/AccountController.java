@@ -27,9 +27,6 @@ public class AccountController {
     @Autowired
     private AccountClientService accountClientService;
 
-    @Autowired
-    private GreeterClientService greeterClientService;
-
     /**
      * control the displaying of account details
      * @param principal the auth token
@@ -69,15 +66,6 @@ public class AccountController {
         // End of Attributes for header
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());
-
-        // Generate our own message, based on the information we have available to us
-        String portfolioMessage = String.format(
-            "The portfolio service (which is serving you this message) knows you are logged in as '%s' (role='%s'), with ID=%d",
-            principal.getName(),
-            roles,
-            id
-        );
-        model.addAttribute("portfolioMessage", portfolioMessage);
 
         return "account";
     }

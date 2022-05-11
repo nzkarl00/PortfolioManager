@@ -61,7 +61,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
         } else if (emailExists(request.getEmail())) {
             reply.setIsSuccess(false).setMessage("Registration failed, email already exists");
         } else {
-            // TODO: Handle saving of name.
             // Hash the password
             String hashedPassword = Hasher.hashPassword(request.getPassword());
             AccountProfile newAccount = repo.save(
@@ -206,7 +205,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
             List<Role> roles = roleRepo.findAllByOrderByRoleAsc();
             updateUsersSorted(usersSorted, roles);
-            System.out.println(usersSorted.size());
 
         } else if (request.getOrderBy().equals("roles_desc")) {
 
@@ -276,7 +274,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
         } catch (Exception e) {
             response.setMessage(e.getMessage())
                 .setIsSuccess(false);
-            System.out.println(e);
         }
         observer.onNext(response.build());
         observer.onCompleted();
@@ -287,9 +284,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
         String roleString;
         switch (request.getRole()) {
-            case STUDENT:
-                roleString = "1student";
-                break;
             case TEACHER:
                 roleString = "2teacher";
                 break;
@@ -323,9 +317,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
         String role;
         switch (request.getRole()) {
-            case STUDENT:
-                role = "1student";
-                break;
             case TEACHER:
                 role = "2teacher";
                 break;

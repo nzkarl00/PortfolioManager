@@ -5,6 +5,7 @@ import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.springframework.stereotype.Component;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -137,7 +138,6 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
         request.setRole(roleSending);
 
-        System.out.println("portfolio service");
         return accountServiceStub.removeRoleFromUser(request.build());
     }
 

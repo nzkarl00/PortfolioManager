@@ -200,9 +200,6 @@ public class AccountProfile {
         this.bio = bio;
     }
 
-    // this has to be bad practice right?
-    // but as I have no idea how to mock the relationship of linked tables
-    // it should be fine for now
     public void addRoleTestingOnly(Role role) {
         roles = new ArrayList<>(); // note this is just for testing
         roles.add(role);

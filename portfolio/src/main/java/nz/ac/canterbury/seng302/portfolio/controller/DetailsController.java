@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.rpc.context.AttributeContext;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -87,17 +88,15 @@ public class DetailsController {
         errorCalendarCode = "";
 
         // Below code is just begging to be added as a method somewhere...
-        String role = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("role"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("NOT FOUND");
+        String role = AuthStateInformer.getRole(principal);
 
         /* Return the name of the Thymeleaf template */
         // detects the role of the current user and returns appropriate page
         if (role.equals("teacher") || role.equals("admin")) {
+            model.addAttribute("roleName", "teacher");
             return "teacherProjectDetails";
         } else {
+            model.addAttribute("roleName", "student");
             return "userProjectDetails";
         }
     }
@@ -202,7 +201,7 @@ public class DetailsController {
         valueId += 1;
 
 
-        if (role.equals("teacher")) {
+        if (role.equals("teacher") || role.equals("admin")) {
             Sprint sprint = new Sprint(projectId, "Sprint " + valueId.toString(), "Sprint " + valueId.toString(), "", startDate, endDate);
             repository.save(sprint);
             return "redirect:edit-sprint?id=" + projectId +"&ids=" + sprint.getId();

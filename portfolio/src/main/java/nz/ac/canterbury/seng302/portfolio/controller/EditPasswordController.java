@@ -58,7 +58,6 @@ public class EditPasswordController {
         passwordSuccessShow = "display:none;";
         passwordSuccessCode = "successCode";
 
-        /* Return the name of the Thymeleaf template */
         return "editPassword";
     }
 
