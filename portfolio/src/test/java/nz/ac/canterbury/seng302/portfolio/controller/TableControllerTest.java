@@ -73,6 +73,9 @@ public class TableControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
+    NavController navController;
+
+    @MockBean
     AccountClientService accountClientService;
 
     @MockBean

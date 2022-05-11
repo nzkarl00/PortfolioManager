@@ -101,6 +101,9 @@ public class AccountControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
+    NavController navController;
+
+    @MockBean
     AccountClientService accountClientService;
 
     @Before
@@ -137,7 +140,6 @@ public class AccountControllerTest {
         // Expected values in the model
         String name = testUser.getFirstName() + " " + testUser.getLastName();
         String nickname = testUser.getNickname();
-        String username = testUser.getUsername();
         String email = testUser.getEmail();
         String bio = testUser.getBio();
         String roles = "STUDENT";
@@ -151,7 +153,6 @@ public class AccountControllerTest {
              //Model test.
             .andExpect(model().attribute("name", name))
             .andExpect(model().attribute("nickname", nickname))
-            .andExpect(model().attribute("username", username))
             .andExpect(model().attribute("email", email))
             .andExpect(model().attribute("roles", roles))
             .andExpect(model().attribute("pronouns", pronouns))

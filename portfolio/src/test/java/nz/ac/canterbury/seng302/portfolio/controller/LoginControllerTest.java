@@ -26,6 +26,9 @@ public class LoginControllerTest {
     @MockBean
     AuthenticateClientService authenticateClientService;
 
+    @MockBean
+    NavController navController;
+
     @Test
     public void loginMessageIsEmptyOnNavigation() throws Exception {
         mockMvc.perform(get("/login"))

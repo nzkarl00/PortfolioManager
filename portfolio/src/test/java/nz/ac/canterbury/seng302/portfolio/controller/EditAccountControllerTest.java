@@ -106,6 +106,9 @@ class EditAccountControllerTest {
     @MockBean
     AccountClientService accountClientService;
 
+    @MockBean
+    NavController navController;
+
     MockedStatic<AuthStateInformer> utilities;
 
     @Before

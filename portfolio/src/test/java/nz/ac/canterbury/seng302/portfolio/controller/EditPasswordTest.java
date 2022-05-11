@@ -46,6 +46,9 @@ public class EditPasswordTest {
     @MockBean
     AccountClientService accountClientService;
 
+    @MockBean
+    NavController navController;
+
     public AuthState validAuthState = AuthState.newBuilder()
             .setIsAuthenticated(true)
             .setNameClaimType("name")
