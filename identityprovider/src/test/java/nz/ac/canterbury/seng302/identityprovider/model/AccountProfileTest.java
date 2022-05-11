@@ -49,7 +49,7 @@ public class AccountProfileTest {
         expectedAccountString += "Date registered: " + actual.getRegisterDate() + "\n";
         expectedAccountString += "Personal biography: " + "testing bio" + "\n";
         expectedAccountString += "Email: " + "test1@test.com" + "\n";
-        expectedAccountString += "Path to photo: " + "identityprovider/src/main/resources/images/default_account_icon.png";
+        expectedAccountString += "Path to photo: " + "default_account_icon.jpeg";
 
         // actual account string
         String actualAccountString = "Username: " + actual.getUsername() + "\n";
