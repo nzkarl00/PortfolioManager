@@ -36,7 +36,7 @@ public class ProfilePhotoController {
     @Autowired
     FileSystemUtils fsUtils;
 
-    @GetMapping("/image/{personId}")
+    @RequestMapping("/image/{personId}")
     @ResponseBody
     public HttpEntity<byte[]> getPhoto(@PathVariable int personId) throws IOException {
         String photoRelPath = repo.findById(personId).getPhotoPath();
