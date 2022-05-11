@@ -100,9 +100,9 @@ public class TableControllerTest {
     }
 
     String role = "STUDENT"; //testUser.getRoles()
-    private UserPreference userPreference = new UserPreference(1, "firstname", 0);
+    private UserPreference userPreference = new UserPreference(1, "", 0);
     int step = 50;
-    int currentPage = 1;
+    int currentPage = 0;
     int start = currentPage * step;
     String sortCol = userPreference.getSortCol();
     int sortOrder = userPreference.getSortOrder();
