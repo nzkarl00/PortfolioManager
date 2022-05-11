@@ -124,6 +124,6 @@ public class EditPasswordTest {
                 .param("passwordConfirm",passwordConfirm)
             )
                 .andExpect(status().is3xxRedirection()) // Whether to return the status "302 OK"
-                .andExpect(MockMvcResultMatchers.view().name("redirect:/edit-password"));
+                .andExpect(MockMvcResultMatchers.view().name("redirect:edit-password"));
     }
 }

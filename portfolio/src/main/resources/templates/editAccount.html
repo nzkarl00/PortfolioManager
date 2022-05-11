@@ -31,7 +31,7 @@
         <!-- Editing body -->
 
 
-        <form class="row" th:action="@{/edit-account}" method="post">
+        <form class="row" th:action="@{edit-account}" method="post">
 
             <div class="col-2"></div>
 
@@ -83,7 +83,7 @@
             <div class="col-1 align-items-end">
 
                 <button class="cancel" type="button">
-                    <a class="button_a" th:href="@{'/account'}">CANCEL</a>
+                    <a class="button_a" th:href="@{'account'}">CANCEL</a>
                 </button>
                 <button class="save" type="submit">SAVE</button>
             </div>
@@ -126,6 +126,6 @@
 
 
 <!-- JS -->
-<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

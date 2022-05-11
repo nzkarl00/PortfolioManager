@@ -49,7 +49,7 @@ public class EditPhotoController {
         int id = AuthStateInformer.getId(principal);
         FileUploadStatusResponse response = accountClientService.uploadPhoto(id, file.getContentType(), file);
         model.addAttribute("message", response.getMessage());
-        return "redirect:/edit-photo";
+        return "redirect:edit-photo";
     }
 
     @RequestMapping(value="/delete-photo", method = RequestMethod.DELETE)
@@ -57,6 +57,6 @@ public class EditPhotoController {
                               @AuthenticationPrincipal AuthState principal) {
         int id = AuthStateInformer.getId(principal);
         accountClientService.deleteUserProfilePhoto(id);
-        return "redirect:/edit-photo";
+        return "redirect:edit-photo";
     }
 }

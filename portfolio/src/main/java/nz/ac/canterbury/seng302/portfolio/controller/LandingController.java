@@ -100,10 +100,10 @@ public class LandingController {
               LocalDate.now().plusMonths(8));
       repository.save(project);
 
-      return "redirect:/edit-project?id=" + project.getId();
+      return "redirect:edit-project?id=" + project.getId();
     }
 
-    return "redirect:/landing";
+    return "redirect:landing";
   }
 
 }
