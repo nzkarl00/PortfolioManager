@@ -25,11 +25,9 @@ public class AccountPhotoService extends UserAccountServiceGrpc.UserAccountServi
     private UserAccountServiceGrpc.UserAccountServiceStub accountStub;
 
     public ProfilePhotoUploadMetadata createPhotoMetaData(int id, String fileType) {
-        System.out.println(fileType);
-        System.out.println(fileType.split("/")[1]);
         return ProfilePhotoUploadMetadata.newBuilder()
                 .setUserId(id)
-                .setFileType(fileType.split("/")[1])
+                .setFileType("jpeg")
                 .build();
     }
 
