@@ -53,6 +53,7 @@ public class AccountPhotoService extends UserAccountServiceGrpc.UserAccountServi
         }
         inputStream.close();
         streamObserver.onCompleted();
+
     }
 
 
