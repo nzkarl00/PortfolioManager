@@ -46,6 +46,9 @@ public class TableController {
     private AccountClientService accountClientService;
 
     @Autowired
+    private NavController navController;
+
+    @Autowired
     private UserPreferenceRepository userPreferenceRepo;
     private int start = 0;
     private int step = 50;
@@ -126,7 +129,7 @@ public class TableController {
             ascDesc = preference.getSortOrder();
         }
 
-        NavController.updateModelForNav(principal, model, userReply, id);
+        navController.updateModelForNav(principal, model, userReply, id);
         model.addAttribute("start", start);
         model.addAttribute("currentPage", currentPage);
 

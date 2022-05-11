@@ -43,6 +43,8 @@ public class EditSprintController {
     private SprintRepository repository;
     @Autowired
     private AccountClientService accountClientService;
+    @Autowired
+    private NavController navController;
 
 
     String errorShow = "display:none;";
@@ -65,7 +67,7 @@ public class EditSprintController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
 
-        NavController.updateModelForNav(principal, model, userReply, id);
+        navController.updateModelForNav(principal, model, userReply, id);
         model.addAttribute("projectStart", project.getStartDateStringHtml());
         model.addAttribute("projectEnd", project.getEndDateStringHtml());
         model.addAttribute("sprint", sprint);

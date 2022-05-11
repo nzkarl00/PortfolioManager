@@ -28,6 +28,9 @@ public class EditPasswordController {
     @Autowired
     private AccountClientService accountClientService;
 
+    @Autowired
+    private NavController navController;
+
     String password = ""; //TODO these still need db implementation
     String passwordConfirm = "";
     String passwordErrorShow = "display:none;";
@@ -46,7 +49,7 @@ public class EditPasswordController {
         int id = AuthStateInformer.getId(principal);
         UserResponse userReply = accountClientService.getUserById(id);
 
-        NavController.updateModelForNav(principal, model, userReply, id);
+        navController.updateModelForNav(principal, model, userReply, id);
 
         model.addAttribute("password", password);
         model.addAttribute("passwordConfirm", passwordConfirm);

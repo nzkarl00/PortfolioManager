@@ -38,6 +38,8 @@ public class EditProjectController {
     private SprintService sprintService;
     @Autowired
     private AccountClientService accountClientService;
+    @Autowired
+    private NavController navController;
 
 
     String errorShow = "display:none;";
@@ -66,7 +68,7 @@ public class EditProjectController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
 
-        NavController.updateModelForNav(principal, model, userReply, id);
+        navController.updateModelForNav(principal, model, userReply, id);
         // End of Attributes for header
 
         // Reset for the next display of the page

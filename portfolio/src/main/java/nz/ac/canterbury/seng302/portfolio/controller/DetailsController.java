@@ -40,6 +40,8 @@ public class DetailsController {
     private SprintService sprintService;
     @Autowired
     private AccountClientService accountClientService;
+    @Autowired
+    private NavController navController;
 
     String errorShow = "display:none;";
     String errorCode = "";
@@ -68,7 +70,7 @@ public class DetailsController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
 
-        NavController.updateModelForNav(principal, model, userReply, id);
+        navController.updateModelForNav(principal, model, userReply, id);
 
         List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
         model.addAttribute("sprints", sprintList);

@@ -31,6 +31,9 @@ public class EditAccountController {
     @Autowired
     private AccountClientService accountClientService;
 
+    @Autowired
+    private NavController navController;
+
     String editErrorShow = "display:none;";
     String editSuccessShow = "display:none;";
     String editSuccessCode = "successCode";
@@ -51,7 +54,7 @@ public class EditAccountController {
         userReply = accountClientService.getUserById(id);
 
         // Put the users details into the page
-        NavController.updateModelForNav(principal, model, userReply, id);
+        navController.updateModelForNav(principal, model, userReply, id);
         model.addAttribute("email", userReply.getEmail());
         model.addAttribute("bio", userReply.getBio());
         model.addAttribute("nickname", userReply.getNickname());
