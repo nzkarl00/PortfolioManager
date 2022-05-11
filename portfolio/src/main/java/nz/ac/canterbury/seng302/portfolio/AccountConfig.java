@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio;
 
+import nz.ac.canterbury.seng302.portfolio.controller.NavController;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AccountPhotoService;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,10 @@ public class AccountConfig {
         return new AccountClientService();
     }
 
+    @Bean
+    public NavController navController() {
+        return new NavController();
+    }
 
     @Bean
     public AccountPhotoService uploadService() {
