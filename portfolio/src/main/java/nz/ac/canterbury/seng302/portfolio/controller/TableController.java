@@ -271,7 +271,7 @@ public class TableController {
             @RequestParam(value="username") String username,
             Model model
     ) throws Exception {
-        if (role.equals("teacher")) {
+        if (role.equals("teacher") || role.equals("admin")) {
             User user = null;
             for (User userTemp : users) {
                 if (userTemp.getUsername().equals(username)) {
@@ -319,7 +319,7 @@ public class TableController {
 
         /* Return the name of the Thymeleaf template */
         // detects the role of the current user and performs appropriate action
-        if (role.equals("teacher")) {
+        if (role.equals("teacher") || role.equals("admin")) {
             // Locates the appropriate user
             User user = null;
             for (User userTemp : users) {
