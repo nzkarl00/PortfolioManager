@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS ACCOUNT_PROFILE (
     register_date DATE NOT NULL CHECK (register_date >= DATE'2022-01-01'), /*The date the user registered their account, must be after 1/1/2022*/
     bio VARCHAR(1024), /*The user's short autobiography with a maximum length of 1MB of text*/
     email VARCHAR(30) UNIQUE NOT NULL, /*The user's email address*/
-    photo_path VARCHAR(100), /*A path to the user's uploaded profile photo*/
+    /*A path to the user's uploaded profile photo, relative to the user-content directory. Null if default should be used*/
+    photo_path VARCHAR(100),
     first_name CHAR(20) NOT NULL, /*The user's first name*/
     last_name CHAR(20) NOT NULL, /*The user's last name*/
     middle_name CHAR(20), /*The user's middle or other name(s)*/

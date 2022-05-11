@@ -74,11 +74,7 @@ public class AccountProfile {
         this.middleName = "";
         this.nickname = "";
         this.pronouns = pronouns;
-        if(photoPath != null) {
-            this.photoPath = photoPath;
-        } else {
-            this.photoPath = "identityprovider/src/main/resources/images/default_account_icon.png"; //Path for default photo
-        }
+        this.photoPath = photoPath;
     }
 
     /**
@@ -120,7 +116,8 @@ public class AccountProfile {
     }
 
     public String getPhotoPath() {
-        return photoPath;
+        // TODO: Change this to default and refactor to not use shared profile paths.
+        return photoPath != null ? photoPath : "DEFAULT";
     }
 
     public String getMiddleName() {
@@ -173,6 +170,10 @@ public class AccountProfile {
 
     public void setEmail(String newEmail) {
         this.email = newEmail;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
     }
 
     public void setPronouns(String pronouns) {
