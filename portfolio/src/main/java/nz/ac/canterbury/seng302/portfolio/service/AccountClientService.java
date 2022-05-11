@@ -22,7 +22,6 @@ import java.util.List;
  * The GRPC client side service class
  * contains many of the protobuf implementations to allow communication between the idp and portfolio servers
  */
-// @Component this kills the program, idk what it is for
 public class AccountClientService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     @GrpcClient("identity-provider-grpc-server")
@@ -49,8 +48,6 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
                 .build();
         return accountServiceStub.register(registerRequest);
     }
-
-
 
     /**
      * Get a user's details from the id of the user
@@ -141,7 +138,6 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
         request.setRole(roleSending);
 
-        System.out.println("portfolio service");
         return accountServiceStub.removeRoleFromUser(request.build());
     }
 
@@ -163,19 +159,10 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         return accountServiceStub.addRoleToUser(request.build());
     }
 
-    public FileUploadStatusResponse uploadPhoto(int id, String fileType, MultipartFile photo) throws IOException {
-        String fileName = StringUtils.cleanPath(photo.getOriginalFilename());
-        FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
-        String path = "src/main/resources/static/images/" + id;
-        FileUploadUtil.saveFile(path, String.valueOf(id) + ".jpg", photo);
-        return response.build();
-    }
 
     public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int id) {
-        DeleteUserProfilePhotoResponse.Builder response = DeleteUserProfilePhotoResponse.newBuilder();
-        String path = "src/main/resources/static/images/" + id + "/" + id + ".jpg";
-        File file = new File(path);
-        response.setIsSuccess(file.delete());
-        return response.build();
+        DeleteUserProfilePhotoRequest.Builder request = DeleteUserProfilePhotoRequest.newBuilder()
+            .setUserId(id);
+        return accountServiceStub.deleteUserProfilePhoto(request.build());
     }
 }

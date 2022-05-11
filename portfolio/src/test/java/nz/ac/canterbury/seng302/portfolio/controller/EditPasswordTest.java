@@ -1,12 +1,17 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.authentication.AuthenticationClientInterceptor;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.Before;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,7 +26,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -36,6 +43,9 @@ public class EditPasswordTest {
     @MockBean
     AuthenticateClientService authenticateClientService;
 
+    @MockBean
+    AccountClientService accountClientService;
+
     public AuthState validAuthState = AuthState.newBuilder()
             .setIsAuthenticated(true)
             .setNameClaimType("name")
@@ -46,11 +56,45 @@ public class EditPasswordTest {
             .setName("validtesttoken")
             .build();
 
+    private UserResponse testUser = UserResponse.newBuilder()
+        .setBio("testbio")
+        .setCreated(Timestamp.newBuilder().setSeconds(10))
+        .setEmail("test@email")
+        .setFirstName("testfirstname")
+        .setLastName("testlastname")
+        .setMiddleName("testmiddlename")
+        .setNickname("testnickname")
+        .setPersonalPronouns("test/test")
+        .addRoles(UserRole.STUDENT)
+        .build();
+
+    private ChangePasswordResponse changePasswordResponse = ChangePasswordResponse.newBuilder()
+        .setIsSuccess(true)
+        .setMessage("Password changed successfully")
+        .build();
+
+    String newPassword = "newPassword";
+    String currentPassword = "currentPassword";
+    String passwordConfirm = "newPassword";
+
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(EditPasswordController.class)
-                .build();
+            .build();
     }
+
+    static MockedStatic<AuthStateInformer> utilities;
+
+    @BeforeAll
+    public static void open() {
+        utilities = Mockito.mockStatic(AuthStateInformer.class);
+    }
+
+    @AfterAll
+    public static void close() {
+        utilities.close();
+    }
+
 
     @Test
     public void getEditPasswordWithValidCredentials() throws Exception {
@@ -62,17 +106,37 @@ public class EditPasswordTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
+        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
+        when(accountClientService.getUserById(1)).thenReturn(testUser);
+
         mockMvc.perform(get("/edit-password"))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                .andExpect(view().name("edit-password")); // Whether to return the template "account"
+                .andExpect(MockMvcResultMatchers.view().name("editPassword")) // Whether to return the template "account"
+                .andExpect(MockMvcResultMatchers.model().attribute("password", ""))
+                .andExpect(MockMvcResultMatchers.model().attribute("passwordConfirm", ""))
+                .andExpect(MockMvcResultMatchers.model().attribute("passwordSuccessCode", "successCode"));
     }
 
     @Test
-    public void loginMessageIsEmptyOnNavigation() throws Exception {
-        mockMvc.perform(get("/login"))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("login"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("loginMessage"))
-                .andExpect(MockMvcResultMatchers.model().attribute("loginMessage", ""));
+    public void postEditPasswordWithValidCredentials() throws Exception {
+
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+            .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
+        when(accountClientService.editPassword(1, currentPassword, newPassword)).thenReturn(changePasswordResponse);
+
+        mockMvc.perform(post("/edit-password")
+                .param("newPassword", newPassword)
+                .param("currentPassword", currentPassword)
+                .param("passwordConfirm",passwordConfirm)
+            )
+                .andExpect(status().is3xxRedirection()) // Whether to return the status "302 OK"
+                .andExpect(MockMvcResultMatchers.view().name("redirect:edit-password"));
     }
 }

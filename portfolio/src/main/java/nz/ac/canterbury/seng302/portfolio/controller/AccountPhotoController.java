@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.AccountPhotoService;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -21,13 +22,16 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Controller
-public class EditPhotoController {
+public class AccountPhotoController {
 
     @Autowired
     private AccountClientService accountClientService;
 
+    @Autowired
+    private AccountPhotoService photoService;
+
     @GetMapping("/edit-photo")
-    public String projectForm(Model model, @AuthenticationPrincipal AuthState principal) {
+    public String projectForm(Model model, @AuthenticationPrincipal AuthState principal) throws IOException {
         Integer id = AuthStateInformer.getId(principal);
         /* Add project details to the model */
 
@@ -37,8 +41,6 @@ public class EditPhotoController {
         UserResponse userReply = accountClientService.getUserById(id);
 
         NavController.updateModelForNav(principal, model, userReply, id);
-
-        model.addAttribute("photo", "/images/" + id + "/" + id + ".jpg");
         return "editPhoto";
     }
 
@@ -47,9 +49,8 @@ public class EditPhotoController {
                               @AuthenticationPrincipal AuthState principal,
                               @RequestParam(value="filename") MultipartFile file) throws IOException {
         int id = AuthStateInformer.getId(principal);
-        FileUploadStatusResponse response = accountClientService.uploadPhoto(id, file.getContentType(), file);
-        model.addAttribute("message", response.getMessage());
-        return "redirect:/edit-photo";
+        photoService.uploadPhoto(id, file);
+        return "redirect:edit-photo";
     }
 
     @RequestMapping(value="/delete-photo", method = RequestMethod.DELETE)
@@ -57,6 +58,6 @@ public class EditPhotoController {
                               @AuthenticationPrincipal AuthState principal) {
         int id = AuthStateInformer.getId(principal);
         accountClientService.deleteUserProfilePhoto(id);
-        return "redirect:/edit-photo";
+        return "redirect:edit-photo";
     }
 }

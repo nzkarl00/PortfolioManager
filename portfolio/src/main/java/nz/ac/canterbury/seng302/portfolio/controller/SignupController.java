@@ -82,7 +82,7 @@ public class SignupController {
     {
         if (!password.equals(passwordConfirm)) { //TODO this is depricated, kinda annoying to dev in
             model.addAttribute("errorCode", "Error: Passwords do not match");
-            errorShow = "";
+            errorShow = "";git
             successShow = "";
             return "signup";
         }

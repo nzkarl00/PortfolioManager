@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
+
 
 /**
  * Controller for the edit password page
@@ -39,7 +41,7 @@ public class EditPasswordController {
      */
     @GetMapping("/edit-password")
     public String passwordForm(Model model,
-                              @AuthenticationPrincipal AuthState principal) {
+                              @AuthenticationPrincipal AuthState principal) throws IOException {
 
         int id = AuthStateInformer.getId(principal);
         UserResponse userReply = accountClientService.getUserById(id);
@@ -56,7 +58,6 @@ public class EditPasswordController {
         passwordSuccessShow = "display:none;";
         passwordSuccessCode = "successCode";
 
-        /* Return the name of the Thymeleaf template */
         return "editPassword";
     }
 
@@ -89,6 +90,6 @@ public class EditPasswordController {
             passwordSuccessShow = "";
         }
 
-        return "redirect:/edit-password";
+        return "redirect:edit-password";
     }
 }

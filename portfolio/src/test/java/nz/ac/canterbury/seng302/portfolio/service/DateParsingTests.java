@@ -93,8 +93,6 @@ class DateParsingTests {
         Long seconds = c.getTime().getTime();
         Date expectedDate = new Date(seconds);
         Date actualDate = DateParser.stringToDate("28/Nov/2022");
-        System.out.println(expectedDate); // for debugging as the .getTime() give gross numbers
-        System.out.println(actualDate);
         assertEquals(expectedDate.getTime(), actualDate.getTime());
     }
 
@@ -106,8 +104,6 @@ class DateParsingTests {
         Long seconds = c.getTime().getTime();
         Date expectedDate = new Date(seconds);
         Date actualDate = DateParser.stringToDate("2022-11-28");
-        System.out.println(expectedDate); // for debugging as the .getTime() give gross numbers
-        System.out.println(actualDate);
         assertEquals(expectedDate.getTime(), actualDate.getTime());
     }
     @Test

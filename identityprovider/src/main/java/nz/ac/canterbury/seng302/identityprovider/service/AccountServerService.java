@@ -3,25 +3,31 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Timestamp;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.Role;
 import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.hibernate.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
-import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
+import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
 
 /**
  * The GRPC server side service class
@@ -39,6 +45,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Autowired
     RolesRepository roleRepo;
 
+    @Autowired
+    private FileSystemUtils fsUtils;
+
+
     /**
      * the handling and registering of a new user through a UserRegisterRequest
      * @param request the request with user details
@@ -53,7 +63,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
         } else if (emailExists(request.getEmail())) {
             reply.setIsSuccess(false).setMessage("Registration failed, email already exists");
         } else {
-            // TODO: Handle saving of name.
             // Hash the password
             String hashedPassword = Hasher.hashPassword(request.getPassword());
             AccountProfile newAccount = repo.save(
@@ -198,7 +207,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
             List<Role> roles = roleRepo.findAllByOrderByRoleAsc();
             updateUsersSorted(usersSorted, roles);
-            System.out.println(usersSorted.size());
 
         } else if (request.getOrderBy().equals("roles_desc")) {
 
@@ -268,7 +276,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
         } catch (Exception e) {
             response.setMessage(e.getMessage())
                 .setIsSuccess(false);
-            System.out.println(e);
         }
         observer.onNext(response.build());
         observer.onCompleted();
@@ -279,9 +286,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
         String roleString;
         switch (request.getRole()) {
-            case STUDENT:
-                roleString = "1student";
-                break;
             case TEACHER:
                 roleString = "2teacher";
                 break;
@@ -315,9 +319,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
         String role;
         switch (request.getRole()) {
-            case STUDENT:
-                role = "1student";
-                break;
             case TEACHER:
                 role = "2teacher";
                 break;
@@ -333,6 +334,101 @@ public class AccountServerService extends UserAccountServiceImplBase{
         roleRepo.save(roleForRepo);
 
         responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
+        return new StreamObserver<UploadUserProfilePhotoRequest>() {
+            private Integer userId;
+            private String fileType;
+            private Path imagePath;
+
+            @Override
+            public void onNext(UploadUserProfilePhotoRequest uploadRequest) {
+                // if there is meta-data update the variables, if not update the file
+                if (!uploadRequest.getMetaData().getFileType().isEmpty()) {
+                    // set up map variables based on metadata
+                    userId = uploadRequest.getMetaData().getUserId();
+                    fileType = uploadRequest.getMetaData().getFileType();
+                    imagePath = fsUtils.userProfilePhotoAbsolutePath(userId, fileType);
+
+                    try {
+                        // Delete the file if it already exists.
+                        Files.deleteIfExists(imagePath);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        // if the file doesn't exist, make it, and it's path
+                        if (Files.notExists(imagePath)) {
+                            Files.createDirectories(imagePath.getParent());
+                            Files.createFile(imagePath);
+                        }
+                        // write the bytes fed from the portfolio to the file location
+                        Files.write(imagePath, uploadRequest.getFileContent().toByteArray(), StandardOpenOption.APPEND);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
+                response.setMessage("Uploading")
+                    .setStatus(FileUploadStatus.PENDING);
+                responseObserver.onNext(response.build());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                System.out.println("Upload failed, ERROR: " + Status.fromThrowable(t));
+                FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
+                response.setMessage("Upload failed, ERROR: " + Status.fromThrowable(t))
+                    .setStatus(FileUploadStatus.FAILED);
+                responseObserver.onNext(response.build());
+                responseObserver.onCompleted();
+            }
+
+            @Override
+            public void onCompleted() {
+
+                // Save the new file path to user repo
+                AccountProfile profile = repo.findById(userId);
+                if (!(profile == null)) {
+                    profile.setPhotoPath(fsUtils.userProfilePhotoRelativePath(userId, fileType).toString());
+                    repo.save(profile);
+                }
+
+                FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
+                response.setMessage("Upload complete")
+                    .setStatus(FileUploadStatus.SUCCESS);
+                responseObserver.onNext(response.build());
+                responseObserver.onCompleted();
+            }
+        };
+    }
+
+    /**
+     * responsible for deleting the user profile photo if the user requests it
+     * @param request the id of the user photo to delete
+     * @param responseObserver where to send the message about the deletion
+     */
+    @Override
+    public void deleteUserProfilePhoto(DeleteUserProfilePhotoRequest request, StreamObserver<DeleteUserProfilePhotoResponse> responseObserver) {
+        AccountProfile profile = repo.findById(request.getUserId());
+        DeleteUserProfilePhotoResponse.Builder response = DeleteUserProfilePhotoResponse.newBuilder();
+        try {
+            Files.deleteIfExists(fsUtils.resolveRelativeProfilePhotoPath(Paths.get(profile.getPhotoPath())));
+            profile.setPhotoPath(null);
+            repo.save(profile);
+            response.setIsSuccess(true);
+            response.setMessage("File deleted");
+        } catch (IOException e) {
+            e.printStackTrace();
+            response.setIsSuccess(false);
+            response.setMessage(e.getMessage());
+        }
+        responseObserver.onNext(response.build());
         responseObserver.onCompleted();
     }
 }

@@ -32,27 +32,27 @@
             <thead>
                 <tr class="justify-content-center">
                     <th class="table_head justify-content-center text-center" th:style="${firstNameShow}" scope="col" >
-                        <form  class="form-inline" th:action="@{/order-list(sortColumn=${'first_name'})}" method="post" ><button class="table_button" type="input">First Name
+                        <form  class="form-inline" th:action="@{order-list(sortColumn=${'first_name'})}" method="post" ><button class="table_button" type="input">First Name
                             <p class="table_text_arrow" th:style="${firstNameUp}"> &#x25B2 </p><p class="table_text_arrow" th:style="${firstNameDown}"> &#x25BC </p>
                         </button></form>
                     </th>
                     <th class="table_head justify-content-center text-center" th:style="${lastNameShow}" scope="col">
-                        <form class="form-inline"  th:action="@{/order-list(sortColumn=${'last_name'})}" method="post" ><button class="table_button" type="input">Last Name
+                        <form class="form-inline"  th:action="@{order-list(sortColumn=${'last_name'})}" method="post" ><button class="table_button" type="input">Last Name
                             <p class="table_text_arrow" th:style="${lastNameUp}"> &#x25B2 </p><p class="table_text_arrow" th:style="${lastNameDown}"> &#x25BC </p>
                         </button></form>
                     </th>
                     <th class="table_head justify-content-center text-center" th:style="${usernameShow}"  scope="col">
-                        <form  class="form-inline" th:action="@{/order-list(sortColumn=${'username'})}" method="post" ><button class="table_button" type="input">Username
+                        <form  class="form-inline" th:action="@{order-list(sortColumn=${'username'})}" method="post" ><button class="table_button" type="input">Username
                             <p class="table_text_arrow" th:style="${usernameUp}"> &#x25B2 </p><p class="table_text_arrow" th:style="${usernameDown}"> &#x25BC </p>
                         </button></form>
                     </th>
                     <th class="table_head justify-content-center text-center" th:style="${nicknameShow}" scope="col">
-                        <form class="form-inline"  th:action="@{/order-list(sortColumn=${'nickname'})}" method="post" ><button class="table_button" type="input">Alias
+                        <form class="form-inline"  th:action="@{order-list(sortColumn=${'nickname'})}" method="post" ><button class="table_button" type="input">Alias
                             <p class="table_text_arrow" th:style="${nicknameUp}"> &#x25B2 </p><p class="table_text_arrow" th:style="${nicknameDown}"> &#x25BC </p>
                         </button></form>
                     </th>
                     <th class="table_head justify-content-center text-center" th:style="${rolesShow}" scope="col">
-                        <form  class="form-inline" th:action="@{/order-list(sortColumn=${'roles'})}" method="post" ><button class="table_button" type="input">Roles
+                        <form  class="form-inline" th:action="@{order-list(sortColumn=${'roles'})}" method="post" ><button class="table_button" type="input">Roles
                             <p class="table_text_arrow" th:style="${rolesUp}"> &#x25B2 </p><p class="table_text_arrow" th:style="${rolesDown}"> &#x25BC </p>
                         </button></form>
                     </th>
@@ -69,7 +69,7 @@
                     <td><span class="table_text" th:text="${user.nickname}"> Alias </span></td>
                     <td>
                         <div class="user_role_table" th:each="role : ${user.listRoles()}">
-                            <span class="table_text" th:text="${role.toUpperCase()}">Roles</span> <form  style="display:inline;" th:if="${userRole == 'teacher' || userRole == 'admin'}" th:action="@{/delete-role(roleDelete=${role},username=${user.username})}" method="post" ><button class="table_text button_none">&#x2716</button></form>
+                            <span class="table_text" th:text="${role.toUpperCase()}">Roles</span> <form  style="display:inline;" th:if="${userRole == 'teacher' || userRole == 'admin'}" th:action="@{delete-role(roleDelete=${role},username=${user.username})}" method="post" ><button class="table_text button_none">&#x2716</button></form>
                         </div>
                         <div class="user_role_table btn-group d-md-none m-1 user_button" th:if="${userRole == 'teacher' || userRole == 'admin'}">
                             <button class="table_text button_none "
@@ -83,13 +83,13 @@
                             </button>
                             <div class="dropdown-menu ">
                                 <a href="#" class="dropdown-item table_text" th:if="${not user.listRoles().contains('student')}">
-                                    <form style="display:inline;" th:action="@{/add-role(roleAdd=${'student'},username=${user.username})}" method="post" ><button class="table_text button_none">Add Student</button></form>
+                                    <form style="display:inline;" th:action="@{add-role(roleAdd=${'student'},username=${user.username})}" method="post" ><button class="table_text button_none">Add Student</button></form>
                                 </a>
                                 <a href="#" class="dropdown-item table_text" th:if="${not user.listRoles().contains('teacher')}">
-                                    <form style="display:inline;" th:action="@{/add-role(roleAdd=${'teacher'},username=${user.username})}" method="post" ><button class="table_text button_none">Add Teacher</button></form>
+                                    <form style="display:inline;" th:action="@{add-role(roleAdd=${'teacher'},username=${user.username})}" method="post" ><button class="table_text button_none">Add Teacher</button></form>
                                 </a>
                                 <a href="#" class="dropdown-item table_text" th:if="${not user.listRoles().contains('admin')}">
-                                    <form style="display:inline;" th:action="@{/add-role(roleAdd=${'course_administrator'},username=${user.username})}" method="post" ><button class="table_text button_none">Add Admin</button></form>
+                                    <form style="display:inline;" th:action="@{add-role(roleAdd=${'course_administrator'},username=${user.username})}" method="post" ><button class="table_text button_none">Add Admin</button></form>
                                 </a>
                             </div>
                         </div>

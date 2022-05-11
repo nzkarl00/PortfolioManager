@@ -65,6 +65,8 @@ deploy-staging-identityprovider:
     - bash ../runner/save-env.sh
     - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET.sh
     - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET-env.sh
+    # Ensure the user-content directory exists
+    - mkdir /home/gitlab-runner/$DEPLOY_TARGET-user-content || true
     - sudo systemctl restart $DEPLOY_TARGET
   artifacts:
     paths:
@@ -111,6 +113,8 @@ deploy-production-identityprovider:
     - bash ../runner/save-env.sh
     - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET.sh
     - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET-env.sh
+    # Ensure the user-content directory exists
+    - mkdir /home/gitlab-runner/$DEPLOY_TARGET-user-content || true
     - sudo systemctl restart $DEPLOY_TARGET
   artifacts:
     paths:
@@ -122,7 +126,7 @@ deploy-production-identityprovider:
 deploy-production-portfolio:
   stage: deploy
   variables:
-    ENV_TARGET: production-portfolio
+    DEPLOY_TARGET: production-portfolio
   script:
     - cd portfolio
     - ./gradlew bootJar

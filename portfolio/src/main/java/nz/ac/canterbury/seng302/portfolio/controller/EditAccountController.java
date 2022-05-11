@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,7 +42,7 @@ public class EditAccountController {
      */
     @GetMapping("/edit-account")
     public String projectForm(Model model,
-                              @AuthenticationPrincipal AuthState principal) {
+                              @AuthenticationPrincipal AuthState principal) throws IOException {
 
         Integer id = AuthStateInformer.getId(principal);
         /* Add project details to the model */
@@ -104,6 +105,6 @@ public class EditAccountController {
             editSuccessShow = "display:none;";
         }
 
-        return "redirect:/edit-account";
+        return "redirect:edit-account";
     }
 }

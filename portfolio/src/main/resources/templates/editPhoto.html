@@ -18,12 +18,15 @@
                 <p class="profile_head">Edit Profile Photo</p>
                 <p>Preview</p>
                 <div id="preview"></div>
-                <form th:action="@{/upload-photo}" method="post" enctype="multipart/form-data">
+                <form th:action="@{upload-photo}" method="post" enctype="multipart/form-data">
                     <input type="file" id="photo" name="filename" accept="image/*" onChange='compress()' required>
-                    <input type="submit" class="save" style="width:96% !important;">
+                    <!--<input type="file" id="photo" name="filename" accept="image/*" required>-->
+                    <button type="submit" class="save" style="width:96% !important;">
+                        Upload Photo
+                    </button>
                 </form>
                 <span th:text="${message}"></span>
-                <form action="#" th:action="@{/delete-photo}" th:method="delete">
+                <form action="#" th:action="@{delete-photo}" th:method="delete">
                     <button type="submit" class="cancel" style="width:96% !important;">
                         Delete Photo
                     </button>
@@ -33,6 +36,6 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" th:src="@{/js/photo-compression.js}"></script>
+<script type="text/javascript" th:src="@{js/photo-compression.js}"></script>
 </body>
 </html>
