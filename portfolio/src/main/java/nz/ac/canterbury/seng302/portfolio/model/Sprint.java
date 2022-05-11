@@ -15,7 +15,7 @@ import javax.persistence.Column;
 /**
  * The entity representation for the Sprint and sprint table
  */
-@Entity // this is an entity, assumed to be in a table called Sprint
+@Entity
 public class Sprint {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

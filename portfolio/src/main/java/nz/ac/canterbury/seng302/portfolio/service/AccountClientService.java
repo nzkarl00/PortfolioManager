@@ -22,7 +22,6 @@ import java.util.List;
  * The GRPC client side service class
  * contains many of the protobuf implementations to allow communication between the idp and portfolio servers
  */
-// @Component this kills the program, idk what it is for
 public class AccountClientService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     @GrpcClient("identity-provider-grpc-server")
@@ -141,7 +140,6 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
         request.setRole(roleSending);
 
-        System.out.println("portfolio service");
         return accountServiceStub.removeRoleFromUser(request.build());
     }
 
