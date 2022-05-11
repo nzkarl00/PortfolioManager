@@ -1,13 +1,15 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
+import nz.ac.canterbury.seng302.portfolio.model.UserPreference;
+import nz.ac.canterbury.seng302.portfolio.model.UserPreferenceRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.Before;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
@@ -63,11 +65,21 @@ public class TableControllerTest {
         .addRoles(UserRole.STUDENT)
         .build();
 
+    private PaginatedUsersResponse paginatedUsersResponse = PaginatedUsersResponse.newBuilder()
+        .addUsers(testUser)
+        .build();
+
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     AccountClientService accountClientService;
+
+    @MockBean
+    AuthenticateClientService authenticateClientService;
+
+    @MockBean
+    UserPreferenceRepository userPreferenceRepo;
 
     @Before
     public void setup() {
@@ -75,7 +87,26 @@ public class TableControllerTest {
             .build();
     }
 
-    //String role = testUser.getRoles();
+    static MockedStatic<AuthStateInformer> utilities;
+
+    @BeforeAll
+    public static void open() {
+        utilities = Mockito.mockStatic(AuthStateInformer.class);
+    }
+
+    @AfterAll
+    public static void close() {
+        utilities.close();
+    }
+
+    String role = "STUDENT"; //testUser.getRoles()
+    private UserPreference userPreference = new UserPreference(1, "firstname", 0);
+    int step = 50;
+    int currentPage = 1;
+    int start = currentPage * step;
+    String sortCol = userPreference.getSortCol();
+    int sortOrder = userPreference.getSortOrder();
+
 
     @Test
     public void getUserListWithValidCredentials() throws Exception {
@@ -87,15 +118,15 @@ public class TableControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
         utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn(role);
         utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
         when(accountClientService.getUserById(1)).thenReturn(testUser);
+        when(userPreferenceRepo.findById(1)).thenReturn(userPreference);
+        when(accountClientService.getPaginatedUsers(step, start, sortCol, sortOrder)).thenReturn(paginatedUsersResponse);
 
         mockMvc.perform(get("/user-list"))
             .andExpect(status().isOk()) // Whether to return the status "200 OK"
             .andExpect(MockMvcResultMatchers.view().name("userList")) // Whether to return the template "account"
             .andExpect(MockMvcResultMatchers.model().attribute("userRole", role));
     }
-
 }
