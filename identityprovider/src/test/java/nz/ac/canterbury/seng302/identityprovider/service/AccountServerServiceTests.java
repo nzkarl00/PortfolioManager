@@ -187,11 +187,6 @@ public class AccountServerServiceTests {
         verify(testPaginatedObserver, times(1)).onNext(captor.capture());
         PaginatedUsersResponse response = captor.getValue();
 
-        // for debugging
-        for (UserResponse userResponse : response.getUsersList()) {
-            System.out.println(userResponse);
-        }
-
         // make sure we get the user we put in during set up
         assertEquals(1, response.getUsersCount());
     }
@@ -224,10 +219,6 @@ public class AccountServerServiceTests {
         verify(testPaginatedObserver, times(1)).onNext(captor.capture());
         PaginatedUsersResponse response = captor.getValue();
 
-        // for debugging
-        for (UserResponse userResponse : response.getUsersList()) {
-            System.out.println(userResponse);
-        }
 
         // make sure we get the user we put in during set up
         assertEquals(0, response.getUsersCount());
@@ -264,10 +255,6 @@ public class AccountServerServiceTests {
         PaginatedUsersResponse response = captor.getValue();
         assertTrue(response.getUsersCount() >= 0); //TODO make it actually return data in the repo? can this be done?
 
-        // for debugging
-        for (UserResponse userResponse : response.getUsersList()) {
-            System.out.println(userResponse);
-        }
 
         // make sure we get the user we put in during set up
         assertEquals(1, response.getUsersCount());

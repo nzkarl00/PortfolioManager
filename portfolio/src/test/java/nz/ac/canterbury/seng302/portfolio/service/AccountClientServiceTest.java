@@ -107,7 +107,6 @@ class AccountClientServiceTest {
             .setEmail("lra63@uclive.ac.nz")
             .setBio("i think therefor i am ;)")
             .build();
-        System.out.println(expectedInput);
         when(accountServiceStub.editUser(expectedInput)).thenReturn(expected);
         EditUserResponse actual = accountClientService.editUser(1, "lachlan", "robert colin", "alsop", "lachie", "i think therefor i am ;)", "He/Him", "lra63@uclive.ac.nz");
         assertEquals(expected, actual);
