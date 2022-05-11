@@ -25,7 +25,6 @@ public class NavController {
 
     public void updateModelForNav(AuthState principal, Model model, UserResponse userReply, int id) throws IOException {
         String request = idpLocation + "/image/" + id;
-        System.out.println(request);
         model.addAttribute("photo", request);
         model.addAttribute("username", userReply.getUsername());
         model.addAttribute("date", DateParser.displayDate(userReply));
