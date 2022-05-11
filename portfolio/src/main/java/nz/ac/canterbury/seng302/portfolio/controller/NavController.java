@@ -20,13 +20,9 @@ import java.nio.file.Paths;
  */
 public class NavController {
     public static void updateModelForNav(AuthState principal, Model model, UserResponse userReply, int id) throws IOException {
-        String photoString = "data:image/jpeg;base64,";
-        //Path path = Paths.get(userReply.getProfileImagePath());
-        Path path = Paths.get("E:/IdeaProjects/team-700/identityprovider/user-images/1/1.jpeg");
-        byte[] bytes = Files.readAllBytes(path);
-        bytes = Base64Utils.encode(bytes);
-        photoString += new String(bytes);
-        model.addAttribute("photo", photoString);
+        String idpLocation = "http://localhost:8080"; //TODO make the redirect as intended
+        String request = idpLocation + "/image/" + id;
+        model.addAttribute("photo", request);
         model.addAttribute("username", userReply.getUsername());
         model.addAttribute("date", DateParser.displayDate(userReply));
     }

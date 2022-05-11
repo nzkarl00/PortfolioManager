@@ -433,6 +433,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             @Override
             public void onCompleted() {
                 System.out.println("Upload complete");
+                System.out.println(imagePath.toString());
 
                 // Save the new file path to user repo
                 AccountProfile profile = repo.findById(userId);
@@ -461,9 +462,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
         DeleteUserProfilePhotoResponse.Builder response = DeleteUserProfilePhotoResponse.newBuilder();
         try {
             Files.deleteIfExists(Paths.get(profile.getPhotoPath()));
-            String dir = System.getProperty("user.dir");
-            dir += "/src/main/resources/images/default_account_icon.jpeg";
-            profile.setPhotoPath(dir);
+            profile.setPhotoPath("default_account_icon.jpeg");
             repo.save(profile);
             response.setIsSuccess(true);
             response.setMessage("File deleted");
