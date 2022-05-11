@@ -66,6 +66,7 @@ deploy-staging-identityprovider:
     - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET.sh
     - chmod u+x /home/gitlab-runner/$DEPLOY_TARGET-env.sh
     # Ensure the user-content directory exists
+    - rm -rf /home/gitlab-runner/$DEPLOY_TARGET-user-content
     - mkdir /home/gitlab-runner/$DEPLOY_TARGET-user-content || true
     - sudo systemctl restart $DEPLOY_TARGET
   artifacts:
