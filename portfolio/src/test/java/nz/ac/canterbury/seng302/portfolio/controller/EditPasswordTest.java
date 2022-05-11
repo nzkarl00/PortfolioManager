@@ -5,10 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.authentication.AuthenticationClientInt
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,6 +66,15 @@ public class EditPasswordTest {
         .addRoles(UserRole.STUDENT)
         .build();
 
+    private ChangePasswordResponse changePasswordResponse = ChangePasswordResponse.newBuilder()
+        .setIsSuccess(true)
+        .setMessage("Password changed successfully")
+        .build();
+
+    String newPassword = "newPassword";
+    String currentPassword = "currentPassword";
+    String passwordConfirm = "newPassword";
+
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(EditPasswordController.class)
@@ -93,7 +99,8 @@ public class EditPasswordTest {
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
                 .andExpect(MockMvcResultMatchers.view().name("editPassword")) // Whether to return the template "account"
                 .andExpect(MockMvcResultMatchers.model().attribute("password", ""))
-                .andExpect(MockMvcResultMatchers.model().attribute("passwordConfirm", ""));
+                .andExpect(MockMvcResultMatchers.model().attribute("passwordConfirm", ""))
+                .andExpect(MockMvcResultMatchers.model().attribute("passwordSuccessCode", "successCode"));
     }
 
     @Test
@@ -109,11 +116,14 @@ public class EditPasswordTest {
 
         MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
         utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
-        when(accountClientService.getUserById(1)).thenReturn(testUser);
+        when(accountClientService.editPassword(1, currentPassword, newPassword)).thenReturn(changePasswordResponse);
 
-        mockMvc.perform(post("/edit-password"))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("redirect:/edit-password"))
-                .andExpect(MockMvcResultMatchers.model().attribute("passwordErrorShow", ""));
+        mockMvc.perform(post("/edit-password")
+                .param("newPassword", newPassword)
+                .param("currentPassword", currentPassword)
+                .param("passwordConfirm",passwordConfirm)
+            )
+                .andExpect(status().is3xxRedirection()) // Whether to return the status "302 OK"
+                .andExpect(MockMvcResultMatchers.view().name("redirect:/edit-password"));
     }
 }
