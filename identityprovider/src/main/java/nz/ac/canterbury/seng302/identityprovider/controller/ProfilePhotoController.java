@@ -13,6 +13,7 @@ import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class ProfilePhotoController {
     @Autowired
     FileSystemUtils fsUtils;
 
-    @RequestMapping("/image/{personId}")
+    @GetMapping("/image/{personId}")
     @ResponseBody
     public HttpEntity<byte[]> getPhoto(@PathVariable int personId) throws IOException {
         String photoRelPath = repo.findById(personId).getPhotoPath();
