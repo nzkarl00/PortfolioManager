@@ -59,7 +59,7 @@ public class AccountPhotoService extends UserAccountServiceGrpc.UserAccountServi
     public class PhotoUploadObserver implements StreamObserver<FileUploadStatusResponse> {
         @Override
         public void onNext(FileUploadStatusResponse uploadStatusResponse){
-            System.out.println("Uploading photo section "+uploadStatusResponse.getMessage()+" "+uploadStatusResponse.getSerializedSize());
+//            System.out.println("Uploading photo section "+uploadStatusResponse.getMessage()+" "+uploadStatusResponse.getSerializedSize());
         }
 
         @Override
@@ -69,7 +69,7 @@ public class AccountPhotoService extends UserAccountServiceGrpc.UserAccountServi
 
         @Override
         public void onCompleted(){
-            System.out.println("Upload complete");
+//            System.out.println("Upload complete");
         }
     }
 }

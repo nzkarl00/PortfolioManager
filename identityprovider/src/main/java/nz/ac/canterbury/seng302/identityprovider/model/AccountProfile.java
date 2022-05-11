@@ -117,7 +117,7 @@ public class AccountProfile {
 
     public String getPhotoPath() {
         // TODO: Change this to default and refactor to not use shared profile paths.
-        return photoPath != null ? photoPath : "default_account_icon.jpeg";
+        return photoPath != null ? photoPath : "DEFAULT";
     }
 
     public String getMiddleName() {
