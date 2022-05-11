@@ -15,6 +15,7 @@ import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -105,10 +106,17 @@ class EditAccountControllerTest {
     @MockBean
     AccountClientService accountClientService;
 
+    MockedStatic<AuthStateInformer> utilities;
+
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(EditAccountController.class)
                 .build();
+    }
+
+    @AfterEach
+    public void closeStatics() {
+        utilities.close();
     }
 
     @Test
@@ -121,7 +129,7 @@ class EditAccountControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
+        utilities = Mockito.mockStatic(AuthStateInformer.class);
         utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
         when(accountClientService.getUserById(1)).thenReturn(testUser);
 
@@ -165,7 +173,7 @@ class EditAccountControllerTest {
         String bio = "testUser.getBio()";
         String pronouns = "testUser.getPersonalPronouns()";
 
-        MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
+        utilities = Mockito.mockStatic(AuthStateInformer.class);
         utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
         when(accountClientService.getUserById(1)).thenReturn(testUser);
         when(accountClientService.editUser(1, firstName, "", lastName, nickname, bio, pronouns, email)).thenReturn(editedUser);
