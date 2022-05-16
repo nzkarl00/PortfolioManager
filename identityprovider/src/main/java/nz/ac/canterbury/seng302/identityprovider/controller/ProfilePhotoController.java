@@ -41,7 +41,7 @@ public class ProfilePhotoController {
         String photoRelPath = repo.findById(personId).getPhotoPath();
         Path photoAbsPath;
         if (photoRelPath.equals("DEFAULT")) {
-            photoAbsPath = fsUtils.resourcesDirectory().resolve("images/default_account_icon.jpeg");
+            photoAbsPath = fsUtils.resourcesDirectory().resolve("default_account_icon.jpeg");
         } else {
             photoAbsPath = fsUtils.resolveRelativeProfilePhotoPath(Paths.get(photoRelPath));
         }
