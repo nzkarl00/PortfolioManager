@@ -7,18 +7,25 @@ import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.StreamUtils;
+import org.springframework.util.StreamUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 @Controller
 public class ProfilePhotoController {
@@ -35,21 +42,22 @@ public class ProfilePhotoController {
     @Autowired
     FileSystemUtils fsUtils;
 
-    @RequestMapping("/image/{personId}")
-    @ResponseBody
-    public HttpEntity<byte[]> getPhoto(@PathVariable int personId) throws IOException {
+    @RequestMapping(value = "/image/{personId}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getPhoto(@PathVariable int personId) throws IOException {
         String photoRelPath = repo.findById(personId).getPhotoPath();
-        Path photoAbsPath;
+        InputStream inputStream;
         if (photoRelPath.equals("DEFAULT")) {
-            photoAbsPath = fsUtils.resourcesDirectory().resolve("default_account_icon.jpeg");
+            inputStream = new ClassPathResource("images/default_account_icon.jpeg").getInputStream();
         } else {
-            photoAbsPath = fsUtils.resolveRelativeProfilePhotoPath(Paths.get(photoRelPath));
+            Path photoAbsPath = fsUtils.resolveRelativeProfilePhotoPath(Paths.get(photoRelPath));
+            inputStream = new FileInputStream(photoAbsPath.toFile());
         }
-        byte[] bytes = Files.readAllBytes(photoAbsPath);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
-        headers.setContentLength(bytes.length);
-        return new HttpEntity<byte[]>(bytes, headers);
+        byte[] bytes = StreamUtils.copyToByteArray(inputStream);
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(bytes);
     }
 }
