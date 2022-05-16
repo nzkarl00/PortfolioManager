@@ -5,7 +5,6 @@ stages:
   - test
   - sonarqube
   - deploy
-  - deploy2
 
 tag-checker:
   stage: tagChecking
@@ -76,11 +75,10 @@ deploy-staging-identityprovider:
     - dev
 
 deploy-staging-portfolio:
-  stage: deploy2
+  stage: deploy
   variables:
     DEPLOY_TARGET: staging-portfolio
   script:
-    - sleep 30
     - cd portfolio
     - ./gradlew bootJar
     - rm -rf /home/gitlab-runner/staging-portfolio/ || true
