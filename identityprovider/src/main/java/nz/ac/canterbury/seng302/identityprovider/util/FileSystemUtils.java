@@ -13,8 +13,8 @@ public class FileSystemUtils {
     @Value("${identityprovider.user-content-directory}")
     String userContentDirectory;
 
-    @Value("classpath:images")
-    Resource imagesDir;
+//    @Value("classpath:images")
+//    Resource imagesDir;
 
     private FileSystemUtils instance;
 
@@ -30,27 +30,11 @@ public class FileSystemUtils {
     }
 
     /**
-     * Get the absolute path to the resources directory
-     * @return The absolute path
-     */
-    public Path resourcesDirectory() {
-        System.out.println("resources dir");
-        try {
-            System.out.println(Paths.get(imagesDir.getFile().getAbsolutePath()).toString());
-            return Paths.get(imagesDir.getFile().getAbsolutePath());
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        return Paths.get(System.getProperty("user.dir")).resolve("src/main/resources");
-    }
-
-    /**
      * Resolve the directory in which user profile images should be stored.
      * @return A path to the directory in which user content should be stored
      */
     public Path userContentDirectory() {
         String projectDir = System.getProperty("user.dir");
-        System.out.println(userContentDirectory);
         if (userContentDirectory.startsWith(".")) {
             return Paths.get(projectDir).resolve(userContentDirectory);
         } else {
@@ -87,5 +71,4 @@ public class FileSystemUtils {
     public Path resolveRelativeProfilePhotoPath(Path relativePath) {
         return userContentDirectory().resolve(relativePath);
     }
-
 }
