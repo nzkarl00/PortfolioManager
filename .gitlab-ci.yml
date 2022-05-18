@@ -157,6 +157,6 @@ sonarqube-report:
       - .sonar/cache
   script:
     - cd identityprovider
-    - ./gradlew --debug sonarqube
+    - ./gradlew sonarqube
     - cd ../portfolio
-    - ./gradlew --debug sonarqube
+    - ./gradlew sonarqube
