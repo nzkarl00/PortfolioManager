@@ -6,11 +6,15 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.springframework.stereotype.Service;
+import org.springframework.core.io.Resource;
 
 public class FileSystemUtils {
 
     @Value("${identityprovider.user-content-directory}")
     String userContentDirectory;
+
+//    @Value("classpath:images")
+//    Resource imagesDir;
 
     private FileSystemUtils instance;
 
@@ -23,14 +27,6 @@ public class FileSystemUtils {
             instance = new FileSystemUtils();
         }
         return instance;
-    }
-
-    /**
-     * Get the absolute path to the resources directory
-     * @return The absolute path
-     */
-    public Path resourcesDirectory() {
-        return Paths.get(System.getProperty("user.dir")).resolve("src/main/resources");
     }
 
     /**
@@ -75,5 +71,4 @@ public class FileSystemUtils {
     public Path resolveRelativeProfilePhotoPath(Path relativePath) {
         return userContentDirectory().resolve(relativePath);
     }
-
 }
