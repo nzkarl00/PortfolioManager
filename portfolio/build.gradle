@@ -30,6 +30,15 @@ dependencies {
 
     implementation 'io.jsonwebtoken:jjwt-api:0.11.0'
 
+    // for end implementation testing
+    // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+    implementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
+    // https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager
+    implementation 'io.github.bonigarcia:webdrivermanager:1.0.0'
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    testImplementation 'org.projectlombok:lombok:1.18.4'
+
+
     // H2 database
     implementation 'com.h2database:h2:2.1.210'
     // Java Persistence API
