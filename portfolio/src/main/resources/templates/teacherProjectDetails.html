@@ -95,12 +95,13 @@
                             <button class="edit" style="padding-top:0rem;">
                                 <a class="button_a" th:href="@{edit-project(id=${project.getId})}">Edit Project</a>
                             </button>
+
                         </div>
                         <div class="col-2"></div>
 
                     </div>
-
                     <br>
+                    <p></p>
 
                     <div class="row row_sprints"  th:each="sprint: ${sprints}">
 
@@ -158,7 +159,7 @@
                             <form th:action="@{new-sprint}" method="post">
                                 <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
                                 <button class="add" type="submit">
-                                    Add Sprint
+                                    Add Dates
                                 </button>
                             </form>
                             <br>
@@ -255,7 +256,6 @@
             displayEventTime : false,
 
             eventResize: function (eventResizeInfo) {
-                console.log("test");
                 let form = document.createElement('form'); // Creating the form which will be used to post new sprint data.
                 form.setAttribute("th:action", "@{details}");
                 form.setAttribute("method", "post");
@@ -274,7 +274,6 @@
                 formEnd.setAttribute("th:name", "end");
                 formEnd.setAttribute("name", "end");
                 form.appendChild(formEnd);
-                console.log(form.childNodes);
                 form.elements["sprintId"].value = eventResizeInfo.event.id;
                 form.elements["start"].value = eventResizeInfo.event.start;
                 form.elements["end"].value = eventResizeInfo.event.end;
