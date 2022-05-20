@@ -1,5 +1,8 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,7 +13,7 @@ import java.util.List;
 * This entity matches that found in the schema
 */
 @Entity
-@Table(name = "AccountProfile")
+@Table(name = "Account_Profile")
 public class AccountProfile {
 
     //Auto-generated ID is assigned to each persons account
@@ -41,11 +44,19 @@ public class AccountProfile {
     private String nickname;
     @Column(name = "pronouns", length = 10)
     private String pronouns;
-    @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+
+    //https://stackoverflow.com/questions/25996758/difference-between-lazycollectionlazycollectionoption-false-and-onetomanyfe
+    // The fundamental difference between the annotations is that @OneToMany and its parameters (e.g. fetch = FetchType.EAGER) is a pure JPA.
+    // It can be used with any JPA provider, such as Hibernate or EclipseLink.
+    //@LazyCollection on the other hand, is Hibernate specific, and obviously works only if Hibernate is used.
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL)
     protected List<Role> roles;
 
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany (mappedBy = "registeredGroupUser", cascade = CascadeType.ALL)
+    protected List<GroupMembership> groups;
 
-    //Necessary for Hibernate to work properly
     public AccountProfile() {}
 
     /**
