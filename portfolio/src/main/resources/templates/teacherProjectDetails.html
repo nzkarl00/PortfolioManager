@@ -191,6 +191,7 @@
 <script src="/webjars/jquery/jquery.min.js"></script>
 <script src="/webjars/sockjs-client/sockjs.min.js"></script>
 <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="text/javascript" th:inline="javascript">
 
     var stompClient = null;
@@ -213,8 +214,14 @@
         stompClient.connect({}, function (frame) {
             setConnected(true);
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/calendar', function (greeting) {
-                document.location.reload();
+            stompClient.subscribe('/topic/calendar', function (update) {
+                if (JSON.parse(update.body).updateType == "SPRINT") {
+                    axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
+                    .then((response) => {
+                        console.log(response.data)
+                        renderCalendar(response.data)
+                    })
+                }
             });
         });
     }
@@ -232,7 +239,7 @@
         // stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    function renderCalendar(sprintList) {
         var calendarEl = document.getElementById('calendar');
 
         // Gets the date project end date and format's it as Date
@@ -241,17 +248,17 @@
         // Add an extra day to end date since time is set to 00:00:00
         endDate.setDate(endDate.getDate() + 1);
         let selectedEvent;
-        let sprintList = [[${sprints}]];
+
         let sprintEvents = [];
 
         // Colors for the sprints
         const colors = ['#a3c7d7', '#067d46', '#19DAFF','#f5deb3', '#d470a2', '#9acd32',
-                        '#a2add0', '#c9a0dc', '#9f1d35', '#e34234', '#5b92e5', '#66023c',
-                        '#483c32', '#0abab5', '#eee600', '#f28500', '#ffcc33', '#a7fc00',
-                        '#cdc9c9', '#eee9e9', '#836fff', '#473c8b', '#708090', '#c0c0c0',
-                        '#ffd800', '#ff2400', '#e30b5d', '#003153', '#ff5a36', '#e5e4e2',
-                        '#cc3333', '#1c39bb', '#1ca9c9', '#002147', '#d3af37', '#30bfbf',
-                        '#fdbe02', '#eaa221', '#32cd32', '#c5cbe1'];
+            '#a2add0', '#c9a0dc', '#9f1d35', '#e34234', '#5b92e5', '#66023c',
+            '#483c32', '#0abab5', '#eee600', '#f28500', '#ffcc33', '#a7fc00',
+            '#cdc9c9', '#eee9e9', '#836fff', '#473c8b', '#708090', '#c0c0c0',
+            '#ffd800', '#ff2400', '#e30b5d', '#003153', '#ff5a36', '#e5e4e2',
+            '#cc3333', '#1c39bb', '#1ca9c9', '#002147', '#d3af37', '#30bfbf',
+            '#fdbe02', '#eaa221', '#32cd32', '#c5cbe1'];
 
         // Loops through sprint list and saves it to be displayed on the calendar
         for (var sprintIndex = 0; sprintIndex < sprintList.length; sprintIndex++) {
@@ -325,7 +332,13 @@
             }
         });
         calendar.render();
-    });
+    }
+
+    let initialSprintList = [[${sprints}]];
+
+    document.addEventListener('DOMContentLoaded', function() { renderCalendar(initialSprintList) });
+
+    //setTimeout(function() {console.log("CHANGE"); renderCalendar([])}, 1000*10)
     connect();
 
 </script>

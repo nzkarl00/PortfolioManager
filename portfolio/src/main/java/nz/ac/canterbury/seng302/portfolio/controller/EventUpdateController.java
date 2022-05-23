@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.EventUpdate;
+import nz.ac.canterbury.seng302.portfolio.model.FetchUpdateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -20,12 +21,12 @@ public class EventUpdateController {
     public EventUpdate greeting(EventUpdate message) throws Exception {
         Thread.sleep(1000); // simulated delay
         sendAnother();
-        return new EventUpdate("Hello, " + HtmlUtils.htmlEscape(message.getName()) + "!");
+        return new EventUpdate(FetchUpdateType.EVENT);
     }
 
     public void sendAnother() {
         System.out.println("yeet");
-        this.template.convertAndSend("/topic/greetings", new EventUpdate("HAVE ANOTHER!!!"));
+        this.template.convertAndSend("/topic/greetings", new EventUpdate(FetchUpdateType.DEADLINE));
     }
 
     @GetMapping("/hello")

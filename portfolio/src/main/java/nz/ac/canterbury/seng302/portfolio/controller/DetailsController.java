@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -218,7 +219,7 @@ public class DetailsController {
     }
 
     public void sendSprintCalendarChange() {
-        this.template.convertAndSend("/topic/calendar", new EventUpdate("HAVE ANOTHER!!!"));
+        this.template.convertAndSend("/topic/calendar", new EventUpdate(FetchUpdateType.SPRINT));
     }
 
     @PostMapping("/details")
@@ -278,8 +279,12 @@ public class DetailsController {
             sendSprintCalendarChange();
             repository.save(sprint);
         }
-
         return redirect;
     }
 
+    @GetMapping("/sprints")
+    public ResponseEntity<List<Sprint>> getProjectSprints(@AuthenticationPrincipal AuthState principal,
+                                            @RequestParam(value="id") Integer projectId) {
+        return ResponseEntity.ok(repository.findByParentProjectId(projectId));
+    }
 }

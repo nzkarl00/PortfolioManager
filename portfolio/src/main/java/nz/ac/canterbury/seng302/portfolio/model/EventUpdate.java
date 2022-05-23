@@ -1,20 +1,20 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
 public class EventUpdate {
-    private String name;
+    private FetchUpdateType updateType;
 
     public EventUpdate() {
     }
 
-    public EventUpdate(String name) {
-        this.name = name;
+    public EventUpdate(FetchUpdateType updateType) {
+        this.updateType = updateType;
     }
 
-    public String getName() {
-        return name;
+    public FetchUpdateType getUpdateType() {
+        return updateType;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(FetchUpdateType updateType) {
+        this.updateType = updateType;
     }
 }
