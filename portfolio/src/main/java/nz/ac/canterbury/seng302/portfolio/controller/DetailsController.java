@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.rpc.context.AttributeContext;
+import io.grpc.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -20,10 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.text.SimpleDateFormat;
 
 /**
@@ -80,6 +78,19 @@ public class DetailsController {
         model.addAttribute("successCalendarCode", successCalendarCode);
         model.addAttribute("errorCalendarShow", errorCalendarShow);
         model.addAttribute("errorCalendarCode", errorCalendarCode);
+
+        // TODO Change this to get lists from repo
+        List<Date> deadlineList = new ArrayList<>();
+        List<Date> eventList = new ArrayList<>();
+        List<Date> milestoneList = new ArrayList<>();
+        eventList.add(new Date());
+        deadlineList.add(sprintList.get(0).getEndDate());
+        deadlineList.add(sprintList.get(0).getStartDate());
+        milestoneList.add(sprintList.get(0).getStartDate());
+        milestoneList.add(new Date());
+        model.addAttribute("deadlines", deadlineList);
+        model.addAttribute("milestones", milestoneList);
+        model.addAttribute("events", eventList);
 
         // Reset for the next display of the page
         errorShow = "display:none;";
