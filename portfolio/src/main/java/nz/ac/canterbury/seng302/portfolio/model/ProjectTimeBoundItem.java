@@ -35,6 +35,7 @@ public abstract class ProjectTimeBoundItem {
      * Construct a project time bound item.
      * Precondition:
      * - Call validateProperties to verify parameters are valid.
+     * @param parentProject the parent project to which the item belongs.
      * @param name  The name of the ProjectItem
      * @param description The description of the ProjectItem
      * @param startDate A single date relevant to the project item
@@ -63,26 +64,61 @@ public abstract class ProjectTimeBoundItem {
         }
     }
 
+    /**
+     * Set the name of the item
+     * @param name
+     */
     void setName(String name) {
         this.name = name;
     }
+
+    /**
+     * Set the description of the item.
+     * @param description
+     */
     void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Set the start date of the item.
+     * For some instances this may be equivalent to setting the end date.
+     * @param startDate
+     */
     abstract void setStartDate(LocalDateTime startDate);
 
+    /**
+     * Set the end date of the item.
+     * For some instances this may be equivalent to setting the start date.
+     * @param endDate
+     */
     abstract void setEndDate(LocalDateTime endDate);
 
+    /**
+     * Get the item name
+     * @return
+     */
     String getName() {
         return name;
     }
 
+    /**
+     * Get the item description
+     * @return
+     */
     String getDescription() {
         return description;
     }
 
+    /**
+     * Get the start date
+     * @return
+     */
     abstract LocalDateTime getStartDate();
 
+    /**
+     * Get the end date.
+     * @return
+     */
     abstract LocalDateTime getEndDate();
 }
