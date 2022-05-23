@@ -45,5 +45,25 @@ public class GroupServerService extends GroupsServiceGrpc.GroupsServiceImplBase 
     private FileSystemUtils fsUtils;
 
 
+    private AddGroupMembersResponse addGroupMembers(AddGroupMembersRequest request) {
+
+        Boolean isSuccessful = false;
+        String responseMessage = "";
+
+
+
+        return addGroupMembersResponse(isSuccessful, responseMessage);
+    }
+
+    private AddGroupMembersResponse addGroupMembersResponse(Boolean success, String messageResponse) {
+        AddGroupMembersResponse.Builder reply = AddGroupMembersResponse.newBuilder();
+        reply
+                .setIsSuccess(true)
+                .setMessage("Member Added");
+
+
+        return reply.build();
+    }
+
 
 }
