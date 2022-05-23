@@ -93,7 +93,7 @@
                         <div class="col-lg-8 col-md-10 col-sm-12">
 
                             <button class="edit" style="padding-top:0rem;">
-                                <a class="button_a" th:href="@{/edit-project(id=${project.getId})}">Edit Project</a>
+                                <a class="button_a" th:href="@{edit-project(id=${project.getId})}">Edit Project</a>
                             </button>
                         </div>
                         <div class="col-2"></div>
@@ -118,7 +118,7 @@
                                 <a class="button_a" th:href="@{'/edit-sprint?id=' + ${sprint.getParentProjectId} + '&ids=' + ${sprint.getId}}">EDIT</a>
                             </button>
 
-                            <form th:action="@{/delete-sprint}" method="post">
+                            <form th:action="@{delete-sprint}" method="post">
 
                                 <input style="display:none;" th:name="deleteprojectId" id="deleteprojectId" th:value="${project.getId}" type="number">
 
@@ -166,7 +166,7 @@
                                 <p class="login_error" th:text="${errorCode}"/>
                             </button>
                             <button class="edit ">
-                                <a class=" button_a" th:href="@{/landing}">      Return      </a>
+                                <a class=" button_a" th:href="@{landing}">      Return      </a>
                             </button>
                             <br><br>
                         </div>
@@ -257,7 +257,7 @@
             eventResize: function (eventResizeInfo) {
                 console.log("test");
                 let form = document.createElement('form'); // Creating the form which will be used to post new sprint data.
-                form.setAttribute("th:action", "@{/details}");
+                form.setAttribute("th:action", "@{details}");
                 form.setAttribute("method", "post");
                 let formId = document.createElement("input"); // Adding sprint ID field to the form
                 formId.setAttribute("type", "hidden");
