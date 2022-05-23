@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * Each concrete implementation is free to implement the methods as most appropriate.
  */
 @Entity
-public abstract class ProjectItem {
+public abstract class ProjectTimeBoundItem {
     public static final int MAX_NAME_LENGTH = 60;
     public static final int MAX_DESCRIPTION_LENGTH = 60;
 
@@ -29,17 +29,17 @@ public abstract class ProjectItem {
     @JoinColumn(name="parent_project_id", nullable=false)
     private Project parentProject;
 
-    protected ProjectItem() {}
+    protected ProjectTimeBoundItem() {}
 
     /**
-     * Construct a project item.
+     * Construct a project time bound item.
      * Precondition:
      * - Call validateProperties to verify parameters are valid.
      * @param name  The name of the ProjectItem
      * @param description The description of the ProjectItem
      * @param startDate A single date relevant to the project item
      */
-    public ProjectItem(Project parentProject, String name, String description, LocalDateTime startDate) {
+    public ProjectTimeBoundItem(Project parentProject, String name, String description, LocalDateTime startDate) {
         this.parentProject = parentProject;
         this.name = name;
         this.description = description;
