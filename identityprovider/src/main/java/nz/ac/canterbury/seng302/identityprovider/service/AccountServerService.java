@@ -284,6 +284,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
+
+        System.out.println(request);
         String roleString;
         switch (request.getRole()) {
             case TEACHER:

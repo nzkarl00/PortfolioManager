@@ -154,6 +154,7 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
         } else {
             roleSending = UserRole.STUDENT;
         }
+        System.out.println(roleSending);
 
         request.setRole(roleSending);
         return accountServiceStub.addRoleToUser(request.build());
@@ -163,6 +164,7 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
     public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int id) {
         DeleteUserProfilePhotoRequest.Builder request = DeleteUserProfilePhotoRequest.newBuilder()
             .setUserId(id);
+        System.out.println(id);
         return accountServiceStub.deleteUserProfilePhoto(request.build());
     }
 }

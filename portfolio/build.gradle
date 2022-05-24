@@ -37,6 +37,9 @@ dependencies {
     implementation 'io.github.bonigarcia:webdrivermanager:1.0.0'
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     testImplementation 'org.projectlombok:lombok:1.18.4'
+    // https://mvnrepository.com/artifact/org.testng/testng
+    testImplementation group: 'org.testng', name: 'testng', version: '7.6.0'
+
 
 
     // H2 database
@@ -61,6 +64,7 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    useTestNG()
     finalizedBy cucumber
 }
 
