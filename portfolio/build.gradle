@@ -32,15 +32,13 @@ dependencies {
 
     // for end implementation testing
     // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
-    implementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
-    // https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager
-    implementation 'io.github.bonigarcia:webdrivermanager:1.0.0'
-    // https://mvnrepository.com/artifact/org.projectlombok/lombok
-    testImplementation 'org.projectlombok:lombok:1.18.4'
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.4.0'
     // https://mvnrepository.com/artifact/org.testng/testng
-    testImplementation group: 'org.testng', name: 'testng', version: '7.6.0'
-
-
+    implementation group: 'org.testng', name: 'testng', version: '7.6.0'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
+    
 
     // H2 database
     implementation 'com.h2database:h2:2.1.210'
