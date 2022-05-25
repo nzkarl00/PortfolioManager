@@ -4,6 +4,7 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.testng.AssertJUnit.*;
 
 public class SeleniumWithTestNGLiveTest {
@@ -29,5 +30,7 @@ public class SeleniumWithTestNGLiveTest {
                 assertNotNull(actualTitle);
                 assertEquals(expectedTitle, actualTitle);
                 assertTrue(seleniumExample.isAuthorInformationAvailable());
+                System.out.println(System.getProperty("os.arch"));
+                System.out.println(System.getProperty("os.name"));
         }
 }
