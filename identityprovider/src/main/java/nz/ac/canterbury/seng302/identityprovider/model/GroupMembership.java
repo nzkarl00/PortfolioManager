@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import javax.persistence.*;
-
 /**
  * This class specifies the attributes and methods associated with a group type and an GroupMembership type
  * There is a mapping made to the GroupMembership with a many-to-one relationship and
@@ -22,5 +21,25 @@ public class GroupMembership {
     @ManyToOne
     @JoinColumn(name="parent_account_id", nullable = false)
     private AccountProfile registeredGroupUser;
+
+    public GroupMembership() {};
+
+    /**
+     * The main constructor with all the required details to add to the GroupMembership table
+     * @param registeredGroups is the registered groups from the groups table
+     * @param registeredGroupUser is the users that is registered in a group
+     */
+    public GroupMembership(Groups registeredGroups, AccountProfile registeredGroupUser) {
+        this.registeredGroups = registeredGroups;
+        this.registeredGroupUser = registeredGroupUser;
+
+    }
+
+    public  Long getGroupMembershipId() {return groupMembershipId;};
+
+    public Groups getRegisteredGroups(){return registeredGroups;}
+
+    public AccountProfile getRegisteredGroupUser() {return registeredGroupUser;}
+
 
 }
