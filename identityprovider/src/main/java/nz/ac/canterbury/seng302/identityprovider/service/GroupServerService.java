@@ -4,15 +4,13 @@ import com.google.protobuf.Timestamp;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
-import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
-import nz.ac.canterbury.seng302.identityprovider.model.Role;
-import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
+import nz.ac.canterbury.seng302.identityprovider.model.*;
 import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
+import org.apache.catalina.Group;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
@@ -39,6 +37,12 @@ public class GroupServerService extends GroupsServiceGrpc.GroupsServiceImplBase 
     AccountProfileRepository repo;
 
     @Autowired
+    GroupMembershipRepository groupmemberrepo;
+
+    @Autowired
+    GroupRepository grouprepo;
+
+    @Autowired
     RolesRepository roleRepo;
 
     @Autowired
@@ -47,10 +51,16 @@ public class GroupServerService extends GroupsServiceGrpc.GroupsServiceImplBase 
 
     private AddGroupMembersResponse addGroupMembers(AddGroupMembersRequest request) {
 
-        Boolean isSuccessful = false;
-        String responseMessage = "";
+        Groups currentGroup = grouprepo.findById(request.getGroupId());
 
+        for (int userId : request.getUserIdsList()) {
+            AccountProfile user = repo.findById(userId);
+            GroupMembership newGroupUser = new GroupMembership(user, currentGroup);
+            groupmemberrepo.save(newGroupUser);
+        }
 
+        Boolean isSuccessful = true;
+        String responseMessage = "Users: " + request.getUserIdsList() + " added.";
 
         return addGroupMembersResponse(isSuccessful, responseMessage);
     }
@@ -58,9 +68,33 @@ public class GroupServerService extends GroupsServiceGrpc.GroupsServiceImplBase 
     private AddGroupMembersResponse addGroupMembersResponse(Boolean success, String messageResponse) {
         AddGroupMembersResponse.Builder reply = AddGroupMembersResponse.newBuilder();
         reply
-                .setIsSuccess(true)
-                .setMessage("Member Added");
+                .setIsSuccess(success)
+                .setMessage(messageResponse);
 
+        return reply.build();
+    }
+
+    private RemoveGroupMembersResponse removeGroupMembers(AddGroupMembersRequest request) {
+
+        Groups currentGroup = grouprepo.findById(request.getGroupId());
+
+        for (int userId : request.getUserIdsList()) {
+            AccountProfile user = repo.findById(userId);
+            GroupMembership newGroupUser = new GroupMembership(user, currentGroup);
+            groupmemberrepo.save(newGroupUser);
+        }
+
+        Boolean isSuccessful = true;
+        String responseMessage = "Users: " + request.getUserIdsList() + " added.";
+
+        return removeGroupMembersResponse(isSuccessful, responseMessage);
+    }
+
+    private RemoveGroupMembersResponse removeGroupMembersResponse(Boolean success, String messageResponse) {
+        RemoveGroupMembersResponse.Builder reply = RemoveGroupMembersResponse.newBuilder();
+        reply
+                .setIsSuccess(success)
+                .setMessage(messageResponse);
 
         return reply.build();
     }

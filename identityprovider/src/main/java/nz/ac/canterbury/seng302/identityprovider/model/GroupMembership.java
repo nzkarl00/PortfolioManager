@@ -23,4 +23,13 @@ public class GroupMembership {
     @JoinColumn(name="parent_account_id", nullable = false)
     private AccountProfile registeredGroupUser;
 
+
+    public GroupMembership(AccountProfile registeredUser, Groups parentGroup) {
+        this.registeredGroupUser = registeredUser;
+        this.registeredGroups = parentGroup;
+    }
+
+    public GroupMembership() {
+
+    }
 }
