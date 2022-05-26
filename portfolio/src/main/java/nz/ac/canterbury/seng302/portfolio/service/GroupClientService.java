@@ -26,4 +26,14 @@ public class GroupClientService extends GroupsServiceGrpc.GroupsServiceImplBase 
         return groupsServiceStub.addGroupMembers(request.build());
     }
 
+    public RemoveGroupMembersResponse removeUserFromGroup(int groupId, ArrayList<Integer> userIds) {
+        RemoveGroupMembersRequest.Builder request = RemoveGroupMembersRequest.newBuilder().setGroupId(groupId);
+
+        for (Integer userId : userIds) {
+            request.addUserIds(userId);
+        }
+
+        return groupsServiceStub.removeGroupMembers(request.build());
+    }
+
 }

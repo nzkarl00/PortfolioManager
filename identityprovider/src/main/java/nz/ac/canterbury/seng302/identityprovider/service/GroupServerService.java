@@ -76,16 +76,17 @@ public class GroupServerService extends GroupsServiceGrpc.GroupsServiceImplBase 
 
     private RemoveGroupMembersResponse removeGroupMembers(AddGroupMembersRequest request) {
 
-        Groups currentGroup = grouprepo.findById(request.getGroupId());
-
-        for (int userId : request.getUserIdsList()) {
-            AccountProfile user = repo.findById(userId);
-            GroupMembership newGroupUser = new GroupMembership(user, currentGroup);
-            groupmemberrepo.save(newGroupUser);
+        List<GroupMembership> groupMemberships = groupmemberrepo.findAllByParentGroupId(request.getGroupId());
+        for (GroupMembership userGroup : groupMemberships) {
+            AccountProfile userAccount = userGroup.getRegisteredGroupUser();
+            if ((request.getUserIdsList()).contains(userAccount.getId())) {
+                Long membershipId = userGroup.getGroupMembershipId();
+                groupmemberrepo.deleteById(membershipId);
+            }
         }
 
         Boolean isSuccessful = true;
-        String responseMessage = "Users: " + request.getUserIdsList() + " added.";
+        String responseMessage = "Users: " + request.getUserIdsList() + " removed.";
 
         return removeGroupMembersResponse(isSuccessful, responseMessage);
     }
