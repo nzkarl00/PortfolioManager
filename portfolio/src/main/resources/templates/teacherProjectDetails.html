@@ -256,11 +256,11 @@
                     axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
                     .then((response) => {
                         deleteAllSprints()
-                        renderCalendar(response.data)
                         for (const sprint of response.data) {
                             console.log(sprint)
                             buildSprint(sprint)
                         }
+                        renderCalendar(response.data)
                     })
                 }
             });
