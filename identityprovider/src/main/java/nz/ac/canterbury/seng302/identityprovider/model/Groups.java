@@ -16,9 +16,11 @@ public class Groups {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long groupId;
-    @Column(name = "group_name", length = 50)
-    private String groupName;
+    private int groupId;
+    @Column(name = "group_long_name", length = 50)
+    private String groupLongName;
+    @Column(name = "group_short_name", length = 10)
+    private String groupShortName;
 
     //https://stackoverflow.com/questions/25996758/difference-between-lazycollectionlazycollectionoption-false-and-onetomanyfe
     // The fundamental difference between the annotations is that @OneToMany and its parameters (e.g. fetch = FetchType.EAGER) is a pure JPA.
@@ -32,12 +34,16 @@ public class Groups {
 
     /**
      * The main constructor with all the required details
-     * @param groupName the assigned group name
+     * @param groupShortName the assigned group name with a max length of 10
+     * @param groupLongName the assigned group name with a max length of 50
      */
-    public Groups(String groupName) {
-        this.groupName = groupName;
+    public Groups(String groupLongName, String groupShortName) {
+        this.groupLongName = groupLongName;
+        this.groupShortName = groupShortName;
     }
 
-    public String getGroupName(){ return groupName; }
+    public String groupShortName(){ return groupShortName; }
+    public String groupLongName(){ return groupLongName; }
+    public int getId(){return groupId;}
 
 }
