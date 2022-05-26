@@ -38,6 +38,13 @@ public class Groups {
         this.groupName = groupName;
     }
 
+    public Long getGroupId() { return groupId;}
+
     public String getGroupName(){ return groupName; }
+
+    public List<GroupMembership> getMembers() {return members;}
+
+    public void setGroupName(String newGroupName) {this.groupName = newGroupName;}
+
 
 }

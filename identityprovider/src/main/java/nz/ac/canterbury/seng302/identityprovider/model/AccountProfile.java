@@ -147,6 +147,8 @@ public class AccountProfile {
         return roles;
     }
 
+    public List<GroupMembership> getGroups() {return groups;}
+
     public Role getHighestRole() {
         if (roles.size() == 0) {
             return null;
