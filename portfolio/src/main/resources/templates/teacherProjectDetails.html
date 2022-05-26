@@ -156,8 +156,7 @@
                             </div>
                             </div>
                             </div>
-                            <div>
-                            <p class="sprint-description project_edit_data">Events:
+                            <div class="sprint-description project_edit_data">Events:
                             <div th:each="event: ${events}" th:if="${event &lt; sprint.getEndDate}">
                                 <p th:text="${event.toString()}"></p>
                             </div>

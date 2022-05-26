@@ -1,0 +1,138 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head.html :: head('Add Dates')"></head>
+<body>
+
+
+
+<!-- Navigation Bar -->
+<div th:replace="fragments/validUser.html :: navbar"></div>
+
+
+
+<!-- Body -->
+<div class="main">
+    <div class="container">
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+
+        <!-- Editing heading -->
+
+        <div class="row-1">
+
+            <div class="col-12">
+                <p class="body_title_large">Add Dates</p>
+            </div>
+
+        </div>
+
+        <!-- Editing body -->
+
+
+        <form class="row" id="eventForm" th:action="@{edit-sprint}" method="post">
+
+            <div class="col-2"></div>
+
+            <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
+                <select class="project_edit_data horizontal_field" name="eventType" id="eventType" onchange="updateForm()">
+                    <option value="Sprint">Sprint</option>
+                    <option value="Milestone">Milestone</option>
+                    <option value="Deadline">Deadline</option>
+                    <option value="Event">Event</option>
+                </select>
+                <label class="project_subhead" id="eventNameLabel" for="eventName">Sprint Name</label> <br/>
+                <input class="project_edit_data horizontal_field" id="eventName" type="text" th:name="eventName">
+                <br/>
+                <div class="horizontal-group">
+                    <div class="horizontal-group-element" >
+                        <label class="project_subhead" id="eventStartDateLabel" for="eventStartDate">Sprint Start Date</label> <br/>
+                        <input class="project_edit_data" id="eventStartDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="eventStartDate">
+                    </div>
+                    <div class="horizontal-group-element" >
+                        <label class="project_subhead" id="eventEndDateLabel" for="eventEndDate">Sprint End Date</label> <br/>
+                        <input class="project_edit_data" id="eventEndDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="eventEndDates">
+                    </div>
+                </div>
+                <div>
+                    <label class="project_subhead" id="eventDescriptionLabel" for="eventDescription">Sprint Description</label> <br/>
+                    <textarea class="description-input project_edit_data horizontal_field bio" id="eventDescription" th:name="eventDescription"></textarea>
+                </div>
+
+
+                <input style="display:none;" th:name="projectId" id="projectId" th:value="${sprint.getParentProjectId}" type="number">
+
+
+            </div>
+
+            <!-- Form Submission -->
+
+            <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
+
+                <button class="cancel" type="button">
+                    <a class="button_a" th:href="@{details(id=${project.getId})}">CANCEL</a>
+                </button>
+                <button class="save" type="submit">SAVE</button>
+            </div>
+
+
+            <div class="col-2"></div>
+
+        </form>
+
+        <script type="text/javascript" th:inline="javascript">
+            /**
+             * Updates the names of labels and inputs to match what is required for the type selected by the event type picker.
+             */
+            function updateForm() {
+                        let type = document.getElementById("eventType").value;
+                        document.getElementById("eventNameLabel").innerHTML =type + " Name";
+                        document.getElementById("eventDescriptionLabel").innerHTML =type + " Description";
+                        if (type === "Milestone") { // Disables end date selection and hides it
+                            document.getElementById("eventEndDate").setAttribute("type", "hidden");
+                            document.getElementById("eventEndDateLabel").innerHTML = "";
+                            document.getElementById("eventStartDateLabel").innerHTML =type + " Date";
+                        } else if (type === "Deadline") { // Changes end date to represent the time instead
+                            document.getElementById("eventStartDateLabel").innerHTML =type + " Date";
+                            document.getElementById("eventEndDateLabel").innerHTML =type + " Time";
+                            document.getElementById("eventEndDate").setAttribute("type", "time");
+                        } else { // All fields visible as normal
+                            document.getElementById("eventStartDateLabel").innerHTML =type + " Start Date";
+                            document.getElementById("eventEndDateLabel").innerHTML =type + " End Date";
+                            document.getElementById("eventEndDate").setAttribute("type", "date");
+                        }
+                    }
+                </script>
+        <br>
+
+        <div class="row">
+
+            <div class="col-2"></div>
+
+            <div class="col-lg-7 col-md-8 col-sm-12">
+
+                <button class="login_box "th:style="${errorShow}">
+                    <p class="login_error" th:text="${errorCode}"/>
+                </button>
+
+            </div>
+
+            <div class="col-2"></div>
+
+
+        </div>
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+
+    </div>
+</div>
+
+
+
+<!-- JS -->
+<script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
