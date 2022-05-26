@@ -93,14 +93,15 @@
                         <div class="col-lg-8 col-md-10 col-sm-12">
 
                             <button class="edit" style="padding-top:0rem;">
-                                <a class="button_a" th:href="@{/edit-project(id=${project.getId})}">Edit Project</a>
+                                <a class="button_a" th:href="@{edit-project(id=${project.getId})}">Edit Project</a>
                             </button>
+
                         </div>
                         <div class="col-2"></div>
 
                     </div>
-
                     <br>
+                    <p></p>
 
                     <div class="row row_sprints"  th:each="sprint: ${sprints}">
 
@@ -118,7 +119,7 @@
                                 <a class="button_a" th:href="@{'/edit-sprint?id=' + ${sprint.getParentProjectId} + '&ids=' + ${sprint.getId}}">EDIT</a>
                             </button>
 
-                            <form th:action="@{/delete-sprint}" method="post">
+                            <form th:action="@{delete-sprint}" method="post">
 
                                 <input style="display:none;" th:name="deleteprojectId" id="deleteprojectId" th:value="${project.getId}" type="number">
 
@@ -158,7 +159,7 @@
                             <form th:action="@{new-sprint}" method="post">
                                 <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
                                 <button class="add" type="submit">
-                                    Add Sprint
+                                    Add Dates
                                 </button>
                             </form>
                             <br>
@@ -166,7 +167,7 @@
                                 <p class="login_error" th:text="${errorCode}"/>
                             </button>
                             <button class="edit ">
-                                <a class=" button_a" th:href="@{/landing}">      Return      </a>
+                                <a class=" button_a" th:href="@{landing}">      Return      </a>
                             </button>
                             <br><br>
                         </div>
@@ -304,9 +305,8 @@
             displayEventTime : false,
 
             eventResize: function (eventResizeInfo) {
-                console.log("test");
                 let form = document.createElement('form'); // Creating the form which will be used to post new sprint data.
-                form.setAttribute("th:action", "@{/details}");
+                form.setAttribute("th:action", "@{details}");
                 form.setAttribute("method", "post");
                 let formId = document.createElement("input"); // Adding sprint ID field to the form
                 formId.setAttribute("type", "hidden");
@@ -323,7 +323,6 @@
                 formEnd.setAttribute("th:name", "end");
                 formEnd.setAttribute("name", "end");
                 form.appendChild(formEnd);
-                console.log(form.childNodes);
                 form.elements["sprintId"].value = eventResizeInfo.event.id;
                 form.elements["start"].value = eventResizeInfo.event.start;
                 form.elements["end"].value = eventResizeInfo.event.end;
