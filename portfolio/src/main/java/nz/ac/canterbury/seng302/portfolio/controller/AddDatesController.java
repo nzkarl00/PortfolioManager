@@ -1,0 +1,111 @@
+package nz.ac.canterbury.seng302.portfolio.controller;
+
+import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
+import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+@Controller
+public class AddDatesController {
+
+    @Autowired
+    private SprintRepository repository;
+    @Autowired
+    private ProjectService projectService;
+    @Autowired
+    private SprintService sprintService;
+    @Autowired
+    private AccountClientService accountClientService;
+    @Autowired
+    private NavController navController;
+
+    String errorShow = "display:none;";
+    String errorCode = "";
+
+    @GetMapping("/add-dates")
+    public String addDates(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value = "projectId") Integer projectId,
+            Model model
+    ) throws Exception {
+
+        Project project = projectService.getProjectById(projectId);
+        Integer id = AuthStateInformer.getId(principal);
+
+        // Attributes For header
+        UserResponse userReply;
+        userReply =accountClientService.getUserById(id);
+
+        navController.updateModelForNav(principal,model,userReply,id);
+        model.addAttribute("projectStart",project.getStartDateStringHtml());
+        model.addAttribute("projectEnd",project.getEndDateStringHtml());
+        model.addAttribute("project",project);
+        model.addAttribute("errorShow",errorShow);
+        model.addAttribute("errorCode",errorCode);
+
+        // Reset for the next display of the page
+        errorShow ="display:none;";
+        errorCode ="";
+
+        String role = AuthStateInformer.getRole(principal);
+
+        if(role.equals("teacher")||role.equals("admin"))
+        {
+            return "addDates";
+        } else
+
+        {
+            return "userProjectDetails";
+        }
+
+    }
+
+    @PostMapping("/add-dates")
+    public String newSprint(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value = "projectId") Integer projectId,
+            @RequestParam(value = "eventName") String eventName,
+            @RequestParam(value = "eventStartDate") String eventStartDate,
+            @RequestParam(value = "eventEndDate") String eventEndDate,
+            @RequestParam(value = "eventDescription") String eventDescription,
+            Model model
+    ) throws Exception {
+        String role = AuthStateInformer.getRole(principal);
+        List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
+        Project project = projectService.getProjectById(projectId);
+        Date projStart = project.getStartDate();
+        Date projEnd = project.getEndDate();
+        Date newStart = DateParser.stringToDate(eventStartDate);
+        Date newEnd = DateParser.stringToDate(eventEndDate);
+        if (eventName == "") {
+            eventName = "Sprint " + (sprints.size() + 1);
+        }
+        if (!sprintService.areNewSprintDatesValid(newStart, newEnd, projectId) || newStart.before(projStart) || newEnd.after(projEnd)) {
+            errorShow="";
+            errorCode="Invalid dates";
+            return "redirect:addDates?projectId=" + projectId;
+        }
+        if (role.equals("teacher") || role.equals("admin")) {
+            Sprint sprint = new Sprint(projectId, eventName, eventName, eventDescription, newStart, newEnd);
+            repository.save(sprint);
+            return "redirect:details?id=" + projectId;
+        }
+        return "redirect:details?id=" + projectId;
+    }
+}

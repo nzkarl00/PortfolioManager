@@ -31,7 +31,7 @@
         <!-- Editing body -->
 
 
-        <form class="row" id="eventForm" th:action="@{edit-sprint}" method="post">
+        <form class="row" id="eventForm" th:action="@{add-dates}" method="post">
 
             <div class="col-2"></div>
 
@@ -50,9 +50,10 @@
                         <label class="project_subhead" id="eventStartDateLabel" for="eventStartDate">Sprint Start Date</label> <br/>
                         <input class="project_edit_data" id="eventStartDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="eventStartDate">
                     </div>
+                    <!-- https://dzone.com/articles/disable-dates-in-datepicker -->
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" id="eventEndDateLabel" for="eventEndDate">Sprint End Date</label> <br/>
-                        <input class="project_edit_data" id="eventEndDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="eventEndDates">
+                        <input class="project_edit_data" id="eventEndDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="eventEndDate">
                     </div>
                 </div>
                 <div>
@@ -61,7 +62,7 @@
                 </div>
 
 
-                <input style="display:none;" th:name="projectId" id="projectId" th:value="${sprint.getParentProjectId}" type="number">
+                <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId()}" type="number">
 
 
             </div>

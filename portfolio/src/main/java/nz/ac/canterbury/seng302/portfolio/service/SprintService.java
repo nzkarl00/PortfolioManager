@@ -6,6 +6,8 @@ import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,5 +53,28 @@ public class SprintService {
         {
             throw new Exception("Project not found");
         }
+    }
+
+    /**
+     * Checks to see if the proposed dates for a new sprint do not lie within any other sprint dates.
+     * @param start the start date of the proposed sprint
+     * @param end the end date of the proposed sprint
+     * @param projectId the project for which all sprints will be compared to
+     * @return true if the dates do not lie within another sprint, false if they do.
+     */
+    public boolean areNewSprintDatesValid(Date start, Date end, Integer projectId) {
+        List<Sprint> sprints = repository.findByParentProjectId(projectId);
+        if (start.after(end)) {
+            return false;
+        }
+        for (Sprint s : sprints) {
+            if (start.after(s.getStartDate()) && start.before(s.getEndDate())) {
+                return false;
+            }
+            if(end.after(s.getStartDate()) && end.before(s.getEndDate())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

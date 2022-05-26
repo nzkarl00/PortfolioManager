@@ -109,7 +109,6 @@ public class EditSprintController {
             @RequestParam(value="sprintDescription") String sprintDescription,
             Model model
     ) throws Exception {
-
         Sprint sprint = sprintService.getSprintById(sprintId);
         Project project = projectService.getProjectById(projectId);
 
@@ -120,7 +119,7 @@ public class EditSprintController {
 
         errorShow = "";
 
-        String redirect = "redirect:edit-sprint?id=" + projectId + "&ids=" + sprintId;
+        String redirect = "redirect:project" + projectId + "&ids=" + sprintId;
 
         // check if sprint name is blank
         if (sprintName.isBlank()) {
