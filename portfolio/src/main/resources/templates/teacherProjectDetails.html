@@ -102,51 +102,8 @@
                     </div>
                     <br>
                     <p></p>
-
-                    <div class="row row_sprints"  th:each="sprint: ${sprints}">
-
-
-                        <div class="col-2"></div>
-
-                        <!-- Buttons -->
-
-                        <div class="col-lg-1 col-md-2 col-sm-12 col-12 align-items-end ">
-
-
-                            <div class="portion_sprintbody project_sprinthead " th:text="${sprint.getLabel}" />
-
-                            <button class="edit">
-                                <a class="button_a" th:href="@{'/edit-sprint?id=' + ${sprint.getParentProjectId} + '&ids=' + ${sprint.getId}}">EDIT</a>
-                            </button>
-
-                            <form th:action="@{delete-sprint}" method="post">
-
-                                <input style="display:none;" th:name="deleteprojectId" id="deleteprojectId" th:value="${project.getId}" type="number">
-
-                                <input style="display:none;" th:name="sprintId" id="sprintId" th:value="${sprint.getId}" type="number">
-
-
-                                <button class="delete delete-button ">DELETE</button>
-                            </form>
-                            <br>
-                            <br>
-
-                        </div>
-
-                        <!-- Sprint info -->
-                        <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
-
-
-                            <div class="sprint-title project_subhead " th:text="${sprint.getName}" />
-
-                            <div class="sprint-date detail_date" th:text="${sprint.getStartDateString} + ' - ' + ${sprint.getEndDateString}" />
-
-                            <div class="sprint-description project_edit_data" th:text="${sprint.getDescription}" />
-
-                        </div>
-
-                        <div class="col-2"></div>
-
+                    <div id="sprints">
+                        <!-- where to insert all the sprint details in the js method buildSprint-->
                     </div>
 
                     <div class="row">
@@ -195,6 +152,85 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="text/javascript" th:inline="javascript">
 
+    function buildSprint(sprint) {
+        const mainDiv = document.getElementById("sprints")
+        // make the main container for all the sprints
+        const sprintDiv = document.createElement("div")
+        sprintDiv.className = "row row_sprints";
+        mainDiv.appendChild(sprintDiv)
+
+        const col2 = document.createElement("div")
+        col2.className = "col-2"
+        sprintDiv.appendChild(col2)
+
+        const col1 = document.createElement("div")
+        col1.className = "col-lg-1 col-md-2 col-sm-12 col-12 align-items-end "
+        sprintDiv.appendChild(col1)
+
+        const label = document.createElement("div")
+        label.className = "portion_sprintbody project_sprinthead "
+        label.innerText = sprint.label
+        col1.appendChild(label)
+
+        const editButton = document.createElement("button")
+        editButton.className = "edit"
+        editButton.innerText = "EDIT"
+        col1.appendChild(editButton)
+
+        const deleteForm = document.createElement("form")
+        deleteForm.method = "post"
+        deleteForm.action = "delete-sprint"
+        col1.appendChild(deleteForm)
+
+        const deleteProjectId = document.createElement("input")
+        deleteProjectId.style = "display:none;"
+        deleteProjectId.name = "deleteprojectId"
+        deleteProjectId.id = "deleteprojectId"
+        deleteProjectId.value = sprint.parentProjectId
+        deleteProjectId.type = "number"
+        deleteForm.appendChild(deleteProjectId)
+
+        const deleteSprintId = document.createElement("input")
+        deleteSprintId.style = "display:none;"
+        deleteSprintId.name = "sprintId"
+        deleteSprintId.id = "sprintId"
+        deleteSprintId.value = sprint.id
+        deleteSprintId.type = "number"
+        deleteForm.appendChild(deleteSprintId)
+
+        const deleteButton = document.createElement("button")
+        deleteButton.className = "delete delete-button "
+        deleteButton.innerText = "DELETE"
+        deleteForm.appendChild(deleteButton)
+
+        const br1 = document.createElement("br")
+        const br2 = document.createElement("br")
+        col1.appendChild(br1)
+        col1.appendChild(br2)
+
+        const col3 = document.createElement("div")
+        col3.className = "col-lg-7 col-md-8 col-sm-12 portion_body"
+        sprintDiv.appendChild(col3)
+
+        const name = document.createElement("div")
+        name.className = "sprint-title project_subhead "
+        name.innerText = sprint.name
+        col3.appendChild(name)
+
+        const date = document.createElement("div")
+        date.className = "sprint-date detail_date"
+        date.innerText = sprint.startDateString + "-" + sprint.endDateString
+        col3.appendChild(date)
+
+        const description = document.createElement("div")
+        description.className = "sprint-description project_edit_data"
+        col3.appendChild(description)
+
+        const col4 = document.createElement("div")
+        col4.className = "col-2"
+        sprintDiv.appendChild(col4)
+    }
+
     var stompClient = null;
 
     function setConnected(connected) {
@@ -219,8 +255,12 @@
                 if (JSON.parse(update.body).updateType == "SPRINT") {
                     axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
                     .then((response) => {
-                        console.log(response.data)
+                        deleteAllSprints()
                         renderCalendar(response.data)
+                        for (const sprint of response.data) {
+                            console.log(sprint)
+                            buildSprint(sprint)
+                        }
                     })
                 }
             });
@@ -333,7 +373,22 @@
         calendar.render();
     }
 
+    function deleteAllSprints() {
+        var e = document.getElementById("sprints");
+
+        //e.firstElementChild can be used.
+        var child = e.lastElementChild;
+        while (child) {
+            e.removeChild(child);
+            child = e.lastElementChild;
+        }
+    }
+
     let initialSprintList = [[${sprints}]];
+
+    for (const sprint of initialSprintList) {
+        buildSprint(sprint)
+    }
 
     document.addEventListener('DOMContentLoaded', function() { renderCalendar(initialSprintList) });
 
