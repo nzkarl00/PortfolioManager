@@ -218,7 +218,11 @@ public class DetailsController {
         return "redirect:details?id=" + projectId;
     }
 
+    /**
+     * Send an update sprint message through websockets to all the users on the project details pages
+     */
     public void sendSprintCalendarChange() {
+        //TODO make individual project id topics
         this.template.convertAndSend("/topic/calendar", new EventUpdate(FetchUpdateType.SPRINT));
     }
 
@@ -282,6 +286,12 @@ public class DetailsController {
         return redirect;
     }
 
+    /**
+     * Sends all the sprints in JSON for a given project
+     * @param principal authstate to validate the user
+     * @param projectId the id of the project to
+     * @return the list of sprints in JSON
+     */
     @GetMapping("/sprints")
     public ResponseEntity<List<Sprint>> getProjectSprints(@AuthenticationPrincipal AuthState principal,
                                             @RequestParam(value="id") Integer projectId) {

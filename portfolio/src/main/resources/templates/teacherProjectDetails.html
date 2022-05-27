@@ -152,6 +152,9 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="text/javascript" th:inline="javascript">
 
+
+    // this is all to make sure that the calendar re-renders once the tab is loaded
+    // not before as that will cause sizing errors
     let flag = false;
 
     $('#calendar-tab').on('click', function (e) {
@@ -169,6 +172,7 @@
         flag = false;
     });
 
+    // build a sprint in html from js
     function buildSprint(sprint) {
         const mainDiv = document.getElementById("sprints")
         // make the main container for all the sprints
@@ -250,25 +254,15 @@
 
     var stompClient = null;
 
-    function setConnected(connected) {
-        $("#connect").prop("disabled", connected);
-        $("#disconnect").prop("disabled", !connected);
-        if (connected) {
-            $("#conversation").show();
-        }
-        else {
-            $("#conversation").hide();
-        }
-        $("#greetings").html("");
-    }
-
     function connect() {
         var socket = new SockJS('/gs-guide-websocket');
         stompClient = Stomp.over(socket);
+        // connect to the portfolio server
         stompClient.connect({}, function (frame) {
-            setConnected(true);
             console.log('Connected: ' + frame);
+            // subscribe to the global topic
             stompClient.subscribe('/topic/calendar', function (update) {
+                // if it is a sprint update, update the calendar and details sprints
                 if (JSON.parse(update.body).updateType == "SPRINT") {
                     axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
                     .then((response) => {
@@ -284,14 +278,6 @@
         });
     }
 
-    function pausecomp(millis)
-    {
-        var date = new Date();
-        var curDate = null;
-        do { curDate = new Date(); }
-        while(curDate-date < millis);
-    }
-
    function calendarTryAgain() {
         axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
             .then((response) => {
@@ -305,11 +291,6 @@
         }
         setConnected(false);
         console.log("Disconnected");
-    }
-
-    function send() {
-        // template for now
-        // stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
     }
 
     function renderCalendar(sprintList) {
@@ -417,6 +398,8 @@
         }
     }
 
+    // initial loading, base the sprints off of thymeleaf
+    // then set the calendar and the details tabs with the correct data
     let initialSprintList = [[${sprints}]];
 
     for (const sprint of initialSprintList) {
@@ -425,7 +408,6 @@
 
     document.addEventListener('DOMContentLoaded', function() { renderCalendar(initialSprintList) });
 
-    //setTimeout(function() {console.log("CHANGE"); renderCalendar([])}, 1000*10)
     connect();
 
 </script>
