@@ -276,8 +276,8 @@ public class DetailsController {
             errorCalendarCode = "";
             successCalendarShow = "";
             successCalendarCode = "Sprint time edited to: " + sprint.getStartDateString() + " - " + sprint.getEndDateString() + "";
-            sendSprintCalendarChange();
             repository.save(sprint);
+            sendSprintCalendarChange();
         }
         return redirect;
     }

@@ -48,8 +48,8 @@
 
         <!-- Tab Buttons -->
         <ul class="nav nav-tabs h4" style="font-family: nexaBold;">
-            <li class="active"><a data-toggle="tab" href="#calendar-tab">Planner</a></li>
-            <li><a data-toggle="tab" href="#project-details-tab">Project Details</a></li>
+            <li id="toCalendar" class="active"><a data-toggle="tab" href="#calendar-tab" id="calendar-tab-head">Planner</a></li>
+            <li id="toDetails"><a data-toggle="tab" href="#project-details-tab" id="details-tab-head">Project Details</a></li>
         </ul>
 
         <!-- Tab containers-->
@@ -151,6 +151,18 @@
 <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="text/javascript" th:inline="javascript">
+
+    let flag = true;
+
+    $('#calendar-tab').on('click', function (e) {
+        if(!$('#toCalendar').hasClass('disabled') && flag) {
+            calendarTryAgain()
+            flag = false;
+        }
+    });
+    $('#details-tab-head').on('click', function (e) {
+            flag = true;
+    });
 
     function buildSprint(sprint) {
         const mainDiv = document.getElementById("sprints")
@@ -260,11 +272,25 @@
                             console.log(sprint)
                             buildSprint(sprint)
                         }
-                        renderCalendar(response.data)
                     })
                 }
             });
         });
+    }
+
+    function pausecomp(millis)
+    {
+        var date = new Date();
+        var curDate = null;
+        do { curDate = new Date(); }
+        while(curDate-date < millis);
+    }
+
+   function calendarTryAgain() {
+        axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
+            .then((response) => {
+                renderCalendar(response.data)
+            })
     }
 
     function disconnect() {
@@ -371,6 +397,7 @@
             }
         });
         calendar.render();
+        return calendar
     }
 
     function deleteAllSprints() {
