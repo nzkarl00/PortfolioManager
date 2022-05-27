@@ -1,26 +1,12 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import com.google.protobuf.Timestamp;
-import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.*;
 import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
-import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
-import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
-import org.apache.catalina.Group;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.transaction.Transactional;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,10 +23,10 @@ public class GroupServerService extends GroupsServiceGrpc.GroupsServiceImplBase 
     AccountProfileRepository repo;
 
     @Autowired
-    GroupMembershipRepository groupmemberrepo;
+    GroupMembershipRepository groupMemberRepo;
 
     @Autowired
-    GroupRepository grouprepo;
+    GroupRepository groupRepo;
 
     @Autowired
     RolesRepository roleRepo;
@@ -49,55 +35,63 @@ public class GroupServerService extends GroupsServiceGrpc.GroupsServiceImplBase 
     private FileSystemUtils fsUtils;
 
 
-    private AddGroupMembersResponse addGroupMembers(AddGroupMembersRequest request) {
+    @Override
+    public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
 
-        Groups currentGroup = grouprepo.findById(request.getGroupId());
+        Groups currentGroup = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
 
         for (int userId : request.getUserIdsList()) {
             AccountProfile user = repo.findById(userId);
             GroupMembership newGroupUser = new GroupMembership(user, currentGroup);
-            groupmemberrepo.save(newGroupUser);
+            groupMemberRepo.save(newGroupUser);
         }
+
 
         Boolean isSuccessful = true;
         String responseMessage = "Users: " + request.getUserIdsList() + " added.";
 
-        return addGroupMembersResponse(isSuccessful, responseMessage);
+        addGroupMembersResponse(isSuccessful, responseMessage, responseObserver);
     }
 
-    private AddGroupMembersResponse addGroupMembersResponse(Boolean success, String messageResponse) {
+    private void addGroupMembersResponse(Boolean success, String messageResponse, StreamObserver<AddGroupMembersResponse> responseObserver) {
         AddGroupMembersResponse.Builder reply = AddGroupMembersResponse.newBuilder();
         reply
                 .setIsSuccess(success)
                 .setMessage(messageResponse);
 
-        return reply.build();
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+
     }
 
-    private RemoveGroupMembersResponse removeGroupMembers(AddGroupMembersRequest request) {
+    @Override
+    public void removeGroupMembers(RemoveGroupMembersRequest request, StreamObserver<RemoveGroupMembersResponse> responseObserver) {
 
-        List<GroupMembership> groupMemberships = groupmemberrepo.findAllByParentGroupId(request.getGroupId());
+        Groups parentGroup = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
+
+        List<GroupMembership> groupMemberships = groupMemberRepo.findAllByRegisteredGroups(parentGroup);
         for (GroupMembership userGroup : groupMemberships) {
             AccountProfile userAccount = userGroup.getRegisteredGroupUser();
             if ((request.getUserIdsList()).contains(userAccount.getId())) {
                 Long membershipId = userGroup.getGroupMembershipId();
-                groupmemberrepo.deleteById(membershipId);
+                groupMemberRepo.deleteById(membershipId);
             }
         }
 
         Boolean isSuccessful = true;
         String responseMessage = "Users: " + request.getUserIdsList() + " removed.";
 
-        return removeGroupMembersResponse(isSuccessful, responseMessage);
+        removeGroupMembersResponse(isSuccessful, responseMessage, responseObserver);
     }
 
-    private RemoveGroupMembersResponse removeGroupMembersResponse(Boolean success, String messageResponse) {
+    private void removeGroupMembersResponse(Boolean success, String messageResponse, StreamObserver<RemoveGroupMembersResponse> responseObserver) {
         RemoveGroupMembersResponse.Builder reply = RemoveGroupMembersResponse.newBuilder();
         reply
                 .setIsSuccess(success)
                 .setMessage(messageResponse);
 
-        return reply.build();
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
     }
 
 
