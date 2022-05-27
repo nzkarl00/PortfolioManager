@@ -105,51 +105,56 @@ public class EditProjectController {
             @RequestParam(value="projectDescription") String projectDescription,
             Model model
     )  throws Exception  {
-        Project project = projectService.getProjectById(projectId);
-        project.setName(projectName);
 
-        Date checkStartDate = DateParser.stringToDate(projectStartDate);
-        Date checkEndDate = DateParser.stringToDate(projectEndDate);
+        String role = AuthStateInformer.getRole(principal);
 
-        if (projectName.isBlank()) {
-            errorShow = "";
-            errorCode = "Project requires a name";
-            return "redirect:edit-project?id=" + projectId;
-        }
+        if (role.equals("teacher") || role.equals("admin")) {
+            Project project = projectService.getProjectById(projectId);
+            project.setName(projectName);
 
-        // Loop through sprints and check to see if a date change violates the existing sprints dates
-        for (Sprint temp: sprintService.getSprintByParentId(projectId)) {
-            if (temp.getStartDate().before(checkStartDate)) {
+            Date checkStartDate = DateParser.stringToDate(projectStartDate);
+            Date checkEndDate = DateParser.stringToDate(projectEndDate);
+
+            if (projectName.isBlank()) {
                 errorShow = "";
-                errorCode = "Project can't start after the earliest sprint";
+                errorCode = "Project requires a name";
                 return "redirect:edit-project?id=" + projectId;
             }
-            if (temp.getEndDate().after(checkEndDate)) {
+
+            // Loop through sprints and check to see if a date change violates the existing sprints dates
+            for (Sprint temp : sprintService.getSprintByParentId(projectId)) {
+                if (temp.getStartDate().before(checkStartDate)) {
+                    errorShow = "";
+                    errorCode = "Project can't start after the earliest sprint";
+                    return "redirect:edit-project?id=" + projectId;
+                }
+                if (temp.getEndDate().after(checkEndDate)) {
+                    errorShow = "";
+                    errorCode = "Project can't end before the latest sprint";
+                    return "redirect:edit-project?id=" + projectId;
+                }
+            }
+
+            if (checkStartDate.before(checkEndDate)) {
+                project.setStartDateString(projectStartDate);
+            } else {
                 errorShow = "";
-                errorCode = "Project can't end before the latest sprint";
+                errorCode = "Start and End date overlap";
                 return "redirect:edit-project?id=" + projectId;
             }
-        }
 
-        if (checkStartDate.before(checkEndDate)) {
-            project.setStartDateString(projectStartDate);
-        } else {
-            errorShow = "";
-            errorCode = "Start and End date overlap";
-            return "redirect:edit-project?id=" + projectId;
-        }
+            if (checkEndDate.after(checkStartDate)) {
+                project.setEndDateString(projectEndDate);
+            } else {
+                errorShow = "";
+                errorCode = "Start and End date overlap";
+                return "redirect:edit-project?id=" + projectId;
+            }
 
-        if (checkEndDate.after(checkStartDate)) {
-            project.setEndDateString(projectEndDate);
-        } else {
-            errorShow = "";
-            errorCode = "Start and End date overlap";
-            return "redirect:edit-project?id=" + projectId;
+            project.setDescription(projectDescription);
+            repository.save(project);
         }
-
-        project.setDescription(projectDescription);
-        repository.save(project);
-        return "redirect:details?id=" + projectId;
+            return "redirect:details?id=" + projectId;
     }
 
 }

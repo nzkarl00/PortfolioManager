@@ -161,6 +161,12 @@ public class DetailsController {
             Model model
     ) throws Exception {
         String role = AuthStateInformer.getRole(principal);
+
+        // Reject non-authorized users
+        if (!(role.equals("teacher") || role.equals("admin"))) {
+            return "redirect:details?id=" + projectId;
+        }
+
         List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
 
         Integer valueId = 0;
@@ -207,15 +213,11 @@ public class DetailsController {
 
         valueId += 1;
 
+        Sprint sprint = new Sprint(projectId, "Sprint " + valueId.toString(), "Sprint " + valueId.toString(), "", startDate, endDate);
+        repository.save(sprint);
+        sendSprintCalendarChange();
 
-        if (role.equals("teacher") || role.equals("admin")) {
-            Sprint sprint = new Sprint(projectId, "Sprint " + valueId.toString(), "Sprint " + valueId.toString(), "", startDate, endDate);
-            repository.save(sprint);
-            sendSprintCalendarChange();
-            return "redirect:edit-sprint?id=" + projectId +"&ids=" + sprint.getId();
-        }
-
-        return "redirect:details?id=" + projectId;
+        return "redirect:edit-sprint?id=" + projectId +"&ids=" + sprint.getId();
     }
 
     /**

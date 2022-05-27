@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
+import nz.ac.canterbury.seng302.portfolio.model.Role;
 import nz.ac.canterbury.seng302.portfolio.model.UserPreference;
 import nz.ac.canterbury.seng302.portfolio.model.UserPreferenceRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
@@ -28,6 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -45,12 +47,14 @@ public class TableControllerTest {
         .setName("validtesttoken")
         .build();
 
-    private AuthState invalidAuthState = AuthState.newBuilder()
+    public AuthState validStudentAuthState = AuthState.newBuilder()
         .setIsAuthenticated(true)
         .setNameClaimType("name")
         .setRoleClaimType("role")
+        .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
+        .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
         .setAuthenticationType("AuthenticationTypes.Federation")
-        .setName("invalidtesttoken")
+        .setName("validtesttoken")
         .build();
 
     private UserResponse testUser = UserResponse.newBuilder()
@@ -132,4 +136,47 @@ public class TableControllerTest {
             .andExpect(MockMvcResultMatchers.view().name("userList")) // Whether to return the template "account"
             .andExpect(MockMvcResultMatchers.model().attribute("userRole", role));
     }
+
+    @Test
+    public void getUserListStudent() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validStudentAuthState, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        utilities.when(() -> AuthStateInformer.getRole(validStudentAuthState)).thenReturn(role);
+        utilities.when(() -> AuthStateInformer.getId(validStudentAuthState)).thenReturn(1);
+        when(accountClientService.getUserById(1)).thenReturn(testUser);
+        when(userPreferenceRepo.findById(1)).thenReturn(userPreference);
+        when(accountClientService.getPaginatedUsers(step, start, sortCol, sortOrder)).thenReturn(paginatedUsersResponse);
+
+        mockMvc.perform(get("/user-list"))
+                .andExpect(status().isOk()) // Whether to return the status "200 OK"
+                .andExpect(MockMvcResultMatchers.view().name("userList")) // Whether to return the template "account"
+                .andExpect(MockMvcResultMatchers.model().attribute("userRole", role));
+    }
+
+    @Test
+    public void postOrderListWithValidCredentials() throws Exception {
+
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
+
+        mockMvc.perform(post("/order-list")
+                        .param("sortColumn", "username")
+                )
+                .andExpect(status().is3xxRedirection()) // Whether to return the status "302 OK"
+                .andExpect(MockMvcResultMatchers.view().name("redirect:user-list"));
+    }
+
 }
