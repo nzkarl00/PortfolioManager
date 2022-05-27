@@ -2,15 +2,11 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import javax.persistence.Column;
+import java.util.List;
 
 /**
  * The entity representation for the Project and project table
@@ -29,6 +25,8 @@ public class Project {
     private Date projectStartDate;
     @Column(name = "project_end_date")
     private Date projectEndDate;
+    @OneToMany(mappedBy = "parentProject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    protected List<Deadline> deadlines;
 
     public Project() {}
 

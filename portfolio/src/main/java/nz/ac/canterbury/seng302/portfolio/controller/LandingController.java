@@ -97,7 +97,8 @@ public class LandingController {
 
     String thisYear = new SimpleDateFormat("yyyy").format(new Date());
 
-    if (role.equals("teacher")) {
+
+    if (role.equals("teacher") || role.equals("admin")) {
       Project project = new Project("Project "+thisYear, "", LocalDate.now(),
               LocalDate.now().plusMonths(8));
       repository.save(project);
