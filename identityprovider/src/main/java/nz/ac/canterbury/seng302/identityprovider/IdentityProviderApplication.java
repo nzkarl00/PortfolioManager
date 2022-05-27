@@ -29,6 +29,7 @@ public class IdentityProviderApplication {
      * @param args default main param
      */
     public static void main(String[] args) {
+
         SpringApplication.run(IdentityProviderApplication.class, args);
     }
 }

@@ -34,8 +34,8 @@ public class GroupsServerService extends GroupsServiceImplBase {
     @Override
     public void createGroup(CreateGroupRequest request, StreamObserver<CreateGroupResponse> responseObserver) {
         CreateGroupResponse.Builder reply = CreateGroupResponse.newBuilder();
-        // TODO need to make this in the group repo
-        if (groupRepo.findByShortName(request.getShortName()).isEmpty() && findByLongName(...))  {
+
+        if (groupRepo.findAllByShortName(request.getShortName()).isEmpty() && groupRepo.findAllByLongName(request.getLongName()).isEmpty())  {
             Groups newGroup = new Groups(request.getLongName(), request.getShortName());
             groupRepo.save(newGroup);
             reply
