@@ -30,6 +30,10 @@ public class Groups {
 
     public Groups() {}
 
+    public Groups(Long id) {
+        this.groupId = id;
+    }
+
     /**
      * The main constructor with all the required details
      * @param groupName the assigned group name
