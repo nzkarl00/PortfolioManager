@@ -13,13 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Controller
 public class AddDatesController {
@@ -38,6 +33,14 @@ public class AddDatesController {
     String errorShow = "display:none;";
     String errorCode = "";
 
+    /**
+     * Gets the page for adding dates to a project and passes date boundaries to the model.
+     * @param principal auth token
+     * @param projectId id for the project dates will be added to
+     * @param model webpage model to hold data
+     * @return the date adding page
+     * @throws Exception
+     */
     @GetMapping("/add-dates")
     public String addDates(
             @AuthenticationPrincipal AuthState principal,
@@ -76,6 +79,17 @@ public class AddDatesController {
 
     }
 
+    /**
+     * Saves a new date supplied by the user and redirects to the project page afterwards
+     * @param principal auth token
+     * @param projectId project that had a date added to it
+     * @param eventName name of event
+     * @param eventStartDate event start date
+     * @param eventEndDate event end date
+     * @param eventDescription event description
+     * @return project details page on successful update, redirect to add dates again on failure
+     * @throws Exception
+     */
     @PostMapping("/add-dates")
     public String newSprint(
             @AuthenticationPrincipal AuthState principal,
@@ -83,8 +97,7 @@ public class AddDatesController {
             @RequestParam(value = "eventName") String eventName,
             @RequestParam(value = "eventStartDate") String eventStartDate,
             @RequestParam(value = "eventEndDate") String eventEndDate,
-            @RequestParam(value = "eventDescription") String eventDescription,
-            Model model
+            @RequestParam(value = "eventDescription") String eventDescription
     ) throws Exception {
         String role = AuthStateInformer.getRole(principal);
         List<Sprint> sprints = sprintService.getSprintByParentId(projectId);

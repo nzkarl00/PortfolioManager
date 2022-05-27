@@ -56,7 +56,8 @@ public class SprintService {
     }
 
     /**
-     * Checks to see if the proposed dates for a new sprint do not lie within any other sprint dates.
+     * Checks to see if the proposed dates for a new sprint do not lie within any other sprint dates. Does not check against PROJECT DATES
+     * as this would require the introduction of another repository to the service, which would violate single responsibility.
      * @param start the start date of the proposed sprint
      * @param end the end date of the proposed sprint
      * @param projectId the project for which all sprints will be compared to
@@ -72,6 +73,9 @@ public class SprintService {
                 return false;
             }
             if(end.after(s.getStartDate()) && end.before(s.getEndDate())) {
+                return false;
+            }
+            if(end.getTime() == s.getStartDate().getTime() || start.getTime() == s.getEndDate().getTime() || end.getTime() == s.getEndDate().getTime() || start.getTime() == s.getStartDate().getTime()) {
                 return false;
             }
         }

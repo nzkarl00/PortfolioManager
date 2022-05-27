@@ -119,7 +119,7 @@ public class EditSprintController {
 
         errorShow = "";
 
-        String redirect = "redirect:project" + projectId + "&ids=" + sprintId;
+        String redirect = "redirect:edit-sprint?id=" + projectId + "&ids=" + sprintId;
 
         // check if sprint name is blank
         if (sprintName.isBlank()) {
@@ -127,6 +127,7 @@ public class EditSprintController {
             return redirect;
         }
         sprint.setName(sprintName);
+        sprint.setLabel(sprintName);
         sprint.setDescription(sprintDescription);
 
         // check if the sprint dates are within the project dates
