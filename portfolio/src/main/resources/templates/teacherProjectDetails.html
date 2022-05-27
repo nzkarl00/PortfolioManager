@@ -152,7 +152,7 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="text/javascript" th:inline="javascript">
 
-    let flag = true;
+    let flag = false;
 
     $('#calendar-tab').on('click', function (e) {
         if(!$('#toCalendar').hasClass('disabled') && flag) {
@@ -160,8 +160,13 @@
             flag = false;
         }
     });
+
     $('#details-tab-head').on('click', function (e) {
-            flag = true;
+        flag = true;
+    });
+
+    $('#toCalendar').on('click', function (e) {
+        flag = false;
     });
 
     function buildSprint(sprint) {
