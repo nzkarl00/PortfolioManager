@@ -43,9 +43,6 @@ public class TableController {
     private AccountClientService accountClientService;
 
     @Autowired
-    private GroupClientService groupClientService;
-
-    @Autowired
     private NavController navController;
 
     @Autowired
