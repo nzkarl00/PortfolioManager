@@ -3,6 +3,7 @@ stages:
   - publishProtosToLocalMavenRepo
   - build
   - test
+  - lint
   - sonarqube
   - deploy
 
@@ -12,6 +13,18 @@ tag-checker:
     - python3 tag_checker.py $CI_COMMIT_TAG
   only:
     - tags
+
+lint-portfolio:
+  stage: lint
+  script:
+    - cd portfolio
+    - ./gradlew check
+
+lint-identityprovider:
+  stage: lint
+  script:
+    - cd identityprovider
+    - ./gradlew check
 
 junit-portfolio:
   stage: test
