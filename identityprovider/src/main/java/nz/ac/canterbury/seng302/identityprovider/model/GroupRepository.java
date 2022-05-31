@@ -14,4 +14,5 @@ public interface GroupRepository extends CrudRepository<Groups, Long> {
 
     List<Groups> findAllByShortName(String shortName);
     List<Groups> findAllByLongName(String longName);
+    List<Groups> findAllByGroupId(int groupId);
 }

@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.*;
@@ -60,12 +59,20 @@ public class GroupsServerService extends GroupsServiceImplBase {
      */
     @Override
     public void deleteGroup(DeleteGroupRequest request, StreamObserver<DeleteGroupResponse> responseObserver) {
-
         groupRepo.deleteById((long) request.getGroupId());
         DeleteGroupResponse.Builder reply = DeleteGroupResponse.newBuilder();
-        reply
-                .setIsSuccess(true)
-                .setMessage("group has been deleted");
+        if (!(groupRepo.findAllByGroupId(request.getGroupId()).isEmpty())){
+            reply
+                    .setIsSuccess(true)
+                    .setMessage("group has been deleted");
+        } else {
+            reply
+                    .setIsSuccess(false)
+                    .setMessage("group id is incorrect");
+        }
+
+
+
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
 

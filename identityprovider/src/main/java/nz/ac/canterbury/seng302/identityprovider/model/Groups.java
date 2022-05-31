@@ -32,6 +32,11 @@ public class Groups {
 
     public Groups() {}
 
+
+    public Groups(int id) {
+        this.groupId = id;
+    }
+
     /**
      * The main constructor with all the required details
      * @param groupShortName the assigned group name with a max length of 10

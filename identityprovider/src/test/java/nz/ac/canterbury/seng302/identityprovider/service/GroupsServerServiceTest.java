@@ -1,10 +1,8 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 import io.grpc.stub.StreamObserver;
-import nz.ac.canterbury.seng302.identityprovider.model.GroupRepository;
-import nz.ac.canterbury.seng302.identityprovider.model.Groups;
-import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
+import nz.ac.canterbury.seng302.identityprovider.model.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -41,6 +39,11 @@ class GroupsServerServiceTest {
      * Mocked stream observer to parse response as a replacement for the portfolio
      */
     private StreamObserver<CreateGroupResponse> testCreateObserver = mock(StreamObserver.class);
+
+    /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<DeleteGroupResponse> testDeleteObserver = mock(StreamObserver.class);
 
     /**
      * Tests to make a valid group
@@ -142,11 +145,44 @@ class GroupsServerServiceTest {
     @Test
     void deleteGroup_validGroup() {
 
+        List<Groups> groupsCheck = new ArrayList<>();
+        groupsCheck.add(new Groups(1));
+        when(groupRepo.findAllByGroupId(1)).thenReturn(groupsCheck);
+        DeleteGroupRequest validDeleteRequest = DeleteGroupRequest.newBuilder()
+                .setGroupId(1).build();
 
+        gss.deleteGroup(validDeleteRequest, testDeleteObserver);
 
+        verify(testDeleteObserver, times(1)).onCompleted();
+        ArgumentCaptor<DeleteGroupResponse> captor = ArgumentCaptor.forClass(DeleteGroupResponse.class);
+        verify(testDeleteObserver, times(1)).onNext(captor.capture());
+        DeleteGroupResponse response = captor.getValue();
+        assertTrue(response.getIsSuccess());
+        assertEquals("group has been deleted", response.getMessage());
 
 
     }
 
+    /**
+     * Test to delete invalid group to get error - done by providing an incorrect groupId
+     */
+    @Test
+    void deleteGroup_invalidGroup_TestForFailure() {
+
+        List<Groups> groupsCheck = new ArrayList<>();
+        when(groupRepo.findAllByGroupId(1)).thenReturn(groupsCheck);
+        DeleteGroupRequest invalidDeleteRequest = DeleteGroupRequest.newBuilder()
+                .setGroupId(2).build();
+
+        gss.deleteGroup(invalidDeleteRequest, testDeleteObserver);
+
+        verify(testDeleteObserver, times(1)).onCompleted();
+        ArgumentCaptor<DeleteGroupResponse> captor = ArgumentCaptor.forClass(DeleteGroupResponse.class);
+        verify(testDeleteObserver, times(1)).onNext(captor.capture());
+        DeleteGroupResponse response = captor.getValue();
+        assertFalse(response.getIsSuccess());
+        assertEquals("group id is incorrect", response.getMessage());
+
+    }
 
 }
