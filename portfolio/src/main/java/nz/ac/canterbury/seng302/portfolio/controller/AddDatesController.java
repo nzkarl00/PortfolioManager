@@ -47,36 +47,29 @@ public class AddDatesController {
             @RequestParam(value = "projectId") Integer projectId,
             Model model
     ) throws Exception {
-
         Project project = projectService.getProjectById(projectId);
         Integer id = AuthStateInformer.getId(principal);
-
         // Attributes For header
         UserResponse userReply;
         userReply =accountClientService.getUserById(id);
-
+        // Attributes for webpage
         navController.updateModelForNav(principal,model,userReply,id);
         model.addAttribute("projectStart",project.getStartDateStringHtml());
         model.addAttribute("projectEnd",project.getEndDateStringHtml());
         model.addAttribute("project",project);
         model.addAttribute("errorShow",errorShow);
         model.addAttribute("errorCode",errorCode);
-
         // Reset for the next display of the page
         errorShow ="display:none;";
         errorCode ="";
-
         String role = AuthStateInformer.getRole(principal);
-
-        if(role.equals("teacher")||role.equals("admin"))
-        {
+        if(role.equals("teacher")||role.equals("admin")) {
             return "addDates";
-        } else
-
-        {
+        } else {
+            List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
+            model.addAttribute("sprints", sprintList);
             return "userProjectDetails";
         }
-
     }
 
     /**
