@@ -1,5 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio;
 
+import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
@@ -14,7 +17,7 @@ public class SeleniumWithTestNGLiveTest {
 
         @BeforeSuite
         public void setUp() {
-                seleniumExample = new SeleniumExample();
+                seleniumExample = new SeleniumExample("");
         }
 
         @AfterSuite
@@ -23,14 +26,14 @@ public class SeleniumWithTestNGLiveTest {
         }
 
         @Test
-        public void whenAboutBaeldungIsLoaded_thenAboutEugenIsMentionedOnPage() {
-                seleniumExample.getAboutBaeldungPage();
-                String actualTitle = seleniumExample.getTitle();
-
-                assertNotNull(actualTitle);
-                assertEquals(expectedTitle, actualTitle);
-                assertTrue(seleniumExample.isAuthorInformationAvailable());
-                System.out.println(System.getProperty("os.arch"));
-                System.out.println(System.getProperty("os.name"));
+        public void whenPortfolioIsLoaded_thenLoginWorks() {
+                WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
+                username.sendKeys("lra63");
+                WebElement password = seleniumExample.config.getDriver().findElement(By.id("password"));
+                password.sendKeys("1234567890");
+                WebElement loginButton = seleniumExample.config.getDriver().findElement(By.id("login-button"));
+                loginButton.click();
+                WebElement fullName = seleniumExample.config.getDriver().findElement(By.id("full-name"));
+                Assertions.assertEquals("Lachlan Alsop", fullName.getText());
         }
 }
