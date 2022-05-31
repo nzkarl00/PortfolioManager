@@ -22,7 +22,6 @@ public class SmokeTest {
     @Autowired
     private AccountController controller;
 
-    @Test
     public void contextLoads() throws Exception {
         assertThat(controller).isNotNull();
     }
