@@ -204,8 +204,13 @@
 
         const editButton = document.createElement("button")
         editButton.className = "edit"
-        editButton.innerText = "EDIT"
         col1.appendChild(editButton)
+
+        const innerEditButton = document.createElement("a")
+        innerEditButton.className = "button_a"
+        innerEditButton.innerText = "EDIT"
+        innerEditButton.href = "/edit-sprint?id=" + sprint.parentProjectId + "&ids=" + sprint.id
+        editButton.appendChild(innerEditButton)
 
         const deleteForm = document.createElement("form")
         deleteForm.method = "post"
@@ -270,7 +275,7 @@
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             // subscribe to the global topic
-            stompClient.subscribe('/topic/calendar', function (update) {
+            stompClient.subscribe('/topic/calendar/'+[[${project.getId()}]], function (update) {
                 // if it is a sprint update, update the calendar and details sprints
                 if (JSON.parse(update.body).updateType == "SPRINT") {
                     axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})

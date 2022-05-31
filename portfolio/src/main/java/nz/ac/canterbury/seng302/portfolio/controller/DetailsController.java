@@ -140,7 +140,7 @@ public class DetailsController {
 
             }
 
-            sendSprintCalendarChange();
+            sendSprintCalendarChange(projectId);
         }
 
         return "redirect:details?id=" + projectId;
@@ -215,17 +215,16 @@ public class DetailsController {
 
         Sprint sprint = new Sprint(projectId, "Sprint " + valueId.toString(), "Sprint " + valueId.toString(), "", startDate, endDate);
         repository.save(sprint);
-        sendSprintCalendarChange();
+        sendSprintCalendarChange(projectId);
 
         return "redirect:edit-sprint?id=" + projectId +"&ids=" + sprint.getId();
     }
 
     /**
-     * Send an update sprint message through websockets to all the users on the project details pages
+     * Send an update sprint message through websockets to all the users on the same project details page
      */
-    public void sendSprintCalendarChange() {
-        //TODO make individual project id topics
-        this.template.convertAndSend("/topic/calendar", new EventUpdate(FetchUpdateType.SPRINT));
+    public void sendSprintCalendarChange(int id) {
+        this.template.convertAndSend("/topic/calendar/" + id, new EventUpdate(FetchUpdateType.SPRINT));
     }
 
     @PostMapping("/details")
@@ -283,7 +282,7 @@ public class DetailsController {
             successCalendarShow = "";
             successCalendarCode = "Sprint time edited to: " + sprint.getStartDateString() + " - " + sprint.getEndDateString() + "";
             repository.save(sprint);
-            sendSprintCalendarChange();
+            sendSprintCalendarChange(projectId);
         }
         return redirect;
     }
