@@ -8,11 +8,13 @@ public class GroupTest {
     @Test
     void create_teacher_group_test() {
 
-        String expectedGroupName = "Teacher Group";
+        String expectedLongGroupName = "Teacher Group";
+        String expectedShortGroupName = "Teacher Group";
 
-        Groups actual = new Groups(expectedGroupName);
+        Groups actual = new Groups(expectedLongGroupName, expectedShortGroupName);
 
-        assertEquals(expectedGroupName, actual.getGroupName());
+        assertEquals(expectedLongGroupName, actual.groupLongName());
+        assertEquals(expectedShortGroupName, actual.groupShortName());
 
     }
 }

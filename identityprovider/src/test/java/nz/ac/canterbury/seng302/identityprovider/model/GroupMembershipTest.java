@@ -22,10 +22,11 @@ public class GroupMembershipTest {
         // make AccountProfile instance for testing
         AccountProfile mockAccountProfile = new AccountProfile(expectedUsername, expectedPasswordHash, expectedRegisterDate, expectedBio, expectedEmail, null, expectedFirstName, expectedLastName, expectedPronouns);
 
-        String expectedGroupName = "Teacher Group";
+        String expectedLongGroupName = "Teacher Group";
+        String expectedShortGroupName = "TG";
 
         // make Group instance for testing
-        Groups mockGroups = new Groups(expectedGroupName);
+        Groups mockGroups = new Groups(expectedLongGroupName, expectedShortGroupName);
 
         GroupMembership actualGroupMembership = new GroupMembership(mockGroups, mockAccountProfile);
 
