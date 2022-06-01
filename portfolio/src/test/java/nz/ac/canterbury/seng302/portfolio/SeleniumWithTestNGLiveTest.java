@@ -25,6 +25,10 @@ public class SeleniumWithTestNGLiveTest {
                 seleniumExample.closeWindow();
         }
 
+
+        /**
+         * load up hte page then login to the user lra63, with the set password, note if this is not on your machine you will get errors
+         */
         @Test
         public void whenPortfolioIsLoaded_thenLoginWorks() {
                 WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
