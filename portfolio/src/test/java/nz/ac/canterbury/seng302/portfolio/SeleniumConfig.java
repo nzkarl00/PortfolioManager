@@ -43,11 +43,11 @@ public class SeleniumConfig {
             suffix = ".exe";
         } else if (os.toLowerCase(Locale.ROOT).contains("linux")) {
             os = "Linux";
-            suffix = ".tar.gz";
+            suffix = "";
         } else {
             os = "Mac";
             suffix = ".mac";
         }
-        System.setProperty("webdriver.gecko.driver", System.getProperty("user.dir") + "\\WebDrivers\\FireFox\\" + os + "\\" + bit + "\\geckodriver" + suffix);
+        System.setProperty("webdriver.gecko.driver", System.getProperty("user.dir") + "/WebDrivers/FireFox/" + os + "/" + bit + "/geckodriver" + suffix);
     }
 }

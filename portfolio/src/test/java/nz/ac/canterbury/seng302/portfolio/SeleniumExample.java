@@ -16,7 +16,7 @@ public class SeleniumExample {
     SeleniumConfig config;
     @LocalServerPort
     private int port = 9000;
-    private String url = "http://localhost:" + port;
+    public String url = "http://localhost:" + port;
 
     public SeleniumExample(String contextPath) {
         config = new SeleniumConfig();
