@@ -1,12 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
-import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +18,8 @@ import java.util.List;
 @Controller
 public class AddDatesController {
 
+    @Autowired
+    private SimpMessagingTemplate template;
     @Autowired
     private SprintRepository repository;
     @Autowired
@@ -110,8 +111,16 @@ public class AddDatesController {
         if (role.equals("teacher") || role.equals("admin")) {
             Sprint sprint = new Sprint(projectId, eventName, eventName, eventDescription, newStart, newEnd);
             repository.save(sprint);
+            sendSprintCalendarChange(projectId);
             return "redirect:details?id=" + projectId;
         }
         return "redirect:details?id=" + projectId;
+    }
+
+    /**
+     * Send an update sprint message through websockets to all the users on the same project details page
+     */
+    public void sendSprintCalendarChange(int id) {
+        this.template.convertAndSend("/topic/calendar/" + id, new EventUpdate(FetchUpdateType.SPRINT));
     }
 }

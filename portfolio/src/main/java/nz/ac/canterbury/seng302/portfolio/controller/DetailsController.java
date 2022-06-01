@@ -6,6 +6,8 @@ import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +32,8 @@ import java.text.SimpleDateFormat;
 @Controller
 public class DetailsController {
 
+    @Autowired
+    private SimpMessagingTemplate template;
     @Autowired
     private SprintRepository repository;
     @Autowired
@@ -136,22 +140,30 @@ public class DetailsController {
 
         Sprint sprint = sprintService.getSprintById(sprintId);
 
-        if (role.equals("teacher")) {
+        if (role.equals("teacher") || role.equals("admin")) {
             repository.deleteById(sprintId);
-        }
+            Integer i = 1;
 
-        Integer i = 1;
+            List<Sprint> sprintLists = sprintService.getSprintByParentId(projectId);
+            for (Sprint temp : sprintLists) {
 
-        List<Sprint> sprintLists = sprintService.getSprintByParentId(projectId);
-        for (Sprint temp : sprintLists) {
+                temp.setLabel("Sprint " + i);
+                repository.save(temp);
+                i += 1;
 
-            temp.setLabel("Sprint " + i);
-            repository.save(temp);
-            i += 1;
+            }
 
+            sendSprintCalendarChange(projectId);
         }
 
         return "redirect:details?id=" + projectId;
+    }
+
+    /**
+     * Send an update sprint message through websockets to all the users on the same project details page
+     */
+    public void sendSprintCalendarChange(int id) {
+        this.template.convertAndSend("/topic/calendar/" + id, new EventUpdate(FetchUpdateType.SPRINT));
     }
 
     @PostMapping("/details")
@@ -209,9 +221,20 @@ public class DetailsController {
             successCalendarShow = "";
             successCalendarCode = "Sprint time edited to: " + sprint.getStartDateString() + " - " + sprint.getEndDateString() + "";
             repository.save(sprint);
+            sendSprintCalendarChange(projectId);
         }
-
         return redirect;
     }
 
+    /**
+     * Sends all the sprints in JSON for a given project
+     * @param principal authstate to validate the user
+     * @param projectId the id of the project to
+     * @return the list of sprints in JSON
+     */
+    @GetMapping("/sprints")
+    public ResponseEntity<List<Sprint>> getProjectSprints(@AuthenticationPrincipal AuthState principal,
+                                            @RequestParam(value="id") Integer projectId) {
+        return ResponseEntity.ok(repository.findByParentProjectId(projectId));
+    }
 }
