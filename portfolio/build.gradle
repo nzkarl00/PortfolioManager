@@ -63,11 +63,15 @@ dependencies {
     testImplementation "io.cucumber:cucumber-junit:7.2.3"
 }
 
-// weird note, you can't use junit and testNG, the first one is ignored
 tasks.named('test') {
-    useTestNG()
     useJUnitPlatform()
     finalizedBy cucumber
+}
+
+def integrationTestTask = tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+    useTestNG()
 }
 
 configurations {
