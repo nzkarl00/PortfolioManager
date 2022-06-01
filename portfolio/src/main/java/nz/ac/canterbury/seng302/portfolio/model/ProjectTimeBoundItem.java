@@ -21,7 +21,7 @@ public abstract class ProjectTimeBoundItem {
     private int id;
 
     @Column(name="name", length = MAX_NAME_LENGTH)
-    private String name = "";
+    protected String name = "";
     @Column(name="description", length = MAX_DESCRIPTION_LENGTH)
     private String description = "";
     protected LocalDateTime startDate;

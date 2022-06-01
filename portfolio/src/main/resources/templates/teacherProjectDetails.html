@@ -151,7 +151,7 @@
                             </div>
                             <div>
                             <div class="sprint-description project_edit_data">Deadlines:
-                            <div th:each="deadline: ${deadlines}" th:if="${deadline &lt; sprint.getEndDate}">
+                            <div th:each="deadline: ${deadlines}" th:if="${deadline.getStartDateAsDate() &lt; sprint.getEndDate}">
                                 <p th:text="${deadline.toString()}"></p>
                             </div>
                             </div>
@@ -212,18 +212,19 @@
 <!-- Javascript for the calendar -->
 <script type="text/javascript" th:inline="javascript">
 
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
+    document.addEventListener('DOMContentLoaded', function (index) {
+        let calendarEl = document.getElementById('calendar');
 
         // Gets the date project end date and format's it as Date
-        var endDate = new Date([[${project.getEndDate()}]].toString());
+        let endDate = new Date([[${project.getEndDate()}]].toString());
 
         // Add an extra day to end date since time is set to 00:00:00
         endDate.setDate(endDate.getDate() + 1);
         let selectedEvent;
         let sprintList = [[${sprints}]];
+        let deadlineList = [[${deadlines}]];
         let sprintEvents = [];
-
+        let deadlineEvents = [];
         // Colors for the sprints
         const colors = ['#a3c7d7', '#067d46', '#19DAFF','#f5deb3', '#d470a2', '#9acd32',
                         '#a2add0', '#c9a0dc', '#9f1d35', '#e34234', '#5b92e5', '#66023c',
@@ -233,10 +234,25 @@
                         '#cc3333', '#1c39bb', '#1ca9c9', '#002147', '#d3af37', '#30bfbf',
                         '#fdbe02', '#eaa221', '#32cd32', '#c5cbe1'];
 
+        // Loops through deadline list and saves it to be displayed on the calendar
+        for (let deadlineIndex = 0; deadlineIndex < deadlineList.length; deadlineIndex++) {
+            deadlineEvents.push({
+                id: deadlineList[deadlineIndex].id,
+                title: deadlineList[deadlineIndex].name,
+                start: deadlineList[deadlineIndex].startDate,
+                end: deadlineList[deadlineIndex].startDate,
+                durationEditable: false,
+                color: colors[deadlineIndex % colors.length],
+                borderColor: 'white'
+                }
+            )
+        }
+        console.log(deadlineList)
+        console.log(deadlineEvents)
         // Loops through sprint list and saves it to be displayed on the calendar
-        for (var sprintIndex = 0; sprintIndex < sprintList.length; sprintIndex++) {
+        for (let sprintIndex = 0; sprintIndex < sprintList.length; sprintIndex++) {
 
-            var sprintEndDate = new Date(sprintList[sprintIndex].endDate.toString());
+            let sprintEndDate = new Date(sprintList[sprintIndex].endDate.toString());
             sprintEndDate.setDate(sprintEndDate.getDate() + 1);
 
             // Information about each sprint
@@ -253,7 +269,7 @@
             });
         }
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+        let calendar = new FullCalendar.Calendar(calendarEl, {
             eventClick: function (info) {
                 if (selectedEvent) {
                     selectedEvent.setProp("durationEditable", false);
@@ -273,9 +289,8 @@
             eventDurationEditable: true,
             eventResizableFromStart: true,
             eventOverlap: false,
-            events: sprintEvents,
+            events: sprintEvents.concat(deadlineEvents),
             displayEventTime : false,
-
             eventResize: function (eventResizeInfo) {
                 let form = document.createElement('form'); // Creating the form which will be used to post new sprint data.
                 form.setAttribute("th:action", "@{/details}");
@@ -302,6 +317,7 @@
                 form.submit() // Automatically submit form on move
             }
         });
+        console.log(calendar.getEvents())
         calendar.render();
     });
 

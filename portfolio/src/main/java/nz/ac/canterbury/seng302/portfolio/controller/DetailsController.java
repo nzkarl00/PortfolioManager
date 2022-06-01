@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.rpc.context.AttributeContext;
-import io.grpc.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -21,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
@@ -81,12 +82,12 @@ public class DetailsController {
         model.addAttribute("errorCalendarCode", errorCalendarCode);
 
         // TODO Change this to get lists from repo
-        List<Date> deadlineList = new ArrayList<>();
+        List<Deadline> deadlineList = new ArrayList<>();
         List<Date> eventList = new ArrayList<>();
         List<Date> milestoneList = new ArrayList<>();
         eventList.add(new Date());
-        deadlineList.add(sprintList.get(0).getEndDate());
-        deadlineList.add(sprintList.get(0).getStartDate());
+        deadlineList.add(new Deadline(project, "testDeadline", "testDeadlineDesc", sprintList.get(0).getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()));
+        deadlineList.add(new Deadline(project, "testDeadline2", "testDeadlineDesc2", sprintList.get(0).getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()));
         milestoneList.add(sprintList.get(0).getStartDate());
         milestoneList.add(new Date());
         model.addAttribute("deadlines", deadlineList);
