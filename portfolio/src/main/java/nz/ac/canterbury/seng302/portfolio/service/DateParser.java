@@ -35,7 +35,8 @@ public class DateParser {
         int currentYear = currentCalendar.get(Calendar.YEAR);
 
         int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
-        int totalYear = (currentYear - year - 1);
+        boolean monthsCross = month > currentMonth;
+        int totalYear = monthsCross?(currentYear - year - 1) : currentYear - year;
 
         if (totalMonth > 0){
             stringDate += " (";

@@ -84,19 +84,6 @@ public class DetailsController {
         model.addAttribute("errorCalendarShow", errorCalendarShow);
         model.addAttribute("errorCalendarCode", errorCalendarCode);
 
-        // TODO Change this to get lists from repo
-        List<Date> deadlineList = new ArrayList<>();
-        List<Date> eventList = new ArrayList<>();
-        List<Date> milestoneList = new ArrayList<>();
-        eventList.add(new Date());
-        deadlineList.add(sprintList.get(0).getEndDate());
-        deadlineList.add(sprintList.get(0).getStartDate());
-        milestoneList.add(sprintList.get(0).getStartDate());
-        milestoneList.add(new Date());
-        model.addAttribute("deadlines", deadlineList);
-        model.addAttribute("milestones", milestoneList);
-        model.addAttribute("events", eventList);
-
         // Reset for the next display of the page
         errorShow = "display:none;";
         errorCode = "";

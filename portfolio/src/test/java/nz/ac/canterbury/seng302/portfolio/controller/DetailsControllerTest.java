@@ -219,57 +219,6 @@ public class DetailsControllerTest {
     }
 
     @Test
-    public void postDetailsNewSprintAsTeacher() throws Exception {
-        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
-
-        // Configuring Spring to use the mocked SecurityContext
-        SecurityContextHolder.setContext(mockedSecurityContext);
-
-        when(projectService.getProjectById(1)).thenReturn(testProject);
-
-        mockMvc.perform(post("/new-sprint").param("projectId", String.valueOf(1)))
-                .andExpect(status().is3xxRedirection()) // given this should refresh the page redirection is expected
-                .andExpect(view().name("redirect:edit-sprint?id=1&ids=0")); // page is moved
-    }
-
-    @Test
-    public void postDetailsNewSprintMaximumAsTeacher() throws Exception {
-        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
-
-        // Configuring Spring to use the mocked SecurityContext
-        SecurityContextHolder.setContext(mockedSecurityContext);
-
-        when(projectService.getProjectById(1)).thenReturn(testProject);
-
-        mockMvc.perform(post("/new-sprint").param("projectId", String.valueOf(1)))
-                .andExpect(status().is3xxRedirection()) // given this should move to editing the sprint redirection is expected
-                .andExpect(view().name("redirect:edit-sprint?id=1&ids=0"));
-    }
-
-    @Test
-    public void postDetailsNewSprintAsStudent() throws Exception {
-        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
-
-        // Configuring Spring to use the mocked SecurityContext
-        SecurityContextHolder.setContext(mockedSecurityContext);
-
-        when(projectService.getProjectById(1)).thenReturn(testProject);
-
-        mockMvc.perform(post("/new-sprint").param("projectId", String.valueOf(1)))
-                .andExpect(status().is3xxRedirection()) // given this should move to editing the sprint redirection is expected
-                .andExpect(view().name("redirect:details?id=1"));
-    }
-
-    @Test
     public void postDetailsDeleteSprintAsTeacher() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
