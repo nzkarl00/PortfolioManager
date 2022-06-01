@@ -13,8 +13,8 @@ public class GroupTest {
 
         Groups actual = new Groups(expectedLongGroupName, expectedShortGroupName);
 
-        assertEquals(expectedLongGroupName, actual.groupLongName());
-        assertEquals(expectedShortGroupName, actual.groupShortName());
+        assertEquals(expectedLongGroupName, actual.getGroupLongName());
+        assertEquals(expectedShortGroupName, actual.getGroupShortName());
 
     }
 }

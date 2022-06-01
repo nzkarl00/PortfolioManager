@@ -47,8 +47,8 @@ public class Groups {
         this.groupShortName = groupShortName;
     }
 
-    public String groupShortName(){ return groupShortName; }
-    public String groupLongName(){ return groupLongName; }
+    public String getGroupShortName(){ return groupShortName; }
+    public String getGroupLongName(){ return groupLongName; }
     public int getId(){return groupId;}
 
     public List<GroupMembership> getMembers() {return members;}
