@@ -110,55 +110,60 @@ public class EditSprintController {
             Model model
     ) throws Exception {
 
-        Sprint sprint = sprintService.getSprintById(sprintId);
-        Project project = projectService.getProjectById(projectId);
 
-        Date projStartDate = DateParser.stringToDate(project.getStartDateString()); // project.getStartDateString();
-        Date projEndDate = DateParser.stringToDate(project.getEndDateString()); // project.getEndDateString();
-        Date checkStartDate = DateParser.stringToDate(sprintStartDate);
-        Date checkEndDate = DateParser.stringToDate(sprintEndDate);
+        String role = AuthStateInformer.getRole(principal);
 
-        errorShow = "";
+        if (role.equals("teacher") || role.equals("admin")) {
 
-        String redirect = "redirect:edit-sprint?id=" + projectId + "&ids=" + sprintId;
+            Sprint sprint = sprintService.getSprintById(sprintId);
+            Project project = projectService.getProjectById(projectId);
 
-        // check if sprint name is blank
-        if (sprintName.isBlank()) {
-            errorCode = "Sprint requires a name";
-            return redirect;
-        }
-        sprint.setName(sprintName);
-        sprint.setDescription(sprintDescription);
+            Date projStartDate = DateParser.stringToDate(project.getStartDateString()); // project.getStartDateString();
+            Date projEndDate = DateParser.stringToDate(project.getEndDateString()); // project.getEndDateString();
+            Date checkStartDate = DateParser.stringToDate(sprintStartDate);
+            Date checkEndDate = DateParser.stringToDate(sprintEndDate);
 
-        // check if the sprint dates are within the project dates
-        if (!checkStartDate.after(projStartDate) || !checkEndDate.before(projEndDate)) {
+            errorShow = "";
 
-            // check to is if the sprint isn't equal to the project start and end date
-            if (!checkStartDate.equals(projStartDate) && !checkEndDate.equals(projEndDate)) {
-                errorCode = "Sprint is outside of the Project's timeline";
+            String redirect = "redirect:edit-sprint?id=" + projectId + "&ids=" + sprintId;
+
+            // check if sprint name is blank
+            if (sprintName.isBlank()) {
+                errorCode = "Sprint requires a name";
                 return redirect;
             }
+            sprint.setName(sprintName);
+            sprint.setDescription(sprintDescription);
+
+            // check if the sprint dates are within the project dates
+            if (!checkStartDate.after(projStartDate) || !checkEndDate.before(projEndDate)) {
+
+                // check to is if the sprint isn't equal to the project start and end date
+                if (!checkStartDate.equals(projStartDate) && !checkEndDate.equals(projEndDate)) {
+                    errorCode = "Sprint is outside of the Project's timeline";
+                    return redirect;
+                }
+            }
+
+            // check if sprint start is before sprint end
+            if (!checkStartDate.before(checkEndDate)) {
+                errorCode = "Start and End date overlap";
+                return redirect;
+            }
+
+            // moving the harder sprint date checking to a service helper class that can be easily unit tested
+            List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
+            if (!DateParser.sprintDateCheck(sprints, sprint, checkStartDate, checkEndDate)) {
+                errorCode = "Sprint dates overlap with " + DateParser.sprintIdFail;
+                return redirect;
+            }
+
+            // show no errors, update the sprint and save it to the db
+            errorShow = "display:none;";
+            sprint.setStartDate(checkStartDate);
+            sprint.setEndDate(checkEndDate);
+            repository.save(sprint);
         }
-
-        // check if sprint start is before sprint end
-        if (!checkStartDate.before(checkEndDate)) {
-            errorCode = "Start and End date overlap";
-            return redirect;
-        }
-
-        // moving the harder sprint date checking to a service helper class that can be easily unit tested
-        List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
-        if (!DateParser.sprintDateCheck(sprints, sprint, checkStartDate, checkEndDate)) {
-            errorCode = "Sprint dates overlap with " + DateParser.sprintIdFail;
-            return redirect;
-        }
-
-        // show no errors, update the sprint and save it to the db
-        errorShow = "display:none;";
-        sprint.setStartDate(checkStartDate);
-        sprint.setEndDate(checkEndDate);
-        repository.save(sprint);
-
         return "redirect:details?id=" + projectId;
     }
 

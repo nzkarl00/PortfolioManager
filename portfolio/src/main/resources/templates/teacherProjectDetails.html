@@ -92,9 +92,14 @@
                         <!-- Buttons -->
                         <div class="col-lg-8 col-md-10 col-sm-12">
 
-                            <button class="edit" style="padding-top:0rem;">
-                                <a class="button_a" th:href="@{/edit-project(id=${project.getId})}">Edit Project</a>
-                            </button>
+                            <form th:action="@{/edit-project}" method="get">
+
+                                <input style="display:none;" th:name="id" id="id" th:value="${project.getId}" type="number">
+                                <button class="edit" style="padding-top:0rem;" type="submit">
+                                    Edit Project
+                                </button>
+                            </form>
+
                         </div>
                         <div class="col-2"></div>
 
@@ -165,9 +170,14 @@
                             <button class="login_box "th:style="${errorShow}">
                                 <p class="login_error" th:text="${errorCode}"/>
                             </button>
-                            <button class="edit ">
-                                <a class=" button_a" th:href="@{/landing}">      Return      </a>
-                            </button>
+
+
+                            <form th:action="@{/landing}" method="get">
+                                <button class="edit" style="padding-top:0rem;" type="submit">
+                                    Return
+                                </button>
+                            </form>
+
                             <br><br>
                         </div>
 

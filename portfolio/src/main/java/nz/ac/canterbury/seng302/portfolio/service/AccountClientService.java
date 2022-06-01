@@ -1,43 +1,48 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import com.google.protobuf.ByteString;
-import io.grpc.Status;
-import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
-import org.springframework.stereotype.Component;
-import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import nz.ac.canterbury.seng302.shared.identityprovider.ChangePasswordRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.ChangePasswordResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.ModifyRoleOfUserRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
 
 /**
  * The GRPC client side service class
  * contains many of the protobuf implementations to allow communication between the idp and portfolio servers
  */
-public class AccountClientService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
+public class AccountClientService
+        extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     @GrpcClient("identity-provider-grpc-server")
     UserAccountServiceGrpc.UserAccountServiceBlockingStub accountServiceStub;
 
     /**
      * makes a UserRegisterRequest to receive a UserRegisterResponse
-     * @param username the user's username
-     * @param password the user's plaintext password
-     * @param firstName the user's firstname
-     * @param lastName the user's lastname
+     *
+     * @param username         the user's username
+     * @param password         the user's plaintext password
+     * @param firstName        the user's firstname
+     * @param lastName         the user's lastname
      * @param personalPronouns the user's preferred pronouns
-     * @param email the user's email
+     * @param email            the user's email
      * @return the UserRegisterResponse from the request with the params
      */
-    public UserRegisterResponse register(String username, String password, String firstName, String lastName, String personalPronouns, String email) {
+    public UserRegisterResponse register(String username, String password,
+                                         String firstName, String lastName,
+                                         String personalPronouns,
+                                         String email) {
         UserRegisterRequest registerRequest = UserRegisterRequest.newBuilder()
                 .setUsername(username)
                 .setPassword(password)
@@ -51,50 +56,74 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
     /**
      * Get a user's details from the id of the user
+     *
      * @param id
      * @return the user's details
      */
     public UserResponse getUserById(int id) {
-        GetUserByIdRequest.Builder request = GetUserByIdRequest.newBuilder().setId(id);
+        GetUserByIdRequest.Builder request =
+                GetUserByIdRequest.newBuilder().setId(id);
         return accountServiceStub.getUserAccountById(request.build());
     }
 
     /**
      * Passes an edit user request to the IDP
-     * @param id the user's account id
-     * @param firstName the user's first name
+     *
+     * @param id         the user's account id
+     * @param firstName  the user's first name
      * @param middleName the user's middle name
-     * @param lastName the user's last name
-     * @param nickname the user's nickname
-     * @param bio the user's self description
-     * @param pronouns the user's preferred pronouns
-     * @param email the user's email
+     * @param lastName   the user's last name
+     * @param nickname   the user's nickname
+     * @param bio        the user's self description
+     * @param pronouns   the user's preferred pronouns
+     * @param email      the user's email
      * @return the response from the IDP
      */
-    public EditUserResponse editUser(int id, String firstName, String middleName, String lastName, String nickname, String bio, String pronouns, String email) {
+    public EditUserResponse editUser(int id, String firstName,
+                                     String middleName, String lastName,
+                                     String nickname, String bio,
+                                     String pronouns, String email) {
         EditUserRequest.Builder request = EditUserRequest.newBuilder();
         request.setUserId(id);
         // as all of these fields are optional we have if's for null or empty values
-        if (!firstName.isEmpty()) { request.setFirstName(firstName); }
-        if (!middleName.isEmpty()) { request.setMiddleName(middleName); }
-        if (!lastName.isEmpty()) { request.setLastName(lastName); }
-        if (!nickname.isEmpty()) { request.setNickname(nickname); }
-        if (!bio.isEmpty()) { request.setBio(bio); }
-        if (!pronouns.isEmpty()) { request.setPersonalPronouns(pronouns); }
-        if (!email.isEmpty()) { request.setEmail(email); }
+        if (!firstName.isEmpty()) {
+            request.setFirstName(firstName);
+        }
+        if (!middleName.isEmpty()) {
+            request.setMiddleName(middleName);
+        }
+        if (!lastName.isEmpty()) {
+            request.setLastName(lastName);
+        }
+        if (!nickname.isEmpty()) {
+            request.setNickname(nickname);
+        }
+        if (!bio.isEmpty()) {
+            request.setBio(bio);
+        }
+        if (!pronouns.isEmpty()) {
+            request.setPersonalPronouns(pronouns);
+        }
+        if (!email.isEmpty()) {
+            request.setEmail(email);
+        }
         return accountServiceStub.editUser(request.build());
     }
 
     /**
      * returns a paginated users response from the request details
-     * @param limit the max amount of users to get
-     * @param offset the starting point to get users from
-     * @param orderBy the sorting mode
+     *
+     * @param limit     the max amount of users to get
+     * @param offset    the starting point to get users from
+     * @param orderBy   the sorting mode
      * @param orderMode 1 for descending 0 for ascending
      * @return the list of UserResponses in the form of a paginatedUsersResponse
      */
-    public PaginatedUsersResponse getPaginatedUsers(int limit, int offset, String orderBy, int orderMode) {
-        GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder();
+    public PaginatedUsersResponse getPaginatedUsers(int limit, int offset,
+                                                    String orderBy,
+                                                    int orderMode) {
+        GetPaginatedUsersRequest.Builder request =
+                GetPaginatedUsersRequest.newBuilder();
         String order = orderBy;
         if (orderMode == 1) {
             order += "_desc";
@@ -109,21 +138,25 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
     /**
      * returns the Change password response based on the given details
-     * @param id thhe id of the user to change
+     *
+     * @param id              thhe id of the user to change
      * @param currentPassword the current user password
-     * @param newPassword the new user password
+     * @param newPassword     the new user password
      * @return the grpc response ChangePasswordResponse
      */
-    public ChangePasswordResponse editPassword(int id, String currentPassword, String newPassword) {
-        ChangePasswordRequest.Builder request = ChangePasswordRequest.newBuilder();
+    public ChangePasswordResponse editPassword(int id, String currentPassword,
+                                               String newPassword) {
+        ChangePasswordRequest.Builder request =
+                ChangePasswordRequest.newBuilder();
         request.setUserId(id)
-            .setCurrentPassword(currentPassword)
-            .setNewPassword(newPassword);
+                .setCurrentPassword(currentPassword)
+                .setNewPassword(newPassword);
         return accountServiceStub.changeUserPassword(request.build());
     }
 
     public UserRoleChangeResponse deleteRole(String role, Integer userId) {
-        ModifyRoleOfUserRequest.Builder request = ModifyRoleOfUserRequest.newBuilder();
+        ModifyRoleOfUserRequest.Builder request =
+                ModifyRoleOfUserRequest.newBuilder();
         request.setUserId(userId);
         UserRole roleSending;
         if (role.equals("student")) {
@@ -142,7 +175,8 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
     }
 
     public UserRoleChangeResponse addRole(String role, Integer userId) {
-        ModifyRoleOfUserRequest.Builder request = ModifyRoleOfUserRequest.newBuilder();
+        ModifyRoleOfUserRequest.Builder request =
+                ModifyRoleOfUserRequest.newBuilder();
         request.setUserId(userId);
         UserRole roleSending;
         if (role.equals("student")) {
@@ -162,9 +196,9 @@ public class AccountClientService extends UserAccountServiceGrpc.UserAccountServ
 
 
     public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int id) {
-        DeleteUserProfilePhotoRequest.Builder request = DeleteUserProfilePhotoRequest.newBuilder()
-            .setUserId(id);
-        System.out.println(id);
+        DeleteUserProfilePhotoRequest.Builder request =
+                DeleteUserProfilePhotoRequest.newBuilder()
+                        .setUserId(id);
         return accountServiceStub.deleteUserProfilePhoto(request.build());
     }
 }

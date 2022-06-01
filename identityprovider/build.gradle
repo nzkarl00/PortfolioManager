@@ -4,6 +4,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id "org.sonarqube" version "3.3"
+    id 'checkstyle'
 }
 
 group = 'nz.ac.canterbury.seng302.team700'
@@ -22,6 +23,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework:spring-web'
+    implementation 'com.puppycrawl.tools:checkstyle:10.1'
 
     // JWT dependencies
     implementation 'io.jsonwebtoken:jjwt-api:0.11.0'
@@ -85,12 +87,13 @@ jacoco {
 }
 
 jacocoTestReport {
-  reports {
-    xml.enabled true
-    xml.destination file("${buildDir}/jacoco/test-report.xml")
-    csv.enabled false
-    html.destination file("${buildDir}/jacoco/html")
-  }
+    reports {
+        csv.required = false
+        xml.required = true
+        xml.destination = file("${buildDir}/jacoco/test-report.xml")
+        html.required = true
+        html.destination = file("${buildDir}/jacoco/html")
+    }
 }
 
 sonarqube {

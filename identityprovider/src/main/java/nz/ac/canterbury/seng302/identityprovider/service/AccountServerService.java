@@ -175,18 +175,66 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
     /**
      * Updates the usersSorted list with the correct users in the order given by the sorted roles query
+     * @param usersAll the list to reference
      * @param usersSorted the list to update
-     * @param roles the order to base the update from
+     * @param ascDesc the list to if we're sorting by lowest or highest role
      */
-    public void updateUsersSorted(List<AccountProfile> usersSorted, List<Role> roles) {
-        ArrayList<Integer> userIds = new ArrayList<>();
-        for (Role role: roles) {
-            Integer userId = role.getRoleAccountId();
-            if (!userIds.contains(userId)){
-                userIds.add(userId);
-                usersSorted.add(repo.findById(userId.intValue()));
+    public void updateUsersSorted(List<AccountProfile> usersAll, List<AccountProfile> usersSorted, Boolean ascDesc) {
+        ArrayList<AccountProfile> userAdmins = new ArrayList<>();
+        ArrayList<AccountProfile> userTeachers = new ArrayList<>();
+        ArrayList<AccountProfile> userStudents = new ArrayList<>();
+
+        for (AccountProfile profile: usersAll) {
+            Role currentRole = null;
+            List<Role> usersRoles = roleRepo.findAllByRegisteredUser(profile);
+
+            for (Role role: usersRoles) {
+                if (currentRole == null) {
+                    currentRole = role;
+                } else {
+                    if (currentRole.getRole().equals("3admin")) {
+                    } else if ((currentRole.getRole().equals("2teacher")) && (role.getRole().equals("3admin"))) {
+                            currentRole = role;
+                    } else {
+                        currentRole = role;
+                    }
+                }
+            }
+
+            if (currentRole.getRole().equals("3admin")) {
+                userAdmins.add(profile);
+            }
+            if (currentRole.getRole().equals("2teacher")) {
+                userTeachers.add(profile);
+            }
+            if (currentRole.getRole().equals("1student")) {
+                userStudents.add(profile);
+            }
+
+        }
+
+        if (ascDesc) {
+            for (AccountProfile profile: userAdmins) {
+                usersSorted.add(profile);
+            }
+            for (AccountProfile profile: userTeachers) {
+                usersSorted.add(profile);
+            }
+            for (AccountProfile profile: userStudents) {
+                usersSorted.add(profile);
+            }
+        } else {
+            for (AccountProfile profile: userStudents) {
+                usersSorted.add(profile);
+            }
+            for (AccountProfile profile: userTeachers) {
+                usersSorted.add(profile);
+            }
+            for (AccountProfile profile: userAdmins) {
+                usersSorted.add(profile);
             }
         }
+
     }
 
     /**
@@ -204,14 +252,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
         Boolean isSorted = false;
 
         if (request.getOrderBy().equals("roles_asc")) {
-
-            List<Role> roles = roleRepo.findAllByOrderByRoleAsc();
-            updateUsersSorted(usersSorted, roles);
+            updateUsersSorted(sortUsers(request), usersSorted, true);
 
         } else if (request.getOrderBy().equals("roles_desc")) {
-
-            List<Role> roles = roleRepo.findAllByOrderByRoleDesc();
-            updateUsersSorted(usersSorted, roles);
+            updateUsersSorted(sortUsers(request), usersSorted, false);
 
         } else {
             usersSorted = sortUsers(request);
