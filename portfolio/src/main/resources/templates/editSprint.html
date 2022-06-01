@@ -31,27 +31,27 @@
         <!-- Editing body -->
 
 
-        <form class="row" th:action="@{edit-sprint}" method="post">
+        <form class="row" id="eventForm" th:action="@{edit-sprint}" method="post">
 
             <div class="col-2"></div>
 
             <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
-                <label class="project_subhead" for="sprintName">Sprint Name</label> <br/>
-                <input class="project_edit_data horizontal_field" id="sprintName" type="text" th:name="sprintName" th:value="*{sprint.getName}">
+                <label class="project_subhead" id="eventNameLabel" for="eventName">Sprint Name</label> <br/>
+                <input class="project_edit_data horizontal_field" id="eventName" type="text" th:name="sprintName" th:value="*{sprint.getName}">
                 <br/>
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
-                        <label class="project_subhead" for="sprintStartDate">Sprint Start Date</label> <br/>
-                        <input class="project_edit_data" id="sprintStartDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="sprintStartDate" th:value="*{sprint.getStartDateStringHtml}">
+                        <label class="project_subhead" id="eventStartDateLabel" for="eventStartDate">Sprint Start Date</label> <br/>
+                        <input class="project_edit_data" id="eventStartDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="sprintStartDate" th:value="*{sprint.getStartDateStringHtml}">
                     </div>
                     <div class="horizontal-group-element" >
-                        <label class="project_subhead" for="sprintEndDate">Sprint End Date</label> <br/>
-                        <input class="project_edit_data" id="sprintEndDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="sprintEndDate" th:value="*{sprint.getEndDateStringHtml}">
+                        <label class="project_subhead" id="eventEndDateLabel" for="eventEndDate">Sprint End Date</label> <br/>
+                        <input class="project_edit_data" id="eventEndDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="sprintEndDate" th:value="*{sprint.getEndDateStringHtml}">
                     </div>
                 </div>
                 <div>
-                    <label class="project_subhead" for="sprintDescription">Sprint Description</label> <br/>
-                    <textarea class="description-input project_edit_data horizontal_field bio" id="sprintDescription" th:name="sprintDescription" th:text="*{sprint.getDescription}"></textarea>
+                    <label class="project_subhead" id="eventDescriptionLabel" for="eventDescription">Sprint Description</label> <br/>
+                    <textarea class="description-input project_edit_data horizontal_field bio" id="eventDescription" th:name="sprintDescription" th:text="*{sprint.getDescription}"></textarea>
                 </div>
 
 

@@ -92,20 +92,16 @@
                         <!-- Buttons -->
                         <div class="col-lg-8 col-md-10 col-sm-12">
 
-                            <form th:action="@{/edit-project}" method="get">
-
-                                <input style="display:none;" th:name="id" id="id" th:value="${project.getId}" type="number">
-                                <button class="edit" style="padding-top:0rem;" type="submit">
-                                    Edit Project
-                                </button>
-                            </form>
+                            <button class="edit" style="padding-top:0rem;">
+                                <a class="button_a" th:href="@{edit-project(id=${project.getId})}">Edit Project</a>
+                            </button>
 
                         </div>
                         <div class="col-2"></div>
 
                     </div>
-
                     <br>
+                    <p></p>
 
                     <div class="row row_sprints"  th:each="sprint: ${sprints}">
 
@@ -146,11 +142,27 @@
                             <div class="sprint-date detail_date" th:text="${sprint.getStartDateString} + ' - ' + ${sprint.getEndDateString}" />
 
                             <div class="sprint-description project_edit_data" th:text="${sprint.getDescription}" />
-
+                            <div>
+                            <div class="sprint-description project_edit_data">Milestones:
+                            <div th:each="milestone: ${milestones}" th:if="${milestone &lt; sprint.getEndDate}">
+                                <p th:text="${milestone.toString()}"></p>
+                            </div>
+                            </div>
+                            </div>
+                            <div>
+                            <div class="sprint-description project_edit_data">Deadlines:
+                            <div th:each="deadline: ${deadlines}" th:if="${deadline &lt; sprint.getEndDate}">
+                                <p th:text="${deadline.toString()}"></p>
+                            </div>
+                            </div>
+                            </div>
+                            <div class="sprint-description project_edit_data">Events:
+                            <div th:each="event: ${events}" th:if="${event &lt; sprint.getEndDate}">
+                                <p th:text="${event.toString()}"></p>
+                            </div>
+                            </p>
+                            </div>
                         </div>
-
-                        <div class="col-2"></div>
-
                     </div>
 
                     <div class="row">
@@ -160,10 +172,10 @@
                         <!-- Buttons -->
 
                         <div class="col-lg-8 col-md-10 col-sm-12" >
-                            <form th:action="@{new-sprint}" method="post">
+                            <form th:action="@{add-dates}" method="get">
                                 <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
                                 <button class="add" type="submit">
-                                    Add Sprint
+                                    Add Dates
                                 </button>
                             </form>
                             <br>
@@ -265,7 +277,6 @@
             displayEventTime : false,
 
             eventResize: function (eventResizeInfo) {
-                console.log("test");
                 let form = document.createElement('form'); // Creating the form which will be used to post new sprint data.
                 form.setAttribute("th:action", "@{/details}");
                 form.setAttribute("method", "post");
@@ -284,7 +295,6 @@
                 formEnd.setAttribute("th:name", "end");
                 formEnd.setAttribute("name", "end");
                 form.appendChild(formEnd);
-                console.log(form.childNodes);
                 form.elements["sprintId"].value = eventResizeInfo.event.id;
                 form.elements["start"].value = eventResizeInfo.event.start;
                 form.elements["end"].value = eventResizeInfo.event.end;

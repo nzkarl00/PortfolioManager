@@ -109,10 +109,7 @@ public class EditSprintController {
             @RequestParam(value="sprintDescription") String sprintDescription,
             Model model
     ) throws Exception {
-
-
         String role = AuthStateInformer.getRole(principal);
-
         if (role.equals("teacher") || role.equals("admin")) {
 
             Sprint sprint = sprintService.getSprintById(sprintId);

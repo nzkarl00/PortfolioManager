@@ -51,4 +51,6 @@ public class Groups {
     public String groupLongName(){ return groupLongName; }
     public int getId(){return groupId;}
 
+    public List<GroupMembership> getMembers() {return members;}
+
 }
