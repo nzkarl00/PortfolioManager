@@ -12,6 +12,9 @@ public class SeleniumConfig {
 
     private WebDriver driver;
 
+    /**
+     * Makes the browser to test implementation on
+     */
     public SeleniumConfig() {
         Capabilities capabilities = DesiredCapabilities.firefox();
         driver = new FirefoxDriver(capabilities);
@@ -22,6 +25,8 @@ public class SeleniumConfig {
         return driver;
     }
 
+    // I set up a file directory of web-drivers
+    // so that hopefully most of that can be done automatically
     static {
         String suffix;
 

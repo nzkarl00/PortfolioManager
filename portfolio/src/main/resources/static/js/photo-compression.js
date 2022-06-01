@@ -8,7 +8,7 @@ console.log("here");
 
 function compress() {
     console.log("started");
-    const input = document.getElementById("photo"
+    const input = document.getElementById("photo")
     const file = input.files[0];
     // Use the file
     const blobURL = window.URL.createObjectURL(file);

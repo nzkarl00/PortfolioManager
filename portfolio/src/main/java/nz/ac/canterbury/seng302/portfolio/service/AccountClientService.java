@@ -188,7 +188,6 @@ public class AccountClientService
         } else {
             roleSending = UserRole.STUDENT;
         }
-        System.out.println(roleSending);
 
         request.setRole(roleSending);
         return accountServiceStub.addRoleToUser(request.build());
