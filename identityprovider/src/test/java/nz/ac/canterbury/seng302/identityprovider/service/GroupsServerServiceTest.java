@@ -51,8 +51,8 @@ class GroupsServerServiceTest {
     @Test
     void createGroup_validNames() {
         List<Groups> groupsCheck = new ArrayList<>();
-        when(groupRepo.findAllByLongName("The Society of Pompous Rapscallions")).thenReturn(groupsCheck);
-        when(groupRepo.findAllByShortName("SPR")).thenReturn(groupsCheck);
+        when(groupRepo.findAllByGroupLongName("The Society of Pompous Rapscallions")).thenReturn(groupsCheck);
+        when(groupRepo.findAllByGroupShortName("SPR")).thenReturn(groupsCheck);
 
         CreateGroupRequest request = CreateGroupRequest.newBuilder()
                 .setLongName("The Society of Pompous Rapscallions")
@@ -75,9 +75,9 @@ class GroupsServerServiceTest {
         List<Groups> groupsCheck = new ArrayList<>();
         List<Groups> duplicate = new ArrayList<>();
         duplicate.add(new Groups("The Society of Pompous Rapscallions", "SPR"));
-        when(groupRepo.findAllByLongName("The Society of Pompous Rapscallions")).thenReturn(duplicate);
-        when(groupRepo.findAllByLongName("SPR")).thenReturn(groupsCheck);
-        when(groupRepo.findAllByLongName("SPR")).thenReturn(duplicate);
+        when(groupRepo.findAllByGroupLongName("The Society of Pompous Rapscallions")).thenReturn(duplicate);
+        when(groupRepo.findAllByGroupLongName("SPR")).thenReturn(groupsCheck);
+        when(groupRepo.findAllByGroupLongName("SPR")).thenReturn(duplicate);
         CreateGroupRequest invalidRequest = CreateGroupRequest.newBuilder()
                 .setLongName("The Society of Pompous Rapscallions")
                 .setShortName("SPR").build();
@@ -99,9 +99,9 @@ class GroupsServerServiceTest {
         List<Groups> groupsCheck = new ArrayList<>();
         List<Groups> duplicate = new ArrayList<>();
         duplicate.add(new Groups("The Society of Pompous Rapscallions", "SPR"));
-        when(groupRepo.findAllByLongName("The New Society of Pompous Rapscallions")).thenReturn(groupsCheck);
-        when(groupRepo.findAllByShortName("SPR")).thenReturn(groupsCheck);
-        when(groupRepo.findAllByShortName("SPR")).thenReturn(duplicate);
+        when(groupRepo.findAllByGroupLongName("The New Society of Pompous Rapscallions")).thenReturn(groupsCheck);
+        when(groupRepo.findAllByGroupShortName("SPR")).thenReturn(groupsCheck);
+        when(groupRepo.findAllByGroupShortName("SPR")).thenReturn(duplicate);
         CreateGroupRequest invalidRequest = CreateGroupRequest.newBuilder()
                 .setLongName("The New Society of Pompous Rapscallions")
                 .setShortName("SPR").build();
@@ -123,9 +123,9 @@ class GroupsServerServiceTest {
         List<Groups> groupsCheck = new ArrayList<>();
         List<Groups> duplicate = new ArrayList<>();
         duplicate.add(new Groups("SPR", "SP"));
-        when(groupRepo.findAllByShortName("SPR")).thenReturn(groupsCheck);
-        when(groupRepo.findAllByLongName("SPR")).thenReturn(duplicate);
-        when(groupRepo.findAllByLongName("The Owl Group")).thenReturn(groupsCheck);
+        when(groupRepo.findAllByGroupShortName("SPR")).thenReturn(groupsCheck);
+        when(groupRepo.findAllByGroupLongName("SPR")).thenReturn(duplicate);
+        when(groupRepo.findAllByGroupLongName("The Owl Group")).thenReturn(groupsCheck);
         CreateGroupRequest invalidRequest = CreateGroupRequest.newBuilder()
                 .setLongName("The Owl Group")
                 .setShortName("SPR").build();
@@ -137,6 +137,7 @@ class GroupsServerServiceTest {
         verify(testCreateObserver, times(1)).onNext(captor.capture());
         CreateGroupResponse response = captor.getValue();
         assertFalse(response.getIsSuccess());
+
     }
 
     /**
