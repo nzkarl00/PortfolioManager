@@ -45,7 +45,10 @@ public class GroupController {
         List<Group> groups = new ArrayList<>();
         GetGroupDetailsResponse response = GetGroupDetailsResponse.newBuilder()
                 .addMembers(userReply).addMembers(userReply).setLongName("The Society of Pompous Rapscallions").setShortName("SPR").build();
+        GetGroupDetailsResponse response2 = GetGroupDetailsResponse.newBuilder()
+            .addMembers(userReply).addMembers(userReply).setLongName("The Society of Pompous Rapscallions").setShortName("SOPR").build();
         groups.add(new Group(response));
+        groups.add(new Group(response2));
         //TEST DATA
 
         model.addAttribute("groups", groups);
