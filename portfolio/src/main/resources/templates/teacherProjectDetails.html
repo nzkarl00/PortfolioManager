@@ -103,7 +103,7 @@
                     <br>
                     <p></p>
 
-                    <div class="row row_sprints"  th:each="sprint: ${sprints}">
+                    <div class="row row_sprints"  th:each="sprint, iStat: ${sprints}">
 
 
                         <div class="col-2"></div>
@@ -113,7 +113,7 @@
                         <div class="col-lg-1 col-md-2 col-sm-12 col-12 align-items-end ">
 
 
-                            <div class="portion_sprintbody project_sprinthead " th:text="${sprint.getLabel}" />
+                            <div class="portion_sprintbody project_sprinthead " th:styleappend="'background-color:' + ${colors[iStat.index]} + '!important'" th:text="${sprint.getLabel}"/>
 
                             <button class="edit">
                                 <a class="button_a" th:href="@{'/edit-sprint?id=' + ${sprint.getParentProjectId} + '&ids=' + ${sprint.getId}}">EDIT</a>
@@ -134,7 +134,7 @@
                         </div>
 
                         <!-- Sprint info -->
-                        <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
+                        <div th:styleappend="'background-color:' + ${colors[iStat.index]} + '!important'" class="col-lg-7 col-md-8 col-sm-12 portion_body">
 
 
                             <div class="sprint-title project_subhead " th:text="${sprint.getName}" />
@@ -144,20 +144,20 @@
                             <div class="sprint-description project_edit_data" th:text="${sprint.getDescription}" />
                             <div>
                             <div class="sprint-description project_edit_data">Milestones:
-                            <div th:each="milestone: ${milestones}" th:if="${milestone &lt; sprint.getEndDate}">
+                            <div th:each="milestone: ${milestones}" th:if="${milestone &lt;= sprint.getEndDate and milestone &gt;= sprint.getStartDate}">
                                 <p th:text="${milestone.toString()}"></p>
                             </div>
                             </div>
                             </div>
                             <div>
                             <div class="sprint-description project_edit_data">Deadlines:
-                            <div th:each="deadline: ${deadlines}" th:if="${deadline.getStartDateAsDate() &lt; sprint.getEndDate}">
-                                <p th:text="${deadline.toString()}"></p>
+                            <div th:each="deadline: ${deadlines}" th:if="${deadline.getStartDateAsDate() &lt;= sprint.getEndDate and deadline.getStartDateAsDate &gt;= sprint.getStartDate}">
+                                <p th:text="${deadline.name}"></p>
                             </div>
                             </div>
                             </div>
                             <div class="sprint-description project_edit_data">Events:
-                            <div th:each="event: ${events}" th:if="${event &lt; sprint.getEndDate}">
+                            <div th:each="event: ${events}" th:if="${event &lt;= sprint.getEndDate and event &gt;= sprint.getStartDate}">
                                 <p th:text="${event.toString()}"></p>
                             </div>
                             </p>

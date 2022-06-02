@@ -49,6 +49,15 @@ public class DetailsController {
     String errorCalendarShow = "display:none;";
     String errorCalendarCode = "";
 
+    // Colors for the sprints
+    List<String> colors = new ArrayList<String>(Arrays.asList("#a3c7d7", "#067d46", "#19DAFF","#f5deb3", "#d470a2", "#9acd32",
+        "#a2add0", "#c9a0dc", "#9f1d35", "#e34234", "#5b92e5", "#66023c",
+        "#483c32", "#0abab5", "#eee600", "#f28500", "#ffcc33", "#a7fc00",
+        "#cdc9c9", "#eee9e9", "#836fff", "#473c8b", "#708090", "#c0c0c0",
+        "#ffd800", "#ff2400", "#e30b5d", "#003153", "#ff5a36", "#e5e4e2",
+        "#cc3333", "#1c39bb", "#1ca9c9", "#002147", "#d3af37", "#30bfbf",
+        "#fdbe02", "#eaa221", "#32cd32", "#c5cbe1"));
+
     /**
      * Returns the html page based on the user's role
      *
@@ -93,7 +102,7 @@ public class DetailsController {
         model.addAttribute("deadlines", deadlineList);
         model.addAttribute("milestones", milestoneList);
         model.addAttribute("events", eventList);
-
+        model.addAttribute("colors", colors);
         // Reset for the next display of the page
         errorShow = "display:none;";
         errorCode = "";
