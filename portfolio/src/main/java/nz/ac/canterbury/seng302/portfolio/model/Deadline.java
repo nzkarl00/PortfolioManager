@@ -66,4 +66,8 @@ public class Deadline extends ProjectTimeBoundItem {
     public LocalDateTime getEndDate() {
         return this.startDate;
     }
+
+    public String getName() {
+        return this.name;
+    }
 }
