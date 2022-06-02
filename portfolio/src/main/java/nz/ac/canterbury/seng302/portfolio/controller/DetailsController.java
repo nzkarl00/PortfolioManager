@@ -1,10 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.rpc.context.AttributeContext;
+import io.grpc.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,10 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.text.SimpleDateFormat;
 
 /**
@@ -32,6 +32,8 @@ import java.text.SimpleDateFormat;
 @Controller
 public class DetailsController {
 
+    @Autowired
+    private SimpMessagingTemplate template;
     @Autowired
     private SprintRepository repository;
     @Autowired
@@ -52,13 +54,14 @@ public class DetailsController {
 
     /**
      * Returns the html page based on the user's role
+     *
      * @param principal the auth token
-     * @param model The model to be used by the application for web integration
+     * @param model     The model to be used by the application for web integration
      * @return The html page to direct to
      * @throws Exception
      */
     @GetMapping("/details")
-    public String details(@AuthenticationPrincipal AuthState principal , @RequestParam(value="id") Integer projectId, Model model) throws Exception {
+    public String details(@AuthenticationPrincipal AuthState principal, @RequestParam(value = "id") Integer projectId, Model model) throws Exception {
         /* Add project details to the model */
         // Gets the project with id 0 to plonk on the page
         Project project = projectService.getProjectById(projectId);
@@ -105,115 +108,50 @@ public class DetailsController {
 
     /**
      * The mapping to delete a sprint
+     *
      * @param principal auth token
      * @param projectId id param for project to delete sprint from
-     * @param sprintId sprint id under project to delete
-     * @param model the model to add attributes to
+     * @param sprintId  sprint id under project to delete
+     * @param model     the model to add attributes to
      * @return A location of where to go next
      * @throws Exception
      */
     @PostMapping("delete-sprint")
     public String sprintDelete(
             @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value="deleteprojectId") Integer projectId,
-            @RequestParam(value="sprintId") Integer sprintId,
+            @RequestParam(value = "deleteprojectId") Integer projectId,
+            @RequestParam(value = "sprintId") Integer sprintId,
             Model model
     ) throws Exception {
         String role = AuthStateInformer.getRole(principal);
 
         Sprint sprint = sprintService.getSprintById(sprintId);
 
-        if (role.equals("teacher")) {
+        if (role.equals("teacher") || role.equals("admin")) {
             repository.deleteById(sprintId);
-        }
+            Integer i = 1;
 
-        Integer i = 1;
+            List<Sprint> sprintLists = sprintService.getSprintByParentId(projectId);
+            for (Sprint temp : sprintLists) {
 
-        List<Sprint> sprintLists = sprintService.getSprintByParentId(projectId);
-        for (Sprint temp : sprintLists) {
+                temp.setLabel("Sprint " + i);
+                repository.save(temp);
+                i += 1;
 
-            temp.setLabel("Sprint " + i);
-            repository.save(temp);
-            i += 1;
+            }
 
+            sendSprintCalendarChange(projectId);
         }
 
         return "redirect:details?id=" + projectId;
     }
 
     /**
-     * The mapping to create a new sprint for a specified project
-     * @param principal auth token
-     * @param projectId id param for project to create sprint for
-     * @param model the model to add attributes to
-     * @return A location of where to go next
-     * @throws Exception
+     * Send an update sprint message through websockets to all the users on the same project details page
      */
-    @PostMapping("/new-sprint")
-    public String newSprint(
-            @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value="projectId") Integer projectId,
-            Model model
-    ) throws Exception {
-        String role = AuthStateInformer.getRole(principal);
-
-        // Reject non-authorized users
-        if (!(role.equals("teacher") || role.equals("admin"))) {
-            return "redirect:details?id=" + projectId;
-        }
-
-        List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
-
-        Integer valueId = 0;
-
-        valueId = sprints.size();
-
-        Project project = projectService.getProjectById(projectId);
-        Date startDate;
-        Date endDate;
-        Calendar calendar = Calendar.getInstance();
-        int noOfDays = 21;
-        //check to see if the project already has a sprint
-        if (valueId == 0) {
-            // if not use the project start date to get the new sprint start date
-            startDate = project.getStartDate();
-
-            calendar.setTime(startDate);
-            calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
-            endDate = calendar.getTime();
-
-        } else {
-            // if it does use the last sprint end date for the new sprint start date
-            startDate = sprints.get(sprints.size()-1).getEndDate();
-            calendar.setTime(startDate);
-            calendar.add(Calendar.DATE, +1); // add one more day to the date so sprints don't overlap with end date
-            startDate = calendar.getTime();
-            calendar.add(Calendar.DAY_OF_YEAR, noOfDays);
-            endDate = calendar.getTime();
-            if (endDate.after(project.getEndDate())) {
-
-                endDate = project.getEndDate();
-
-            }
-
-            if (Objects.equals(sprints.get(sprints.size() - 1).getEndDateString(), project.getEndDateString())) {
-
-                errorShow="";
-                errorCode="There is not enough time in your project for another sprint";
-                return "redirect:details?id=" + projectId;
-
-            }
-
-        }
-
-        valueId += 1;
-
-        Sprint sprint = new Sprint(projectId, "Sprint " + valueId.toString(), "Sprint " + valueId.toString(), "", startDate, endDate);
-        repository.save(sprint);
-
-        return "redirect:edit-sprint?id=" + projectId +"&ids=" + sprint.getId();
+    public void sendSprintCalendarChange(int id) {
+        this.template.convertAndSend("/topic/calendar/" + id, new EventUpdate(FetchUpdateType.SPRINT));
     }
-
 
     @PostMapping("/details")
     public String sprintSaveFromCalendar(@AuthenticationPrincipal AuthState principal,
@@ -270,9 +208,20 @@ public class DetailsController {
             successCalendarShow = "";
             successCalendarCode = "Sprint time edited to: " + sprint.getStartDateString() + " - " + sprint.getEndDateString() + "";
             repository.save(sprint);
+            sendSprintCalendarChange(projectId);
         }
-
         return redirect;
     }
 
+    /**
+     * Sends all the sprints in JSON for a given project
+     * @param principal authstate to validate the user
+     * @param projectId the id of the project to
+     * @return the list of sprints in JSON
+     */
+    @GetMapping("/sprints")
+    public ResponseEntity<List<Sprint>> getProjectSprints(@AuthenticationPrincipal AuthState principal,
+                                            @RequestParam(value="id") Integer projectId) {
+        return ResponseEntity.ok(repository.findByParentProjectId(projectId));
+    }
 }

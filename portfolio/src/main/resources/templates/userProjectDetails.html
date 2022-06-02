@@ -103,10 +103,30 @@
 
 
                         <div class="sprint-title project_subhead " th:text="${sprint.getName}" />
+
                         <div class="sprint-date detail_date" th:text="${sprint.getStartDateString} + ' - ' + ${sprint.getEndDateString}" />
+
                         <div class="sprint-description project_edit_data" th:text="${sprint.getDescription}" />
-
-
+                        <div>
+                            <div class="sprint-description project_edit_data">Milestones:
+                                <div th:each="milestone: ${milestones}" th:if="${milestone &lt; sprint.getEndDate}">
+                                    <p th:text="${milestone.toString()}"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="sprint-description project_edit_data">Deadlines:
+                                <div th:each="deadline: ${deadlines}" th:if="${deadline &lt; sprint.getEndDate}">
+                                    <p th:text="${deadline.toString()}"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sprint-description project_edit_data">Events:
+                            <div th:each="event: ${events}" th:if="${event &lt; sprint.getEndDate}">
+                                <p th:text="${event.toString()}"></p>
+                            </div>
+                            </p>
+                        </div>
                     </div>
 
                     <div class="col-2"></div>

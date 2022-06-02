@@ -6,6 +6,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class IdentityProviderConfig {
+    /**
+     * Returns a new instance of the file system utils bean.
+     * @return a new instance of FileSystemUtils
+     */
     @Bean
     public FileSystemUtils fileSystemUtils() {
         return new FileSystemUtils();

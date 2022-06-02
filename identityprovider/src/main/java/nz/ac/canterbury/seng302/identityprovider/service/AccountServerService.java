@@ -328,6 +328,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
+
+        System.out.println(request);
         String roleString;
         switch (request.getRole()) {
             case TEACHER:
@@ -425,7 +427,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
             @Override
             public void onError(Throwable t) {
-                System.out.println("Upload failed, ERROR: " + Status.fromThrowable(t));
                 FileUploadStatusResponse.Builder response = FileUploadStatusResponse.newBuilder();
                 response.setMessage("Upload failed, ERROR: " + Status.fromThrowable(t))
                     .setStatus(FileUploadStatus.FAILED);

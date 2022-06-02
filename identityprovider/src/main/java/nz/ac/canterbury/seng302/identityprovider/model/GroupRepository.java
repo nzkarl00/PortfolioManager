@@ -1,8 +1,9 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
-import org.apache.catalina.Group;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 
 /**
@@ -11,4 +12,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GroupRepository extends CrudRepository<Groups, Long> {
     Groups findByGroupId(long id);
+
+    List<Groups> findAllByGroupShortName(String shortName);
+    List<Groups> findAllByGroupLongName(String longName);
+    List<Groups> findAllByGroupId(int groupId);
 }
