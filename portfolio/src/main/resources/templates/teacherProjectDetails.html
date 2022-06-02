@@ -176,6 +176,14 @@
         flag = false;
     });
 
+    const colors = ['#a3c7d7', '#067d46', '#19DAFF','#f5deb3', '#d470a2', '#9acd32',
+        '#a2add0', '#c9a0dc', '#9f1d35', '#e34234', '#5b92e5', '#66023c',
+        '#483c32', '#0abab5', '#eee600', '#f28500', '#ffcc33', '#a7fc00',
+        '#cdc9c9', '#eee9e9', '#836fff', '#473c8b', '#708090', '#c0c0c0',
+        '#ffd800', '#ff2400', '#e30b5d', '#003153', '#ff5a36', '#e5e4e2',
+        '#cc3333', '#1c39bb', '#1ca9c9', '#002147', '#d3af37', '#30bfbf',
+        '#fdbe02', '#eaa221', '#32cd32', '#c5cbe1'];
+
     // build a sprint in html from js
     function buildSprint(sprint) {
         const mainDiv = document.getElementById("sprints")
@@ -241,6 +249,7 @@
 
         const col3 = document.createElement("div")
         col3.className = "col-lg-7 col-md-8 col-sm-12 portion_body"
+        col3.style.border = "5px solid " + colors[sprint.id % colors.length]
         sprintDiv.appendChild(col3)
 
         const name = document.createElement("div")
@@ -285,7 +294,6 @@
         stompClient.connect({}, function (frame) {
             // subscribe to the global topic
             stompClient.subscribe('/topic/calendar/'+[[${project.getId()}]], function (update) {
-
                 // if it is a sprint update, update the calendar and details sprints
                 if (JSON.parse(update.body).updateType == "SPRINT") {
                     axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
@@ -345,13 +353,6 @@
         let sprintEvents = [];
 
         // Colors for the sprints
-        const colors = ['#a3c7d7', '#067d46', '#19DAFF','#f5deb3', '#d470a2', '#9acd32',
-            '#a2add0', '#c9a0dc', '#9f1d35', '#e34234', '#5b92e5', '#66023c',
-            '#483c32', '#0abab5', '#eee600', '#f28500', '#ffcc33', '#a7fc00',
-            '#cdc9c9', '#eee9e9', '#836fff', '#473c8b', '#708090', '#c0c0c0',
-            '#ffd800', '#ff2400', '#e30b5d', '#003153', '#ff5a36', '#e5e4e2',
-            '#cc3333', '#1c39bb', '#1ca9c9', '#002147', '#d3af37', '#30bfbf',
-            '#fdbe02', '#eaa221', '#32cd32', '#c5cbe1'];
 
         // Loops through sprint list and saves it to be displayed on the calendar
         for (var sprintIndex = 0; sprintIndex < sprintList.length; sprintIndex++) {
@@ -368,7 +369,7 @@
                 end: sprintEndDate,
                 durationEditable: false,
                 // Mod so the sprint index doesn't go out of range for colors list
-                color: colors[sprintIndex % colors.length],
+                color: colors[sprintList[sprintIndex].id % colors.length],
                 borderColor: 'white'
             });
         }
