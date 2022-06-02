@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import javax.persistence.*;
+
 /**
  * This class specifies the attributes and methods associated with a group type and an GroupMembership type
  * There is a mapping made to the GroupMembership with a many-to-one relationship and
@@ -35,11 +36,14 @@ public class GroupMembership {
 
     }
 
-    public  Long getGroupMembershipId() {return groupMembershipId;};
-
     public Groups getRegisteredGroups(){return registeredGroups;}
+
+    public GroupMembership(AccountProfile registeredUser, Groups parentGroup) {
+        this.registeredGroupUser = registeredUser;
+        this.registeredGroups = parentGroup;
+    }
 
     public AccountProfile getRegisteredGroupUser() {return registeredGroupUser;}
 
-
+    public Long getGroupMembershipId() {return groupMembershipId;}
 }
