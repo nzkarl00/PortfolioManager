@@ -10,6 +10,7 @@ import com.google.rpc.context.AttributeContext;
 import nz.ac.canterbury.seng302.portfolio.authentication.AuthenticationClientInterceptor;
 import nz.ac.canterbury.seng302.portfolio.authentication.JwtAuthenticationFilter;
 import nz.ac.canterbury.seng302.portfolio.authentication.JwtAuthenticationToken;
+import nz.ac.canterbury.seng302.portfolio.model.DeadlineRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
@@ -134,6 +135,9 @@ public class DetailsControllerTest {
 
     @MockBean
     SimpMessagingTemplate template;
+
+    @MockBean
+    DeadlineRepository deadlineRepository;
 
     @Before
     public void setup() throws Exception {

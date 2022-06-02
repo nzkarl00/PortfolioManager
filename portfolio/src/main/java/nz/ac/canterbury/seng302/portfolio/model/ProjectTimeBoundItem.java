@@ -18,16 +18,16 @@ public abstract class ProjectTimeBoundItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="id")
-    private int id;
+    protected int id;
 
     @Column(name="name", length = MAX_NAME_LENGTH)
-    private String name = "";
+    protected String name = "";
     @Column(name="description", length = MAX_DESCRIPTION_LENGTH)
-    private String description = "";
+    protected String description = "";
     protected LocalDateTime startDate;
     @ManyToOne
     @JoinColumn(name="parent_project_id", nullable=false)
-    private Project parentProject;
+    protected Project parentProject;
 
     protected ProjectTimeBoundItem() {}
 

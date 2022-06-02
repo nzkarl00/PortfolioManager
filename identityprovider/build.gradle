@@ -53,7 +53,8 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 
   // Cucumber dependencies
-  testImplementation 'io.cucumber:cucumber-java:7.2.3'
+    testImplementation 'io.cucumber:cucumber-java:7.2.3'
+    testImplementation "io.cucumber:cucumber-junit:7.2.3"
 }
 
 tasks.named('test') {

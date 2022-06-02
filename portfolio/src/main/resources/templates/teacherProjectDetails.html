@@ -90,10 +90,10 @@
                     <div class="col-2"></div>
 
                         <!-- Buttons -->
-                        <div class="col-lg-8 col-md-10 col-sm-12"> class="edit" style="padding-top:0rem;">
+                        <div class="col-lg-8 col-md-10 col-sm-12">
+                            <button class="edit" style="padding-top:0rem;">
                                 <a class="button_a" th:href="@{edit-project(id=${project.getId})}">Edit Project</a>
                             </button>
-
                         </div>
                         <div class="col-2"></div>
 
@@ -181,6 +181,7 @@
         const mainDiv = document.getElementById("sprints")
         // make the main container for all the sprints
         const sprintDiv = document.createElement("div")
+        sprintDiv.id = "sprint" + sprint.id
         sprintDiv.className = "row row_sprints";
         mainDiv.appendChild(sprintDiv)
 
@@ -254,11 +255,25 @@
 
         const description = document.createElement("div")
         description.className = "sprint-description project_edit_data"
+        description.innerText = "Description: " + sprint.description
         col3.appendChild(description)
+
+        const deadlines = document.createElement("div")
+        deadlines.className = "sprint-description project_edit_data"
+        deadlines.id = "deadlines" + sprint.id
+        deadlines.innerText = "Deadlines:"
+        col3.appendChild(deadlines)
 
         const col4 = document.createElement("div")
         col4.className = "col-2"
         sprintDiv.appendChild(col4)
+    }
+
+    function buildDeadline(deadline, sprintId) {
+    const mainDiv = document.getElementById("deadlines" + sprintId)
+        const deadlineText = document.createElement("div")
+        deadlineText.innerText = deadline.name
+        mainDiv.appendChild(deadlineText)
     }
 
     var stompClient = null;
@@ -268,20 +283,35 @@
         stompClient = Stomp.over(socket);
         // connect to the portfolio server
         stompClient.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
             // subscribe to the global topic
             stompClient.subscribe('/topic/calendar/'+[[${project.getId()}]], function (update) {
+
                 // if it is a sprint update, update the calendar and details sprints
                 if (JSON.parse(update.body).updateType == "SPRINT") {
                     axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
                     .then((response) => {
                         deleteAllSprints()
                         for (const sprint of response.data) {
-                            console.log(sprint)
                             buildSprint(sprint)
+                            axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+                            .then((response) => {
+                                for (const deadline of response.data) {
+                                    buildDeadline(deadline, sprint.id)
+                                }
+                            })
                         }
                         renderCalendar(response.data)
                     })
+                }
+
+                if (JSON.parse(update.body).updateType == "DEADLINE") {
+                    axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":JSON.parse(update.body).sprintId}})
+                        .then((response) => {
+                            deleteAllDeadlines(sprint.id)
+                            for (const deadline of response.data) {
+                                buildDeadline(sprint, JSON.parse(update.body).sprintId)
+                            }
+                        })
                 }
             });
         });
@@ -407,12 +437,29 @@
         }
     }
 
+    function deleteAllDeadlines(id) {
+        var e = document.getElementById("deadlines" + id);
+
+        //e.firstElementChild can be used.
+        var child = e.lastElementChild;
+        while (child) {
+            e.removeChild(child);
+            child = e.lastElementChild;
+        }
+    }
+
     // initial loading, base the sprints off of thymeleaf
     // then set the calendar and the details tabs with the correct data
     let initialSprintList = [[${sprints}]];
 
     for (const sprint of initialSprintList) {
         buildSprint(sprint)
+        axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+            .then((response) => {
+                for (const deadline of response.data) {
+                    buildDeadline(deadline, sprint.id)
+                }
+            })
     }
 
     document.addEventListener('DOMContentLoaded', function() { renderCalendar(initialSprintList) });
