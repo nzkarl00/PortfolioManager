@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head.html :: head('Groups')"></head>
+<body>
+
+
+
+<!-- Navigation Bar -->
+<div th:replace="fragments/validUser.html :: navbar"></div>
+
+
+
+<!-- Body -->
+<div class="container">
+    <div class="row-1">
+        <br><br><br>
+    </div>
+
+    <div class="row">
+        <div class="col-2">
+        </div>
+        <form class="col-lg-8 col-md-10 col-sm-12" th:style="${display}" th:action="@{addGroup}" method="get">
+            <button class="add" type="submit">
+                Add Group
+            </button>
+        </form>
+    </div>
+    <br>
+
+    <div class="row" th:each="group: ${groups}">
+
+        <div class="col-2">
+        </div>
+
+        <!-- Groups Section -->
+        <div class="col-lg-8 col-md-10 col-sm-12 portion_body" >
+
+            <a class="project_a" th:href="@{editGroup(id=${group.getId})}" >
+                <h3 class="project_subhead" th:text="${group.longName}"/>
+            </a>
+            <br>
+            <div>
+                <!-- Users -->
+                <div class="user-table">
+                    <table class="table" id="groupUserTable">
+                        <thead>
+                        <tr class="justify-content-center">
+                            <th class="table_head justify-content-center text-center"scope="col" >
+                                First Name
+                            </th>
+                            <th class="table_head justify-content-center text-center" scope="col">
+                                Last Name
+                            </th>
+                            <th class="table_head justify-content-center text-center" scope="col">
+                                Username
+                            </th>
+                            <th class="table_head justify-content-center text-center" scope="col">
+                                Alias
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${group.getMembers.empty}">
+                            <td colspan="5"> Could not get users to list </td>
+                        </tr>
+                        <tr th:each="user : ${group.getMembers}">
+                            <td><span class="table_text" th:text="${user.firstName}"> First </span></td>
+                            <td><span class="table_text" th:text="${user.lastName}"> Last </span></td>
+                            <td><span class="table_text" th:text="${user.username}"> Username </span></td>
+                            <td><span class="table_text" th:text="${user.nickname}"> Alias </span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+            </div>
+
+        </div>
+
+        <div class="col-2">
+
+
+        </div>
+
+        <div class="col-4">
+
+            <br>
+            <br>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+</body>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var table = $('#groupUserTable').DataTable();
+        $('#groupUserTable tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+                console.log("working")
+            }
+            else {
+                $(this).addClass('selected');
+                console.log("still working")
+            }
+        });
+    });
+</script>
+
+</html>
