@@ -41,7 +41,8 @@
             <div class="col-12 ">
                 <p class="body_title_large " th:text="${project.getName}" />
                 <p class="header_project_dates" th:text="'Start Date: ' + ${project.getStartDateString} + ' - ' + 'End Date: ' + ${project.getEndDateString}"/>
-                <br>
+                <p class="horizontal_field project_subtext" th:text="${project.getDescription}" />
+            <br>
             </div>
 
         </div>
@@ -91,7 +92,7 @@
 
                         <!-- Buttons -->
                         <div class="col-lg-8 col-md-10 col-sm-12"> class="edit" style="padding-top:0rem;">
-                                <a class="button_a" th:href="@{edit-project(id=${project.getId})}">Edit Project</a>
+                                <a class="button_a" th:action="@{edit-project(id=${project.getId})}">Edit Project</a>
                             </button>
 
                         </div>
