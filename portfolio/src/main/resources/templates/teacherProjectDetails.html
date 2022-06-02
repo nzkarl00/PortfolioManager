@@ -42,6 +42,12 @@
                 <p class="body_title_large " th:text="${project.getName}" />
                 <p class="header_project_dates" th:text="'Start Date: ' + ${project.getStartDateString} + ' - ' + 'End Date: ' + ${project.getEndDateString}"/>
                 <p class="horizontal_field project_subtext" th:text="${project.getDescription}" />
+<!--                &lt;!&ndash; Buttons &ndash;&gt;-->
+<!--                <form class="col-lg-8 col-md-10 col-sm-12" th:style="${display}" th:action="@{edit-project(id=${project.getId})}" method="get">-->
+<!--                    <button class="button_a edit" type="submit">-->
+<!--                        Edit Project-->
+<!--                    </button>-->
+<!--                </form>-->
             <br>
             </div>
 
@@ -77,28 +83,7 @@
                 <div class="row">
                     <div class="col-2"></div>
                     <div class="col-lg-8 col-md-10 col-sm-12 portion_body">
-                    <div class="col-lg-8 col-md-10 col-sm-12 portion_body">
 
-                        <p class="detail_date " th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
-
-                            <div class="horizontal_field project_subtext" th:text="${project.getDescription}" /> </div>
-
-                        <div class="col-2"></div>
-
-                </div>
-
-                <div class="row">
-                    <div class="col-2"></div>
-
-                        <!-- Buttons -->
-                        <div class="col-lg-8 col-md-10 col-sm-12"> class="edit" style="padding-top:0rem;">
-                                <a class="button_a" th:action="@{edit-project(id=${project.getId})}">Edit Project</a>
-                            </button>
-
-                        </div>
-                        <div class="col-2"></div>
-
-                    </div>
                     <br>
                     <p></p>
 
