@@ -5,7 +5,8 @@ import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.GetGroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,15 +42,12 @@ public class GroupController {
 
         navController.updateModelForNav(principal, model, userReply, id);
 
-        //TEST DATA
         List<Group> groups = new ArrayList<>();
-        GetGroupDetailsResponse response = GetGroupDetailsResponse.newBuilder()
-                .addMembers(userReply).addMembers(userReply).setLongName("The Society of Pompous Rapscallions").setShortName("SPR").build();
-        GetGroupDetailsResponse response2 = GetGroupDetailsResponse.newBuilder()
-            .addMembers(userReply).addMembers(userReply).setLongName("The Society of Pompous Rapscallions").setShortName("SOPR").build();
-        groups.add(new Group(response));
-        groups.add(new Group(response2));
-        //TEST DATA
+
+        PaginatedGroupsResponse response = groupsService.getGroups(10, 0, true);
+        for (GroupDetailsResponse group: response.getGroupsList()) {
+            groups.add(new Group(group));
+        }
 
         model.addAttribute("groups", groups);
 

@@ -13,7 +13,78 @@
 <!-- Body -->
 <div class="main">
   <div class="container">
-    ADD GROUP PLACEHOLDER
+
+    <div class="row-1">
+      <br><br><br>
+    </div>
+
+
+    <!-- Signup Form -->
+    <form class="row" th:action="@{createGroup}" method="post">
+
+      <div class="col-lg-2 col-m-1 col-2"></div>
+
+      <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
+        <div>
+          <label class="project_subhead" >Long Name*:</label>
+          <input class="project_edit_data horizontal_field" id="longName" type="text" th:name="longName" th:value="*{longName}" maxlength="50" title="Long Name can be a max of 50 characters" required><br/>
+        </div>
+
+
+        <div>
+          <label class="project_subhead">Short Name*:</label>
+          <input class="project_edit_data horizontal_field"  id="shortName" th:name="shortName" th:value="*{shortName}" maxlength="10" title="Short Name can be a max of 10 characters" required><br/>
+
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end text-center" style="text-align:center;">
+
+        <button id="signup-button" class="save" type="submit">CREATE</button>
+
+
+        <button class="cancel" type="button">
+          <a  class="button_a " th:href="@{groups}">CANCEL</a>
+        </button>
+
+      </div>
+
+
+
+      <div class="col-2"></div>
+
+    </form>
+
+    <br>
+
+    <div class="row">
+
+      <div class="col-2"></div>
+
+      <div class="col-7 text-center ">
+
+
+        <button class="signup_box" th:style="${errorShow}">
+          <p class="signup_error" th:text="${successCode}"/>
+        </button>
+
+        <button class="signup_box_green" th:style="${successShow}">
+          <p class="signup_error_green" th:text="${successCode}"/>
+        </button>
+
+
+      </div>
+
+      <div class="col-3"></div>
+
+
+    </div>
+
+    <div class="row-1">
+      <br><br><br>
+    </div>
+
   </div>
 </div>
 
