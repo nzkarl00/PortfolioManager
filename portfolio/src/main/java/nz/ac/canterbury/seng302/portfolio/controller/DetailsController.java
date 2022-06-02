@@ -5,6 +5,8 @@ import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
@@ -31,6 +32,10 @@ import java.text.SimpleDateFormat;
 @Controller
 public class DetailsController {
 
+    @Autowired
+    private DeadlineRepository deadlineRepo;
+    @Autowired
+    private SimpMessagingTemplate template;
     @Autowired
     private SprintRepository repository;
     @Autowired
@@ -49,15 +54,6 @@ public class DetailsController {
     String errorCalendarShow = "display:none;";
     String errorCalendarCode = "";
 
-    // Colors for the sprints
-    List<String> colors = new ArrayList<String>(Arrays.asList("#a3c7d7", "#067d46", "#19DAFF","#f5deb3", "#d470a2", "#9acd32",
-        "#a2add0", "#c9a0dc", "#9f1d35", "#e34234", "#5b92e5", "#66023c",
-        "#483c32", "#0abab5", "#eee600", "#f28500", "#ffcc33", "#a7fc00",
-        "#cdc9c9", "#eee9e9", "#836fff", "#473c8b", "#708090", "#c0c0c0",
-        "#ffd800", "#ff2400", "#e30b5d", "#003153", "#ff5a36", "#e5e4e2",
-        "#cc3333", "#1c39bb", "#1ca9c9", "#002147", "#d3af37", "#30bfbf",
-        "#fdbe02", "#eaa221", "#32cd32", "#c5cbe1"));
-
     /**
      * Returns the html page based on the user's role
      *
@@ -68,6 +64,7 @@ public class DetailsController {
      */
     @GetMapping("/details")
     public String details(@AuthenticationPrincipal AuthState principal, @RequestParam(value = "id") Integer projectId, Model model) throws Exception {
+
         /* Add project details to the model */
         // Gets the project with id 0 to plonk on the page
         Project project = projectService.getProjectById(projectId);
@@ -90,19 +87,6 @@ public class DetailsController {
         model.addAttribute("errorCalendarShow", errorCalendarShow);
         model.addAttribute("errorCalendarCode", errorCalendarCode);
 
-        // TODO Change this to get lists from repo
-        List<Deadline> deadlineList = new ArrayList<>();
-        List<Date> eventList = new ArrayList<>();
-        List<Date> milestoneList = new ArrayList<>();
-        eventList.add(new Date());
-        deadlineList.add(new Deadline(project, "testDeadline", "testDeadlineDesc", sprintList.get(0).getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()));
-        deadlineList.add(new Deadline(project, "testDeadline2", "testDeadlineDesc2", sprintList.get(0).getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()));
-        milestoneList.add(sprintList.get(0).getStartDate());
-        milestoneList.add(new Date());
-        model.addAttribute("deadlines", deadlineList);
-        model.addAttribute("milestones", milestoneList);
-        model.addAttribute("events", eventList);
-        model.addAttribute("colors", colors);
         // Reset for the next display of the page
         errorShow = "display:none;";
         errorCode = "";
@@ -146,22 +130,30 @@ public class DetailsController {
 
         Sprint sprint = sprintService.getSprintById(sprintId);
 
-        if (role.equals("teacher")) {
+        if (role.equals("teacher") || role.equals("admin")) {
             repository.deleteById(sprintId);
-        }
+            Integer i = 1;
 
-        Integer i = 1;
+            List<Sprint> sprintLists = sprintService.getSprintByParentId(projectId);
+            for (Sprint temp : sprintLists) {
 
-        List<Sprint> sprintLists = sprintService.getSprintByParentId(projectId);
-        for (Sprint temp : sprintLists) {
+                temp.setLabel("Sprint " + i);
+                repository.save(temp);
+                i += 1;
 
-            temp.setLabel("Sprint " + i);
-            repository.save(temp);
-            i += 1;
+            }
 
+            sendSprintCalendarChange(projectId);
         }
 
         return "redirect:details?id=" + projectId;
+    }
+
+    /**
+     * Send an update sprint message through websockets to all the users on the same project details page
+     */
+    public void sendSprintCalendarChange(int id) {
+        this.template.convertAndSend("/topic/calendar/" + id, new EventUpdate(FetchUpdateType.SPRINT));
     }
 
     @PostMapping("/details")
@@ -219,9 +211,43 @@ public class DetailsController {
             successCalendarShow = "";
             successCalendarCode = "Sprint time edited to: " + sprint.getStartDateString() + " - " + sprint.getEndDateString() + "";
             repository.save(sprint);
+            sendSprintCalendarChange(projectId);
         }
-
         return redirect;
     }
 
+    /**
+     * Sends all the sprints in JSON for a given project
+     * @param principal authstate to validate the user
+     * @param projectId the id of the project to
+     * @return the list of sprints in JSON
+     */
+    @GetMapping("/sprints")
+    public ResponseEntity<List<Sprint>> getProjectSprints(@AuthenticationPrincipal AuthState principal,
+                                            @RequestParam(value="id") Integer projectId) {
+        return ResponseEntity.ok(repository.findByParentProjectId(projectId));
+    }
+
+    /**
+     * Sends all the deadlines in JSON for a given project
+     * @param principal authstate to validate the user
+     * @param projectId the id of the project to
+     * @return the list of deadlines in JSON
+     */
+    @GetMapping("/deadlines")
+    public ResponseEntity<List<Deadline>> getProjectDeadlines(@AuthenticationPrincipal AuthState principal,
+                                                          @RequestParam(value="id") Integer projectId,
+                                                              @RequestParam(value="sprintId") Integer sprintId) throws Exception {
+        List<Deadline> deadlines = deadlineRepo.findAllByParentProject(projectService.getProjectById(projectId));
+        Optional<Sprint> sprint = repository.findById(sprintId);
+        List<Deadline> sendingDeadlines = new ArrayList<>();
+        for (Deadline deadline : deadlines) {
+            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
+            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
+            if (deadline.getEndDate().isBefore(endDate) && deadline.getStartDate().isAfter(startDate)) {
+                sendingDeadlines.add(deadline);
+            }
+        }
+        return ResponseEntity.ok(sendingDeadlines);
+    }
 }

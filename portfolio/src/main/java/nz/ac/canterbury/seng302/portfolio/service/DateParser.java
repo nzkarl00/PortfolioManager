@@ -4,6 +4,9 @@ import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -35,7 +38,8 @@ public class DateParser {
         int currentYear = currentCalendar.get(Calendar.YEAR);
 
         int totalMonth = (currentMonth - month) + 12 * (currentYear - year);
-        int totalYear = (currentYear - year - 1);
+        boolean monthsCross = month > currentMonth;
+        int totalYear = monthsCross?(currentYear - year - 1) : currentYear - year;
 
         if (totalMonth > 0){
             stringDate += " (";
@@ -133,5 +137,11 @@ public class DateParser {
             }
         }
         return true;
+    }
+
+    public static LocalDateTime convertToLocalDateTime(Date dateToConvert) {
+        return Instant.ofEpochMilli(dateToConvert.getTime())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 }

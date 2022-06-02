@@ -3,12 +3,14 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.google.protobuf.Timestamp;
 import com.google.rpc.context.AttributeContext;
 import nz.ac.canterbury.seng302.portfolio.authentication.AuthenticationClientInterceptor;
 import nz.ac.canterbury.seng302.portfolio.authentication.JwtAuthenticationFilter;
 import nz.ac.canterbury.seng302.portfolio.authentication.JwtAuthenticationToken;
+import nz.ac.canterbury.seng302.portfolio.model.DeadlineRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
@@ -29,6 +31,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.MethodParameter;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,7 +70,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = DetailsController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class DetailsControllerTest {
-/*
     public AuthState validAuthState = AuthState.newBuilder()
         .setIsAuthenticated(true)
         .setNameClaimType("name")
@@ -99,7 +101,7 @@ public class DetailsControllerTest {
         .build();
 
 
-    private UserResponse testUser = UserResponse.newBuilder()
+    private final UserResponse testUser = UserResponse.newBuilder()
             .setBio("testbio")
             .setCreated(Timestamp.newBuilder().setSeconds(10))
             .setEmail("test@email")
@@ -111,19 +113,7 @@ public class DetailsControllerTest {
             .addRoles(UserRole.TEACHER)
             .build();
 
-    public Sprint sprint = new Sprint();
-
-    public class CustomArgumentResolver implements HandlerMethodArgumentResolver {
-        @Override
-        public boolean supportsParameter(MethodParameter parameter) {
-            return parameter.getParameterType().isAssignableFrom(AuthState.class);
-        }
-
-        @Override
-        public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-            return validAuthState;
-        }
-    }
+    private final Project testProject = new Project("testName", "testDescription", new Date(), new Date());
 
     @Autowired
     private MockMvc mockMvc;
@@ -140,11 +130,18 @@ public class DetailsControllerTest {
     @MockBean
     SprintService sprintService;
 
+    @MockBean
+    NavController navController;
+
+    @MockBean
+    SimpMessagingTemplate template;
+
+    @MockBean
+    DeadlineRepository deadlineRepository;
+
     @Before
     public void setup() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(DetailsController.class)
-            .setCustomArgumentResolvers(new CustomArgumentResolver())
-            .addInterceptors((HandlerInterceptor) new AuthenticationClientInterceptor())
             .build();
     }
 
@@ -171,16 +168,17 @@ public class DetailsControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        MockedStatic<AuthStateInformer> utilities = Mockito.mockStatic(AuthStateInformer.class);
         utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("role");
+
         when(accountClientService.getUserById(1)).thenReturn(testUser);
+
+        when(projectService.getProjectById(1)).thenReturn(testProject);
 
 
         mockMvc.perform(get("/details").param("id", String.valueOf(1)))
             .andExpect(status().isOk()) // Whether to return the status "200 OK"
-            .andExpect(view().name("teacherProjectDetails")); // Whether to return the template "account"
-            //Model test.
-            //.andExpect(model().attribute("sprints", sprintList));
+            .andExpect(view().name("userProjectDetails"));
     }
 
     @Test
@@ -190,18 +188,18 @@ public class DetailsControllerTest {
         Mockito.when(mockedSecurityContext.getAuthentication())
             .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
 
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
+
+        when(projectService.getProjectById(1)).thenReturn(testProject);
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
 
         mockMvc.perform(get("/details").param("id", String.valueOf(1)))
-            .andExpect(status().isOk()) // Whether to return the status "200 OK"
-            .andExpect(view().name("teacherProjectDetails")) // Whether to return the template "account"
-            .andExpect(model().attribute("errorcode", ""))
-            .andExpect(model().attribute("errorShow", "display:none;"))
-            .andExpect(model().attribute("roleName", "teacher"))
-            .andExpect(model().attribute("sprints", sprintService.getSprintByParentId(1)));
+            .andExpect(status().isOk()); // Whether to return the status "200 OK"
+        //
     }
 
     @Test
@@ -214,80 +212,14 @@ public class DetailsControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
+        when(projectService.getProjectById(1)).thenReturn(testProject);
 
         mockMvc.perform(get("/details").param("id", String.valueOf(1)))
             .andExpect(status().isOk()) // Whether to return the status "200 OK"
             .andExpect(view().name("userProjectDetails")) // Whether to return the template "account"
-            .andExpect(model().attribute("errorcode", ""))
             .andExpect(model().attribute("errorShow", "display:none;"))
             .andExpect(model().attribute("roleName", "student"))
             .andExpect(model().attribute("sprints", sprintService.getSprintByParentId(1)));
-    }
-
-    @Test
-    public void postDetailsNewSprintAsTeacher() throws Exception {
-        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
-
-        // Configuring Spring to use the mocked SecurityContext
-        SecurityContextHolder.setContext(mockedSecurityContext);
-
-        Integer size = sprintService.getSprintByParentId(1).size();
-
-        mockMvc.perform(post("/new-sprint").param("projectId", String.valueOf(1)))
-                .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                .andExpect(view().name("teacherProjectDetails"))
-                .andExpect(model().attribute("errorcode", ""))
-                .andExpect(model().attribute("errorShow", "display:none;"));
-        assertEquals(size+1, sprintService.getSprintByParentId(1).size());
-    }
-
-    @Test
-    public void postDetailsNewSprintMaximumAsTeacher() throws Exception {
-        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
-
-        // Configuring Spring to use the mocked SecurityContext
-        SecurityContextHolder.setContext(mockedSecurityContext);
-
-        // Fill the project dates
-        // Fill the project dates
-        for (int i=0; i < 11; i++) {
-            mockMvc.perform(post("/new-sprint").param("projectId", String.valueOf(1)));
-        }
-
-        Integer size = sprintService.getSprintByParentId(1).size();
-
-        mockMvc.perform(post("/new-sprint").param("projectId", String.valueOf(1)))
-                .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                .andExpect(view().name("teacherProjectDetails"))
-                .andExpect(model().attribute("errorcode", "There is not enough time in your project for another sprint"))
-                .andExpect(model().attribute("errorShow", ""));
-        assertEquals(size, sprintService.getSprintByParentId(1).size());
-    }
-
-    @Test
-    public void postDetailsNewSprintAsStudent() throws Exception {
-        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
-
-        // Configuring Spring to use the mocked SecurityContext
-        SecurityContextHolder.setContext(mockedSecurityContext);
-
-        Integer size = sprintService.getSprintByParentId(1).size();
-
-        mockMvc.perform(post("/new-sprint").param("projectId", String.valueOf(1)))
-                .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                .andExpect(view().name("teacherProjectDetails"))
-                .andExpect(model().attribute("errorcode", ""))
-                .andExpect(model().attribute("errorShow", "display:none;"));
-        assertEquals(size, sprintService.getSprintByParentId(1).size());
     }
 
     @Test
@@ -300,16 +232,11 @@ public class DetailsControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        mockMvc.perform(post("/new-sprint").param("projectId", String.valueOf(1)));
-
-        Integer size = sprintService.getSprintByParentId(1).size();
+        when(projectService.getProjectById(1)).thenReturn(testProject);
 
         mockMvc.perform(post("/delete-sprint").param("deleteprojectId", String.valueOf(1)).param("sprintId", String.valueOf(1)))
-                .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                .andExpect(view().name("teacherProjectDetails"))
-                .andExpect(model().attribute("errorcode", ""))
-                .andExpect(model().attribute("errorShow", "display:none;"));
-        assertEquals(size-1, sprintService.getSprintByParentId(1).size());
+                .andExpect(status().is3xxRedirection()) // given this should move to details once deleted redirection is expected
+                .andExpect(view().name("redirect:details?id=1")); // page is moved
     }
 
     @Test
@@ -322,18 +249,14 @@ public class DetailsControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn("student");
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateStudent)).thenReturn(1);
+        when(projectService.getProjectById(1)).thenReturn(testProject);
+
         mockMvc.perform(post("/new-sprint").param("projectId", String.valueOf(1)));
 
-        Integer size = sprintService.getSprintByParentId(1).size();
-
         mockMvc.perform(post("/delete-sprint").param("deleteprojectId", String.valueOf(1)).param("sprintId", String.valueOf(1)))
-                .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                .andExpect(view().name("userProjectDetails"))
-                .andExpect(model().attribute("errorcode", ""))
-                .andExpect(model().attribute("errorShow", "display:none;"));
-        assertEquals(size, sprintService.getSprintByParentId(1).size());
+                .andExpect(status().is3xxRedirection()) // given this should redirect to the details once attempted redirection is expected
+                .andExpect(view().name("redirect:details?id=1"));
     }
-
-
- */
 }

@@ -1,9 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * Deadline.
@@ -69,7 +67,7 @@ public class Deadline extends ProjectTimeBoundItem {
         return this.startDate;
     }
 
-    public Date getStartDateAsDate() { return Timestamp.valueOf(this.startDate);}
-
-    public String getName() { return this.name;}
+    public String getName() {
+        return this.name;
+    }
 }
