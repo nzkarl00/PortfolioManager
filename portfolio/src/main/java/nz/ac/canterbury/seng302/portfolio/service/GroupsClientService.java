@@ -56,4 +56,32 @@ public class GroupsClientService extends GroupsServiceGrpc.GroupsServiceImplBase
 
         return groupServiceStub.getPaginatedGroups(request);
     }
+
+    /**
+     * Returns a response to a request to modify a group
+     * @param id the ID of the group to be named
+     * @param nameL the new Long name of the group
+     * @param nameS the new Short name of the group
+     * @return a ModifyGroupDetailsResponse
+     */
+    public ModifyGroupDetailsResponse modifyGroup(int id, String nameL, String nameS) {
+        ModifyGroupDetailsRequest request = ModifyGroupDetailsRequest.newBuilder()
+            .setGroupId(id)
+            .setLongName(nameL)
+            .setShortName(nameS).build();
+
+        return groupServiceStub.modifyGroupDetails(request);
+    }
+
+    /**
+     * Returns information on a specific group
+     * @param id the ID of the group to be named
+     * @return the group id, short and long names, and a list of members
+     */
+    public GroupDetailsResponse getGroup(int id) {
+        GetGroupDetailsRequest request = GetGroupDetailsRequest.newBuilder()
+            .setGroupId(id).build();
+
+        return groupServiceStub.getGroupDetails(request);
+    }
 }

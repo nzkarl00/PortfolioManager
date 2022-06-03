@@ -175,6 +175,28 @@ public class GroupsServerService extends GroupsServiceImplBase {
     }
 
     /**
+     * Modifies a given group
+     * @param request contains the details of the groups we are changing and what to change it to
+     * @param observer where to send the groups to
+     */
+    @Override
+    public void modifyGroupDetails(ModifyGroupDetailsRequest request, StreamObserver<ModifyGroupDetailsResponse> observer) {
+        ModifyGroupDetailsResponse.Builder reply = ModifyGroupDetailsResponse.newBuilder();
+        Long targetVal = Long.valueOf(request.getGroupId());
+        Groups targetGroup = groupRepo.findByGroupId(targetVal);
+        if (!(targetGroup == null)) {
+            if (!request.getShortName().isEmpty()) { targetGroup.setGroupShortName(request.getLongName()); }
+            if (!request.getLongName().isEmpty()) { targetGroup.setGroupShortName(request.getShortName()); }
+            groupRepo.save(targetGroup);
+            reply.setIsSuccess(true)
+                    .setMessage("Edit successful");
+            observer.onNext(reply.build());
+        }
+        observer.onCompleted();
+    }
+
+
+    /**
      * Get a bunch of groups for the portfolio
      * @param request contains the details of the groups we are looking for
      * @param observer where to send the groups to
@@ -204,11 +226,23 @@ public class GroupsServerService extends GroupsServiceImplBase {
         observer.onCompleted();
     }
 
-    /**
-     * build a group response to send to portfolio
-     * @param group the group to build the response from
-     * @return the build response
-     */
+    @Override
+    public void getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> observer) {
+        Long targetVal = Long.valueOf(request.getGroupId());
+        Groups targetGroup = groupRepo.findByGroupId(targetVal);
+
+        GroupDetailsResponse groupInfo = buildGroup(targetGroup);
+
+        observer.onNext(groupInfo);
+        observer.onCompleted();
+
+    }
+
+        /**
+         * build a group response to send to portfolio
+         * @param group the group to build the response from
+         * @return the build response
+         */
     public GroupDetailsResponse buildGroup(Groups group) {
         // set the group details
         GroupDetailsResponse.Builder response = GroupDetailsResponse.newBuilder()
