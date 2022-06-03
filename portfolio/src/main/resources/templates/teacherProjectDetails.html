@@ -17,6 +17,9 @@
 
     <!-- For the FullCalendar to work -->
     <link th:href="@{css/fullcalendar.css}" rel="stylesheet">
+
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 
@@ -45,9 +48,16 @@
                 <!-- Edit project button-->
                 <div class="row">
                     <div class="col-2"></div>
-                    <form class="col-lg-8 col-md-10 col-sm-12" th:action="@{/edit-project}" method="get">
+                    <form class="col-lg-4 col-md-4 col-sm-12 col-12 align-items-end " th:action="@{/landing}" method="get">
+                        <button class="edit" style="padding-top:0rem;" type="submit">
+                            <i class="fa fa-arrow-left"></i>&nbsp;
+                            Return
+                        </button>
+                    </form>
+                    <form class="col-lg-4 col-md-4 col-sm-12" th:action="@{/edit-project}" method="get">
                         <input style="display:none;" th:name="id" id="id" th:value="${project.getId}" type="number">
                         <button class="edit" style="padding-top:0rem;" type="submit">
+                            <i class="fa fa-edit"></i>&nbsp;
                             Edit Project
                         </button>
                     </form>
@@ -95,13 +105,14 @@
                                 <form th:action="@{add-dates}" method="get">
                                     <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
                                     <button class="add" type="submit">
+                                        <i class="fa fa-plus"></i>&nbsp;
                                         Add Dates
                                     </button>
                                 </form>
                             </div>
                         <div class="col-2"></div>
                     </div>
-
+                    <br>
                     <br>
                     <p></p>
 
@@ -114,21 +125,11 @@
 
                         <div class="col-2"></div>
 
-                        <!-- Buttons -->
-
                         <div class="col-lg-8 col-md-10 col-sm-12" >
                             </form>
                             <button class="login_box "th:style="${errorShow}">
                                 <p class="login_error" th:text="${errorCode}"/>
                             </button>
-
-
-                            <form th:action="@{/landing}" method="get">
-                                <button class="edit" style="padding-top:0rem;" type="submit">
-                                    Return
-                                </button>
-                            </form>
-
                             <br><br>
                         </div>
 
