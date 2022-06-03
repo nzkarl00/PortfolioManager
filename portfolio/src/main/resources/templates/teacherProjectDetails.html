@@ -17,6 +17,9 @@
 
     <!-- For the FullCalendar to work -->
     <link th:href="@{css/fullcalendar.css}" rel="stylesheet">
+
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 
@@ -41,6 +44,26 @@
             <div class="col-12 ">
                 <p class="body_title_large " th:text="${project.getName}" />
                 <p class="header_project_dates" th:text="'Start Date: ' + ${project.getStartDateString} + ' - ' + 'End Date: ' + ${project.getEndDateString}"/>
+
+                <!-- Edit project button-->
+                <div class="row">
+                    <div class="col-2"></div>
+                    <form class="col-lg-4 col-md-4 col-sm-12 col-12 align-items-end " th:action="@{/landing}" method="get">
+                        <button class="edit" style="padding-top:0rem;" type="submit">
+                            <i class="fa fa-arrow-left"></i>&nbsp;
+                            Return
+                        </button>
+                    </form>
+                    <form class="col-lg-4 col-md-4 col-sm-12" th:action="@{/edit-project}" method="get">
+                        <input style="display:none;" th:name="id" id="id" th:value="${project.getId}" type="number">
+                        <button class="edit" style="padding-top:0rem;" type="submit">
+                            <i class="fa fa-edit"></i>&nbsp;
+                            Edit Project
+                        </button>
+                    </form>
+                    <div class="col-2"></div>
+                </div>
+
                 <br>
             </div>
 
@@ -74,62 +97,40 @@
                 <br><br>
 
                 <div class="row">
+
+                    <!-- Add dates button -->
+                    <div class="row">
                     <div class="col-2"></div>
-                    <div class="col-lg-8 col-md-10 col-sm-12 portion_body">
-                    <div class="col-lg-8 col-md-10 col-sm-12 portion_body">
-
-                        <p class="detail_date " th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
-
-                            <div class="horizontal_field project_subtext" th:text="${project.getDescription}" /> </div>
-
+                            <div class="col-lg-8 col-md-10 col-sm-12" >
+                                <form th:action="@{add-dates}" method="get">
+                                    <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
+                                    <button class="add" type="submit">
+                                        <i class="fa fa-plus"></i>&nbsp;
+                                        Add Dates
+                                    </button>
+                                </form>
+                            </div>
                         <div class="col-2"></div>
-
-                </div>
-
-                <div class="row">
-                    <div class="col-2"></div>
-
-                        <!-- Buttons -->
-                        <div class="col-lg-8 col-md-10 col-sm-12">
-                            <button class="edit" style="padding-top:0rem;">
-                                <a class="button_a" th:href="@{edit-project(id=${project.getId})}">Edit Project</a>
-                            </button>
-                        </div>
-                        <div class="col-2"></div>
-
                     </div>
+                    <br>
+                    <br>
                     <br>
                     <p></p>
 
                     <div id="sprints">
                         <!-- where to insert all the sprint details in the js method buildSprint-->
+                        <!-- where to insert all the sprint details in the js method buildSpdetarint-->
                     </div>
 
                     <div class="row">
 
                         <div class="col-2"></div>
 
-                        <!-- Buttons -->
-
                         <div class="col-lg-8 col-md-10 col-sm-12" >
-                            <form th:action="@{add-dates}" method="get">
-                                <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
-                                <button class="add" type="submit">
-                                    Add Dates
-                                </button>
                             </form>
-                            <br>
                             <button class="login_box "th:style="${errorShow}">
                                 <p class="login_error" th:text="${errorCode}"/>
                             </button>
-
-
-                            <form th:action="@{/landing}" method="get">
-                                <button class="edit" style="padding-top:0rem;" type="submit">
-                                    Return
-                                </button>
-                            </form>
-
                             <br><br>
                         </div>
 
@@ -258,17 +259,17 @@
         col3.appendChild(name)
 
         const date = document.createElement("div")
-        date.className = "sprint-date detail_date"
+        date.className = "sprint-date display_data"
         date.innerText = sprint.startDateString + "-" + sprint.endDateString
         col3.appendChild(date)
 
         const description = document.createElement("div")
-        description.className = "sprint-description project_edit_data"
+        description.className = "sprint-description display_data"
         description.innerText = "Description: " + sprint.description
         col3.appendChild(description)
 
         const deadlines = document.createElement("div")
-        deadlines.className = "sprint-description project_edit_data"
+        deadlines.className = "sprint-description display_data"
         deadlines.id = "deadlines" + sprint.id
         deadlines.innerText = "Deadlines:"
         col3.appendChild(deadlines)
