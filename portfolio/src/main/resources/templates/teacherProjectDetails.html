@@ -114,6 +114,7 @@
                     </div>
                     <br>
                     <br>
+                    <br>
                     <p></p>
 
                     <div id="sprints">
@@ -258,17 +259,17 @@
         col3.appendChild(name)
 
         const date = document.createElement("div")
-        date.className = "sprint-date detail_date"
+        date.className = "sprint-date display_data"
         date.innerText = sprint.startDateString + "-" + sprint.endDateString
         col3.appendChild(date)
 
         const description = document.createElement("div")
-        description.className = "sprint-description project_edit_data"
+        description.className = "sprint-description display_data"
         description.innerText = "Description: " + sprint.description
         col3.appendChild(description)
 
         const deadlines = document.createElement("div")
-        deadlines.className = "sprint-description project_edit_data"
+        deadlines.className = "sprint-description display_data"
         deadlines.id = "deadlines" + sprint.id
         deadlines.innerText = "Deadlines:"
         col3.appendChild(deadlines)
