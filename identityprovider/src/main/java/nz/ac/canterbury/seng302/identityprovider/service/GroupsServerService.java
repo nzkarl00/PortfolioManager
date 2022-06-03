@@ -32,6 +32,9 @@ public class GroupsServerService extends GroupsServiceImplBase {
     GroupMembershipRepository groupMembershipRepo;
 
     @Autowired
+    AccountProfileRepository repo;
+
+    @Autowired
     RolesRepository roleRepo;
 
     @Autowired
