@@ -117,7 +117,7 @@ public class GroupServerServiceTests {
     @Test
     void addFourMembersToGroup() throws Exception {
 
-        when(groupRepo.findByGroupId(Long.valueOf(1))).thenReturn(new Groups(Long.valueOf(1))); // Simulates username not found
+        when(groupRepo.findByGroupId(Long.valueOf(1))).thenReturn(new Groups(1)); // Simulates username not found
         when(accountRepo.findById(Long.valueOf(1))).thenReturn(Optional.ofNullable(testAccountProfile)); // Simulates username not found
 
 
@@ -136,8 +136,8 @@ public class GroupServerServiceTests {
     @Test
     void addOneMemberToGroup() throws Exception {
 
-        when(groupRepo.findByGroupId(Long.valueOf(1))).thenReturn(new Groups(Long.valueOf(1))); // Simulates username not found
-        when(accountRepo.findById(Long.valueOf(1))).thenReturn(Optional.ofNullable(testAccountProfile)); // Simulates username not found
+        when(groupRepo.findByGroupId(1)).thenReturn(new Groups(1)); // Simulates username not found
+        when(accountRepo.findById(1)).thenReturn(testAccountProfile); // Simulates username not found
 
 
         groupsSS.addGroupMembers(testRequest1b, testObserverAdd);
@@ -155,8 +155,8 @@ public class GroupServerServiceTests {
     @Test
     void addOneMemberToGroupInvalid() throws Exception {
 
-        when(groupRepo.findByGroupId(Long.valueOf(1))).thenReturn(new Groups(Long.valueOf(1))); // Simulates username not found
-        when(accountRepo.findById(Long.valueOf(1))).thenReturn(Optional.ofNullable(testAccountProfile)); // Simulates username not found
+        when(groupRepo.findByGroupId(1)).thenReturn(new Groups(1)); // Simulates username not found
+        when(accountRepo.findById(1)).thenReturn(testAccountProfile); // Simulates username not found
 
 
         groupsSS.addGroupMembers(testRequest1c, testObserverAdd);
@@ -174,8 +174,8 @@ public class GroupServerServiceTests {
     @Test
     void addManyMembersToGroup() throws Exception {
 
-        when(groupRepo.findByGroupId(Long.valueOf(1))).thenReturn(new Groups(Long.valueOf(1))); // Simulates username not found
-        when(accountRepo.findById(Long.valueOf(1))).thenReturn(Optional.ofNullable(testAccountProfile)); // Simulates username not found
+        when(groupRepo.findByGroupId(1)).thenReturn(new Groups(1)); // Simulates username not found
+        when(accountRepo.findById(1)).thenReturn(testAccountProfile); // Simulates username not found
 
         AddGroupMembersRequest.Builder testRequestMany = AddGroupMembersRequest.newBuilder()
                 .setGroupId(1);
@@ -201,8 +201,8 @@ public class GroupServerServiceTests {
     @Test
     void removeFourMembersFromGroup() throws Exception {
 
-        when(groupRepo.findByGroupId(Long.valueOf(1))).thenReturn(new Groups(Long.valueOf(1))); // Simulates username not found
-        when(accountRepo.findById(Long.valueOf(1))).thenReturn(Optional.ofNullable(testAccountProfile)); // Simulates username not found
+        when(groupRepo.findByGroupId(1)).thenReturn(new Groups(1)); // Simulates username not found
+        when(accountRepo.findById(1)).thenReturn(testAccountProfile); // Simulates username not found
 
 
         groupsSS.removeGroupMembers(testRequest2, testObserverRemove);
