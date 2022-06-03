@@ -113,7 +113,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
         AccountProfile profile = repo.findById(request.getId());
         if (!(profile == null)) {
-            UserResponse reply = buildUserResponse(profile);
+            UserResponse reply = accountService.buildUserResponse(profile);
             responseObserver.onNext(reply);
         }
         responseObserver.onCompleted();
@@ -142,35 +142,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
             responseObserver.onNext(reply.build());
         }
         responseObserver.onCompleted();
-    }
-
-    /**
-     * A builder for a UserResponse from a repo profile
-     * @param profile the profile to build the protobuf from
-     * @return the final protobuf to represent the profile given
-     */
-    private UserResponse buildUserResponse(AccountProfile profile) {
-        UserResponse.Builder reply = UserResponse.newBuilder();
-        reply
-            .setUsername(profile.getUsername())
-            .setFirstName(profile.getFirstName())
-            .setMiddleName(profile.getMiddleName())
-            .setLastName(profile.getLastName())
-            .setNickname(profile.getNickname())
-            .setBio(profile.getBio())
-            .setId(profile.getId())
-            .setPersonalPronouns(profile.getPronouns())
-            .setEmail(profile.getEmail())
-            .setCreated(Timestamp.newBuilder().setSeconds(profile.getRegisterDate().getTime()/1000).build())
-            .setProfileImagePath(profile.getPhotoPath());
-
-        for (Role role : profile.getRoles()) {
-            if (role.getRole().equals("1student")) { reply.addRoles(UserRole.STUDENT); } // Note the {number}{role} structure is due to sorting to allow for the highest priority roles to be shown
-            if (role.getRole().equals("2teacher")) { reply.addRoles(UserRole.TEACHER); }
-            if (role.getRole().equals("3admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
-        }
-
-        return reply.build();
     }
 
     /**
@@ -263,7 +234,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         int i = request.getOffset();
         while (i < limit && i < usersSorted.size()) {
-            reply.addUsers(buildUserResponse(usersSorted.get(i)));
+            reply.addUsers(accountService.buildUserResponse(usersSorted.get(i)));
             i++;
         }
         responseObserver.onNext(reply.build());

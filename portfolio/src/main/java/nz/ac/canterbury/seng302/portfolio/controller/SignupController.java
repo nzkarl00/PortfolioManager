@@ -80,13 +80,6 @@ public class SignupController {
         Model model
     )
     {
-        if (!password.equals(passwordConfirm)) { //TODO this is depricated, kinda annoying to dev in
-            model.addAttribute("errorCode", "Error: Passwords do not match");
-            errorShow = "";
-            successShow = "";
-            return "signup";
-        }
-
         UserRegisterResponse registerReply;
         registerReply = accountClientService.register(username, password, firstname, lastname, pronouns, email);
         successCode = registerReply.getMessage();
