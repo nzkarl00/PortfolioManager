@@ -11,6 +11,7 @@ import java.util.List;
  */
 @Repository
 public interface GroupRepository extends CrudRepository<Groups, Long> {
+    Groups findByGroupId(long id);
 
     List<Groups> findAllByGroupShortName(String shortName);
     List<Groups> findAllByGroupLongName(String longName);

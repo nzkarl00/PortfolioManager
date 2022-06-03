@@ -41,14 +41,24 @@
             <div class="col-12 ">
                 <p class="body_title_large " th:text="${project.getName}" />
                 <p class="header_project_dates" th:text="'Start Date: ' + ${project.getStartDateString} + ' - ' + 'End Date: ' + ${project.getEndDateString}"/>
-                <p class="horizontal_field project_subtext" th:text="${project.getDescription}" />
-<!--                &lt;!&ndash; Buttons &ndash;&gt;-->
-<!--                <form class="col-lg-8 col-md-10 col-sm-12" th:style="${display}" th:action="@{edit-project(id=${project.getId})}" method="get">-->
-<!--                    <button class="button_a edit" type="submit">-->
-<!--                        Edit Project-->
-<!--                    </button>-->
-<!--                </form>-->
-            <br>
+                <div class="row">
+                    <div class="col-2"></div>
+
+                    <!-- Buttons -->
+                    <form th:href="@{edit-project(id=${project.getId})}" method="get">
+                        <button class="edit" style="padding-top:0rem;" type="submit">
+                            Edit Project
+                        </button>
+                    </form>
+                    <div class="col-lg-8 col-md-10 col-sm-12">
+                        <button class="edit" style="padding-top:0rem;">
+                            <a class="button_a" th:href="@{edit-project(id=${project.getId})}">Edit Project</a>
+                        </button>
+                    </div>
+                    <div class="col-2"></div>
+
+                </div>
+                <br>
             </div>
 
         </div>
@@ -82,13 +92,12 @@
 
                 <div class="row">
                     <div class="col-2"></div>
-                    <div class="col-lg-8 col-md-10 col-sm-12 portion_body">
-
                     <br>
                     <p></p>
 
                     <div id="sprints">
                         <!-- where to insert all the sprint details in the js method buildSprint-->
+                        <!-- where to insert all the sprint details in the js method buildSpdetarint-->
                     </div>
 
                     <div class="row">
@@ -162,11 +171,20 @@
         flag = false;
     });
 
+    const colors = ['#a3c7d7', '#067d46', '#19DAFF','#f5deb3', '#d470a2', '#9acd32',
+        '#a2add0', '#c9a0dc', '#9f1d35', '#e34234', '#5b92e5', '#66023c',
+        '#483c32', '#0abab5', '#eee600', '#f28500', '#ffcc33', '#a7fc00',
+        '#cdc9c9', '#eee9e9', '#836fff', '#473c8b', '#708090', '#c0c0c0',
+        '#ffd800', '#ff2400', '#e30b5d', '#003153', '#ff5a36', '#e5e4e2',
+        '#cc3333', '#1c39bb', '#1ca9c9', '#002147', '#d3af37', '#30bfbf',
+        '#fdbe02', '#eaa221', '#32cd32', '#c5cbe1'];
+
     // build a sprint in html from js
     function buildSprint(sprint) {
         const mainDiv = document.getElementById("sprints")
         // make the main container for all the sprints
         const sprintDiv = document.createElement("div")
+        sprintDiv.id = "sprint" + sprint.id
         sprintDiv.className = "row row_sprints";
         mainDiv.appendChild(sprintDiv)
 
@@ -226,6 +244,7 @@
 
         const col3 = document.createElement("div")
         col3.className = "col-lg-7 col-md-8 col-sm-12 portion_body"
+        col3.style.border = "5px solid " + colors[sprint.id % colors.length]
         sprintDiv.appendChild(col3)
 
         const name = document.createElement("div")
@@ -240,11 +259,25 @@
 
         const description = document.createElement("div")
         description.className = "sprint-description project_edit_data"
+        description.innerText = "Description: " + sprint.description
         col3.appendChild(description)
+
+        const deadlines = document.createElement("div")
+        deadlines.className = "sprint-description project_edit_data"
+        deadlines.id = "deadlines" + sprint.id
+        deadlines.innerText = "Deadlines:"
+        col3.appendChild(deadlines)
 
         const col4 = document.createElement("div")
         col4.className = "col-2"
         sprintDiv.appendChild(col4)
+    }
+
+    function buildDeadline(deadline, sprintId) {
+    const mainDiv = document.getElementById("deadlines" + sprintId)
+        const deadlineText = document.createElement("div")
+        deadlineText.innerText = deadline.name
+        mainDiv.appendChild(deadlineText)
     }
 
     var stompClient = null;
@@ -254,7 +287,6 @@
         stompClient = Stomp.over(socket);
         // connect to the portfolio server
         stompClient.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
             // subscribe to the global topic
             stompClient.subscribe('/topic/calendar/'+[[${project.getId()}]], function (update) {
                 // if it is a sprint update, update the calendar and details sprints
@@ -263,11 +295,26 @@
                     .then((response) => {
                         deleteAllSprints()
                         for (const sprint of response.data) {
-                            console.log(sprint)
                             buildSprint(sprint)
+                            axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+                            .then((response) => {
+                                for (const deadline of response.data) {
+                                    buildDeadline(deadline, sprint.id)
+                                }
+                            })
                         }
                         renderCalendar(response.data)
                     })
+                }
+
+                if (JSON.parse(update.body).updateType == "DEADLINE") {
+                    axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":JSON.parse(update.body).sprintId}})
+                        .then((response) => {
+                            deleteAllDeadlines(sprint.id)
+                            for (const deadline of response.data) {
+                                buildDeadline(sprint, JSON.parse(update.body).sprintId)
+                            }
+                        })
                 }
             });
         });
@@ -301,13 +348,6 @@
         let sprintEvents = [];
 
         // Colors for the sprints
-        const colors = ['#a3c7d7', '#067d46', '#19DAFF','#f5deb3', '#d470a2', '#9acd32',
-            '#a2add0', '#c9a0dc', '#9f1d35', '#e34234', '#5b92e5', '#66023c',
-            '#483c32', '#0abab5', '#eee600', '#f28500', '#ffcc33', '#a7fc00',
-            '#cdc9c9', '#eee9e9', '#836fff', '#473c8b', '#708090', '#c0c0c0',
-            '#ffd800', '#ff2400', '#e30b5d', '#003153', '#ff5a36', '#e5e4e2',
-            '#cc3333', '#1c39bb', '#1ca9c9', '#002147', '#d3af37', '#30bfbf',
-            '#fdbe02', '#eaa221', '#32cd32', '#c5cbe1'];
 
         // Loops through sprint list and saves it to be displayed on the calendar
         for (var sprintIndex = 0; sprintIndex < sprintList.length; sprintIndex++) {
@@ -324,7 +364,7 @@
                 end: sprintEndDate,
                 durationEditable: false,
                 // Mod so the sprint index doesn't go out of range for colors list
-                color: colors[sprintIndex % colors.length],
+                color: colors[sprintList[sprintIndex].id % colors.length],
                 borderColor: 'white'
             });
         }
@@ -393,12 +433,29 @@
         }
     }
 
+    function deleteAllDeadlines(id) {
+        var e = document.getElementById("deadlines" + id);
+
+        //e.firstElementChild can be used.
+        var child = e.lastElementChild;
+        while (child) {
+            e.removeChild(child);
+            child = e.lastElementChild;
+        }
+    }
+
     // initial loading, base the sprints off of thymeleaf
     // then set the calendar and the details tabs with the correct data
     let initialSprintList = [[${sprints}]];
 
     for (const sprint of initialSprintList) {
         buildSprint(sprint)
+        axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+            .then((response) => {
+                for (const deadline of response.data) {
+                    buildDeadline(deadline, sprint.id)
+                }
+            })
     }
 
     document.addEventListener('DOMContentLoaded', function() { renderCalendar(initialSprintList) });

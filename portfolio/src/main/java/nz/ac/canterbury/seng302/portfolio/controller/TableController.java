@@ -6,11 +6,8 @@ import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.UserPreference;
 import nz.ac.canterbury.seng302.portfolio.model.UserPreferenceRepository;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.model.User;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.DateParser;
-import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;

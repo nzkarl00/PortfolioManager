@@ -9,6 +9,8 @@ public class EventUpdate {
      */
     private FetchUpdateType updateType;
 
+    private int sprintId = -1;
+
     public EventUpdate() {
     }
 
@@ -18,6 +20,11 @@ public class EventUpdate {
      */
     public EventUpdate(FetchUpdateType updateType) {
         this.updateType = updateType;
+    }
+
+    public EventUpdate(FetchUpdateType updateType, int sprintId) {
+        this.updateType = updateType;
+        this.sprintId = sprintId;
     }
 
     public FetchUpdateType getUpdateType() {
