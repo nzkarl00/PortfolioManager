@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.rpc.context.AttributeContext;
-import io.grpc.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
@@ -32,6 +32,8 @@ import java.text.SimpleDateFormat;
 @Controller
 public class DetailsController {
 
+    @Autowired
+    private DeadlineRepository deadlineRepo;
     @Autowired
     private SimpMessagingTemplate template;
     @Autowired
@@ -62,6 +64,7 @@ public class DetailsController {
      */
     @GetMapping("/details")
     public String details(@AuthenticationPrincipal AuthState principal, @RequestParam(value = "id") Integer projectId, Model model) throws Exception {
+
         /* Add project details to the model */
         // Gets the project with id 0 to plonk on the page
         Project project = projectService.getProjectById(projectId);
@@ -223,5 +226,28 @@ public class DetailsController {
     public ResponseEntity<List<Sprint>> getProjectSprints(@AuthenticationPrincipal AuthState principal,
                                             @RequestParam(value="id") Integer projectId) {
         return ResponseEntity.ok(repository.findByParentProjectId(projectId));
+    }
+
+    /**
+     * Sends all the deadlines in JSON for a given project
+     * @param principal authstate to validate the user
+     * @param projectId the id of the project to
+     * @return the list of deadlines in JSON
+     */
+    @GetMapping("/deadlines")
+    public ResponseEntity<List<Deadline>> getProjectDeadlines(@AuthenticationPrincipal AuthState principal,
+                                                          @RequestParam(value="id") Integer projectId,
+                                                              @RequestParam(value="sprintId") Integer sprintId) throws Exception {
+        List<Deadline> deadlines = deadlineRepo.findAllByParentProject(projectService.getProjectById(projectId));
+        Optional<Sprint> sprint = repository.findById(sprintId);
+        List<Deadline> sendingDeadlines = new ArrayList<>();
+        for (Deadline deadline : deadlines) {
+            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
+            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
+            if (deadline.getEndDate().isBefore(endDate) && deadline.getStartDate().isAfter(startDate)) {
+                sendingDeadlines.add(deadline);
+            }
+        }
+        return ResponseEntity.ok(sendingDeadlines);
     }
 }
