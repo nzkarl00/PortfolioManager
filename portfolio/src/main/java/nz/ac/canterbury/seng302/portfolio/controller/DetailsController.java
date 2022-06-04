@@ -53,7 +53,7 @@ public class DetailsController {
     String successCalendarCode = "";
     String errorCalendarShow = "display:none;";
     String errorCalendarCode = "";
-
+    
     /**
      * Returns the html page based on the user's role
      *

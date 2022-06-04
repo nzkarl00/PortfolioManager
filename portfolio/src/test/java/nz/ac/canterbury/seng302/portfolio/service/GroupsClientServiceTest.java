@@ -74,4 +74,15 @@ public class GroupsClientServiceTest {
 
     }
 
+    @Test
+    void getPaginatedGroups() {
+        PaginatedGroupsResponse expected = PaginatedGroupsResponse.newBuilder().build();
+
+        GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest.newBuilder().setOffset(0).setLimit(10).setIsAscendingOrder(true).build();
+
+        when(groupServiceStub.getPaginatedGroups(request)).thenReturn(expected);
+        PaginatedGroupsResponse actual = groupClientService.getGroups(10, 0, true);
+        assertEquals(expected, actual);
+    }
+
 }
