@@ -1,7 +1,11 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
+import nz.ac.canterbury.seng302.identityprovider.model.Role;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -73,5 +77,35 @@ public class Account {
         {
             throw new Exception("Account profile not found");
         }
+    }
+
+    /**
+     * A builder for a UserResponse from a repo profile
+     * @param profile the profile to build the protobuf from
+     * @return the final protobuf to represent the profile given
+     */
+    public UserResponse buildUserResponse(AccountProfile profile) {
+        UserResponse.Builder reply = UserResponse.newBuilder();
+        reply
+            .setUsername(profile.getUsername())
+            .setFirstName(profile.getFirstName())
+            .setMiddleName(profile.getMiddleName())
+            .setLastName(profile.getLastName())
+            .setNickname(profile.getNickname())
+            .setBio(profile.getBio())
+            .setId(profile.getId())
+            .setPersonalPronouns(profile.getPronouns())
+            .setEmail(profile.getEmail())
+            .setCreated(
+                Timestamp.newBuilder().setSeconds(profile.getRegisterDate().getTime()/1000).build())
+            .setProfileImagePath(profile.getPhotoPath());
+
+        for (Role role : profile.getRoles()) {
+            if (role.getRole().equals("1student")) { reply.addRoles(UserRole.STUDENT); } // Note the {number}{role} structure is due to sorting to allow for the highest priority roles to be shown
+            if (role.getRole().equals("2teacher")) { reply.addRoles(UserRole.TEACHER); }
+            if (role.getRole().equals("3admin")) { reply.addRoles(UserRole.COURSE_ADMINISTRATOR); }
+        }
+
+        return reply.build();
     }
 }

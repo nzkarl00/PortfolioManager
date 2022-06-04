@@ -11,7 +11,7 @@ import org.springframework.core.io.Resource;
 public class FileSystemUtils {
 
     @Value("${identityprovider.user-content-directory}")
-    String userContentDirectory;
+    private String userContentDirectory;
 
 //    @Value("classpath:images")
 //    Resource imagesDir;

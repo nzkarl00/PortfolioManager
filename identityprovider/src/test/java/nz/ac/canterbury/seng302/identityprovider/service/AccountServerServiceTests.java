@@ -40,9 +40,11 @@ public class AccountServerServiceTests {
     @Autowired
     static RolesRepository roleRepo = mock(RolesRepository.class);
 
+
     /**
      * Mocked account service so database checks can be replaced with fixed results
      */
+    @Autowired
     private static Account as = Mockito.mock(Account.class);
 
     /**
@@ -178,6 +180,8 @@ public class AccountServerServiceTests {
             .setLimit(50)
             .setOffset(0);
 
+        when(as.buildUserResponse(testAccountProfile)).thenReturn(UserResponse.newBuilder().build());
+
         // run the method we are testing with the mocked observer
         ass.getPaginatedUsers(request.build(), testPaginatedObserver);
 
@@ -245,6 +249,8 @@ public class AccountServerServiceTests {
             .setLimit(50)
             .setOffset(50);
 
+        when(as.buildUserResponse(testAccountProfile)).thenReturn(UserResponse.newBuilder().build());
+
         // run the method we are testing with the mocked observer
         ass.getPaginatedUsers(request.build(), testPaginatedObserver);
 
@@ -282,6 +288,8 @@ public class AccountServerServiceTests {
         // make the request
         GetUserByIdRequest.Builder request = GetUserByIdRequest.newBuilder()
             .setId(1);
+
+        when(as.buildUserResponse(testAccountProfile)).thenReturn(UserResponse.newBuilder().setUsername("test username").build());
 
         // run the method we are testing with the mocked observer
         ass.getUserAccountById(request.build(), testUserResponseObserver);
