@@ -1,20 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
-import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.aspectj.bridge.Version.getTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DateParsingTests {
@@ -214,4 +207,34 @@ class DateParsingTests {
             new Date(sprint2.getStartDate().getTime() + 1000 * 60 * 60 * 24 * 5), // 5 days in the future
             new Date(sprint2.getEndDate().getTime() - 1000 * 60 * 60 * 24 * 5))); // 5 days in the past
     }
+
+
+
+    @Test
+    void convertStringToLocalDateTime() {
+        String expected = "2022-06-23T02:00";
+        LocalDateTime actual = DateParser.stringToLocalDateTime("2022-06-23", "02:00");
+        assertEquals(expected, actual.toString());
+    }
+
+    @Test
+    void convertStringToLocalDateTimeWithDifferentFormat() {
+        String expected = "2022-06-23T02:00";
+        LocalDateTime actual = DateParser.stringToLocalDateTime("23/Jun/2022", "02:00");
+        assertEquals(expected, actual.toString());
+    }
+
+    @Test
+    void convertStringToLocalDateTimeWithNoTime() {
+        String expected = "2022-06-23T00:00";
+        LocalDateTime actual = DateParser.stringToLocalDateTime("2022-06-23", null);
+        assertEquals(expected, actual.toString());
+    }
+
+    @Test
+    void convertStringToLocalDateTimeWithWrongParametersPassed() {;
+        LocalDateTime actual = DateParser.stringToLocalDateTime("23/Jun/2022J", "02:00");
+        assertNull(actual);
+    }
+
 }
