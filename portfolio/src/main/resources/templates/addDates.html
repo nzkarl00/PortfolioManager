@@ -49,12 +49,12 @@
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" id="eventStartDateLabel" for="eventStartDate">Sprint Start Date</label> <br/>
-                        <input class="project_edit_data" id="eventStartDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="eventStartDate">
+                        <input class="project_edit_data" id="eventStartDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="eventStartDate" required>
                     </div>
                     <!-- https://dzone.com/articles/disable-dates-in-datepicker -->
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" id="eventEndDateLabel" for="eventEndDate">Sprint End Date</label> <br/>
-                        <input class="project_edit_data" id="eventEndDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="eventEndDate">
+                        <input class="project_edit_data" id="eventEndDate" type="date" th:attr="min=${projectStart}, max=${projectEnd}" th:name="eventEndDate" required>
                     </div>
                 </div>
                 <div>

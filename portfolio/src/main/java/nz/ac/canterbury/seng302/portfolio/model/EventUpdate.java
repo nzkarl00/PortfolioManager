@@ -34,4 +34,8 @@ public class EventUpdate {
     public void setName(FetchUpdateType updateType) {
         this.updateType = updateType;
     }
+
+    public int getSprintId() {
+        return sprintId;
+    }
 }

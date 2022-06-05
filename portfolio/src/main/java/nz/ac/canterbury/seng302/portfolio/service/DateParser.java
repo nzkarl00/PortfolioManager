@@ -4,8 +4,9 @@ import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
@@ -88,6 +89,36 @@ public class DateParser {
             }
         }
         return date;
+    }
+
+    /**
+     * Gets a string date and time to be converted to LocalDateTime
+     *
+     * @param dateString the string to read as a date in format "yyyy-MM-dd"
+     * @param timeString the string to read as a time in format "hh:mm"
+     * @return the given string date and time as a LocalDateTime object
+     */
+    public static LocalDateTime stringToLocalDateTime(String dateString, String timeString) {
+        //https://mkyong.com/java8/java-8-how-to-format-localdatetime/
+        if (timeString == null || timeString.isBlank()) {
+            timeString = "00:00";
+        }
+        String dateToBeConverted = dateString + " " + timeString;
+        LocalDateTime formatDateTime = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+        try {
+            formatDateTime = LocalDateTime.parse(dateToBeConverted, formatter);
+        } catch (Exception e1) {
+            try {
+                formatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy HH:mm");
+                formatDateTime = LocalDateTime.parse(dateToBeConverted, formatter);
+            } catch (Exception e2) {
+                System.err.println("Error parsing date: " + e2.getMessage() + " " + e1.getMessage());
+            }
+        }
+
+        return formatDateTime;
     }
 
     /**

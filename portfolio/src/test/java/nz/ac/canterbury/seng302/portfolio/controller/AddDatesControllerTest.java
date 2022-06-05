@@ -2,9 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
 import io.cucumber.java.Before;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
-import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
@@ -30,8 +28,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.*;
@@ -92,17 +90,24 @@ public class AddDatesControllerTest {
         private static final Date may1 = DateParser.stringToDate("22-05-01");
         private static final Date june1 = DateParser.stringToDate("22-06-01");
         private static final Date july1 = DateParser.stringToDate("22-07-01");
+        private static final Date deadlineMay1 = DateParser.stringToDate("2022-05-01");
+        private static final Date deadLinejune1 = DateParser.stringToDate("2022-06-01");
 
-        private static final Sprint validSprint = new Sprint(1, "test", "test", "test", may1, june1);
-        private static final Sprint startsBeforeProjectSprint = new Sprint(1, "test", "test", "test", april1, june1);
-        private static final Sprint endsAfterProjectSprint = new Sprint(1, "test", "test", "test", may1, july1);
-
-
-    private static MultiValueMap<String, String> validParams = new LinkedMultiValueMap<String, String>();
+        private static final Sprint validSprint = new Sprint(0, "test", "test", "test", may1, june1);
+        private static MultiValueMap<String, String> validParams = new LinkedMultiValueMap<String, String>();
+        private static MultiValueMap<String, String> validParamsDeadline = new LinkedMultiValueMap<String, String>();
+        private static MultiValueMap<String, String> deadlineStartsBeforeProjectParams = new LinkedMultiValueMap<String, String>();
+        private static MultiValueMap<String, String> deadlineEndsAfterProjectParams = new LinkedMultiValueMap<String, String>();
         private static MultiValueMap<String, String> startsBeforeProjectParams = new LinkedMultiValueMap<String, String>();
         private static MultiValueMap<String, String> endsAfterProjectParams = new LinkedMultiValueMap<String, String>();
 
-    private final Project testProject = new Project("testName", "testDescription", may1, june1);
+        private final Project testProject = new Project("testName", "testDescription", may1, june1);
+        private final Project testProjectForDeadlines = new Project("testName", "testDescription", deadlineMay1, deadLinejune1);
+
+        private static final LocalDateTime may4 = DateParser.stringToLocalDateTime("2022-05-04", "16:20");
+
+        private final Deadline validDeadline = new Deadline(testProjectForDeadlines, "Deadline 1", "This is a deadline for project 1", may4);
+
 
         @Autowired
         private MockMvc mockMvc;
@@ -115,6 +120,9 @@ public class AddDatesControllerTest {
 
         @MockBean
         SprintRepository sprintRepo;
+
+        @MockBean
+        DeadlineRepository deadlineRepo;
 
         @MockBean
         ProjectService projectService;
@@ -137,22 +145,42 @@ public class AddDatesControllerTest {
         @BeforeAll
         public static void open() {
             utilities = Mockito.mockStatic(AuthStateInformer.class);
-            validParams.add("projectId", String.valueOf(1));
+            validParams.add("projectId", String.valueOf(0));
             validParams.add("eventName", "test");
             validParams.add("eventStartDate", "22-05-01");
             validParams.add("eventEndDate", "22-06-01");
             validParams.add("eventDescription", "test");
-            startsBeforeProjectParams.add("projectId", String.valueOf(1));
+
+            validParamsDeadline.add("projectId", String.valueOf(0));
+            validParamsDeadline.add("eventName", "Deadline 1");
+            validParamsDeadline.add("eventType", "Deadline");
+            validParamsDeadline.add("eventStartDate", "2022-05-04");
+            validParamsDeadline.add("eventEndDate", "16:20");
+            validParamsDeadline.add("eventDescription", "This is a deadline for project 1");
+        
+            startsBeforeProjectParams.add("projectId", String.valueOf(0));
             startsBeforeProjectParams.add("eventName", "test");
             startsBeforeProjectParams.add("eventStartDate", "22-04-01");
             startsBeforeProjectParams.add("eventEndDate", "22-06-01");
             startsBeforeProjectParams.add("eventDescription", "test");
-            endsAfterProjectParams.add("projectId", String.valueOf(1));
+            endsAfterProjectParams.add("projectId", String.valueOf(0));
             endsAfterProjectParams.add("eventName", "test");
             endsAfterProjectParams.add("eventStartDate", "22-05-01");
             endsAfterProjectParams.add("eventEndDate", "22-07-01");
             endsAfterProjectParams.add("eventDescription", "test");
 
+            deadlineStartsBeforeProjectParams.add("projectId", String.valueOf(0));
+            deadlineStartsBeforeProjectParams.add("eventName", "Deadline 1");
+            deadlineStartsBeforeProjectParams.add("eventType", "Deadline");
+            deadlineStartsBeforeProjectParams.add("eventStartDate", "2022-04-01");
+            deadlineStartsBeforeProjectParams.add("eventEndDate", "16:20");
+            deadlineStartsBeforeProjectParams.add("eventDescription", "This is a deadline for project 1");
+            deadlineEndsAfterProjectParams.add("projectId", String.valueOf(0));
+            deadlineEndsAfterProjectParams.add("eventName", "Deadline 1");
+            deadlineEndsAfterProjectParams.add("eventType", "Deadline");
+            deadlineEndsAfterProjectParams.add("eventStartDate", "2022-07-01");
+            deadlineEndsAfterProjectParams.add("eventEndDate", "16:20");
+            deadlineEndsAfterProjectParams.add("eventDescription", "This is a deadline for project 1");
         }
 
         @AfterAll
@@ -172,9 +200,9 @@ public class AddDatesControllerTest {
             utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("admin");
             // Declaring mockito when conditions
             when(accountClientService.getUserById(1)).thenReturn(testUser);
-            when(projectService.getProjectById(1)).thenReturn(testProject);
+            when(projectService.getProjectById(0)).thenReturn(testProject);
             // Executing the mocked get request, checking that the page is displayed
-            mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(1)))
+            mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(0)))
                     .andExpect(status().isOk()) // Whether to return the status "200 OK"
                     .andExpect(view().name("addDates"));
         }
@@ -188,11 +216,11 @@ public class AddDatesControllerTest {
             // Declaring mockito when conditions
             utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
             utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
-            when(projectService.getProjectById(1)).thenReturn(testProject);
+            when(projectService.getProjectById(0)).thenReturn(testProject);
             // Configuring Spring to use the mocked SecurityContext
             SecurityContextHolder.setContext(mockedSecurityContext);
             // Executing the mocked get request, checking that the page is displayed
-            mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(1)))
+            mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(0)))
                     .andExpect(status().isOk()) // Whether to return the status "200 OK"
                     .andExpect(view().name("addDates"));
         }
@@ -207,9 +235,9 @@ public class AddDatesControllerTest {
             SecurityContextHolder.setContext(mockedSecurityContext);
             // Declaring mockito when conditions
             utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn("student");
-            when(projectService.getProjectById(1)).thenReturn(testProject);
+            when(projectService.getProjectById(0)).thenReturn(testProject);
             // Executing the mocked get request, checking that the page is displayed
-            mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(1)))
+            mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(0)))
                     .andExpect(status().isOk()) // Whether to return the status "200 OK"
                     .andExpect(view().name("userProjectDetails")); // Returns user project details page instead of add dates"
         }
@@ -223,12 +251,12 @@ public class AddDatesControllerTest {
             // Configuring Spring to use the mocked SecurityContext
             SecurityContextHolder.setContext(mockedSecurityContext);
             utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
-            when(projectService.getProjectById(1)).thenReturn(testProject);
-            when(sprintService.areNewSprintDatesValid(may1, june1, 1)).thenReturn(true);
+            when(projectService.getProjectById(0)).thenReturn(testProject);
+            when(sprintService.areNewSprintDatesValid(may1, june1, 0)).thenReturn(true);
             // Executing the mocked post request, checking that the page is displayed
             mockMvc.perform(post("/add-dates").params(validParams))
                     .andExpect(status().is3xxRedirection())
-                    .andExpect(view().name("redirect:details?id=" + 1)); // Redirected to details page
+                    .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
             verify(sprintRepo).save(refEq(validSprint)); // Verifies sprint was saved with correct details
         }
 
@@ -241,12 +269,12 @@ public class AddDatesControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
-        when(projectService.getProjectById(1)).thenReturn(testProject);
-        when(sprintService.areNewSprintDatesValid(april1, june1, 1)).thenReturn(true);
+        when(projectService.getProjectById(0)).thenReturn(testProject);
+        when(sprintService.areNewSprintDatesValid(april1, june1, 0)).thenReturn(true);
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-dates").params(startsBeforeProjectParams))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:addDates?projectId=" + 1)); // Redirected to add dates page
+                .andExpect(view().name("redirect:add-dates?projectId=" + 0)); // Redirected to add dates page
         verify(sprintRepo, never()).save(any(Sprint.class)); // Verifies sprint was not saved
     }
 
@@ -259,12 +287,12 @@ public class AddDatesControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
-        when(projectService.getProjectById(1)).thenReturn(testProject);
-        when(sprintService.areNewSprintDatesValid(may1, july1, 1)).thenReturn(true);
+        when(projectService.getProjectById(0)).thenReturn(testProject);
+        when(sprintService.areNewSprintDatesValid(may1, july1, 0)).thenReturn(true);
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-dates").params(endsAfterProjectParams))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:addDates?projectId=" + 1)); // Redirected to add dates page
+                .andExpect(view().name("redirect:add-dates?projectId=" + 0)); // Redirected to add dates page
         verify(sprintRepo, never()).save(any(Sprint.class)); // Verifies sprint was not saved
     }
 
@@ -277,11 +305,81 @@ public class AddDatesControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn("student");
-        when(sprintService.areNewSprintDatesValid(may1, june1, 1)).thenReturn(true);
-        when(projectService.getProjectById(1)).thenReturn(testProject);
+        when(sprintService.areNewSprintDatesValid(may1, june1, 0)).thenReturn(true);
+        when(projectService.getProjectById(0)).thenReturn(testProject);
         mockMvc.perform(post("/add-dates").params(validParams))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:details?id=" + 1)); // Redirected to details page
+                .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
         verify(sprintRepo, never()).save(any(Sprint.class)); // Verifies sprint was not saved
     }
+
+    @Test
+    public void postValidDeadlineAsTeacher() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+        when(projectService.getProjectById(0)).thenReturn(testProjectForDeadlines);
+
+        // Executing the mocked post request, checking that the page is displayed
+        mockMvc.perform(post("/add-dates").params(validParamsDeadline))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
+                verify(deadlineRepo).save(refEq(validDeadline)); // Verifies deadline was saved with correct details
+    }
+
+    @Test
+    public void postDeadlineStartsBeforeProjectAsTeacher() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+        when(projectService.getProjectById(0)).thenReturn(testProjectForDeadlines);
+
+        // Executing the mocked post request, checking that the page is displayed
+        mockMvc.perform(post("/add-dates").params(deadlineStartsBeforeProjectParams))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:add-dates?projectId=" + 0)); // Redirected to add dates page
+        verify(deadlineRepo, never()).save(any(Deadline.class)); // Verifies deadline was not saved
+    }
+
+    @Test
+    public void postDeadlineEndsAfterProjectAsTeacher() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+        when(projectService.getProjectById(0)).thenReturn(testProjectForDeadlines);
+        // Executing the mocked post request, checking that the page is displayed
+        mockMvc.perform(post("/add-dates").params(deadlineEndsAfterProjectParams))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:add-dates?projectId=" + 0)); // Redirected to add dates page
+        verify(deadlineRepo, never()).save(any(Deadline.class)); // Verifies dealdine was not saved
+    }
+
+    @Test
+    public void postValidDeadlinesAsStudent() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn("student");
+        when(projectService.getProjectById(0)).thenReturn(testProjectForDeadlines);
+        mockMvc.perform(post("/add-dates").params(validParamsDeadline))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
+        verify(deadlineRepo, never()).save(any(Deadline.class)); // Verifies deadline was not saved
+    }
+
 }
