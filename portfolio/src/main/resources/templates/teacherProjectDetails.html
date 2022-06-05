@@ -314,7 +314,6 @@
                 }
 
                 if (JSON.parse(update.body).updateType == "DEADLINE") {
-                console.log(JSON.parse(update.body))
                     axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":JSON.parse(update.body).sprintId}})
                         .then((response) => {
                             deleteAllDeadlines(JSON.parse(update.body).sprintId)

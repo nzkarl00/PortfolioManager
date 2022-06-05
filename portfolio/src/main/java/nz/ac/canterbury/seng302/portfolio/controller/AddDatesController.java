@@ -103,9 +103,6 @@ public class AddDatesController {
         Project project = projectService.getProjectById(projectId);
         String messageReturned = "redirect:details?id=";
 
-        System.out.println("This is the projectId: " +  projectId);
-        System.out.println("This is the project.getId() " + project.getId());
-
         String event = eventType.orElse("");
 
         if (role.equals("teacher") || role.equals("admin")) {
