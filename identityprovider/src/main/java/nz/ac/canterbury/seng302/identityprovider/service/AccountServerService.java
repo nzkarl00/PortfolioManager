@@ -4,14 +4,11 @@ import com.google.protobuf.Timestamp;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import nz.ac.canterbury.seng302.identityprovider.model.Role;
-import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
+import nz.ac.canterbury.seng302.identityprovider.model.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
-import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
-import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import javax.transaction.Transactional;
@@ -41,6 +38,12 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Autowired
     private FileSystemUtils fsUtils;
 
+    @Autowired
+    GroupMembershipRepository groupMembershipRepository;
+
+    @Autowired
+    GroupRepository groupRepository;
+
 
     /**
      * the handling and registering of a new user through a UserRegisterRequest
@@ -62,7 +65,9 @@ public class AccountServerService extends UserAccountServiceImplBase{
                     new AccountProfile(
                             request.getUsername(), hashedPassword, new Date(), "", request.getEmail(),
                             null, request.getFirstName(), request.getLastName(), request.getPersonalPronouns()));
-            roleRepo.save(new Role(newAccount, "1student")); // TODO change this from the default
+            roleRepo.save(new Role(newAccount, "1student"));
+            List<Groups> noMembers = groupRepository.findAllByGroupShortName("MWAG");
+            groupMembershipRepository.save(new GroupMembership(noMembers.get(0), newAccount));
             reply.setMessage("Created account " + request.getUsername()).setIsSuccess(true);
         }
         responseObserver.onNext(reply.build());

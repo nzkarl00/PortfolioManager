@@ -12,4 +12,5 @@ import java.util.List;
 @Repository
 public interface GroupMembershipRepository extends CrudRepository<GroupMembership, Long> {
     List<GroupMembership> findAllByRegisteredGroups(Groups group);
+    void deleteGroupMembershipByRegisteredGroupUser(AccountProfile profile);
 }

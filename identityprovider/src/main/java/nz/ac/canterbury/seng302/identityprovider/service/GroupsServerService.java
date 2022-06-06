@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 import java.util.List;
@@ -37,7 +38,11 @@ public class GroupsServerService extends GroupsServiceImplBase {
     @Autowired
     AccountProfileRepository repo;
 
-    {
+    /**
+     * make the special groups if they don't already exist
+     */
+    @PostConstruct
+    private void makeSpecialGroups() {
         List<Groups> currentGroup = groupRepo.findAllByGroupLongName("Teachers Group");
         if (currentGroup.isEmpty()) {
             Groups teachers = new Groups("Teachers Group", "TG");
@@ -107,6 +112,10 @@ public class GroupsServerService extends GroupsServiceImplBase {
             if ((request.getUserIdsList()).contains(userAccount.getId())) {
                 Long membershipId = userGroup.getGroupMembershipId();
                 groupMembershipRepo.deleteById(membershipId);
+            }
+            if (userAccount.getGroups().isEmpty()) {
+                List<Groups> noMembership = groupRepo.findAllByGroupShortName("MWAG");
+                groupMembershipRepo.save(new GroupMembership(noMembership.get(0), userAccount));
             }
         }
 
