@@ -282,7 +282,8 @@
     function buildDeadline(deadline, sprintId) {
     const mainDiv = document.getElementById("deadlines" + sprintId)
         const deadlineText = document.createElement("div")
-        deadlineText.innerText = deadline.name
+        deadlineText.innerHTML = deadline.name + " - " + deadline.startDate +
+            " <button class='editDate' th:action='@{edit-deadline}' method='get'><a href='/edit-dates?id=\" + sprint.parentProjectId + \"&ids=\" + deadline.Id><i size='10px' class='fa fa-edit'></i></a></button>"
         mainDiv.appendChild(deadlineText)
     }
 
