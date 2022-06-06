@@ -37,8 +37,18 @@ public class GroupsServerService extends GroupsServiceImplBase {
     @Autowired
     AccountProfileRepository repo;
 
-    @Autowired
-    private FileSystemUtils fsUtils;
+    {
+        List<Groups> currentGroup = groupRepo.findAllByGroupLongName("Teachers Group");
+        if (currentGroup.isEmpty()) {
+            Groups teachers = new Groups("Teachers Group", "TG");
+            groupRepo.save(teachers);
+        }
+        currentGroup = groupRepo.findAllByGroupLongName("Members without a group");
+        if (currentGroup.isEmpty()) {
+            Groups teachers = new Groups("Members without a group", "MWAG");
+            groupRepo.save(teachers);
+        }
+    }
 
     /**
      * Takes a request and adds a list of users to a given group through the Group Membership table
