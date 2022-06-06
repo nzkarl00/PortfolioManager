@@ -67,6 +67,14 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
         for (int userId : request.getUserIdsList()) {
             AccountProfile user = repo.findById(userId);
+
+            // if a group membership contains MWAG, remove it, see @PostConstruct
+            List<Groups> noMembers = groupRepo.findAllByGroupShortName("MWAG");
+            for (GroupMembership membership: user.getGroups()) {
+                if (membership.getRegisteredGroups().equals(noMembers)) {
+                    groupMembershipRepo.deleteById(membership.getGroupMembershipId());
+                }
+            }
             GroupMembership newGroupUser = new GroupMembership(user, currentGroup);
             groupMembershipRepo.save(newGroupUser);
         }
