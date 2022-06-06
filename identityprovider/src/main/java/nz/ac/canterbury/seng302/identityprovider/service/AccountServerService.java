@@ -293,6 +293,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
         observer.onNext(response.build());
         observer.onCompleted();
     }
+
+    @Transactional
     @Override
     public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         AccountProfile user = repo.findById(request.getUserId());
@@ -319,6 +321,17 @@ public class AccountServerService extends UserAccountServiceImplBase{
             if (role.getRole().equals(roleString)) {
                 roleId = role.getUserRoleId();
                 roleRepo.deleteById(roleId);
+
+                // if the role removal is a teacher also remove them from the teacher group
+                if (roleString.equals("2teacher")) {
+                    Groups teacherGroup = groupRepository.findAllByGroupShortName("TG").get(0);
+                    groupMembershipRepository.deleteByRegisteredGroupsAndRegisteredGroupUser(teacherGroup, user);
+                    // if there are no groups left for the user add them to MWAG
+                    if (groupMembershipRepository.findAllByRegisteredGroupUser(user).isEmpty()) {
+                        Groups noGroup = groupRepository.findAllByGroupShortName("MWAG").get(0);
+                        groupMembershipRepository.save(new GroupMembership(user, noGroup));
+                    }
+                }
             }
         }
 
@@ -327,6 +340,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
     }
 
+    @Transactional
     @Override
     public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         AccountProfile user = repo.findById(request.getUserId());
@@ -346,6 +360,17 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         Role roleForRepo = new Role(user, role);
         roleRepo.save(roleForRepo);
+
+        // if the role to add is a teacher, add them to the teacher group
+        if (role.equals("2teacher")) {
+            Groups teacherGroup = groupRepository.findAllByGroupShortName("TG").get(0);
+            groupMembershipRepository.save(new GroupMembership(user, teacherGroup));
+
+            Groups noMembers = groupRepository.findAllByGroupShortName("MWAG").get(0);
+            System.out.println(noMembers.getGroupLongName());
+            System.out.println(noMembers.getMembers());
+            groupMembershipRepository.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers, user);
+        }
 
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();

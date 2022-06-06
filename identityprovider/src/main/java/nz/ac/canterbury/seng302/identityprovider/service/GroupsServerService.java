@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 import java.util.List;
 
 import java.util.List;
@@ -38,21 +39,51 @@ public class GroupsServerService extends GroupsServiceImplBase {
     @Autowired
     AccountProfileRepository repo;
 
+    String TEACHER_LONG = "Teachers Group";
+    String TEACHER_SHORT = "TG";
+    String MWAG_LONG = "Members Without a Group";
+    String MWAG_SHORT = "MWAG";
+    String TEACHER_ROLE = "2teacher";
+
     /**
      * make the special groups if they don't already exist
      */
     @PostConstruct
     private void makeSpecialGroups() {
-        List<Groups> currentGroup = groupRepo.findAllByGroupLongName("Teachers Group");
+
+        Groups teachers = initGroup(TEACHER_LONG, TEACHER_SHORT);
+
+        /*
+        for (GroupMembership membership : teachers.getMembers()) {
+            if (!membership.getRegisteredGroupUser().getRoles().contains(TEACHER_ROLE)) {
+                roleRepo.save(new Role(membership.getRegisteredGroupUser(), TEACHER_ROLE));
+            }
+        }*/
+
+        Groups noGroup = initGroup(MWAG_LONG, MWAG_SHORT);
+
+        /*
+        for (AccountProfile profile: repo.findAll()) {
+            // if it has no groups, put it in the empty group
+            if (profile.getGroups().isEmpty()) {
+                groupMembershipRepo.save(new GroupMembership(profile, noGroup));
+            // this > 1 avoids the case of deleting the MWAG group if it belongs there
+            } else if (profile.getGroups().size() > 1) {
+                groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noGroup, profile);
+            }
+        }*/
+    }
+
+    private Groups initGroup(String longName, String shortName) {
+        List<Groups> currentGroup = groupRepo.findAllByGroupLongName(longName);
+        Groups group;
         if (currentGroup.isEmpty()) {
-            Groups teachers = new Groups("Teachers Group", "TG");
-            groupRepo.save(teachers);
+            group = new Groups(longName, shortName);
+            groupRepo.save(group);
+        } else {
+            group = currentGroup.get(0);
         }
-        currentGroup = groupRepo.findAllByGroupLongName("Members without a group");
-        if (currentGroup.isEmpty()) {
-            Groups teachers = new Groups("Members without a group", "MWAG");
-            groupRepo.save(teachers);
-        }
+        return group;
     }
 
     /**
@@ -60,21 +91,28 @@ public class GroupsServerService extends GroupsServiceImplBase {
      * @param request the request, containing the ids of the group and list of user ids
      * @param responseObserver sends a response back to the client
      */
+    @Transactional
     @Override
     public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
+        boolean isTeacherGroup = false;
 
         Groups currentGroup = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
+        Groups teacherGroup = groupRepo.findAllByGroupShortName(TEACHER_SHORT).get(0);
+        if (currentGroup.equals(teacherGroup)) {
+            isTeacherGroup = true;
+        }
 
         for (int userId : request.getUserIdsList()) {
             AccountProfile user = repo.findById(userId);
 
             // if a group membership contains MWAG, remove it, see @PostConstruct
-            List<Groups> noMembers = groupRepo.findAllByGroupShortName("MWAG");
-            for (GroupMembership membership: user.getGroups()) {
-                if (membership.getRegisteredGroups().equals(noMembers)) {
-                    groupMembershipRepo.deleteById(membership.getGroupMembershipId());
-                }
+            List<Groups> noMembers = groupRepo.findAllByGroupShortName(MWAG_SHORT);
+            groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers.get(0), user);
+
+            if (isTeacherGroup) {
+                roleRepo.save(new Role(user, TEACHER_ROLE));
             }
+
             GroupMembership newGroupUser = new GroupMembership(user, currentGroup);
             groupMembershipRepo.save(newGroupUser);
         }
@@ -109,21 +147,40 @@ public class GroupsServerService extends GroupsServiceImplBase {
      * @param request the request, containing the ids of the group and list of user ids
      * @param responseObserver sends a response back to the client
      */
+    @Transactional
     @Override
     public void removeGroupMembers(RemoveGroupMembersRequest request, StreamObserver<RemoveGroupMembersResponse> responseObserver) {
 
-        Groups parentGroup = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
+        boolean isTeacherGroup = false;
 
-        List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroups(parentGroup);
+        Groups currentGroup = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
+        Groups teacherGroup = groupRepo.findAllByGroupShortName(TEACHER_SHORT).get(0);
+        if (currentGroup.equals(teacherGroup)) {
+            isTeacherGroup = true;
+        }
+
+        List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroups(currentGroup);
         for (GroupMembership userGroup : groupMemberships) {
             AccountProfile userAccount = userGroup.getRegisteredGroupUser();
             if ((request.getUserIdsList()).contains(userAccount.getId())) {
                 Long membershipId = userGroup.getGroupMembershipId();
                 groupMembershipRepo.deleteById(membershipId);
-            }
-            if (userAccount.getGroups().isEmpty()) {
-                List<Groups> noMembership = groupRepo.findAllByGroupShortName("MWAG");
-                groupMembershipRepo.save(new GroupMembership(noMembership.get(0), userAccount));
+                //if the user has no groups left, add the to the MWAG
+                if (userAccount.getGroups().isEmpty()) {
+                    List<Groups> noMembership = groupRepo.findAllByGroupShortName(MWAG_SHORT);
+                    groupMembershipRepo.save(new GroupMembership(noMembership.get(0), userAccount));
+                }
+
+                // if the group is the teacher group, remove their teacher role
+                if (isTeacherGroup) {
+                    List<Role> roles = roleRepo.findAllByRegisteredUser(userAccount);
+                    for (Role role: roles) {
+                        if (role.getRole().equals(TEACHER_ROLE)) {
+                            Long roleId = role.getUserRoleId();
+                            roleRepo.deleteById(roleId);
+                        }
+                    }
+                }
             }
         }
 
