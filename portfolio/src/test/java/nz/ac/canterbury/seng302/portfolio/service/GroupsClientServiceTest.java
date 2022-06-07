@@ -153,7 +153,6 @@ public class GroupsClientServiceTest {
     @Test
     void modifyGroup() {
 
-
         ModifyGroupDetailsResponse expected = ModifyGroupDetailsResponse.newBuilder()
                 .setIsSuccess(true)
                 .setMessage("Edit successful")
@@ -162,7 +161,7 @@ public class GroupsClientServiceTest {
         ModifyGroupDetailsRequest expectedInput = ModifyGroupDetailsRequest.newBuilder()
                 .setGroupId(1)
                 .setShortName("EditShort")
-                .setShortName("EditLongs")
+                .setLongName("EditLong")
                 .build();
 
         when(groupServiceStub.modifyGroupDetails(expectedInput)).thenReturn(expected);
