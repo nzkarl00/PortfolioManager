@@ -294,23 +294,15 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
     /**
      * Gets the role the user wish to modify (added or removed) to be returned as a string.
-     * @param role the UserRole from the grpc request, that was requested to be modified (added or removed)
+     * @param roleToModify the UserRole from the grpc request, that was requested to be modified (added or removed)
      */
-    public String getRoleToModify(UserRole role) {
-        String roleToModify; // The role to remove/add from the user as given from the request.
-        switch (role) {
-            case TEACHER:
-                roleToModify = "2teacher";
-                break;
-            case COURSE_ADMINISTRATOR:
-                roleToModify = "3admin";
-                break;
-            default:
-                roleToModify = "1student";
-                break;
-        }
+    public String getRoleToModify(UserRole roleToModify) {
 
-        return roleToModify;
+        return switch (roleToModify) {
+            case TEACHER -> "2teacher";
+            case COURSE_ADMINISTRATOR -> "3admin";
+            default -> "1student";
+        };
     }
 
 
@@ -326,22 +318,24 @@ public class AccountServerService extends UserAccountServiceImplBase{
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
 
-        String roleString = getRoleToModify(request.getRole()); // The role to remove from the user as given from the request.
+        String roleToRemove = getRoleToModify(request.getRole()); // The role to remove from the user as given from the request.
+        System.out.println("REMOVE THIS ROLE");
+        System.out.println(roleToRemove);
 
-        Long roleId = null;
+        Long roleIdToRemove = null;
 
-        // List of roles held by that user
-        List<Role> roles = roleRepo.findAllByRegisteredUser(user);
-        // Out of the roles held by that user, update the repos with the requested role to be removed.
-        for (Role role: roles) {
-            if (role.getRole().equals(roleString)) {
-                roleId = role.getUserRoleId();
-                roleRepo.deleteById(roleId);
+        List<Role> rolesOfUser = roleRepo.findAllByRegisteredUser(user); // List of roles held by that user
+        for (Role role: rolesOfUser) {
+            // Out of the roles held by that user, update the repos with the requested role to be removed.
+            if (role.getRole().equals(roleToRemove)) {
+                roleIdToRemove = role.getUserRoleId();
+                roleRepo.deleteById(roleIdToRemove);
 
                 // if the role removal is a teacher also remove them from the teacher group
-                if (roleString.equals("2teacher")) {
+                if (roleToRemove.equals("2teacher")) {
                     Groups teacherGroup = groupRepo.findAllByGroupShortName("TG").get(0);
                     groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(teacherGroup, user);
+
                     // if there are no groups left for the user add them to Members Without A Group (MWAG)
                     if (groupMembershipRepo.findAllByRegisteredGroupUser(user).isEmpty()) {
                         Groups noGroup = groupRepo.findAllByGroupShortName("MWAG").get(0);
@@ -353,7 +347,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
-
     }
 
     /**
