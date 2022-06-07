@@ -218,7 +218,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
         List<Groups> groups = groupRepo.findAll(PageRequest.of(request.getOffset(), request.getLimit(), Sort.by(direction, "groupLongName")));
 
         PaginatedGroupsResponse.Builder reply = PaginatedGroupsResponse.newBuilder();
-
+        reply.setResultSetSize(groups.size());
         // build the group responses for the paginated response
         for (Groups group: groups) {
             GroupDetailsResponse response = buildGroup(group);

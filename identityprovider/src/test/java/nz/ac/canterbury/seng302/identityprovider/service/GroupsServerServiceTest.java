@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +29,16 @@ class GroupsServerServiceTest {
     @Autowired
     static GroupRepository groupRepo = Mockito.mock(GroupRepository.class);
 
+    @Autowired
+    static GroupMembershipRepository groupMembershipRepo = Mockito.mock(GroupMembershipRepository.class);;
+
     /**
      * Setup to replace the autowired instances of these with the mocks
      */
     @BeforeEach
     void setup() {
         gss.groupRepo = groupRepo;
+        gss.groupMembershipRepo = groupMembershipRepo;
     }
 
     /**
@@ -44,6 +50,16 @@ class GroupsServerServiceTest {
      * Mocked stream observer to parse response as a replacement for the portfolio
      */
     private StreamObserver<DeleteGroupResponse> testDeleteObserver = mock(StreamObserver.class);
+
+    /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<GroupDetailsResponse> testGetObserver = mock(StreamObserver.class);
+
+    /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<PaginatedGroupsResponse> testGetPaginatedObserver = mock(StreamObserver.class);
 
     /**
      * Tests to make a valid group
@@ -183,6 +199,117 @@ class GroupsServerServiceTest {
         DeleteGroupResponse response = captor.getValue();
         assertFalse(response.getIsSuccess());
         assertEquals("group id is incorrect", response.getMessage());
+
+    }
+
+    /**
+     * Test that a group can be retrieved
+     */
+    @Test
+    void get_group_validGroup() {
+        Groups testGroup = new Groups();
+        testGroup.setGroupShortName("TestShort");
+        testGroup.setGroupLongName("TestLong");
+
+        List<GroupMembership> members = new ArrayList<>();
+
+        GetGroupDetailsRequest request = GetGroupDetailsRequest.newBuilder().setGroupId(1).build();
+        when(groupRepo.findByGroupId(1)).thenReturn(testGroup);
+        when(groupMembershipRepo.findAllByRegisteredGroups(testGroup)).thenReturn(members);
+
+        gss.getGroupDetails(request, testGetObserver);
+
+        verify(testGetObserver, times(1)).onCompleted();
+        ArgumentCaptor<GroupDetailsResponse> captor = ArgumentCaptor.forClass(GroupDetailsResponse.class);
+        verify(testGetObserver, times(1)).onNext(captor.capture());
+        GroupDetailsResponse response = captor.getValue();
+        assertEquals(response.getGroupId(), 0);
+        assertEquals(response.getShortName(), "TestShort");
+        assertEquals(response.getLongName(), "TestLong");
+        assertEquals(response.getMembersList().size(), 0);
+
+    }
+
+    /**
+     * Test getting a group that doesn't exist to get an error
+     */
+    @Test
+    void get_group_invalidGroup() {
+
+        List<GroupMembership> members = new ArrayList<>();
+
+        GetGroupDetailsRequest request = GetGroupDetailsRequest.newBuilder().setGroupId(1).build();
+        when(groupRepo.findByGroupId(1)).thenReturn(null);
+        when(groupMembershipRepo.findAllByRegisteredGroups(null)).thenReturn(members);
+
+        gss.getGroupDetails(request, testGetObserver);
+
+        verify(testGetObserver, times(1)).onCompleted();
+        ArgumentCaptor<GroupDetailsResponse> captor = ArgumentCaptor.forClass(GroupDetailsResponse.class);
+        verify(testGetObserver, times(1)).onNext(captor.capture());
+        GroupDetailsResponse response = captor.getValue();
+        assertEquals(response.getGroupId(), -1);
+        assertEquals(response.getShortName(), "");
+        assertEquals(response.getLongName(), "");
+        assertEquals(response.getMembersList().size(), 0);
+
+    }
+
+    /**
+     * Test getting a group via pagination
+     */
+    @Test
+    void get_group_paginated() {
+
+        List<Groups> groupList = new ArrayList<>();
+        Groups testGroup = new Groups();
+        testGroup.setGroupShortName("TestShort");
+        testGroup.setGroupLongName("TestLong");
+
+        groupList.add(testGroup);
+
+        List<GroupMembership> members = new ArrayList<>();
+
+
+        GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest.newBuilder().setOffset(0).setOrderBy("groupLongName").setLimit(1).setIsAscendingOrder(true).build();
+        when(groupRepo.findAll(PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "groupLongName")))).thenReturn(groupList);
+        when(groupMembershipRepo.findAllByRegisteredGroups(testGroup)).thenReturn(members);
+
+        gss.getPaginatedGroups(request, testGetPaginatedObserver);
+
+        verify(testGetPaginatedObserver, times(1)).onCompleted();
+        ArgumentCaptor<PaginatedGroupsResponse> captor = ArgumentCaptor.forClass(PaginatedGroupsResponse.class);
+        verify(testGetPaginatedObserver, times(1)).onNext(captor.capture());
+        PaginatedGroupsResponse response = captor.getValue();
+
+        assertEquals(response.getResultSetSize(), 1);
+
+    }
+
+    /**
+     * Test getting no groups via pagination
+     */
+    @Test
+    void get_group_paginated_none() {
+
+        List<Groups> groupList = new ArrayList<>();
+
+
+        List<GroupMembership> members = new ArrayList<>();
+
+
+        GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest.newBuilder().setOffset(0).setOrderBy("groupLongName").setLimit(1).setIsAscendingOrder(true).build();
+        when(groupRepo.findAll(PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "groupLongName")))).thenReturn(groupList);
+
+
+        gss.getPaginatedGroups(request, testGetPaginatedObserver);
+
+        verify(testGetPaginatedObserver, times(1)).onCompleted();
+        ArgumentCaptor<PaginatedGroupsResponse> captor = ArgumentCaptor.forClass(PaginatedGroupsResponse.class);
+        verify(testGetPaginatedObserver, times(1)).onNext(captor.capture());
+        PaginatedGroupsResponse response = captor.getValue();
+
+        assertEquals(response.getResultSetSize(), 0);
 
     }
 
