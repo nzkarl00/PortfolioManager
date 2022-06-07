@@ -293,6 +293,28 @@ public class AccountServerService extends UserAccountServiceImplBase{
     }
 
     /**
+     * Gets the role the user wish to modify (added or removed) to be returned as a string.
+     * @param role the UserRole from the grpc request, that was requested to be modified (added or removed)
+     */
+    public String getRoleToModify(UserRole role) {
+        String roleToModify; // The role to remove/add from the user as given from the request.
+        switch (role) {
+            case TEACHER:
+                roleToModify = "2teacher";
+                break;
+            case COURSE_ADMINISTRATOR:
+                roleToModify = "3admin";
+                break;
+            default:
+                roleToModify = "1student";
+                break;
+        }
+
+        return roleToModify;
+    }
+
+
+    /**
      * Remove the role from a user with details specified by the request.
      * The action to remove a role from a user will be reflected in the DB, for both Role, Group, and GroupMembership repos.
      * @param request the grpc request containing the change details
@@ -304,18 +326,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
 
-        String roleString; // The role to remove from the user as given from the request.
-        switch (request.getRole()) {
-            case TEACHER:
-                roleString = "2teacher";
-                break;
-            case COURSE_ADMINISTRATOR:
-                roleString = "3admin";
-                break;
-            default:
-                roleString = "1student";
-                break;
-        }
+        String roleString = getRoleToModify(request.getRole()); // The role to remove from the user as given from the request.
 
         Long roleId = null;
 
@@ -357,19 +368,9 @@ public class AccountServerService extends UserAccountServiceImplBase{
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
 
-        String role; // The role to remove from the user as given from the request.
-        switch (request.getRole()) {
-            case TEACHER:
-                role = "2teacher";
-                break;
-            case COURSE_ADMINISTRATOR:
-                role = "3admin";
-                break;
-            default:
-                role = "1student";
-                break;
-        }
-
+        String role = getRoleToModify(request.getRole()); // The role to add to the user as given from the request.
+        System.out.println("ROLE TO ADD");
+        System.out.println(role);
         Role roleForRepo = new Role(user, role);
         roleRepo.save(roleForRepo);
 
