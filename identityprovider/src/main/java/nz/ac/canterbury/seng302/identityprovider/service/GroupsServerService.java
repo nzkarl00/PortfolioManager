@@ -190,8 +190,11 @@ public class GroupsServerService extends GroupsServiceImplBase {
             groupRepo.save(targetGroup);
             reply.setIsSuccess(true)
                     .setMessage("Edit successful");
-            observer.onNext(reply.build());
+        } else {
+            reply.setIsSuccess(false)
+                    .setMessage("Edit failed, Group does not exist");
         }
+        observer.onNext(reply.build());
         observer.onCompleted();
     }
 
@@ -230,9 +233,12 @@ public class GroupsServerService extends GroupsServiceImplBase {
     public void getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> observer) {
         Long targetVal = Long.valueOf(request.getGroupId());
         Groups targetGroup = groupRepo.findByGroupId(targetVal);
-
-        GroupDetailsResponse groupInfo = buildGroup(targetGroup);
-
+        GroupDetailsResponse groupInfo;
+        if (!(targetGroup == null)) {
+            groupInfo = buildGroup(targetGroup);
+        } else {
+            groupInfo = GroupDetailsResponse.newBuilder().setGroupId(-1).setLongName("").setLongName("").build();
+        }
         observer.onNext(groupInfo);
         observer.onCompleted();
 
