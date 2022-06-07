@@ -74,4 +74,101 @@ public class GroupsClientServiceTest {
 
     }
 
+
+    /**
+     * Test is for getting details of a group
+     */
+    @Test
+    void getGroupDetails() {
+
+        UserResponse user = UserResponse.newBuilder()
+                .setUsername("")
+                .setFirstName("")
+                .setLastName("")
+                .setNickname("")
+                .setBio("")
+                .setPersonalPronouns("He/Him")
+                .setEmail("lra63@uclive.ac.nz")
+                .build();
+
+        GroupDetailsResponse expected = GroupDetailsResponse.newBuilder()
+                .setLongName("Long")
+                .setShortName("Short")
+                .setGroupId(1)
+                .addMembers(user)
+                .build();
+
+        GetGroupDetailsRequest expectedInput = GetGroupDetailsRequest.newBuilder()
+                .setGroupId(1)
+                .build();
+
+        when(groupServiceStub.getGroupDetails(expectedInput)).thenReturn(expected);
+        GroupDetailsResponse actual = groupClientService.getGroup(1);
+        assertEquals(expected, actual);
+
+    }
+
+    /**
+     * Test is for getting multiple group responses via pagination
+     */
+    @Test
+    void getGroups() {
+
+        UserResponse user = UserResponse.newBuilder()
+                .setUsername("")
+                .setFirstName("")
+                .setLastName("")
+                .setNickname("")
+                .setBio("")
+                .setPersonalPronouns("He/Him")
+                .setEmail("lra63@uclive.ac.nz")
+                .build();
+
+        GroupDetailsResponse group = GroupDetailsResponse.newBuilder()
+                .setLongName("Long")
+                .setShortName("Short")
+                .setGroupId(1)
+                .addMembers(user)
+                .build();
+
+        PaginatedGroupsResponse expected = PaginatedGroupsResponse.newBuilder()
+                .addGroups(group)
+                .build();
+
+
+        GetPaginatedGroupsRequest expectedInput = GetPaginatedGroupsRequest.newBuilder()
+                .setLimit(1)
+                .setOffset(0)
+                .setIsAscendingOrder(true).build();
+
+        when(groupServiceStub.getPaginatedGroups(expectedInput)).thenReturn(expected);
+        PaginatedGroupsResponse actual = groupClientService.getGroups(1, 0, true);
+        assertEquals(expected, actual);
+
+    }
+
+    /**
+     * Test is for modifying the names of a group
+     */
+    @Test
+    void modifyGroup() {
+
+
+        ModifyGroupDetailsResponse expected = ModifyGroupDetailsResponse.newBuilder()
+                .setIsSuccess(true)
+                .setMessage("Edit successful")
+                .build();
+
+        ModifyGroupDetailsRequest expectedInput = ModifyGroupDetailsRequest.newBuilder()
+                .setGroupId(1)
+                .setShortName("EditShort")
+                .setShortName("EditLongs")
+                .build();
+
+        when(groupServiceStub.modifyGroupDetails(expectedInput)).thenReturn(expected);
+        ModifyGroupDetailsResponse actual = groupClientService.modifyGroup(1, "EditLong", "EditShort");
+        assertEquals(expected, actual);
+
+    }
+
 }

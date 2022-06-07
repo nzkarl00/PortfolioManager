@@ -319,7 +319,7 @@ class GroupsServerServiceTest {
     }
 
     /**
-     * Test description
+     * Test that a group can have just its long name modified
      */
     @Test
     void modify_groupDetails_validGroup_longName() {
@@ -343,7 +343,7 @@ class GroupsServerServiceTest {
     }
 
     /**
-     * Test description
+     * Test that the correct message is returned when a non-existent group is modified
      */
     @Test
     void modify_groupDetails_invalidGroup() {
@@ -363,7 +363,7 @@ class GroupsServerServiceTest {
     }
 
     /**
-     * Test description
+     * Test modifying both names of a group that exists
      */
     @Test
     void modify_groupDetails_validGroup_longShortNames() {

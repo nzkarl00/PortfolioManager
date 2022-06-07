@@ -190,12 +190,16 @@ public class GroupsServerService extends GroupsServiceImplBase {
             groupRepo.save(targetGroup);
             reply.setIsSuccess(true)
                     .setMessage("Edit successful");
+
+            observer.onNext(reply.build());
+            observer.onCompleted();
         } else {
             reply.setIsSuccess(false)
                     .setMessage("Edit failed, Group does not exist");
+
+            observer.onNext(reply.build());
+            observer.onCompleted();
         }
-        observer.onNext(reply.build());
-        observer.onCompleted();
     }
 
 

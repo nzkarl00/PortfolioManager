@@ -25,6 +25,7 @@ public class GroupsClientService extends GroupsServiceGrpc.GroupsServiceImplBase
             .setLongName(longName)
             .setShortName(shortName).build();
 
+
         return groupServiceStub.createGroup(request);
     }
 
