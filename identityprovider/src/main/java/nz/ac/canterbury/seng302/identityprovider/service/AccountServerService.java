@@ -30,19 +30,17 @@ public class AccountServerService extends UserAccountServiceImplBase{
     Account accountService;
 
     @Autowired
-    AccountProfileRepository repo;
-
-    @Autowired
-    RolesRepository roleRepo;
-
-    @Autowired
     private FileSystemUtils fsUtils;
 
+    // Repositories required
     @Autowired
-    GroupMembershipRepository groupMembershipRepository;
-
+    AccountProfileRepository repo;
     @Autowired
-    GroupRepository groupRepository;
+    RolesRepository roleRepo;
+    @Autowired
+    GroupMembershipRepository groupMembershipRepo;
+    @Autowired
+    GroupRepository groupRepo;
 
 
     /**
@@ -66,8 +64,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
                             request.getUsername(), hashedPassword, new Date(), "", request.getEmail(),
                             null, request.getFirstName(), request.getLastName(), request.getPersonalPronouns()));
             roleRepo.save(new Role(newAccount, "1student"));
-            List<Groups> noMembers = groupRepository.findAllByGroupShortName("MWAG");
-            groupMembershipRepository.save(new GroupMembership(noMembers.get(0), newAccount));
+            List<Groups> noMembers = groupRepo.findAllByGroupShortName("MWAG");
+            groupMembershipRepo.save(new GroupMembership(noMembers.get(0), newAccount));
             reply.setMessage("Created account " + request.getUsername()).setIsSuccess(true);
         }
         responseObserver.onNext(reply.build());
@@ -294,13 +292,19 @@ public class AccountServerService extends UserAccountServiceImplBase{
         observer.onCompleted();
     }
 
+    /**
+     * Remove the role from a user with details specified by the request.
+     * The action to remove a role from a user will be reflected in the DB, for both Role, Group, and GroupMembership repos.
+     * @param request the grpc request containing the change details
+     * @param responseObserver the observer to send the response to
+     */
     @Transactional
     @Override
     public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
 
-        String roleString;
+        String roleString; // The role to remove from the user as given from the request.
         switch (request.getRole()) {
             case TEACHER:
                 roleString = "2teacher";
@@ -311,12 +315,13 @@ public class AccountServerService extends UserAccountServiceImplBase{
             default:
                 roleString = "1student";
                 break;
-
         }
 
         Long roleId = null;
 
+        // List of roles held by that user
         List<Role> roles = roleRepo.findAllByRegisteredUser(user);
+        // Out of the roles held by that user, update the repos with the requested role to be removed.
         for (Role role: roles) {
             if (role.getRole().equals(roleString)) {
                 roleId = role.getUserRoleId();
@@ -324,12 +329,12 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
                 // if the role removal is a teacher also remove them from the teacher group
                 if (roleString.equals("2teacher")) {
-                    Groups teacherGroup = groupRepository.findAllByGroupShortName("TG").get(0);
-                    groupMembershipRepository.deleteByRegisteredGroupsAndRegisteredGroupUser(teacherGroup, user);
-                    // if there are no groups left for the user add them to MWAG
-                    if (groupMembershipRepository.findAllByRegisteredGroupUser(user).isEmpty()) {
-                        Groups noGroup = groupRepository.findAllByGroupShortName("MWAG").get(0);
-                        groupMembershipRepository.save(new GroupMembership(user, noGroup));
+                    Groups teacherGroup = groupRepo.findAllByGroupShortName("TG").get(0);
+                    groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(teacherGroup, user);
+                    // if there are no groups left for the user add them to Members Without A Group (MWAG)
+                    if (groupMembershipRepo.findAllByRegisteredGroupUser(user).isEmpty()) {
+                        Groups noGroup = groupRepo.findAllByGroupShortName("MWAG").get(0);
+                        groupMembershipRepo.save(new GroupMembership(user, noGroup));
                     }
                 }
             }
@@ -340,12 +345,19 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
     }
 
+    /**
+     * Add the role from a user with details specified by the request.
+     * The action to add a role from a user will be reflected in the DB, for both Role, Group, and GroupMembership repos.
+     * @param request the grpc request containing the change details
+     * @param responseObserver the observer to send the response to
+     */
     @Transactional
     @Override
     public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
-        String role;
+
+        String role; // The role to remove from the user as given from the request.
         switch (request.getRole()) {
             case TEACHER:
                 role = "2teacher";
@@ -361,15 +373,13 @@ public class AccountServerService extends UserAccountServiceImplBase{
         Role roleForRepo = new Role(user, role);
         roleRepo.save(roleForRepo);
 
-        // if the role to add is a teacher, add them to the teacher group
+        // if the role to add is a teacher, add them to the teacher group and remove from the members without a group.
         if (role.equals("2teacher")) {
-            Groups teacherGroup = groupRepository.findAllByGroupShortName("TG").get(0);
-            groupMembershipRepository.save(new GroupMembership(user, teacherGroup));
+            Groups teacherGroup = groupRepo.findAllByGroupShortName("TG").get(0);
+            groupMembershipRepo.save(new GroupMembership(user, teacherGroup));
 
-            Groups noMembers = groupRepository.findAllByGroupShortName("MWAG").get(0);
-            System.out.println(noMembers.getGroupLongName());
-            System.out.println(noMembers.getMembers());
-            groupMembershipRepository.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers, user);
+            Groups noMembers = groupRepo.findAllByGroupShortName("MWAG").get(0);
+            groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers, user);
         }
 
         responseObserver.onNext(reply.build());
