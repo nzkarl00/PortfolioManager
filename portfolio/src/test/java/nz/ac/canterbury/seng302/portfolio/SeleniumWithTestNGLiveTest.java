@@ -13,6 +13,7 @@ import static org.testng.AssertJUnit.*;
 public class SeleniumWithTestNGLiveTest {
 
         private SeleniumExample seleniumExample;
+        private SeleniumAddDatesTitleLengthTest seleniumTestTitleLengthAddDates;
         private String expectedTitle = "About Baeldung | Baeldung";
 
         @BeforeSuite
@@ -20,11 +21,13 @@ public class SeleniumWithTestNGLiveTest {
                 seleniumExample = new SeleniumExample("");
                 whenPortfolioIsLoaded_thenRegisterWorks();
                 whenPortfolioIsLoaded_thenLoginWorks();
+                seleniumTestTitleLengthAddDates = new SeleniumAddDatesTitleLengthTest("");
         }
 
         @AfterSuite
         public void tearDown() {
                 seleniumExample.closeWindow();
+                seleniumTestTitleLengthAddDates.closeWindow();
         }
 
 
