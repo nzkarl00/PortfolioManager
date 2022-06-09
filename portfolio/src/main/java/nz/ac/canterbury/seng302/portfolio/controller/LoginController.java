@@ -101,6 +101,13 @@ public class LoginController {
         return "login";
     }
 
+    /**
+     * This function authenticate login with a username and password, and return the authentication response.
+     * Null will be returned if authenticating the login was unsuccessful.
+     * @param username to login
+     * @param password to login
+     * @param model to display feedback to user
+     */
     public AuthenticateResponse authenticateLogin(String username, String password, Model model) {
         try {
             return authenticateClientService.authenticate(username, password);
@@ -110,6 +117,12 @@ public class LoginController {
         }
     }
 
+    /**
+     * A len-session-token will be set in the domain according to a successful authentication login/response.
+     * @param request HTTP request sent to this endpoint
+     * @param response HTTP response that will be returned by this endpoint
+     * @param authenticateResponse will contain the response details after a user has been authenticated to login
+     */
     public void setCookie(HttpServletRequest request, HttpServletResponse response, AuthenticateResponse authenticateResponse) {
 
         var domain = request.getHeader("host");

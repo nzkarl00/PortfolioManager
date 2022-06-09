@@ -93,12 +93,14 @@ public class SignupController {
             successShow = "display:none;";
         }
 
+        // Tries to auto authenticate a login after signing up
         AuthenticateResponse authenticateResponse = loginController.authenticateLogin(username, password, model);
 
         if (authenticateResponse == null) {
             return "redirect:signup";
         }
 
+        // If authenticating a login is successful, then the cookie will be set in the domain.
         if (authenticateResponse.getSuccess()) {
             loginController.setCookie(request, response, authenticateResponse);
             return "redirect:account";
