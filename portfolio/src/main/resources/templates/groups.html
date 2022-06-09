@@ -23,72 +23,73 @@
             <button class="add" type="submit">
                 Add Group
             </button>
+            <br>
+            <br>
+            <div cstyle="display:flex">
+                <a th:href="${'groups?page=' + (currentPage-1)}" class="btn btn-primary align-text-left">←</a>
+                Page <span class="table_text" th:text="${' ' + currentPage}"></span>
+                <a th:href="${'groups?page=' + (currentPage+1)}" class="btn btn-primary align-text-left">→</a>
+            </div>
         </form>
     </div>
-    <br>
 
-    <div class="row" th:each="group: ${groups}">
+    <div th:each="group: ${groups}">
+        <br>
+        <div class="row">
 
-        <div class="col-2">
-        </div>
-
-        <!-- Groups Section -->
-        <div class="col-lg-8 col-md-10 col-sm-12 portion_body" >
-
-            <a class="project_a" th:href="@{editGroup(id=${group.getId})}" >
-                <h3 class="project_subhead" th:text="${(group.shortName) + ' ' + group.longName}"/>
-            </a>
-            <br>
-            <div>
-                <!-- Users -->
-                <div class="user-table">
-                    <table class="table" th:id="${'groupUserTable' + group.shortName}">
-                        <thead>
-                        <tr class="justify-content-center">
-                            <th class="table_head justify-content-center text-center"scope="col" >
-                                First Name
-                            </th>
-                            <th class="table_head justify-content-center text-center" scope="col">
-                                Last Name
-                            </th>
-                            <th class="table_head justify-content-center text-center" scope="col">
-                                Username
-                            </th>
-                            <th class="table_head justify-content-center text-center" scope="col">
-                                Alias
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:if="${group.getMembers.empty}">
-                            <td colspan="5"> Could not get users to list </td>
-                        </tr>
-                        <tr th:each="user : ${group.getMembers}">
-                            <td><span class="table_text" th:text="${user.firstName}"> First </span></td>
-                            <td><span class="table_text" th:text="${user.lastName}"> Last </span></td>
-                            <td><span class="table_text" th:text="${user.username}"> Username </span></td>
-                            <td><span class="table_text" th:text="${user.nickname}"> Alias </span></td>
-                        </tr>
-                        </tbody>
-                    </table>
+            <div class="col-2">
             </div>
 
-        </div>
+        <!-- Groups Section -->
+            <div class="col-lg-8 col-md-10 col-sm-12 portion_body" >
+                <a class="project_a" th:href="@{editGroup(id=${group.getId})}" >
+                    <h3 class="project_subhead" th:text="${(group.shortName) + ' ' + group.longName}"/>
+                </a>
+                <br>
+                <div>
+                    <!-- Users -->
+                    <div class="user-table">
+                        <table class="table" th:id="${'groupUserTable' + group.shortName}">
+                            <thead>
+                            <tr class="justify-content-center">
+                                <th class="table_head justify-content-center text-center"scope="col" >
+                                    First Name
+                                </th>
+                                <th class="table_head justify-content-center text-center" scope="col">
+                                    Last Name
+                                </th>
+                                <th class="table_head justify-content-center text-center" scope="col">
+                                    Username
+                                </th>
+                                <th class="table_head justify-content-center text-center" scope="col">
+                                    Alias
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${group.getMembers.empty}">
+                                <td colspan="5"> Could not get users to list </td>
+                            </tr>
+                            <tr th:each="user : ${group.getMembers}">
+                                <td><span class="table_text" th:text="${user.firstName}"> First </span></td>
+                                <td><span class="table_text" th:text="${user.lastName}"> Last </span></td>
+                                <td><span class="table_text" th:text="${user.username}"> Username </span></td>
+                                <td><span class="table_text" th:text="${user.nickname}"> Alias </span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                </div>
+            </div>
 
-        <div class="col-2">
+            <div class="col-2">
+            </div>
 
-
-        </div>
-
-        <div class="col-4">
-
-            <br>
-            <br>
-
-        </div>
-
+            <div class="col-4">
+                <br>
+                <br>
+            </div>
     </div>
-
+  </div>
 </div>
 </div>
 </body>

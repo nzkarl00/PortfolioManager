@@ -12,8 +12,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class AddDatesController {
@@ -22,6 +25,8 @@ public class AddDatesController {
     private SimpMessagingTemplate template;
     @Autowired
     private SprintRepository repository;
+    @Autowired
+    private DeadlineRepository deadlineRepository;
     @Autowired
     private ProjectService projectService;
     @Autowired
@@ -89,32 +94,91 @@ public class AddDatesController {
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "projectId") Integer projectId,
             @RequestParam(value = "eventName") String eventName,
+            @RequestParam(value = "eventType") Optional <String> eventType,
             @RequestParam(value = "eventStartDate") String eventStartDate,
             @RequestParam(value = "eventEndDate") String eventEndDate,
             @RequestParam(value = "eventDescription") String eventDescription
     ) throws Exception {
         String role = AuthStateInformer.getRole(principal);
-        List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
         Project project = projectService.getProjectById(projectId);
+        String messageReturned = "redirect:details?id=";
+
+        String event = eventType.orElse("");
+
+        if (role.equals("teacher") || role.equals("admin")) {
+            if (event.equals("Deadline")) {
+                messageReturned = addDeadlines(project, eventName, eventDescription, eventStartDate, eventEndDate);
+            } else if (event.equals("Sprint") || event.equals("")){
+                messageReturned = addSprint(project, eventName, eventDescription, eventStartDate, eventEndDate);
+            }
+        }
+
+        return messageReturned + projectId;
+    }
+
+    /**
+     * Saves a new date supplied by the user and redirects to the project page afterwards
+     * @param project project in which a deadline is being added
+     * @param eventName name of event
+     * @param eventStartDate event start date
+     * @param eventEndDate event end date
+     * @param eventDescription event description
+     * @return project details page on successful update, return string to indicate success or failure
+     * @throws Exception
+     */
+    private String addSprint(Project project, String eventName, String eventDescription, String eventStartDate, String eventEndDate) throws Exception {
         Date projStart = project.getStartDate();
         Date projEnd = project.getEndDate();
+        Integer projectId = project.getId();
+        List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
         Date newStart = DateParser.stringToDate(eventStartDate);
         Date newEnd = DateParser.stringToDate(eventEndDate);
+
         if (eventName == "") {
             eventName = "Sprint " + (sprints.size() + 1);
         }
         if (!sprintService.areNewSprintDatesValid(newStart, newEnd, projectId) || newStart.before(projStart) || newEnd.after(projEnd)) {
             errorShow="";
             errorCode="Invalid dates";
-            return "redirect:addDates?projectId=" + projectId;
+            return "redirect:add-dates?projectId=";
         }
-        if (role.equals("teacher") || role.equals("admin")) {
-            Sprint sprint = new Sprint(projectId, eventName, eventName, eventDescription, newStart, newEnd);
-            repository.save(sprint);
-            sendSprintCalendarChange(projectId);
-            return "redirect:details?id=" + projectId;
+        
+        Sprint sprint = new Sprint(projectId, eventName, eventName, eventDescription, newStart, newEnd);
+        repository.save(sprint);
+        sendSprintCalendarChange(projectId);
+        return "redirect:details?id=";
+    }
+
+    /**
+     * Saves a new date supplied by the user and redirects to the project page afterwards
+     * @param project project in which a deadline is being added
+     * @param eventName name of event
+     * @param eventStartDate event start date
+     * @param eventEndDate event end date
+     * @param eventDescription event description
+     * @return project details page on successful update, return string to indicate success or failure
+     */
+    private String addDeadlines(Project project, String eventName, String eventDescription, String eventStartDate, String eventEndDate){
+        Date projStart = DateParser.stringToDate(project.getStartDateString());
+        Date projEnd = DateParser.stringToDate(project.getEndDateString());
+        LocalDateTime endDate = DateParser.stringToLocalDateTime(eventStartDate, eventEndDate);
+        Date checkForValidationDate = DateParser.stringToDate(eventStartDate);
+        
+        if (eventName.isBlank()) {
+            List<Deadline> deadlines = deadlineRepository.findAllByParentProject(project);
+            eventName = "Deadline " + (deadlines.size() + 1);
         }
-        return "redirect:details?id=" + projectId;
+
+        if (checkForValidationDate.before(projStart) || checkForValidationDate.after(projEnd)){
+            errorShow="";
+            errorCode="Deadline date must be within the project dates";
+            return "redirect:add-dates?projectId=";
+        }
+
+        Deadline deadline = new Deadline(project, eventName, eventDescription, endDate);
+        deadlineRepository.save(deadline);
+        sendDeadlineCalendarChange(project, deadline);
+        return "redirect:details?id=";
     }
 
     /**
@@ -123,4 +187,23 @@ public class AddDatesController {
     public void sendSprintCalendarChange(int id) {
         this.template.convertAndSend("/topic/calendar/" + id, new EventUpdate(FetchUpdateType.SPRINT));
     }
+
+        /**
+     * Send an update deadline message through websockets to all the users on the same project details page
+     */
+    public void sendDeadlineCalendarChange(Project project, Deadline deadline) {
+        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
+        // loop through sprints
+        for (Sprint sprint: sprints) {
+            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.getStartDate());
+            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.getEndDate());
+            // if deadline is within sprint
+            if (deadline.getEndDate().isAfter(startDate) && deadline.getStartDate().isBefore(endDate)) {
+                /// send a deadline update
+                this.template.convertAndSend("/topic/calendar/" + project.getId()
+                    , new EventUpdate(FetchUpdateType.DEADLINE, sprint.getId()));
+            }
+        }
+    }
+
 }

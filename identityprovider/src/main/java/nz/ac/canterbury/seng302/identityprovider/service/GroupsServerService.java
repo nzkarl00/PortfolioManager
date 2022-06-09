@@ -218,11 +218,16 @@ public class GroupsServerService extends GroupsServiceImplBase {
             direction = Sort.Direction.DESC;
         }
 
+        if (request.getOffset() < 0) {
+            throw new IllegalArgumentException("offset must be greater than 0");
+        }
+
         // as there is only really one thing to sort by, names, we sort by the long name always, and the set limits
         List<Groups> groups = groupRepo.findAll(PageRequest.of(request.getOffset(), request.getLimit(), Sort.by(direction, "groupLongName")));
 
         PaginatedGroupsResponse.Builder reply = PaginatedGroupsResponse.newBuilder();
         reply.setResultSetSize(groups.size());
+
         // build the group responses for the paginated response
         for (Groups group: groups) {
             GroupDetailsResponse response = buildGroup(group);
@@ -232,6 +237,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
         observer.onNext(reply.build());
         observer.onCompleted();
     }
+
 
     @Override
     public void getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> observer) {

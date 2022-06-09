@@ -131,7 +131,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             if (!request.getPersonalPronouns().isEmpty()) { profile.setPronouns(request.getPersonalPronouns()); }
             repo.save(profile);
             reply.setIsSuccess(true)
-                .setMessage("We edited somme s***t, idk lol");
+                .setMessage("Your account has been edited");
             responseObserver.onNext(reply.build());
         }
         responseObserver.onCompleted();
@@ -293,7 +293,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
 
-        System.out.println(request);
         String roleString;
         switch (request.getRole()) {
             case TEACHER:

@@ -30,7 +30,7 @@ class GroupsServerServiceTest {
     static GroupRepository groupRepo = Mockito.mock(GroupRepository.class);
 
     @Autowired
-    static GroupMembershipRepository groupMembershipRepo = Mockito.mock(GroupMembershipRepository.class);;
+    static GroupMembershipRepository groupMembershipRepo = Mockito.mock(GroupMembershipRepository.class);
 
     /**
      * Setup to replace the autowired instances of these with the mocks
@@ -207,6 +207,53 @@ class GroupsServerServiceTest {
 
     }
 
+    /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<PaginatedGroupsResponse> groupsObserver = mock(StreamObserver.class);
+
+    /**
+     * test to get a valid set of groups
+     */
+    @Test
+    void getPaginatedGroups_validRequest_blueSky() {
+        Groups group =  new Groups("The Society of Pompous Rapscallions", "SPR");
+        when(groupRepo.findAll(PageRequest.of(
+                0, 10, Sort.by(Sort.Direction.ASC, "groupLongName"))))
+                .thenReturn(new ArrayList<>(List.of(group)));
+        when(groupMembershipRepo.findAllByRegisteredGroups(group)).thenReturn(new ArrayList<>());
+
+        GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest.newBuilder().setIsAscendingOrder(true).setLimit(10).setOffset(0).build();
+        gss.getPaginatedGroups(request, groupsObserver);
+
+        verify(groupsObserver, times(1)).onCompleted();
+        ArgumentCaptor<PaginatedGroupsResponse> captor = ArgumentCaptor.forClass(PaginatedGroupsResponse.class);
+        verify(groupsObserver, times(1)).onNext(captor.capture());
+        PaginatedGroupsResponse response = captor.getValue();
+        assertEquals(1, response.getGroupsCount()); // we have one group
+        assertEquals(0, response.getGroups(0).getMembersCount()); //there are no members in the group
+    }
+
+    /**
+     * test to get a invalid set of groups as the offset is -1, which is an invalid page
+     */
+    @Test
+    void getPaginatedGroups_invalidRequest_testForFailure() {
+        GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest.newBuilder().setIsAscendingOrder(true).setLimit(10).setOffset(-1).build();
+        assertThrows(IllegalArgumentException.class, () -> {
+            gss.getPaginatedGroups(request, groupsObserver);
+        });
+    }
+
+    @Test
+    void buildGroup_validRequest_blueSky() {
+        Groups group =  new Groups("The Society of Pompous Rapscallions", "SPR");
+        when(groupMembershipRepo.findAllByRegisteredGroups(group)).thenReturn(new ArrayList<>());
+        GroupDetailsResponse repsonse = gss.buildGroup(group);
+        assertEquals("SPR", repsonse.getShortName());
+        assertEquals("The Society of Pompous Rapscallions", repsonse.getLongName());
+        assertEquals(0, repsonse.getMembersCount());
+    }
     /**
      * Test that a group can be retrieved
      */
