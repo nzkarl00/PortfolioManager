@@ -91,6 +91,27 @@ public class SignupController {
             successShow = "display:none;";
         }
 
-        return "redirect:signup";
+        AuthenticateResponse loginReply;
+        try {
+            loginReply = authenticateClientService.authenticate(username, password);
+        } catch (StatusRuntimeException e){
+            model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
+            return "login";
+        }
+
+        if (loginReply.getSuccess()) {
+            var domain = request.getHeader("host");
+            CookieUtil.create(
+                    response,
+                    "lens-session-token", // cookie in loginReply.getToken() stored here
+                    loginReply.getToken(),
+                    true,
+                    5 * 60 * 60, // Expires in 5 hours
+                    domain.startsWith("localhost") ? null : domain
+            );
+            return "redirect:account";
+        } else {
+            return "redirect:signup";
+        }
     }
 }
