@@ -42,6 +42,15 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Autowired
     GroupRepository groupRepo;
 
+    // Constant strings to set
+    String TEACHER_GROUP_NAME_LONG = "Teachers Group";
+    String TEACHER_GROUP_NAME_SHORT = "TG";
+    String MWAG_GROUP_NAME_LONG = "Members Without a Group";
+    String MWAG_GROUP_NAME_SHORT = "MWAG";
+    String STUDENT_ROLE = "1student";
+    String TEACHER_ROLE = "2teacher";
+    String ADMIN_ROLE = "3admin";
+
 
     /**
      * the handling and registering of a new user through a UserRegisterRequest
@@ -299,9 +308,9 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public String getRoleToModify(UserRole roleToModify) {
 
         return switch (roleToModify) {
-            case TEACHER -> "2teacher";
-            case COURSE_ADMINISTRATOR -> "3admin";
-            default -> "1student";
+            case TEACHER -> TEACHER_ROLE;
+            case COURSE_ADMINISTRATOR -> ADMIN_ROLE;
+            default -> STUDENT_ROLE;
         };
     }
 
@@ -331,13 +340,13 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 roleRepo.deleteById(roleIdToRemove);
 
                 // if the role removal is a teacher also remove them from the teacher group
-                if (roleToRemove.equals("2teacher")) {
-                    Groups teacherGroup = groupRepo.findAllByGroupShortName("TG").get(0);
+                if (roleToRemove.equals(TEACHER_ROLE)) {
+                    Groups teacherGroup = groupRepo.findAllByGroupShortName(TEACHER_GROUP_NAME_SHORT).get(0);
                     groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(teacherGroup, user);
 
                     // if there are no groups left for the user add them to Members Without A Group (MWAG)
                     if (groupMembershipRepo.findAllByRegisteredGroupUser(user).isEmpty()) {
-                        Groups noGroup = groupRepo.findAllByGroupShortName("MWAG").get(0);
+                        Groups noGroup = groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT).get(0);
                         groupMembershipRepo.save(new GroupMembership(user, noGroup));
                     }
                 }
@@ -365,11 +374,11 @@ public class AccountServerService extends UserAccountServiceImplBase{
         roleRepo.save(roleForRepo);
 
         // if the role to add is a teacher, add them to the teacher group and remove from the members without a group.
-        if (role.equals("2teacher")) {
-            Groups teacherGroup = groupRepo.findAllByGroupShortName("TG").get(0);
+        if (role.equals(TEACHER_ROLE)) {
+            Groups teacherGroup = groupRepo.findAllByGroupShortName(TEACHER_GROUP_NAME_SHORT).get(0);
             groupMembershipRepo.save(new GroupMembership(user, teacherGroup));
 
-            Groups noMembers = groupRepo.findAllByGroupShortName("MWAG").get(0);
+            Groups noMembers = groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT).get(0);
             groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers, user);
         }
 
