@@ -421,11 +421,11 @@ public class AccountServerServiceTests {
             .setUserId(1)
             .setRole(UserRole.TEACHER)
             .build();
-    private ModifyRoleOfUserRequest addTeacherRoleOfUserRequest= ModifyRoleOfUserRequest.newBuilder()
-            .setUserId(2)
-            .setRole(UserRole.TEACHER)
-            .build();
     private StreamObserver<UserRoleChangeResponse> UserRoleChangeResponse = mock(StreamObserver.class);
+    Groups teacherGroup = new Groups("Teacher Group", "TG");
+    Groups noGroup = new Groups("Members without a group", "MWAG");
+
+
 
     /**
      * Given a user that has a role of a teacher, and belonging to the teacher group only.
@@ -448,11 +448,9 @@ public class AccountServerServiceTests {
 
         Mockito.when(roleRepo.findAllByRegisteredUser(user)).thenReturn(rolesOfUser);
 
-        Groups teacherGroup = new Groups("Teacher Group", "TG");
         Mockito.when(ass.groupRepo.findAllByGroupShortName("TG"))
                 .thenReturn(new ArrayList<>(List.of(teacherGroup)));
 
-        Groups noGroup = new Groups("Members without a group", "MWAG");
         Mockito.when(ass.groupRepo.findAllByGroupShortName("MWAG"))
                 .thenReturn(new ArrayList<>(List.of(noGroup)));
 
@@ -461,39 +459,34 @@ public class AccountServerServiceTests {
         Mockito.verify(groupMembershipRepo).save(refEq(new GroupMembership(user, noGroup)));
     }
 
+    /**
+     * Given a user that does not have a role of a teacher, and belonging to the MWAG group only.
+     * This will test if adding the teacher role will successfully update this in the
+     * roleRepo, groupRepo, and groupMembershipRepo.
+     * The user will not belong to the Members Without a Group.
+     * The user should have the role of the teacher, and belong to the teacher group.
+     */
     @Test
     void addRoleToUserTest() {
 
         AccountProfile user = new AccountProfile();
-        Mockito.when(repo.findById(2)).thenReturn(user);
+        Mockito.when(repo.findById(1)).thenReturn(user);
 
         Role newRoleToAdd = new Role(user, "2teacher");
 
-        ass.addRoleToUser(addTeacherRoleOfUserRequest, UserRoleChangeResponse);
-
-        Groups teacherGroup = new Groups("Teacher Group", "TG");
         Mockito.when(ass.groupRepo.findAllByGroupShortName("TG"))
                 .thenReturn(new ArrayList<>(List.of(teacherGroup)));
-        Mockito.verify(groupMembershipRepo).save(refEq(new GroupMembership(user, teacherGroup)));
 
-        Groups noGroup = new Groups("Members without a group", "MWAG");
         Mockito.when(ass.groupRepo.findAllByGroupShortName("MWAG"))
                 .thenReturn(new ArrayList<>(List.of(noGroup)));
+
+        ass.addRoleToUser(modifyRoleOfUserRequest, UserRoleChangeResponse);
+
+        Mockito.verify(groupMembershipRepo).save(refEq(new GroupMembership(user, teacherGroup)));
+
         Mockito.verify(groupMembershipRepo).deleteByRegisteredGroupsAndRegisteredGroupUser(noGroup, user);
 
         Mockito.verify(roleRepo).save(refEq(newRoleToAdd));
-
-
-    }
-
-    @Test
-    void addRoleToUserTest_ToAddAStudentRole_ExpectStudentRoleAdded() {
-
-        AccountProfile user = new AccountProfile();
-        Mockito.when(repo.findById(1)).thenReturn(user);
-
-        Role newStudentRoleToAdd = new Role(user, "2student");
-        Mockito.verify(roleRepo).save(refEq(newStudentRoleToAdd));
     }
 }
 

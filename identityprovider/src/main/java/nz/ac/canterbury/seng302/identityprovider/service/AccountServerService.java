@@ -360,17 +360,9 @@ public class AccountServerService extends UserAccountServiceImplBase{
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
 
-        // TODO: remove after this is for debugging
-        System.out.println("USER");
-        System.out.println(user);
-
         String role = getRoleToModify(request.getRole()); // The role to add to the user as given from the request.
         Role roleForRepo = new Role(user, role);
         roleRepo.save(roleForRepo);
-
-        // TODO: remove after this is for debugging
-        System.out.println("ROLE TO ADD");
-        System.out.println(roleForRepo);
 
         // if the role to add is a teacher, add them to the teacher group and remove from the members without a group.
         if (role.equals("2teacher")) {
