@@ -319,13 +319,12 @@ public class AccountServerService extends UserAccountServiceImplBase{
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
 
         String roleToRemove = getRoleToModify(request.getRole()); // The role to remove from the user as given from the request.
-        System.out.println("REMOVE THIS ROLE");
-        System.out.println(roleToRemove);
 
         Long roleIdToRemove = null;
 
         List<Role> rolesOfUser = roleRepo.findAllByRegisteredUser(user); // List of roles held by that user
         for (Role role: rolesOfUser) {
+
             // Out of the roles held by that user, update the repos with the requested role to be removed.
             if (role.getRole().equals(roleToRemove)) {
                 roleIdToRemove = role.getUserRoleId();
@@ -361,11 +360,17 @@ public class AccountServerService extends UserAccountServiceImplBase{
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
 
+        // TODO: remove after this is for debugging
+        System.out.println("USER");
+        System.out.println(user);
+
         String role = getRoleToModify(request.getRole()); // The role to add to the user as given from the request.
-        System.out.println("ROLE TO ADD");
-        System.out.println(role);
         Role roleForRepo = new Role(user, role);
         roleRepo.save(roleForRepo);
+
+        // TODO: remove after this is for debugging
+        System.out.println("ROLE TO ADD");
+        System.out.println(roleForRepo);
 
         // if the role to add is a teacher, add them to the teacher group and remove from the members without a group.
         if (role.equals("2teacher")) {
