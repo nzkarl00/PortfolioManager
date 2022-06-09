@@ -1,20 +1,18 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 import io.grpc.stub.StreamObserver;
-import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
-import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
-import nz.ac.canterbury.seng302.identityprovider.model.Role;
-import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
+import nz.ac.canterbury.seng302.identityprovider.model.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.exceptions.base.MockitoException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,6 +37,12 @@ public class AccountServerServiceTests {
      */
     @Autowired
     static RolesRepository roleRepo = mock(RolesRepository.class);
+
+    @Autowired
+    static GroupRepository groupRepo = mock(GroupRepository.class);
+
+    @Autowired
+    static GroupMembershipRepository groupMembershipRepo = mock(GroupMembershipRepository.class);
 
 
     /**
@@ -106,6 +110,8 @@ public class AccountServerServiceTests {
         ass.roleRepo = roleRepo;
         ass.repo = repo;
         ass.accountService = as;
+        ass.groupRepo = groupRepo;
+        ass.groupMembershipRepo = groupMembershipRepo;
     }
 
     /**
@@ -406,4 +412,41 @@ public class AccountServerServiceTests {
         // as nothing has been captured it should throw an error that we haven't caught anything
         assertThrows(MockitoException.class, captor::getValue);
     }
+
+    private ModifyRoleOfUserRequest modifyRoleOfUserRequest= ModifyRoleOfUserRequest.newBuilder()
+            .setUserId(1)
+            .setRole(UserRole.TEACHER)
+            .build();
+    private StreamObserver<UserRoleChangeResponse> UserRoleChangeResponse = mock(StreamObserver.class);
+
+    @Test
+    void removeRoleFromUserTest() {
+
+        AccountProfile user = new AccountProfile();
+        Role studentRole = new Role(user, "1student");
+        Role teacherRole = new Role(user, "2teacher");
+        List<Role> rolesOfUser = new ArrayList<Role>();
+        rolesOfUser.add(studentRole);
+        rolesOfUser.add(teacherRole);
+
+        Mockito.when(repo.findById(1)).thenReturn(user);
+
+        String roleToRemove = "2teacher";
+        Long roleIdToRemove = teacherRole.getUserRoleId();
+
+        Mockito.when(roleRepo.findAllByRegisteredUser(user)).thenReturn(rolesOfUser);
+
+        Groups teacherGroup = new Groups("Teacher Group", "TG");
+        Mockito.when(ass.groupRepo.findAllByGroupShortName("TG"))
+                .thenReturn(new ArrayList<>(List.of(teacherGroup)));
+
+        Groups noGroup = new Groups("Members without a group", "MWAG");
+        Mockito.when(ass.groupRepo.findAllByGroupShortName("MWAG"))
+                .thenReturn(new ArrayList<>(List.of(noGroup)));
+
+        ass.removeRoleFromUser(modifyRoleOfUserRequest, UserRoleChangeResponse);
+
+        Mockito.verify(groupMembershipRepo).save(refEq(new GroupMembership(user, noGroup)));
+    }
 }
+
