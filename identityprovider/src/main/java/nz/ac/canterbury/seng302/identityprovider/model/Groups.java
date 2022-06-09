@@ -49,6 +49,8 @@ public class Groups {
 
     public String getGroupShortName(){ return groupShortName; }
     public String getGroupLongName(){ return groupLongName; }
+    public void setGroupShortName(String name){ groupShortName = name; }
+    public void setGroupLongName(String name){ groupLongName = name; }
     public int getId(){return groupId;}
 
     public List<GroupMembership> getMembers() {return members;}

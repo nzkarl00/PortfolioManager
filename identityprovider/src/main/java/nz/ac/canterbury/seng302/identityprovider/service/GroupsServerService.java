@@ -32,10 +32,10 @@ public class GroupsServerService extends GroupsServiceImplBase {
     GroupMembershipRepository groupMembershipRepo;
 
     @Autowired
-    RolesRepository roleRepo;
+    AccountProfileRepository repo;
 
     @Autowired
-    AccountProfileRepository repo;
+    RolesRepository roleRepo;
 
     @Autowired
     private FileSystemUtils fsUtils;
@@ -175,6 +175,35 @@ public class GroupsServerService extends GroupsServiceImplBase {
     }
 
     /**
+     * Modifies a given group
+     * @param request contains the details of the groups we are changing and what to change it to
+     * @param observer where to send the groups to
+     */
+    @Override
+    public void modifyGroupDetails(ModifyGroupDetailsRequest request, StreamObserver<ModifyGroupDetailsResponse> observer) {
+        ModifyGroupDetailsResponse.Builder reply = ModifyGroupDetailsResponse.newBuilder();
+        Long targetVal = Long.valueOf(request.getGroupId());
+        Groups targetGroup = groupRepo.findByGroupId(targetVal);
+        if (!(targetGroup == null)) {
+            if (!request.getShortName().isEmpty()) { targetGroup.setGroupShortName(request.getLongName()); }
+            if (!request.getLongName().isEmpty()) { targetGroup.setGroupShortName(request.getShortName()); }
+            groupRepo.save(targetGroup);
+            reply.setIsSuccess(true)
+                    .setMessage("Edit successful");
+
+            observer.onNext(reply.build());
+            observer.onCompleted();
+        } else {
+            reply.setIsSuccess(false)
+                    .setMessage("Edit failed, Group does not exist");
+
+            observer.onNext(reply.build());
+            observer.onCompleted();
+        }
+    }
+
+
+    /**
      * Get a bunch of groups for the portfolio
      * @param request contains the details of the groups we are looking for
      * @param observer where to send the groups to
@@ -197,6 +226,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
         List<Groups> groups = groupRepo.findAll(PageRequest.of(request.getOffset(), request.getLimit(), Sort.by(direction, "groupLongName")));
 
         PaginatedGroupsResponse.Builder reply = PaginatedGroupsResponse.newBuilder();
+        reply.setResultSetSize(groups.size());
 
         // build the group responses for the paginated response
         for (Groups group: groups) {
@@ -208,11 +238,27 @@ public class GroupsServerService extends GroupsServiceImplBase {
         observer.onCompleted();
     }
 
-    /**
-     * build a group response to send to portfolio
-     * @param group the group to build the response from
-     * @return the build response
-     */
+
+    @Override
+    public void getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> observer) {
+        Long targetVal = Long.valueOf(request.getGroupId());
+        Groups targetGroup = groupRepo.findByGroupId(targetVal);
+        GroupDetailsResponse groupInfo;
+        if (!(targetGroup == null)) {
+            groupInfo = buildGroup(targetGroup);
+        } else {
+            groupInfo = GroupDetailsResponse.newBuilder().setGroupId(-1).setLongName("").setLongName("").build();
+        }
+        observer.onNext(groupInfo);
+        observer.onCompleted();
+
+    }
+
+        /**
+         * build a group response to send to portfolio
+         * @param group the group to build the response from
+         * @return the build response
+         */
     public GroupDetailsResponse buildGroup(Groups group) {
         // set the group details
         GroupDetailsResponse.Builder response = GroupDetailsResponse.newBuilder()
