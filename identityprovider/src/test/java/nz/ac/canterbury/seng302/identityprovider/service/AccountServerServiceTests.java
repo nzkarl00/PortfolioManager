@@ -154,6 +154,16 @@ public class AccountServerServiceTests {
     void createAccountWithValidAttributes() throws Exception {
         when(as.getAccountByUsername("testusername3")).thenThrow(new Exception("Account profile not found")); // Simulates username not found
         when(as.getAccountByEmail("test@email3")).thenThrow(new Exception("Account profile not found")); // Simulates email not found
+
+        // mocking default group checking
+        Groups teacherGroup = new Groups("Teacher Group", "TG");
+        Mockito.when(ass.groupRepo.findAllByGroupShortName("TG"))
+            .thenReturn(new ArrayList<>(List.of(teacherGroup)));
+
+        Groups noGroup = new Groups("Members without a group", "MWAG");
+        Mockito.when(ass.groupRepo.findAllByGroupShortName("MWAG"))
+            .thenReturn(new ArrayList<>(List.of(noGroup)));
+
         ass.register(testRequest3, testObserver);
         verify(testObserver, times(1)).onCompleted();
         ArgumentCaptor<UserRegisterResponse> captor = ArgumentCaptor.forClass(UserRegisterResponse.class);
@@ -469,16 +479,18 @@ public class AccountServerServiceTests {
 
         Role newRoleToAdd = new Role(user, "2teacher");
 
-        ass.addRoleToUser(addTeacherRoleOfUserRequest, UserRoleChangeResponse);
-
         Groups teacherGroup = new Groups("Teacher Group", "TG");
         Mockito.when(ass.groupRepo.findAllByGroupShortName("TG"))
                 .thenReturn(new ArrayList<>(List.of(teacherGroup)));
-        Mockito.verify(groupMembershipRepo).save(refEq(new GroupMembership(user, teacherGroup)));
 
         Groups noGroup = new Groups("Members without a group", "MWAG");
         Mockito.when(ass.groupRepo.findAllByGroupShortName("MWAG"))
                 .thenReturn(new ArrayList<>(List.of(noGroup)));
+
+        ass.addRoleToUser(addTeacherRoleOfUserRequest, UserRoleChangeResponse);
+
+        Mockito.verify(groupMembershipRepo).save(refEq(new GroupMembership(user, teacherGroup)));
+
         Mockito.verify(groupMembershipRepo).deleteByRegisteredGroupsAndRegisteredGroupUser(noGroup, user);
 
         Mockito.verify(roleRepo).save(refEq(newRoleToAdd));
@@ -492,7 +504,7 @@ public class AccountServerServiceTests {
         AccountProfile user = new AccountProfile();
         Mockito.when(repo.findById(1)).thenReturn(user);
 
-        Role newStudentRoleToAdd = new Role(user, "2student");
+        Role newStudentRoleToAdd = new Role(user, "1student");
         Mockito.verify(roleRepo).save(refEq(newStudentRoleToAdd));
     }
 }
