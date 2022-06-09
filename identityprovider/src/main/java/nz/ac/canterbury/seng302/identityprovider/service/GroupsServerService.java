@@ -39,19 +39,23 @@ public class GroupsServerService extends GroupsServiceImplBase {
     @Autowired
     AccountProfileRepository repo;
 
-    String TEACHER_LONG = "Teachers Group";
-    String TEACHER_SHORT = "TG";
-    String MWAG_LONG = "Members Without a Group";
-    String MWAG_SHORT = "MWAG";
+    // Constant strings to set.
+    String TEACHER_GROUP_NAME_LONG = "Teachers Group";
+    String TEACHER_GROUP_NAME_SHORT = "TG";
+    String MWAG_GROUP_NAME_LONG = "Members Without a Group";
+    String MWAG_GROUP_NAME_SHORT = "MWAG";
+    String STUDENT_ROLE = "1student";
     String TEACHER_ROLE = "2teacher";
+    String ADMIN_ROLE = "3admin";
 
     /**
-     * make the special groups if they don't already exist
+     * The function that initialize all the special groups required for the application
+     * if they don't exist already. E.g. Teacher Group & Members Without A Group
      */
     @PostConstruct
-    private void makeSpecialGroups() {
+    private void initAllSpecialGroup() {
 
-        Groups teachers = initGroup(TEACHER_LONG, TEACHER_SHORT);
+        Groups teachers = initGroup(TEACHER_GROUP_NAME_LONG, TEACHER_GROUP_NAME_SHORT);
 
         /*
         for (GroupMembership membership : teachers.getMembers()) {
@@ -60,7 +64,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
             }
         }*/
 
-        Groups noGroup = initGroup(MWAG_LONG, MWAG_SHORT);
+        Groups noGroup = initGroup(MWAG_GROUP_NAME_LONG, MWAG_GROUP_NAME_SHORT);
 
         /*
         for (AccountProfile profile: repo.findAll()) {
@@ -74,6 +78,12 @@ public class GroupsServerService extends GroupsServiceImplBase {
         }*/
     }
 
+    /**
+     * Initialize the group into the Group repo by either creating a new group,
+     * or retrieving an existing one, and then returning that group.
+     * @param longName of the Group name to initialize
+     * @param shortName of the Group name to initialize
+     */
     private Groups initGroup(String longName, String shortName) {
         List<Groups> currentGroup = groupRepo.findAllByGroupLongName(longName);
         Groups group;
@@ -97,7 +107,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
         boolean isTeacherGroup = false;
 
         Groups currentGroup = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
-        Groups teacherGroup = groupRepo.findAllByGroupShortName(TEACHER_SHORT).get(0);
+        Groups teacherGroup = groupRepo.findAllByGroupShortName(TEACHER_GROUP_NAME_SHORT).get(0);
         if (currentGroup.equals(teacherGroup)) {
             isTeacherGroup = true;
         }
@@ -106,7 +116,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
             AccountProfile user = repo.findById(userId);
 
             // if a group membership contains MWAG, remove it, see @PostConstruct
-            List<Groups> noMembers = groupRepo.findAllByGroupShortName(MWAG_SHORT);
+            List<Groups> noMembers = groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT);
             groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers.get(0), user);
 
             if (isTeacherGroup) {
@@ -154,7 +164,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
         boolean isTeacherGroup = false;
 
         Groups currentGroup = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
-        Groups teacherGroup = groupRepo.findAllByGroupShortName(TEACHER_SHORT).get(0);
+        Groups teacherGroup = groupRepo.findAllByGroupShortName(TEACHER_GROUP_NAME_SHORT).get(0);
         if (currentGroup.equals(teacherGroup)) {
             isTeacherGroup = true;
         }
@@ -167,7 +177,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
                 groupMembershipRepo.deleteById(membershipId);
                 //if the user has no groups left, add the to the MWAG
                 if (userAccount.getGroups().isEmpty()) {
-                    List<Groups> noMembership = groupRepo.findAllByGroupShortName(MWAG_SHORT);
+                    List<Groups> noMembership = groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT);
                     groupMembershipRepo.save(new GroupMembership(noMembership.get(0), userAccount));
                 }
 
