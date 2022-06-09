@@ -25,6 +25,8 @@ public class SignupController {
     @Autowired
     private AccountClientService accountClientService;
 
+    @Autowired LoginController loginController;
+
 
     String errorShow = "display:none;";
     String successShow = "display:none;";
@@ -91,27 +93,18 @@ public class SignupController {
             successShow = "display:none;";
         }
 
-        AuthenticateResponse loginReply;
-        try {
-            loginReply = authenticateClientService.authenticate(username, password);
-        } catch (StatusRuntimeException e){
-            model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            return "login";
-        }
+        AuthenticateResponse authenticateResponse = loginController.authenticateLogin(username, password, model);
 
-        if (loginReply.getSuccess()) {
-            var domain = request.getHeader("host");
-            CookieUtil.create(
-                    response,
-                    "lens-session-token", // cookie in loginReply.getToken() stored here
-                    loginReply.getToken(),
-                    true,
-                    5 * 60 * 60, // Expires in 5 hours
-                    domain.startsWith("localhost") ? null : domain
-            );
-            return "redirect:account";
-        } else {
+        if (authenticateResponse == null) {
             return "redirect:signup";
         }
+
+        if (authenticateResponse.getSuccess()) {
+            loginController.setCookie(request, response, authenticateResponse);
+            return "redirect:account";
+        }
+
+        model.addAttribute("loginMessage", authenticateResponse.getMessage());
+        return "redirect:signup";
     }
 }

@@ -85,27 +85,41 @@ public class LoginController {
             @RequestParam(value="password") String password,
             Model model
     ) {
-        AuthenticateResponse loginReply;
-        try {
-            loginReply = authenticateClientService.authenticate(username, password);
-        } catch (StatusRuntimeException e){
-            model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            return "login";
+
+        AuthenticateResponse authenticateResponse = authenticateLogin(username, password, model);
+
+        if (authenticateResponse == null) {
+            return "redirect:login";
         }
-        if (loginReply.getSuccess()) {
-            var domain = request.getHeader("host");
-            CookieUtil.create(
-                response,
-                "lens-session-token", // cookie in loginReply.getToken() stored here
-                    loginReply.getToken(),
-                true,
-                5 * 60 * 60, // Expires in 5 hours
-                domain.startsWith("localhost") ? null : domain
-            );
+
+        if (authenticateResponse.getSuccess()) {
+            setCookie(request, response, authenticateResponse);
             return "redirect:account";
         }
 
-        model.addAttribute("loginMessage", loginReply.getMessage());
+        model.addAttribute("loginMessage", authenticateResponse.getMessage());
         return "login";
+    }
+
+    public AuthenticateResponse authenticateLogin(String username, String password, Model model) {
+        try {
+            return authenticateClientService.authenticate(username, password);
+        } catch (StatusRuntimeException e){
+            model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
+            return null;
+        }
+    }
+
+    public void setCookie(HttpServletRequest request, HttpServletResponse response, AuthenticateResponse authenticateResponse) {
+
+        var domain = request.getHeader("host");
+        CookieUtil.create(
+                response,
+                "lens-session-token", // cookie in loginReply.getToken() stored here
+                authenticateResponse.getToken(),
+                true,
+                5 * 60 * 60, // Expires in 5 hours
+                domain.startsWith("localhost") ? null : domain
+        );
     }
 }
