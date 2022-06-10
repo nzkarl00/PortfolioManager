@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 /**
@@ -70,4 +71,10 @@ public class Deadline extends ProjectTimeBoundItem {
     public String getName() {
         return this.name;
     }
+
+    /**
+     * Get the id of the deadline
+     * @return
+     */
+    public Integer getId() {return this.id; }
 }
