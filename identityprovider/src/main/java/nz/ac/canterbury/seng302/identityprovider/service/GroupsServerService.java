@@ -54,28 +54,8 @@ public class GroupsServerService extends GroupsServiceImplBase {
      */
     @PostConstruct
     private void initAllSpecialGroup() {
-
         Groups teachers = initGroup(TEACHER_GROUP_NAME_LONG, TEACHER_GROUP_NAME_SHORT);
-
-        /*
-        for (GroupMembership membership : teachers.getMembers()) {
-            if (!membership.getRegisteredGroupUser().getRoles().contains(TEACHER_ROLE)) {
-                roleRepo.save(new Role(membership.getRegisteredGroupUser(), TEACHER_ROLE));
-            }
-        }*/
-
         Groups noGroup = initGroup(MWAG_GROUP_NAME_LONG, MWAG_GROUP_NAME_SHORT);
-
-        /*
-        for (AccountProfile profile: repo.findAll()) {
-            // if it has no groups, put it in the empty group
-            if (profile.getGroups().isEmpty()) {
-                groupMembershipRepo.save(new GroupMembership(profile, noGroup));
-            // this > 1 avoids the case of deleting the MWAG group if it belongs there
-            } else if (profile.getGroups().size() > 1) {
-                groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noGroup, profile);
-            }
-        }*/
     }
 
     /**
