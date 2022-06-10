@@ -74,4 +74,12 @@ public class Milestone extends ProjectTimeBoundItem {
     public String getName() {
         return this.name;
     }
+
+    /**
+     * Get the id of the milestone.
+     * @return
+     */
+    public Integer getId() {
+        return this.id;
+    }
 }

@@ -42,223 +42,251 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = AddDatesController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class AddDatesControllerTest {
-        private AuthState validAuthState = AuthState.newBuilder()
-                .setIsAuthenticated(true)
-                .setNameClaimType("name")
-                .setRoleClaimType("role")
-                .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
-                .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-                .setAuthenticationType("AuthenticationTypes.Federation")
-                .setName("validtesttoken")
+    private AuthState validAuthState = AuthState.newBuilder()
+            .setIsAuthenticated(true)
+            .setNameClaimType("name")
+            .setRoleClaimType("role")
+            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
+            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
+            .setAuthenticationType("AuthenticationTypes.Federation")
+            .setName("validtesttoken")
+            .build();
+
+    private AuthState validAuthStateTeacher = AuthState.newBuilder()
+            .setIsAuthenticated(true)
+            .setNameClaimType("name")
+            .setRoleClaimType("role")
+            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("TEACHER").build()) // Set the mock user's role
+            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
+            .setAuthenticationType("AuthenticationTypes.Federation")
+            .setName("validtesttoken")
+            .build();
+
+    private AuthState validAuthStateStudent = AuthState.newBuilder()
+            .setIsAuthenticated(true)
+            .setNameClaimType("name")
+            .setRoleClaimType("role")
+            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("STUDENT").build()) // Set the mock user's role
+            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
+            .setAuthenticationType("AuthenticationTypes.Federation")
+            .setName("validtesttoken")
+            .build();
+
+
+    private final UserResponse testUser = UserResponse.newBuilder()
+            .setBio("testbio")
+            .setCreated(Timestamp.newBuilder().setSeconds(10))
+            .setEmail("test@email")
+            .setFirstName("testfirstname")
+            .setLastName("testlastname")
+            .setMiddleName("testmiddlename")
+            .setNickname("testnickname")
+            .setPersonalPronouns("test/test")
+            .addRoles(UserRole.TEACHER)
+            .build();
+
+
+    private static final Date april1 = DateParser.stringToDate("22-04-01");
+    private static final Date may1 = DateParser.stringToDate("22-05-01");
+    private static final Date june1 = DateParser.stringToDate("22-06-01");
+    private static final Date july1 = DateParser.stringToDate("22-07-01");
+    private static final Date eventMay1 = DateParser.stringToDate("2022-05-01");
+    private static final Date eventJune1 = DateParser.stringToDate("2022-06-01");
+
+    private static final Sprint validSprint = new Sprint(0, "test", "test", "test", may1, june1);
+    private static MultiValueMap<String, String> validParams = new LinkedMultiValueMap<String, String>();
+    private static MultiValueMap<String, String> validParamsDeadline = new LinkedMultiValueMap<String, String>();
+    private static MultiValueMap<String, String> validParamsMilestone = new LinkedMultiValueMap<String, String>();
+    private static MultiValueMap<String, String> deadlineStartsBeforeProjectParams = new LinkedMultiValueMap<String, String>();
+    private static MultiValueMap<String, String> deadlineEndsAfterProjectParams = new LinkedMultiValueMap<String, String>();
+    private static MultiValueMap<String, String> milestoneStartsBeforeProjectParams = new LinkedMultiValueMap<String, String>();
+    private static MultiValueMap<String, String> milestoneEndsAfterProjectParams = new LinkedMultiValueMap<String, String>();
+    private static MultiValueMap<String, String> startsBeforeProjectParams = new LinkedMultiValueMap<String, String>();
+    private static MultiValueMap<String, String> endsAfterProjectParams = new LinkedMultiValueMap<String, String>();
+
+    private final Project testProject = new Project("testName", "testDescription", may1, june1);
+    private final Project testProjectForEvents = new Project("testName", "testDescription", eventMay1, eventJune1);
+
+    private static final LocalDateTime may4 = DateParser.stringToLocalDateTime("2022-05-04", "16:20");
+    private static final LocalDateTime milestoneMay4 = DateParser.stringToLocalDateTime("2022-05-04", "");
+
+    private final Deadline validDeadline = new Deadline(testProjectForEvents, "Deadline 1", "This is a deadline for project 1", may4);
+    private final Milestone validMilestone = new Milestone(testProjectForEvents, "Milestone 1", "This is a milestone for project 1", milestoneMay4);
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    SimpMessagingTemplate template;
+
+    @MockBean
+    AccountClientService accountClientService;
+
+    @MockBean
+    SprintRepository sprintRepo;
+
+    @MockBean
+    DeadlineRepository deadlineRepo;
+
+    @MockBean
+    MilestoneRepository milestoneRepo;
+
+    @MockBean
+    ProjectService projectService;
+
+    @MockBean
+    SprintService sprintService;
+
+    @MockBean
+    NavController navController;
+
+    @Before
+    public void setup() throws Exception {
+        mockMvc = MockMvcBuilders.standaloneSetup(DetailsController.class)
                 .build();
+    }
 
-        private AuthState validAuthStateTeacher = AuthState.newBuilder()
-                .setIsAuthenticated(true)
-                .setNameClaimType("name")
-                .setRoleClaimType("role")
-                .addClaims(ClaimDTO.newBuilder().setType("role").setValue("TEACHER").build()) // Set the mock user's role
-                .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-                .setAuthenticationType("AuthenticationTypes.Federation")
-                .setName("validtesttoken")
-                .build();
+    // setting up and closing the mocked static authStateInformer
+    static MockedStatic<AuthStateInformer> utilities;
 
-        private AuthState validAuthStateStudent = AuthState.newBuilder()
-                .setIsAuthenticated(true)
-                .setNameClaimType("name")
-                .setRoleClaimType("role")
-                .addClaims(ClaimDTO.newBuilder().setType("role").setValue("STUDENT").build()) // Set the mock user's role
-                .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-                .setAuthenticationType("AuthenticationTypes.Federation")
-                .setName("validtesttoken")
-                .build();
+    @BeforeAll
+    public static void open() {
+        utilities = Mockito.mockStatic(AuthStateInformer.class);
+        validParams.add("projectId", String.valueOf(0));
+        validParams.add("eventName", "test");
+        validParams.add("eventStartDate", "22-05-01");
+        validParams.add("eventEndDate", "22-06-01");
+        validParams.add("eventDescription", "test");
 
+        validParamsDeadline.add("projectId", String.valueOf(0));
+        validParamsDeadline.add("eventName", "Deadline 1");
+        validParamsDeadline.add("eventType", "Deadline");
+        validParamsDeadline.add("eventStartDate", "2022-05-04");
+        validParamsDeadline.add("eventEndDate", "16:20");
+        validParamsDeadline.add("eventDescription", "This is a deadline for project 1");
 
-        private final UserResponse testUser = UserResponse.newBuilder()
-                .setBio("testbio")
-                .setCreated(Timestamp.newBuilder().setSeconds(10))
-                .setEmail("test@email")
-                .setFirstName("testfirstname")
-                .setLastName("testlastname")
-                .setMiddleName("testmiddlename")
-                .setNickname("testnickname")
-                .setPersonalPronouns("test/test")
-                .addRoles(UserRole.TEACHER)
-                .build();
+        validParamsMilestone.add("projectId", String.valueOf(0));
+        validParamsMilestone.add("eventName", "Milestone 1");
+        validParamsMilestone.add("eventType", "Milestone");
+        validParamsMilestone.add("eventStartDate", "2022-05-04");
+        validParamsMilestone.add("eventEndDate", "");
+        validParamsMilestone.add("eventDescription", "This is a milestone for project 1");
 
+        startsBeforeProjectParams.add("projectId", String.valueOf(0));
+        startsBeforeProjectParams.add("eventName", "test");
+        startsBeforeProjectParams.add("eventStartDate", "22-04-01");
+        startsBeforeProjectParams.add("eventEndDate", "22-06-01");
+        startsBeforeProjectParams.add("eventDescription", "test");
+        endsAfterProjectParams.add("projectId", String.valueOf(0));
+        endsAfterProjectParams.add("eventName", "test");
+        endsAfterProjectParams.add("eventStartDate", "22-05-01");
+        endsAfterProjectParams.add("eventEndDate", "22-07-01");
+        endsAfterProjectParams.add("eventDescription", "test");
 
-        private static final Date april1 = DateParser.stringToDate("22-04-01");
-        private static final Date may1 = DateParser.stringToDate("22-05-01");
-        private static final Date june1 = DateParser.stringToDate("22-06-01");
-        private static final Date july1 = DateParser.stringToDate("22-07-01");
-        private static final Date deadlineMay1 = DateParser.stringToDate("2022-05-01");
-        private static final Date deadLinejune1 = DateParser.stringToDate("2022-06-01");
+        deadlineStartsBeforeProjectParams.add("projectId", String.valueOf(0));
+        deadlineStartsBeforeProjectParams.add("eventName", "Deadline 1");
+        deadlineStartsBeforeProjectParams.add("eventType", "Deadline");
+        deadlineStartsBeforeProjectParams.add("eventStartDate", "2022-04-01");
+        deadlineStartsBeforeProjectParams.add("eventEndDate", "16:20");
+        deadlineStartsBeforeProjectParams.add("eventDescription", "This is a deadline for project 1");
+        deadlineEndsAfterProjectParams.add("projectId", String.valueOf(0));
+        deadlineEndsAfterProjectParams.add("eventName", "Deadline 1");
+        deadlineEndsAfterProjectParams.add("eventType", "Deadline");
+        deadlineEndsAfterProjectParams.add("eventStartDate", "2022-07-01");
+        deadlineEndsAfterProjectParams.add("eventEndDate", "16:20");
+        deadlineEndsAfterProjectParams.add("eventDescription", "This is a deadline for project 1");
 
-        private static final Sprint validSprint = new Sprint(0, "test", "test", "test", may1, june1);
-        private static MultiValueMap<String, String> validParams = new LinkedMultiValueMap<String, String>();
-        private static MultiValueMap<String, String> validParamsDeadline = new LinkedMultiValueMap<String, String>();
-        private static MultiValueMap<String, String> deadlineStartsBeforeProjectParams = new LinkedMultiValueMap<String, String>();
-        private static MultiValueMap<String, String> deadlineEndsAfterProjectParams = new LinkedMultiValueMap<String, String>();
-        private static MultiValueMap<String, String> startsBeforeProjectParams = new LinkedMultiValueMap<String, String>();
-        private static MultiValueMap<String, String> endsAfterProjectParams = new LinkedMultiValueMap<String, String>();
+        milestoneStartsBeforeProjectParams.add("projectId", String.valueOf(0));
+        milestoneStartsBeforeProjectParams.add("eventName", "Milestone 1");
+        milestoneStartsBeforeProjectParams.add("eventType", "Milestone");
+        milestoneStartsBeforeProjectParams.add("eventStartDate", "2022-04-01");
+        milestoneStartsBeforeProjectParams.add("eventEndDate", "");
+        milestoneStartsBeforeProjectParams.add("eventDescription", "This is a milestone for project 1");
+        milestoneEndsAfterProjectParams.add("projectId", String.valueOf(0));
+        milestoneEndsAfterProjectParams.add("eventName", "Milestone 1");
+        milestoneEndsAfterProjectParams.add("eventType", "Milestone");
+        milestoneEndsAfterProjectParams.add("eventStartDate", "2022-07-01");
+        milestoneEndsAfterProjectParams.add("eventEndDate", "");
+        milestoneEndsAfterProjectParams.add("eventDescription", "This is a milestone for project 1");
 
-        private final Project testProject = new Project("testName", "testDescription", may1, june1);
-        private final Project testProjectForDeadlines = new Project("testName", "testDescription", deadlineMay1, deadLinejune1);
+    }
 
-        private static final LocalDateTime may4 = DateParser.stringToLocalDateTime("2022-05-04", "16:20");
+    @AfterAll
+    public static void close() {
+        utilities.close();
+    }
 
-        private final Deadline validDeadline = new Deadline(testProjectForDeadlines, "Deadline 1", "This is a deadline for project 1", may4);
+    @Test
+    public void getAddDatesWithAdminCredentials() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("admin");
+        // Declaring mockito when conditions
+        when(accountClientService.getUserById(1)).thenReturn(testUser);
+        when(projectService.getProjectById(0)).thenReturn(testProject);
+        // Executing the mocked get request, checking that the page is displayed
+        mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(0)))
+                .andExpect(status().isOk()) // Whether to return the status "200 OK"
+                .andExpect(view().name("addDates"));
+    }
 
+    @Test
+    public void getAddDatesWithTeacherCredentials() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Declaring mockito when conditions
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
+        when(projectService.getProjectById(0)).thenReturn(testProject);
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        // Executing the mocked get request, checking that the page is displayed
+        mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(0)))
+                .andExpect(status().isOk()) // Whether to return the status "200 OK"
+                .andExpect(view().name("addDates"));
+    }
 
-        @Autowired
-        private MockMvc mockMvc;
+    @Test
+    public void getAddDatesWithStudentCredentials() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        // Declaring mockito when conditions
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn("student");
+        when(projectService.getProjectById(0)).thenReturn(testProject);
+        // Executing the mocked get request, checking that the page is displayed
+        mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(0)))
+                .andExpect(status().isOk()) // Whether to return the status "200 OK"
+                .andExpect(view().name("userProjectDetails")); // Returns user project details page instead of add dates"
+    }
 
-        @MockBean
-        SimpMessagingTemplate template;
-
-        @MockBean
-        AccountClientService accountClientService;
-
-        @MockBean
-        SprintRepository sprintRepo;
-
-        @MockBean
-        DeadlineRepository deadlineRepo;
-
-        @MockBean
-        ProjectService projectService;
-
-        @MockBean
-        SprintService sprintService;
-
-        @MockBean
-        NavController navController;
-
-        @Before
-        public void setup() throws Exception {
-            mockMvc = MockMvcBuilders.standaloneSetup(DetailsController.class)
-                    .build();
-        }
-
-        // setting up and closing the mocked static authStateInformer
-        static MockedStatic<AuthStateInformer> utilities;
-
-        @BeforeAll
-        public static void open() {
-            utilities = Mockito.mockStatic(AuthStateInformer.class);
-            validParams.add("projectId", String.valueOf(0));
-            validParams.add("eventName", "test");
-            validParams.add("eventStartDate", "22-05-01");
-            validParams.add("eventEndDate", "22-06-01");
-            validParams.add("eventDescription", "test");
-
-            validParamsDeadline.add("projectId", String.valueOf(0));
-            validParamsDeadline.add("eventName", "Deadline 1");
-            validParamsDeadline.add("eventType", "Deadline");
-            validParamsDeadline.add("eventStartDate", "2022-05-04");
-            validParamsDeadline.add("eventEndDate", "16:20");
-            validParamsDeadline.add("eventDescription", "This is a deadline for project 1");
-        
-            startsBeforeProjectParams.add("projectId", String.valueOf(0));
-            startsBeforeProjectParams.add("eventName", "test");
-            startsBeforeProjectParams.add("eventStartDate", "22-04-01");
-            startsBeforeProjectParams.add("eventEndDate", "22-06-01");
-            startsBeforeProjectParams.add("eventDescription", "test");
-            endsAfterProjectParams.add("projectId", String.valueOf(0));
-            endsAfterProjectParams.add("eventName", "test");
-            endsAfterProjectParams.add("eventStartDate", "22-05-01");
-            endsAfterProjectParams.add("eventEndDate", "22-07-01");
-            endsAfterProjectParams.add("eventDescription", "test");
-
-            deadlineStartsBeforeProjectParams.add("projectId", String.valueOf(0));
-            deadlineStartsBeforeProjectParams.add("eventName", "Deadline 1");
-            deadlineStartsBeforeProjectParams.add("eventType", "Deadline");
-            deadlineStartsBeforeProjectParams.add("eventStartDate", "2022-04-01");
-            deadlineStartsBeforeProjectParams.add("eventEndDate", "16:20");
-            deadlineStartsBeforeProjectParams.add("eventDescription", "This is a deadline for project 1");
-            deadlineEndsAfterProjectParams.add("projectId", String.valueOf(0));
-            deadlineEndsAfterProjectParams.add("eventName", "Deadline 1");
-            deadlineEndsAfterProjectParams.add("eventType", "Deadline");
-            deadlineEndsAfterProjectParams.add("eventStartDate", "2022-07-01");
-            deadlineEndsAfterProjectParams.add("eventEndDate", "16:20");
-            deadlineEndsAfterProjectParams.add("eventDescription", "This is a deadline for project 1");
-        }
-
-        @AfterAll
-        public static void close() {
-            utilities.close();
-        }
-
-        @Test
-        public void getAddDatesWithAdminCredentials() throws Exception {
-            //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-            SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-            when(mockedSecurityContext.getAuthentication())
-                    .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-            // Configuring Spring to use the mocked SecurityContext
-            SecurityContextHolder.setContext(mockedSecurityContext);
-            utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
-            utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("admin");
-            // Declaring mockito when conditions
-            when(accountClientService.getUserById(1)).thenReturn(testUser);
-            when(projectService.getProjectById(0)).thenReturn(testProject);
-            // Executing the mocked get request, checking that the page is displayed
-            mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(0)))
-                    .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                    .andExpect(view().name("addDates"));
-        }
-
-        @Test
-        public void getAddDatesWithTeacherCredentials() throws Exception {
-            //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-            SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-            when(mockedSecurityContext.getAuthentication())
-                    .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
-            // Declaring mockito when conditions
-            utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
-            utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
-            when(projectService.getProjectById(0)).thenReturn(testProject);
-            // Configuring Spring to use the mocked SecurityContext
-            SecurityContextHolder.setContext(mockedSecurityContext);
-            // Executing the mocked get request, checking that the page is displayed
-            mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(0)))
-                    .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                    .andExpect(view().name("addDates"));
-        }
-
-        @Test
-        public void getAddDatesWithStudentCredentials() throws Exception {
-            //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-            SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-            when(mockedSecurityContext.getAuthentication())
-                    .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
-            // Configuring Spring to use the mocked SecurityContext
-            SecurityContextHolder.setContext(mockedSecurityContext);
-            // Declaring mockito when conditions
-            utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn("student");
-            when(projectService.getProjectById(0)).thenReturn(testProject);
-            // Executing the mocked get request, checking that the page is displayed
-            mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(0)))
-                    .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                    .andExpect(view().name("userProjectDetails")); // Returns user project details page instead of add dates"
-        }
-
-        @Test
-        public void postValidSprintAsTeacher() throws Exception {
-            //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-            SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-            when(mockedSecurityContext.getAuthentication())
-                    .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
-            // Configuring Spring to use the mocked SecurityContext
-            SecurityContextHolder.setContext(mockedSecurityContext);
-            utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
-            when(projectService.getProjectById(0)).thenReturn(testProject);
-            when(sprintService.areNewSprintDatesValid(may1, june1, 0)).thenReturn(true);
-            // Executing the mocked post request, checking that the page is displayed
-            mockMvc.perform(post("/add-dates").params(validParams))
-                    .andExpect(status().is3xxRedirection())
-                    .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
-            verify(sprintRepo).save(refEq(validSprint)); // Verifies sprint was saved with correct details
-        }
+    @Test
+    public void postValidSprintAsTeacher() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+        when(projectService.getProjectById(0)).thenReturn(testProject);
+        when(sprintService.areNewSprintDatesValid(may1, june1, 0)).thenReturn(true);
+        // Executing the mocked post request, checking that the page is displayed
+        mockMvc.perform(post("/add-dates").params(validParams))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
+        verify(sprintRepo).save(refEq(validSprint)); // Verifies sprint was saved with correct details
+    }
 
     @Test
     public void postStartsBeforeProjectSprintAsTeacher() throws Exception {
@@ -322,13 +350,31 @@ public class AddDatesControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
-        when(projectService.getProjectById(0)).thenReturn(testProjectForDeadlines);
+        when(projectService.getProjectById(0)).thenReturn(testProjectForEvents);
 
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-dates").params(validParamsDeadline))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
-                verify(deadlineRepo).save(refEq(validDeadline)); // Verifies deadline was saved with correct details
+        verify(deadlineRepo).save(refEq(validDeadline)); // Verifies deadline was saved with correct details
+    }
+
+    @Test
+    public void postValidDeadlineAsAdmin() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("admin");
+        when(projectService.getProjectById(0)).thenReturn(testProjectForEvents);
+
+        // Executing the mocked post request, checking that the page is displayed
+        mockMvc.perform(post("/add-dates").params(validParamsDeadline))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
+        verify(deadlineRepo).save(refEq(validDeadline)); // Verifies deadline was saved with correct details
     }
 
     @Test
@@ -340,7 +386,7 @@ public class AddDatesControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
-        when(projectService.getProjectById(0)).thenReturn(testProjectForDeadlines);
+        when(projectService.getProjectById(0)).thenReturn(testProjectForEvents);
 
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-dates").params(deadlineStartsBeforeProjectParams))
@@ -358,7 +404,7 @@ public class AddDatesControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
-        when(projectService.getProjectById(0)).thenReturn(testProjectForDeadlines);
+        when(projectService.getProjectById(0)).thenReturn(testProjectForEvents);
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-dates").params(deadlineEndsAfterProjectParams))
                 .andExpect(status().is3xxRedirection())
@@ -375,11 +421,99 @@ public class AddDatesControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn("student");
-        when(projectService.getProjectById(0)).thenReturn(testProjectForDeadlines);
+        when(projectService.getProjectById(0)).thenReturn(testProjectForEvents);
         mockMvc.perform(post("/add-dates").params(validParamsDeadline))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
         verify(deadlineRepo, never()).save(any(Deadline.class)); // Verifies deadline was not saved
     }
 
+
+    @Test
+    public void postValidMilestoneAsStudent() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn("student");
+        when(projectService.getProjectById(0)).thenReturn(testProjectForEvents);
+        mockMvc.perform(post("/add-dates").params(validParamsMilestone))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
+        verify(milestoneRepo, never()).save(any(Milestone.class)); // Verifies milestone was not saved
+    }
+
+    @Test
+    public void postValidMilestoneAsTeacher() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+        when(projectService.getProjectById(0)).thenReturn(testProjectForEvents);
+
+        // Executing the mocked post request, checking that the page is displayed
+        mockMvc.perform(post("/add-dates").params(validParamsMilestone))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
+        verify(milestoneRepo).save(refEq(validMilestone)); // Verifies milestone was saved with correct details
+    }
+
+    @Test
+    public void postValidMilestoneAsAdmin() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("admin");
+        when(projectService.getProjectById(0)).thenReturn(testProjectForEvents);
+
+        // Executing the mocked post request, checking that the page is displayed
+        mockMvc.perform(post("/add-dates").params(validParamsMilestone))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
+        verify(milestoneRepo).save(refEq(validMilestone)); // Verifies milestone was saved with correct details
+    }
+
+    @Test
+    public void postMilestoneStartsBeforeProjectAsTeacher() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+        when(projectService.getProjectById(0)).thenReturn(testProjectForEvents);
+
+        // Executing the mocked post request, checking that the page is displayed
+        mockMvc.perform(post("/add-dates").params(milestoneStartsBeforeProjectParams))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:add-dates?projectId=" + 0)); // Redirected to add dates page
+        verify(milestoneRepo, never()).save(any(Milestone.class)); // Verifies deadline was not saved
+    }
+
+    @Test
+    public void postMilestoneEndsAfterProjectAsTeacher() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+        when(projectService.getProjectById(0)).thenReturn(testProjectForEvents);
+        // Executing the mocked post request, checking that the page is displayed
+        mockMvc.perform(post("/add-dates").params(deadlineEndsAfterProjectParams))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:add-dates?projectId=" + 0)); // Redirected to add dates page
+        verify(milestoneRepo, never()).save(any(Milestone.class)); // Verifies milestone was not saved
+
+    }
 }
