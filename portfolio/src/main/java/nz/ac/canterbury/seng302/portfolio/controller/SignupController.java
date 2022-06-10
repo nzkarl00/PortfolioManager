@@ -25,7 +25,8 @@ public class SignupController {
     @Autowired
     private AccountClientService accountClientService;
 
-    @Autowired LoginController loginController;
+    @Autowired
+    private LoginController loginController;
 
 
     String errorShow = "display:none;";

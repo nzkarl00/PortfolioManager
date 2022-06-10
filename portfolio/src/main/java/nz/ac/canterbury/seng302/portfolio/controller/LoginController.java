@@ -108,7 +108,6 @@ public class LoginController {
      * @param password to login
      * @param model to display feedback to user
      */
-    @Autowired
     public AuthenticateResponse authenticateLogin(String username, String password, Model model) {
         try {
             return authenticateClientService.authenticate(username, password);
