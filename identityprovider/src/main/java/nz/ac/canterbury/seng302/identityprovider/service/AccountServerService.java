@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import com.google.protobuf.Timestamp;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -14,7 +13,12 @@ import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +44,92 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
     @Autowired
     private FileSystemUtils fsUtils;
+
+    /**
+     * if there are no users in the db, build a set of 5001 default users
+     */
+    @PostConstruct
+    private void buildDefaultUsers() {
+        // if no users exist
+        if (repo.findById(1) == null) {
+
+            //https://www.baeldung.com/java-random-string
+            int leftLimit = 48; // letter 'a'
+            int rightLimit = 122; // letter 'z'
+            int targetStringLength = 10;
+            Random random = new Random();
+            StringBuilder buffer = new StringBuilder(targetStringLength);
+            for (int i = 0; i < targetStringLength; i++) {
+                int randomLimitedInt = leftLimit + (int)
+                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+                buffer.append((char) randomLimitedInt);
+            }
+            String generatedString = buffer.toString();
+            String hashedPassword = Hasher.hashPassword(generatedString);
+
+            // add a default admin password to the file directory
+            // if a malicious user gets into this server
+            // an admin privileged user shouldn't aid them in their attacks
+
+            // System.outs here are fine in my books currently as this will only be run once
+            // feel free to disagree though
+            try {
+                File admin = new File(System.getProperty("user.dir") + "/defaultAdminPassword.txt");
+                // make sure new file can be made
+                if (admin.exists()) {
+                    admin.delete();
+                }
+                if (admin.createNewFile()) {
+                    //
+                    System.out.println("default admin file created: " + admin.getName());
+                    System.out.println(generatedString);
+                    FileWriter myWriter = new FileWriter(System.getProperty("user.dir") + "/defaultAdminPassword.txt");
+                    myWriter.write(generatedString);
+                    myWriter.close();
+                    createNewUsers(hashedPassword);
+                } else {
+                    System.out.println("default admin file already exists.");
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred in creating the default admin file.");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void createNewUsers(String hashedPassword) {
+        AccountProfile newAdmin = repo.save(
+            new AccountProfile(
+                "admin", hashedPassword, new Date(), "", "admin@defaultAdmin",
+                null, "admin", "admin", "He/Him"));
+        roleRepo.save(new Role(newAdmin, "3admin"));
+
+        try {
+            // open the names to build users from
+            File firstNames = new File(System.getProperty("user.dir") + "/src/main/resources/buildUsers/firstNames.txt");
+            Scanner firstNamesReader = new Scanner(firstNames);
+
+            File lastNames = new File(System.getProperty("user.dir") + "/src/main/resources/buildUsers/lastNames.txt");
+            Scanner lastNamesReader = new Scanner(firstNames);
+
+            // loop through the names and build the users
+            while (firstNamesReader.hasNextLine()) {
+                String firstName = firstNamesReader.nextLine();
+                while (lastNamesReader.hasNextLine()) {
+                    String lastName = lastNamesReader.nextLine();
+                    AccountProfile newAccount = repo.save(
+                        new AccountProfile(
+                            firstName + lastName, hashedPassword, new Date(), "", firstName + "." + lastName + "@default",
+                            null, firstName, lastName, "He/Him"));
+                    roleRepo.save(new Role(newAccount, "1student"));
+                }
+            }
+            firstNamesReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File could not be found");
+            e.printStackTrace();
+        }
+    }
 
 
     /**
