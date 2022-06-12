@@ -27,6 +27,11 @@ public class Milestone extends ProjectTimeBoundItem {
         super(parentProject, name, description, date);
     }
 
+    /**
+     * Calls the parent class to check to validate properties
+     * @param name of the milestone
+     * @param description description
+     */
     public static void validateProperties(String name, String description) throws IllegalArgumentException {
         ProjectTimeBoundItem.validateProperties(name, description);
     }

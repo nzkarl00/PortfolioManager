@@ -68,6 +68,10 @@ public class Deadline extends ProjectTimeBoundItem {
         return this.startDate;
     }
 
+    /**
+     * Get the name of the deadline
+     * @return
+     */
     public String getName() {
         return this.name;
     }
