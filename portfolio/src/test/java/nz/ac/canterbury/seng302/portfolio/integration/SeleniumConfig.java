@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.portfolio;
+package nz.ac.canterbury.seng302.portfolio.integration;
 
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
