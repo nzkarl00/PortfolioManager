@@ -78,13 +78,14 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
     /**
      * A function to check if the given group is a teacher group and return the answer as a boolean.
+     * Checks by comparing the IDs.
      * Identifying the teacher group so any updates to this group can be reflected in the teacher role too.
      * @param groupToCheck
      */
     public boolean checkIsTeacherGroup(Groups groupToCheck) {
         boolean isTeacherGroup = false;
-        Groups teacherGroup = groupRepo.findAllByGroupShortName(TEACHER_GROUP_NAME_SHORT).get(0);
-        if (groupToCheck.equals(teacherGroup)) {
+        Integer teacherGroupId = groupRepo.findAllByGroupShortName(TEACHER_GROUP_NAME_SHORT).get(0).getId();
+        if (groupToCheck.getId() == teacherGroupId) {
             isTeacherGroup = true;
         }
 
