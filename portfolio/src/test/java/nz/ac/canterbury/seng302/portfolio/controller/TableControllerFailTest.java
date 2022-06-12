@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.UserPreference;
 import nz.ac.canterbury.seng302.portfolio.model.UserPreferenceRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
@@ -22,9 +21,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,31 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = TableController.class)
 public class TableControllerFailTest {
 
-
-    public AuthState invalidAuthState = AuthState.newBuilder()
-            .setIsAuthenticated(true)
-            .setNameClaimType("name")
-            .setRoleClaimType("role")
-            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
-            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-            .setAuthenticationType("AuthenticationTypes.Federation")
-            .setName("validtesttoken")
-            .build();
-
-    private UserResponse testUser = UserResponse.newBuilder()
-            .setBio("testbio")
-            .setCreated(Timestamp.newBuilder().setSeconds(10))
-            .setEmail("test@email")
-            .setFirstName("testfirstname")
-            .setLastName("testlastname")
-            .setMiddleName("testmiddlename")
-            .setNickname("testnickname")
-            .setPersonalPronouns("test/test")
-            .addRoles(UserRole.STUDENT)
-            .build();
-
     private PaginatedUsersResponse paginatedUsersResponse = PaginatedUsersResponse.newBuilder()
-            .addUsers(testUser)
+            .addUsers(testUserStudent)
             .build();
 
     @Autowired
@@ -114,7 +90,7 @@ public class TableControllerFailTest {
 
         utilities.when(() -> AuthStateInformer.getRole(invalidAuthState)).thenReturn(role);
         utilities.when(() -> AuthStateInformer.getId(invalidAuthState)).thenReturn(1);
-        when(accountClientService.getUserById(1)).thenReturn(testUser);
+        when(accountClientService.getUserById(1)).thenReturn(testUserStudent);
         when(userPreferenceRepo.findById(1)).thenReturn(userPreference);
         when(accountClientService.getPaginatedUsers(step, start, sortCol, sortOrder)).thenReturn(paginatedUsersResponse);
 

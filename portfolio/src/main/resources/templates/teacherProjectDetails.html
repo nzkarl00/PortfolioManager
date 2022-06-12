@@ -280,10 +280,35 @@
     }
 
     function buildDeadline(deadline, sprintId) {
-    const mainDiv = document.getElementById("deadlines" + sprintId)
-        const deadlineText = document.createElement("div")
-        deadlineText.innerText = deadline.name
-        mainDiv.appendChild(deadlineText)
+        const mainDiv = document.getElementById("deadlines" + sprintId)
+        const eachDeadline = document.createElement("form")
+        const deleteDeadline = document.createElement("button")
+        const projectId = document.createElement("input")
+        const deadlineId = document.createElement("input")
+        projectId.style = "display:none;"
+        projectId.name = "projectId"
+        projectId.id = "projectId"
+        projectId.value = [[${project.getId()}]]
+        projectId.type = "number"
+
+        deadlineId.style = "display:none;"
+        deadlineId.name = "deadlineId"
+        deadlineId.id = "deadlineId"
+        deadlineId.value = deadline.id
+        deadlineId.type = "number"
+
+        deleteDeadline.type = "submit"
+        deleteDeadline.className = "fa fa-trash each-deadline"
+
+        eachDeadline.method = "post"
+        eachDeadline.action = "delete-deadline"
+
+        eachDeadline.innerText = deadline.name
+
+        mainDiv.appendChild(eachDeadline)
+        eachDeadline.appendChild(projectId)
+        eachDeadline.appendChild(deadlineId)
+        eachDeadline.appendChild(deleteDeadline)
     }
 
     var stompClient = null;
@@ -459,6 +484,7 @@
         axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
                 for (const deadline of response.data) {
+                    this.sprint = sprint
                     buildDeadline(deadline, sprint.id)
                 }
             })

@@ -1,13 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.protobuf.Timestamp;
 import io.cucumber.java.Before;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -31,6 +26,7 @@ import org.springframework.util.MultiValueMap;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.*;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,49 +38,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = AddDatesController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class AddDatesControllerTest {
-    private AuthState validAuthState = AuthState.newBuilder()
-            .setIsAuthenticated(true)
-            .setNameClaimType("name")
-            .setRoleClaimType("role")
-            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
-            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-            .setAuthenticationType("AuthenticationTypes.Federation")
-            .setName("validtesttoken")
-            .build();
-
-    private AuthState validAuthStateTeacher = AuthState.newBuilder()
-            .setIsAuthenticated(true)
-            .setNameClaimType("name")
-            .setRoleClaimType("role")
-            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("TEACHER").build()) // Set the mock user's role
-            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-            .setAuthenticationType("AuthenticationTypes.Federation")
-            .setName("validtesttoken")
-            .build();
-
-    private AuthState validAuthStateStudent = AuthState.newBuilder()
-            .setIsAuthenticated(true)
-            .setNameClaimType("name")
-            .setRoleClaimType("role")
-            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("STUDENT").build()) // Set the mock user's role
-            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-            .setAuthenticationType("AuthenticationTypes.Federation")
-            .setName("validtesttoken")
-            .build();
-
-
-    private final UserResponse testUser = UserResponse.newBuilder()
-            .setBio("testbio")
-            .setCreated(Timestamp.newBuilder().setSeconds(10))
-            .setEmail("test@email")
-            .setFirstName("testfirstname")
-            .setLastName("testlastname")
-            .setMiddleName("testmiddlename")
-            .setNickname("testnickname")
-            .setPersonalPronouns("test/test")
-            .addRoles(UserRole.TEACHER)
-            .build();
-
 
     private static final Date april1 = DateParser.stringToDate("22-04-01");
     private static final Date may1 = DateParser.stringToDate("22-05-01");
@@ -216,24 +169,24 @@ public class AddDatesControllerTest {
         utilities.close();
     }
 
-    @Test
-    public void getAddDatesWithAdminCredentials() throws Exception {
-        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-        // Configuring Spring to use the mocked SecurityContext
-        SecurityContextHolder.setContext(mockedSecurityContext);
-        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
-        utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("admin");
-        // Declaring mockito when conditions
-        when(accountClientService.getUserById(1)).thenReturn(testUser);
-        when(projectService.getProjectById(0)).thenReturn(testProject);
-        // Executing the mocked get request, checking that the page is displayed
-        mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(0)))
-                .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                .andExpect(view().name("addDates"));
-    }
+        @Test
+        public void getAddDatesWithAdminCredentials() throws Exception {
+            //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+            SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+            when(mockedSecurityContext.getAuthentication())
+                    .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateAdmin, ""));
+            // Configuring Spring to use the mocked SecurityContext
+            SecurityContextHolder.setContext(mockedSecurityContext);
+            utilities.when(() -> AuthStateInformer.getId(validAuthStateAdmin)).thenReturn(1);
+            utilities.when(() -> AuthStateInformer.getRole(validAuthStateAdmin)).thenReturn("admin");
+            // Declaring mockito when conditions
+            when(accountClientService.getUserById(1)).thenReturn(testUserAdmin);
+            when(projectService.getProjectById(0)).thenReturn(testProject);
+            // Executing the mocked get request, checking that the page is displayed
+            mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(0)))
+                    .andExpect(status().isOk()) // Whether to return the status "200 OK"
+                    .andExpect(view().name("addDates"));
+        }
 
     @Test
     public void getAddDatesWithTeacherCredentials() throws Exception {
@@ -364,10 +317,10 @@ public class AddDatesControllerTest {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateAdmin, ""));
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
-        utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("admin");
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateAdmin)).thenReturn("admin");
         when(projectService.getProjectById(0)).thenReturn(testProjectForEvents);
 
         // Executing the mocked post request, checking that the page is displayed
@@ -468,10 +421,10 @@ public class AddDatesControllerTest {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateAdmin, ""));
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
-        utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("admin");
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateAdmin)).thenReturn("admin");
         when(projectService.getProjectById(0)).thenReturn(testProjectForEvents);
 
         // Executing the mocked post request, checking that the page is displayed
