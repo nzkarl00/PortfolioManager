@@ -28,6 +28,8 @@ public class AddDatesController {
     @Autowired
     private DeadlineRepository deadlineRepository;
     @Autowired
+    private MilestoneRepository milestoneRepository;
+    @Autowired
     private ProjectService projectService;
     @Autowired
     private SprintService sprintService;
@@ -110,6 +112,8 @@ public class AddDatesController {
                 messageReturned = addDeadlines(project, eventName, eventDescription, eventStartDate, eventEndDate);
             } else if (event.equals("Sprint") || event.equals("")){
                 messageReturned = addSprint(project, eventName, eventDescription, eventStartDate, eventEndDate);
+            } else if (event.equals("Milestone")) {
+                messageReturned = addMilestone(project, eventName, eventDescription, eventStartDate);
             }
         }
 
@@ -182,13 +186,44 @@ public class AddDatesController {
     }
 
     /**
+     * Saves a new date supplied by the user and redirects to the project page afterwards
+     * @param project project in which a deadline is being added
+     * @param eventName name of event
+     * @param eventStartDate event start date
+     * @param eventDescription event description
+     * @return project details page on successful update, return string to indicate success or failure
+     */
+    private String addMilestone(Project project, String eventName, String eventDescription, String eventStartDate){
+        Date projStart = DateParser.stringToDate(project.getStartDateString());
+        Date projEnd = DateParser.stringToDate(project.getEndDateString());
+        LocalDateTime endDate = DateParser.stringToLocalDateTime(eventStartDate, "");
+        Date checkForValidationDate = DateParser.stringToDate(eventStartDate);
+
+        if (eventName.isBlank()) {
+            List<Milestone> milestones = milestoneRepository.findAllByParentProject(project);
+            eventName = "Milestone " + (milestones.size() + 1);
+        }
+
+        if (checkForValidationDate.before(projStart) || checkForValidationDate.after(projEnd)){
+            errorShow="";
+            errorCode="Milestone date must be within the project dates";
+            return "redirect:add-dates?projectId=";
+        }
+
+        Milestone milestone = new Milestone(project, eventName, eventDescription, endDate);
+        milestoneRepository.save(milestone);
+        sendMilestoneCalendarChange(project, milestone);
+        return "redirect:details?id=";
+    }
+
+    /**
      * Send an update sprint message through websockets to all the users on the same project details page
      */
     public void sendSprintCalendarChange(int id) {
         this.template.convertAndSend("/topic/calendar/" + id, new EventUpdate(FetchUpdateType.SPRINT));
     }
 
-        /**
+    /**
      * Send an update deadline message through websockets to all the users on the same project details page
      */
     public void sendDeadlineCalendarChange(Project project, Deadline deadline) {
@@ -201,7 +236,25 @@ public class AddDatesController {
             if (deadline.getEndDate().isAfter(startDate) && deadline.getStartDate().isBefore(endDate)) {
                 /// send a deadline update
                 this.template.convertAndSend("/topic/calendar/" + project.getId()
-                    , new EventUpdate(FetchUpdateType.DEADLINE, sprint.getId()));
+                        , new EventUpdate(FetchUpdateType.DEADLINE, sprint.getId()));
+            }
+        }
+    }
+
+    /**
+     * Send an update milestone message through websockets to all the users on the same project details page
+     */
+    public void sendMilestoneCalendarChange(Project project, Milestone milestone) {
+        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
+        // loop through sprints
+        for (Sprint sprint: sprints) {
+            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.getStartDate());
+            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.getEndDate());
+            // if deadline is within sprint
+            if (milestone.getEndDate().isAfter(startDate) && milestone.getStartDate().isBefore(endDate)) {
+                /// send a deadline update
+                this.template.convertAndSend("/topic/calendar/" + project.getId()
+                        , new EventUpdate(FetchUpdateType.MILESTONE, sprint.getId()));
             }
         }
     }

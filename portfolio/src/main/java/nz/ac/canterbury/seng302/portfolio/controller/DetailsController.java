@@ -1,30 +1,25 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.rpc.context.AttributeContext;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller for the display project details page
@@ -46,6 +41,7 @@ public class DetailsController {
     private AccountClientService accountClientService;
     @Autowired
     private NavController navController;
+
 
     String errorShow = "display:none;";
     String errorCode = "";
@@ -128,8 +124,6 @@ public class DetailsController {
     ) throws Exception {
         String role = AuthStateInformer.getRole(principal);
 
-        Sprint sprint = sprintService.getSprintById(sprintId);
-
         if (role.equals("teacher") || role.equals("admin")) {
             repository.deleteById(sprintId);
             Integer i = 1;
@@ -150,10 +144,49 @@ public class DetailsController {
     }
 
     /**
+     * The mapping to delete a deadline
+     *
+     * @param principal auth token
+     * @param projectId id param for project to delete sprint from
+     * @param deadlineId  deadline id under project to delete
+     * @param model     the model to add attributes to
+     * @return A location of where to go next
+     * @throws Exception
+     */
+    @PostMapping("delete-deadline")
+    public String deadlineDelete(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value = "projectId") Integer projectId,
+            @RequestParam(value = "deadlineId") Integer deadlineId,
+            Model model
+    ) throws Exception {
+        String role = AuthStateInformer.getRole(principal);
+
+        if (role.equals("teacher") || role.equals("admin")) {
+            deadlineRepo.deleteById(deadlineId);
+            sendDeadlineCalendarChange(projectService.getProjectById(projectId));
+        }
+
+        return "redirect:details?id=" + projectId;
+    }
+
+    /**
      * Send an update sprint message through websockets to all the users on the same project details page
      */
     public void sendSprintCalendarChange(int id) {
         this.template.convertAndSend("/topic/calendar/" + id, new EventUpdate(FetchUpdateType.SPRINT));
+    }
+
+    /**
+     * Send an update deadline message through websockets to all the users on the same project details page
+     */
+    public void sendDeadlineCalendarChange(Project project) {
+        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
+
+        for (Sprint sprint: sprints) {
+            this.template.convertAndSend("/topic/calendar/" + project.getId()
+                    , new EventUpdate(FetchUpdateType.DEADLINE, sprint.getId()));
+        }
     }
 
     @PostMapping("/details")

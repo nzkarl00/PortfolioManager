@@ -102,7 +102,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
     @Override
     public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
 
-        Groups groupToAddTo = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
+        Groups groupToAddTo = groupRepo.findByGroupId(request.getGroupId());
         boolean isTeacherGroup = checkIsTeacherGroup(groupToAddTo);
 
         for (int userId : request.getUserIdsList()) {
@@ -154,7 +154,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
     @Override
     public void removeGroupMembers(RemoveGroupMembersRequest request, StreamObserver<RemoveGroupMembersResponse> responseObserver) {
 
-        Groups groupToRemoveFrom = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
+        Groups groupToRemoveFrom = groupRepo.findByGroupId(request.getGroupId());
         boolean isTeacherGroup = checkIsTeacherGroup(groupToRemoveFrom);
 
         List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroups(groupToRemoveFrom);
@@ -271,11 +271,10 @@ public class GroupsServerService extends GroupsServiceImplBase {
     @Override
     public void modifyGroupDetails(ModifyGroupDetailsRequest request, StreamObserver<ModifyGroupDetailsResponse> observer) {
         ModifyGroupDetailsResponse.Builder reply = ModifyGroupDetailsResponse.newBuilder();
-        Long targetVal = Long.valueOf(request.getGroupId());
-        Groups targetGroup = groupRepo.findByGroupId(targetVal);
+        Groups targetGroup = groupRepo.findByGroupId(request.getGroupId());
         if (!(targetGroup == null)) {
-            if (!request.getShortName().isEmpty()) { targetGroup.setGroupShortName(request.getLongName()); }
-            if (!request.getLongName().isEmpty()) { targetGroup.setGroupShortName(request.getShortName()); }
+            if (!request.getShortName().isEmpty()) { targetGroup.setGroupShortName(request.getShortName()); }
+            if (!request.getLongName().isEmpty()) { targetGroup.setGroupLongName(request.getLongName()); }
             groupRepo.save(targetGroup);
             reply.setIsSuccess(true)
                     .setMessage("Edit successful");
@@ -290,7 +289,6 @@ public class GroupsServerService extends GroupsServiceImplBase {
             observer.onCompleted();
         }
     }
-
 
     /**
      * Get a bunch of groups for the portfolio
@@ -330,8 +328,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
     @Override
     public void getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> observer) {
-        Long targetVal = Long.valueOf(request.getGroupId());
-        Groups targetGroup = groupRepo.findByGroupId(targetVal);
+        Groups targetGroup = groupRepo.findByGroupId(request.getGroupId());
         GroupDetailsResponse groupInfo;
         if (!(targetGroup == null)) {
             groupInfo = buildGroup(targetGroup);
@@ -343,17 +340,17 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
     }
 
-        /**
-         * build a group response to send to portfolio
-         * @param group the group to build the response from
-         * @return the build response
-         */
+    /**
+     * build a group response to send to portfolio
+     * @param group the group to build the response from
+     * @return the build response
+     */
     public GroupDetailsResponse buildGroup(Groups group) {
         // set the group details
         GroupDetailsResponse.Builder response = GroupDetailsResponse.newBuilder()
-            .setGroupId(group.getId())
-            .setLongName(group.getGroupLongName())
-            .setShortName(group.getGroupShortName());
+                .setGroupId(group.getId())
+                .setLongName(group.getGroupLongName())
+                .setShortName(group.getGroupShortName());
 
         // get all the memberships, from that build the details response members
         List<GroupMembership> members = groupMembershipRepo.findAllByRegisteredGroups(group);

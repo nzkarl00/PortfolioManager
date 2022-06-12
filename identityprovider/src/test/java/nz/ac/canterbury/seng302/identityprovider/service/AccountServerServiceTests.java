@@ -3,17 +3,27 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.identityprovider.model.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
+import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
+import nz.ac.canterbury.seng302.identityprovider.model.Role;
+import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
+import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.exceptions.base.MockitoException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -44,6 +54,11 @@ public class AccountServerServiceTests {
     @Autowired
     static GroupMembershipRepository groupMembershipRepo = mock(GroupMembershipRepository.class);
 
+    /**
+     * Mocked utils so the call to make changes does nothing
+     */
+    @Autowired
+    static FileSystemUtils fsUtils = mock(FileSystemUtils.class);
 
     /**
      * Mocked account service so database checks can be replaced with fixed results
@@ -58,8 +73,8 @@ public class AccountServerServiceTests {
 
     // setup test account profile and a list of said profiles to mock the repo with
     private static AccountProfile testAccountProfile = new AccountProfile("test username",
-        "test hash", new Date(), "test bio", "test email",
-        "test/photopath/", "firstname", "lastname", "pronouns");
+            "test hash", new Date(), "test bio", "test email",
+            "test/photopath/", "firstname", "lastname", "pronouns");
     private static ArrayList<AccountProfile> testProfiles = new ArrayList<>();
 
     // setup test role and a list of said roles to mock the repo with
@@ -112,6 +127,7 @@ public class AccountServerServiceTests {
         ass.accountService = as;
         ass.groupRepo = groupRepo;
         ass.groupMembershipRepo = groupMembershipRepo;
+        ass.fsUtils = fsUtils;
     }
 
     /**
@@ -158,11 +174,11 @@ public class AccountServerServiceTests {
         // mocking default group checking
         Groups teacherGroup = new Groups("Teacher Group", "TG");
         Mockito.when(ass.groupRepo.findAllByGroupShortName("TG"))
-            .thenReturn(new ArrayList<>(List.of(teacherGroup)));
+                .thenReturn(new ArrayList<>(List.of(teacherGroup)));
 
         Groups noGroup = new Groups("Members without a group", "MWAG");
         Mockito.when(ass.groupRepo.findAllByGroupShortName("MWAG"))
-            .thenReturn(new ArrayList<>(List.of(noGroup)));
+                .thenReturn(new ArrayList<>(List.of(noGroup)));
 
         ass.register(testRequest3, testObserver);
         verify(testObserver, times(1)).onCompleted();
@@ -193,8 +209,8 @@ public class AccountServerServiceTests {
 
         // make the request
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder()
-            .setLimit(50)
-            .setOffset(0);
+                .setLimit(50)
+                .setOffset(0);
 
         when(as.buildUserResponse(testAccountProfile)).thenReturn(UserResponse.newBuilder().build());
 
@@ -227,8 +243,8 @@ public class AccountServerServiceTests {
 
         // make the request
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder()
-            .setLimit(50)
-            .setOffset(50);
+                .setLimit(50)
+                .setOffset(50);
 
         // run the method we are testing with the mocked observer
         ass.getPaginatedUsers(request.build(), testPaginatedObserver);
@@ -262,8 +278,8 @@ public class AccountServerServiceTests {
 
         // make the request
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder()
-            .setLimit(50)
-            .setOffset(50);
+                .setLimit(50)
+                .setOffset(50);
 
         when(as.buildUserResponse(testAccountProfile)).thenReturn(UserResponse.newBuilder().build());
 
@@ -303,7 +319,7 @@ public class AccountServerServiceTests {
 
         // make the request
         GetUserByIdRequest.Builder request = GetUserByIdRequest.newBuilder()
-            .setId(1);
+                .setId(1);
 
         when(as.buildUserResponse(testAccountProfile)).thenReturn(UserResponse.newBuilder().setUsername("test username").build());
 
@@ -336,7 +352,7 @@ public class AccountServerServiceTests {
 
         // make the request
         GetUserByIdRequest.Builder request = GetUserByIdRequest.newBuilder()
-            .setId(1);
+                .setId(1);
 
         // run the method we are testing with the mocked observer
         ass.getUserAccountById(request.build(), testUserResponseObserver);
@@ -373,8 +389,8 @@ public class AccountServerServiceTests {
 
         // make the request
         EditUserRequest.Builder request = EditUserRequest.newBuilder()
-            .setUserId(1)
-            .setEmail(expected);
+                .setUserId(1)
+                .setEmail(expected);
 
         // run the method we are testing with the mocked observer
         ass.editUser(request.build(), testUserEditObserver);
@@ -409,8 +425,8 @@ public class AccountServerServiceTests {
 
         // make the request
         EditUserRequest.Builder request = EditUserRequest.newBuilder()
-            .setUserId(1)
-            .setEmail(hopes);
+                .setUserId(1)
+                .setEmail(hopes);
 
         // run the method we are testing with the mocked observer
         ass.editUser(request.build(), testUserEditObserver);
@@ -503,6 +519,258 @@ public class AccountServerServiceTests {
         Mockito.verify(groupMembershipRepo).deleteByRegisteredGroupsAndRegisteredGroupUser(noGroup, user);
 
         Mockito.verify(roleRepo).save(refEq(newRoleToAdd));
+    }
+
+    List<AccountProfile> expected = new ArrayList<>(List.of(testAccountProfile));
+
+    /**
+     * Test that the sorting using the repo call works
+     */
+    @Test
+    void sortUsers_expectedFirstAsc() {
+        GetPaginatedUsersRequest request = GetPaginatedUsersRequest.newBuilder().setOrderBy("first_name_asc").build();
+        when(repo.findAllByOrderByFirstNameAsc()).thenReturn(expected);
+        List<AccountProfile> actual = ass.sortUsers(request);
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Test that the sorting using the repo call works
+     */
+    @Test
+    void sortUsers_expectedFirstDesc() {
+        GetPaginatedUsersRequest request = GetPaginatedUsersRequest.newBuilder().setOrderBy("first_name_desc").build();
+        when(repo.findAllByOrderByFirstNameDesc()).thenReturn(expected);
+        List<AccountProfile> actual = ass.sortUsers(request);
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Test that the sorting using the repo call works
+     */
+    @Test
+    void sortUsers_expectedLastAsc() {
+        GetPaginatedUsersRequest request = GetPaginatedUsersRequest.newBuilder().setOrderBy("last_name_asc").build();
+        when(repo.findAllByOrderByLastNameAsc()).thenReturn(expected);
+        List<AccountProfile> actual = ass.sortUsers(request);
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Test that the sorting using the repo call works
+     */
+    @Test
+    void sortUsers_expectedLastDesc() {
+        GetPaginatedUsersRequest request = GetPaginatedUsersRequest.newBuilder().setOrderBy("last_name_desc").build();
+        when(repo.findAllByOrderByLastNameDesc()).thenReturn(expected);
+        List<AccountProfile> actual = ass.sortUsers(request);
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Test that the sorting using the repo call works
+     */
+    @Test
+    void sortUsers_expectedNicknameAsc() {
+        GetPaginatedUsersRequest request = GetPaginatedUsersRequest.newBuilder().setOrderBy("nickname_asc").build();
+        when(repo.findAllByOrderByNicknameAsc()).thenReturn(expected);
+        List<AccountProfile> actual = ass.sortUsers(request);
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Test that the sorting using the repo call works
+     */
+    @Test
+    void sortUsers_expectedNicknameDesc() {
+        GetPaginatedUsersRequest request = GetPaginatedUsersRequest.newBuilder().setOrderBy("nickname_desc").build();
+        when(repo.findAllByOrderByNicknameDesc()).thenReturn(expected);
+        List<AccountProfile> actual = ass.sortUsers(request);
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Test that the sorting using the repo call works
+     */
+    @Test
+    void sortUsers_expectedUsernameAsc() {
+        GetPaginatedUsersRequest request = GetPaginatedUsersRequest.newBuilder().setOrderBy("username_asc").build();
+        when(repo.findAllByOrderByUsernameAsc()).thenReturn(expected);
+        List<AccountProfile> actual = ass.sortUsers(request);
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Test that the sorting using the repo call works
+     */
+    @Test
+    void sortUsers_expectedUsernameDesc() {
+        GetPaginatedUsersRequest request = GetPaginatedUsersRequest.newBuilder().setOrderBy("username_desc").build();
+        when(repo.findAllByOrderByUsernameDesc()).thenReturn(expected);
+        List<AccountProfile> actual = ass.sortUsers(request);
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Test that the sorting using the repo call works
+     */
+    @Test
+    void sortUsers_InvalidSort() {
+        GetPaginatedUsersRequest request = GetPaginatedUsersRequest.newBuilder().setOrderBy("gibberish 198fkjsd-09312}:}??}:<>?73").build();
+        when(repo.findAll()).thenReturn(expected);
+        List<AccountProfile> actual = ass.sortUsers(request);
+        assertEquals(expected, actual);
+    }
+
+    // setting up and closing the mocked static authStateInformer
+    static MockedStatic<Hasher> utilities;
+
+    @BeforeAll
+    public static void open() {
+        utilities = Mockito.mockStatic(Hasher.class);
+    }
+
+    @AfterAll
+    public static void close() {
+        utilities.close();
+    }
+
+    /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<ChangePasswordResponse> changePasswordObserver = mock(StreamObserver.class);
+
+    /**
+     * Test that the change password call changes the account profiles
+     * password hash to the hash mocked
+     */
+    @Test
+    void changeUserPassword_blueSkyInput() {
+        // mock the repo response
+        when(repo.findById(1)).thenReturn(testAccountProfile);
+
+        utilities.when(() -> Hasher.verify("password", "test hash")).thenReturn(true);
+        utilities.when(() -> Hasher.hashPassword("SecurePurplePlatypusPassword")).thenReturn("HASHED");
+
+        // make the request
+        ChangePasswordRequest.Builder request = ChangePasswordRequest.newBuilder()
+                .setUserId(1)
+                .setCurrentPassword("password")
+                .setNewPassword("SecurePurplePlatypusPassword");
+
+        // run the method we are testing with the mocked observer
+        ass.changeUserPassword(request.build(), changePasswordObserver);
+
+        verify(changePasswordObserver, times(1)).onCompleted();
+        ArgumentCaptor<ChangePasswordResponse> captor = ArgumentCaptor.forClass(ChangePasswordResponse.class);
+        verify(changePasswordObserver, times(1)).onNext(captor.capture());
+        ChangePasswordResponse response = captor.getValue();
+
+        assertTrue(response.getIsSuccess());
+        assertEquals("HASHED", testAccountProfile.getPasswordHash());
+        assertEquals("Password changed", response.getMessage());
+
+        testAccountProfile.setPasswordHash("test hash");
+    }
+
+    /**
+     * simulate an invalid password that then fails to change the profiles password
+     * and returns the invalid message
+     */
+    @Test
+    void changeUserPassword_invalidCurrent() {
+        // mock the repo response
+        when(repo.findById(1)).thenReturn(testAccountProfile);
+
+        utilities.when(() -> Hasher.verify("password", "test hash")).thenReturn(false);
+        utilities.when(() -> Hasher.hashPassword("SecurePurplePlatypusPassword")).thenReturn("HASHED");
+
+        // make the request
+        ChangePasswordRequest.Builder request = ChangePasswordRequest.newBuilder()
+                .setUserId(1)
+                .setCurrentPassword("password")
+                .setNewPassword("SecurePurplePlatypusPassword");
+
+        // run the method we are testing with the mocked observer
+        ass.changeUserPassword(request.build(), changePasswordObserver);
+
+        verify(changePasswordObserver, times(1)).onCompleted();
+        ArgumentCaptor<ChangePasswordResponse> captor = ArgumentCaptor.forClass(ChangePasswordResponse.class);
+        verify(changePasswordObserver, times(1)).onNext(captor.capture());
+        ChangePasswordResponse response = captor.getValue();
+
+        assertFalse(response.getIsSuccess());
+        assertEquals("test hash", testAccountProfile.getPasswordHash()); // expect an unchanged password
+        assertEquals("Password change failed: current password incorrect", response.getMessage());
+
+        testAccountProfile.setPasswordHash("test hash");
+    }
+
+    /**
+     * test that a password isn't changed if a user cannot be found from the id given
+     */
+    @Test
+    void changeUserPassword_invalidUser() {
+        utilities.when(() -> Hasher.verify("password", "test hash")).thenReturn(false);
+        utilities.when(() -> Hasher.hashPassword("SecurePurplePlatypusPassword")).thenReturn("HASHED");
+
+        // make the request
+        ChangePasswordRequest.Builder request = ChangePasswordRequest.newBuilder()
+                .setUserId(0)
+                .setCurrentPassword("password")
+                .setNewPassword("SecurePurplePlatypusPassword");
+
+        // run the method we are testing with the mocked observer
+        ass.changeUserPassword(request.build(), changePasswordObserver);
+
+        verify(changePasswordObserver, times(1)).onCompleted();
+        ArgumentCaptor<ChangePasswordResponse> captor = ArgumentCaptor.forClass(ChangePasswordResponse.class);
+        verify(changePasswordObserver, times(1)).onNext(captor.capture());
+        ChangePasswordResponse response = captor.getValue();
+
+        assertFalse(response.getIsSuccess());
+        assertEquals("test hash", testAccountProfile.getPasswordHash()); // expect an unchanged password
+        assertEquals("Cannot invoke \"nz.ac.canterbury.seng302.identityprovider.model.AccountProfile.getPasswordHash()\" because \"profile\" is null", response.getMessage());
+
+        testAccountProfile.setPasswordHash("test hash");
+    }
+
+    /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<FileUploadStatusResponse> fileObserver = mock(StreamObserver.class);
+
+    String TEST_IMAGE_PATH = "src/test/resources/test.images/-1.jpeg";
+    String FILE_TYPE = "image/jpeg";
+
+    /**
+     * this test creates a stream observer that handles the upload
+     * mocks into the test resources test.images directory
+     * tests that we get an expected response message
+     */
+    @Test
+    void uploadUserProfilePhoto_onNextMetaData() {
+
+        when(fsUtils.userProfilePhotoAbsolutePath(-1, FILE_TYPE)).thenReturn(
+                Path.of(System.getProperty("user.dir")).resolve(TEST_IMAGE_PATH));
+
+        StreamObserver<UploadUserProfilePhotoRequest> subjectObserver = ass.uploadUserProfilePhoto(fileObserver);
+
+        // -1 so that any read/write will not affect any in use actual data
+        ProfilePhotoUploadMetadata metadata = ProfilePhotoUploadMetadata.newBuilder()
+                .setUserId(-1)
+                .setFileType(FILE_TYPE).build();
+
+        UploadUserProfilePhotoRequest request = UploadUserProfilePhotoRequest.newBuilder()
+                .setMetaData(metadata).build();
+        // call the subject's functionality
+        subjectObserver.onNext(request);
+
+        ArgumentCaptor<FileUploadStatusResponse> captor = ArgumentCaptor.forClass(FileUploadStatusResponse.class);
+        verify(fileObserver, times(1)).onNext(captor.capture());
+        FileUploadStatusResponse response = captor.getValue();
+        assertEquals("Uploading", response.getMessage());
+        assertEquals(FileUploadStatus.PENDING, response.getStatus());
     }
 }
 

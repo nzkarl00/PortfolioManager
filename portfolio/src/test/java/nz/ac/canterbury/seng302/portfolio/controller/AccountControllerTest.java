@@ -1,9 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.protobuf.Timestamp;
+
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -29,36 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = AccountController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class AccountControllerTest {
-
-    public AuthState validAuthState = AuthState.newBuilder()
-            .setIsAuthenticated(true)
-            .setNameClaimType("name")
-            .setRoleClaimType("role")
-            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
-            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-            .setAuthenticationType("AuthenticationTypes.Federation")
-            .setName("validtesttoken")
-            .build();
-
-    private AuthState invalidAuthState = AuthState.newBuilder()
-            .setIsAuthenticated(true)
-            .setNameClaimType("name")
-            .setRoleClaimType("role")
-            .setAuthenticationType("AuthenticationTypes.Federation")
-            .setName("invalidtesttoken")
-            .build();
-
-    private UserResponse testUser = UserResponse.newBuilder()
-        .setBio("testbio")
-        .setCreated(Timestamp.newBuilder().setSeconds(10))
-        .setEmail("test@email")
-        .setFirstName("testfirstname")
-        .setLastName("testlastname")
-        .setMiddleName("testmiddlename")
-        .setNickname("testnickname")
-        .setPersonalPronouns("test/test")
-        .addRoles(UserRole.STUDENT)
-        .build();
 
     @Autowired
     private MockMvc mockMvc;
@@ -92,21 +62,21 @@ public class AccountControllerTest {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(mockedSecurityContext.getAuthentication())
-            .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+            .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
-        when(accountClientService.getUserById(1)).thenReturn(testUser);
+        when(accountClientService.getUserById(1)).thenReturn(testUserStudent);
 
-        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateStudent)).thenReturn(1);
 
         // Expected values in the model
-        String name = testUser.getFirstName() + " " + testUser.getLastName();
-        String nickname = testUser.getNickname();
-        String email = testUser.getEmail();
-        String bio = testUser.getBio();
+        String name = testUserStudent.getFirstName() + " " + testUserStudent.getLastName();
+        String nickname = testUserStudent.getNickname();
+        String email = testUserStudent.getEmail();
+        String bio = testUserStudent.getBio();
         String roles = "STUDENT";
-        String pronouns = testUser.getPersonalPronouns();
+        String pronouns = testUserStudent.getPersonalPronouns();
 
         // Spring now thinks we are logged in as the user specified in validAuthState, so any request made from now on will be authenticated.
         // Ready to make a request to any endpoint which requires authentication

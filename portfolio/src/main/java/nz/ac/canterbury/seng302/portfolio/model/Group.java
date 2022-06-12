@@ -12,7 +12,7 @@ import java.util.List;
 public class Group {
     public String longName;
     public String shortName;
-    int id = 1;
+    int id;
     List<User> members = new ArrayList<>();
 
     /**
@@ -22,6 +22,7 @@ public class Group {
     public Group (GroupDetailsResponse response) {
         longName = response.getLongName();
         shortName = response.getShortName();
+        id = response.getGroupId();
         for (UserResponse user : response.getMembersList()) {
             members.add(new User(user));
         }

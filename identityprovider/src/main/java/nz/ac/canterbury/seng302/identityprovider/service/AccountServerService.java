@@ -30,7 +30,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
     Account accountService;
 
     @Autowired
-    private FileSystemUtils fsUtils;
+    FileSystemUtils fsUtils;
 
     // Repositories required
     @Autowired

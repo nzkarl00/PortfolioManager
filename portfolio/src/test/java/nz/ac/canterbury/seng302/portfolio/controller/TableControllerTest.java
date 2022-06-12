@@ -1,7 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.model.Role;
 import nz.ac.canterbury.seng302.portfolio.model.UserPreference;
 import nz.ac.canterbury.seng302.portfolio.model.UserPreferenceRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
@@ -27,6 +25,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.testUserStudent;
+import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateStudent;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,40 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 public class TableControllerTest {
 
-    public AuthState validAuthState = AuthState.newBuilder()
-        .setIsAuthenticated(true)
-        .setNameClaimType("name")
-        .setRoleClaimType("role")
-        .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
-        .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-        .setAuthenticationType("AuthenticationTypes.Federation")
-        .setName("validtesttoken")
-        .build();
-
-    public AuthState validStudentAuthState = AuthState.newBuilder()
-        .setIsAuthenticated(true)
-        .setNameClaimType("name")
-        .setRoleClaimType("role")
-        .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
-        .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-        .setAuthenticationType("AuthenticationTypes.Federation")
-        .setName("validtesttoken")
-        .build();
-
-    private UserResponse testUser = UserResponse.newBuilder()
-        .setBio("testbio")
-        .setCreated(Timestamp.newBuilder().setSeconds(10))
-        .setEmail("test@email")
-        .setFirstName("testfirstname")
-        .setLastName("testlastname")
-        .setMiddleName("testmiddlename")
-        .setNickname("testnickname")
-        .setPersonalPronouns("test/test")
-        .addRoles(UserRole.STUDENT)
-        .build();
-
     private PaginatedUsersResponse paginatedUsersResponse = PaginatedUsersResponse.newBuilder()
-        .addUsers(testUser)
+        .addUsers(testUserStudent)
         .build();
 
     @Autowired
@@ -120,14 +88,14 @@ public class TableControllerTest {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(mockedSecurityContext.getAuthentication())
-            .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+            .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn(role);
-        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
-        when(accountClientService.getUserById(1)).thenReturn(testUser);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn(role);
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateStudent)).thenReturn(1);
+        when(accountClientService.getUserById(1)).thenReturn(testUserStudent);
         when(userPreferenceRepo.findById(1)).thenReturn(userPreference);
         when(accountClientService.getPaginatedUsers(step, start, sortCol, sortOrder)).thenReturn(paginatedUsersResponse);
 
@@ -142,14 +110,14 @@ public class TableControllerTest {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validStudentAuthState, ""));
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        utilities.when(() -> AuthStateInformer.getRole(validStudentAuthState)).thenReturn(role);
-        utilities.when(() -> AuthStateInformer.getId(validStudentAuthState)).thenReturn(1);
-        when(accountClientService.getUserById(1)).thenReturn(testUser);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn(role);
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateStudent)).thenReturn(1);
+        when(accountClientService.getUserById(1)).thenReturn(testUserStudent);
         when(userPreferenceRepo.findById(1)).thenReturn(userPreference);
         when(accountClientService.getPaginatedUsers(step, start, sortCol, sortOrder)).thenReturn(paginatedUsersResponse);
 
@@ -165,12 +133,12 @@ public class TableControllerTest {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateStudent)).thenReturn(1);
 
         mockMvc.perform(post("/order-list")
                         .param("sortColumn", "username")
