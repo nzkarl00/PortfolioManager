@@ -43,7 +43,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
     RolesRepository roleRepo;
 
     @Autowired
-    private FileSystemUtils fsUtils;
+    FileSystemUtils fsUtils;
 
     /**
      * if there are no users in the db, build a set of 5001 default users
@@ -361,7 +361,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void changeUserPassword(ChangePasswordRequest request, StreamObserver<ChangePasswordResponse> observer) {
         ChangePasswordResponse.Builder response = ChangePasswordResponse.newBuilder();
         try {
-            AccountProfile profile = accountService.getAccountById(request.getUserId());
+            AccountProfile profile = repo.findById(request.getUserId());
             if (Hasher.verify(request.getCurrentPassword(), profile.getPasswordHash())) {
                 profile.setPasswordHash(Hasher.hashPassword(request.getNewPassword()));
                 repo.save(profile);
@@ -378,6 +378,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
         observer.onNext(response.build());
         observer.onCompleted();
     }
+
     @Override
     public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         AccountProfile user = repo.findById(request.getUserId());

@@ -48,7 +48,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
     @Override
     public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
 
-        Groups currentGroup = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
+        Groups currentGroup = groupRepo.findByGroupId(request.getGroupId());
 
         for (int userId : request.getUserIdsList()) {
             AccountProfile user = repo.findById(userId);
@@ -89,7 +89,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
     @Override
     public void removeGroupMembers(RemoveGroupMembersRequest request, StreamObserver<RemoveGroupMembersResponse> responseObserver) {
 
-        Groups parentGroup = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
+        Groups parentGroup = groupRepo.findByGroupId(request.getGroupId());
 
         List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroups(parentGroup);
         for (GroupMembership userGroup : groupMemberships) {
@@ -182,11 +182,10 @@ public class GroupsServerService extends GroupsServiceImplBase {
     @Override
     public void modifyGroupDetails(ModifyGroupDetailsRequest request, StreamObserver<ModifyGroupDetailsResponse> observer) {
         ModifyGroupDetailsResponse.Builder reply = ModifyGroupDetailsResponse.newBuilder();
-        Long targetVal = Long.valueOf(request.getGroupId());
-        Groups targetGroup = groupRepo.findByGroupId(targetVal);
+        Groups targetGroup = groupRepo.findByGroupId(request.getGroupId());
         if (!(targetGroup == null)) {
-            if (!request.getShortName().isEmpty()) { targetGroup.setGroupShortName(request.getLongName()); }
-            if (!request.getLongName().isEmpty()) { targetGroup.setGroupShortName(request.getShortName()); }
+            if (!request.getShortName().isEmpty()) { targetGroup.setGroupShortName(request.getShortName()); }
+            if (!request.getLongName().isEmpty()) { targetGroup.setGroupLongName(request.getLongName()); }
             groupRepo.save(targetGroup);
             reply.setIsSuccess(true)
                     .setMessage("Edit successful");
@@ -201,7 +200,6 @@ public class GroupsServerService extends GroupsServiceImplBase {
             observer.onCompleted();
         }
     }
-
 
     /**
      * Get a bunch of groups for the portfolio
@@ -241,8 +239,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
     @Override
     public void getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> observer) {
-        Long targetVal = Long.valueOf(request.getGroupId());
-        Groups targetGroup = groupRepo.findByGroupId(targetVal);
+        Groups targetGroup = groupRepo.findByGroupId(request.getGroupId());
         GroupDetailsResponse groupInfo;
         if (!(targetGroup == null)) {
             groupInfo = buildGroup(targetGroup);
