@@ -37,6 +37,8 @@ public class AddDatesController {
     private AccountClientService accountClientService;
     @Autowired
     private NavController navController;
+    @Autowired
+    private EventRepository eventRepository;
 
     String errorShow = "display:none;";
     String errorCode = "";
@@ -114,6 +116,8 @@ public class AddDatesController {
                 messageReturned = addSprint(project, eventName, eventDescription, eventStartDate, eventEndDate);
             } else if (event.equals("Milestone")) {
                 messageReturned = addMilestone(project, eventName, eventDescription, eventStartDate);
+            } else if (event.equals("Event")) {
+                messageReturned = addEvent(project, eventName, eventDescription, eventStartDate, eventEndDate);
             }
         }
 
@@ -217,10 +221,61 @@ public class AddDatesController {
     }
 
     /**
+     * Saves new event supplied by the user and redirects to the project page afterwards
+     * @param project project in which a event is being added
+     * @param eventName name of event
+     * @param eventStartDate event start date
+     * @param eventEndDate event end date
+     * @param eventDescription event description
+     * @return project details page on successful update, return string to indicate success or failure
+     */
+    private String addEvent(Project project, String eventName, String eventDescription, String eventStartDate, String eventEndDate){
+        Date projStart = DateParser.stringToDate(project.getStartDateString());
+        Date projEnd = DateParser.stringToDate(project.getEndDateString());
+        LocalDateTime startDate = DateParser.stringToLocalDateTime(eventStartDate, "");
+        LocalDateTime endDate = DateParser.stringToLocalDateTime(eventEndDate, "");
+        Date checkForValidationDate = DateParser.stringToDate(eventStartDate);
+
+        if (eventName.isBlank()) {
+            List<Event> events = eventRepository.findAllByParentProject(project);
+            eventName = "Event " + (events.size() + 1);
+        }
+
+        if (checkForValidationDate.before(projStart) || checkForValidationDate.after(projEnd)){
+            errorShow="";
+            errorCode="Event dates must be within the project dates";
+            return "redirect:add-dates?projectId=";
+        }
+
+        Event event = new Event(project, eventName, eventDescription, startDate, endDate);
+        eventRepository.save(event);
+        sendEventCalendarChange(project, event);
+        return "redirect:details?id=";
+    }
+
+    /**
      * Send an update sprint message through websockets to all the users on the same project details page
      */
     public void sendSprintCalendarChange(int id) {
         this.template.convertAndSend("/topic/calendar/" + id, new EventUpdate(FetchUpdateType.SPRINT));
+    }
+
+    /**
+     * Send an update event message through websockets to all the users on the same project details page
+     */
+    public void sendEventCalendarChange(Project project, Event event) {
+        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
+        // loop through sprints
+        for (Sprint sprint: sprints) {
+            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.getStartDate());
+            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.getEndDate());
+            // if deadline is within sprint
+            if (event.getEndDate().isAfter(startDate) && event.getStartDate().isBefore(endDate)) {
+                /// send a deadline update
+                this.template.convertAndSend("/topic/calendar/" + project.getId()
+                    , new EventUpdate(FetchUpdateType.EVENT, sprint.getId()));
+            }
+        }
     }
 
     /**
