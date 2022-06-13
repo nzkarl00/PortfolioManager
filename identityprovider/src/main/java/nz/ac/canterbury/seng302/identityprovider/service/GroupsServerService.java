@@ -40,13 +40,13 @@ public class GroupsServerService extends GroupsServiceImplBase {
     RolesRepository roleRepo;
 
     // Constant strings to set.
-    String TEACHER_GROUP_NAME_LONG = "Teachers Group";
-    String TEACHER_GROUP_NAME_SHORT = "TG";
-    String MWAG_GROUP_NAME_LONG = "Members Without a Group";
-    String MWAG_GROUP_NAME_SHORT = "MWAG";
-    String STUDENT_ROLE = "1student";
-    String TEACHER_ROLE = "2teacher";
-    String ADMIN_ROLE = "3admin";
+    public static String TEACHER_GROUP_NAME_LONG = "Teachers Group";
+    public static String TEACHER_GROUP_NAME_SHORT = "TG";
+    public static String MWAG_GROUP_NAME_LONG = "Members Without a Group";
+    public static String MWAG_GROUP_NAME_SHORT = "MWAG";
+    public static String STUDENT_ROLE = "1student";
+    public static String TEACHER_ROLE = "2teacher";
+    public static String ADMIN_ROLE = "3admin";
 
     /**
      * The function that initialize all the special groups required for the application

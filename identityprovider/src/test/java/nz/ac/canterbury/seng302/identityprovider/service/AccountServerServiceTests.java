@@ -440,6 +440,12 @@ public class AccountServerServiceTests {
     }
 
     /**
+     * The account server service we are testing in this class
+     */
+    @Autowired
+    private static GroupsServerService groupss = new GroupsServerService();
+
+    /**
      * The request and response to modify a user role.
      * Set up for testing removeRoleFromUser and addRoleToUser.
      */
@@ -448,15 +454,8 @@ public class AccountServerServiceTests {
             .setRole(UserRole.TEACHER)
             .build();
     private StreamObserver<UserRoleChangeResponse> UserRoleChangeResponse = mock(StreamObserver.class);
-    String TEACHER_GROUP_NAME_LONG = "Teachers Group";
-    String TEACHER_GROUP_NAME_SHORT = "TG";
-    String MWAG_GROUP_NAME_LONG = "Members Without a Group";
-    String MWAG_GROUP_NAME_SHORT = "MWAG";
-    String STUDENT_ROLE = "1student";
-    String TEACHER_ROLE = "2teacher";
-    String ADMIN_ROLE = "3admin";
-    Groups teacherGroup = new Groups(TEACHER_GROUP_NAME_LONG, TEACHER_GROUP_NAME_SHORT);
-    Groups noGroup = new Groups(MWAG_GROUP_NAME_LONG, MWAG_GROUP_NAME_SHORT);
+    Groups teacherGroup = new Groups(groupss.TEACHER_GROUP_NAME_LONG, groupss.TEACHER_GROUP_NAME_SHORT);
+    Groups noGroup = new Groups(groupss.MWAG_GROUP_NAME_LONG, groupss.MWAG_GROUP_NAME_SHORT);
 
 
     /**
@@ -470,8 +469,8 @@ public class AccountServerServiceTests {
     void removeRoleFromUserTest() {
 
         AccountProfile user = new AccountProfile();
-        Role studentRole = new Role(user, STUDENT_ROLE);
-        Role teacherRole = new Role(user, TEACHER_ROLE);
+        Role studentRole = new Role(user, groupss.STUDENT_ROLE);
+        Role teacherRole = new Role(user, groupss.TEACHER_ROLE);
         List<Role> rolesOfUser = new ArrayList<Role>();
         rolesOfUser.add(studentRole);
         rolesOfUser.add(teacherRole);
@@ -480,10 +479,10 @@ public class AccountServerServiceTests {
 
         Mockito.when(roleRepo.findAllByRegisteredUser(user)).thenReturn(rolesOfUser);
 
-        Mockito.when(ass.groupRepo.findAllByGroupShortName(TEACHER_GROUP_NAME_SHORT))
+        Mockito.when(ass.groupRepo.findAllByGroupShortName(groupss.TEACHER_GROUP_NAME_SHORT))
                 .thenReturn(new ArrayList<>(List.of(teacherGroup)));
 
-        Mockito.when(ass.groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT))
+        Mockito.when(ass.groupRepo.findAllByGroupShortName(groupss.MWAG_GROUP_NAME_SHORT))
                 .thenReturn(new ArrayList<>(List.of(noGroup)));
 
         ass.removeRoleFromUser(modifyRoleOfUserRequest, UserRoleChangeResponse);
@@ -504,12 +503,12 @@ public class AccountServerServiceTests {
         AccountProfile user = new AccountProfile();
         Mockito.when(repo.findById(1)).thenReturn(user);
 
-        Role newRoleToAdd = new Role(user, TEACHER_ROLE);
+        Role newRoleToAdd = new Role(user, groupss.TEACHER_ROLE);
 
-        Mockito.when(ass.groupRepo.findAllByGroupShortName(TEACHER_GROUP_NAME_SHORT))
+        Mockito.when(ass.groupRepo.findAllByGroupShortName(groupss.TEACHER_GROUP_NAME_SHORT))
                 .thenReturn(new ArrayList<>(List.of(teacherGroup)));
 
-        Mockito.when(ass.groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT))
+        Mockito.when(ass.groupRepo.findAllByGroupShortName(groupss.MWAG_GROUP_NAME_SHORT))
                 .thenReturn(new ArrayList<>(List.of(noGroup)));
 
         ass.addRoleToUser(modifyRoleOfUserRequest, UserRoleChangeResponse);
