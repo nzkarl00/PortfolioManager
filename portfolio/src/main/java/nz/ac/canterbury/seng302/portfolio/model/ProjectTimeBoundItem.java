@@ -25,6 +25,7 @@ public abstract class ProjectTimeBoundItem {
     @Column(name="description", length = MAX_DESCRIPTION_LENGTH)
     protected String description = "";
     protected LocalDateTime startDate;
+    protected LocalDateTime endDate;
     @ManyToOne
     @JoinColumn(name="parent_project_id", nullable=false)
     protected Project parentProject;
@@ -45,6 +46,23 @@ public abstract class ProjectTimeBoundItem {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
+    }
+
+    /**
+     * Construct a project time bound item.
+     * Precondition:
+     * - Call validateProperties to verify parameters are valid.
+     * @param parentProject the parent project to which the item belongs.
+     * @param name  The name of the ProjectItem
+     * @param description The description of the ProjectItem
+     * @param startDate A single date relevant to the project item
+     */
+    public ProjectTimeBoundItem(Project parentProject, String name, String description, LocalDateTime startDate, LocalDateTime endDate) {
+        this.parentProject = parentProject;
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     /**
