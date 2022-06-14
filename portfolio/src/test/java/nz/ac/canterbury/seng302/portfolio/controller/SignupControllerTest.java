@@ -51,6 +51,9 @@ public class SignupControllerTest {
     NavController navController;
 
     @MockBean
+    LoginController loginController;
+
+    @MockBean
     AuthenticateClientService authenticateClientService;
 
     @Before

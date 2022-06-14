@@ -1,18 +1,19 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 import io.grpc.stub.StreamObserver;
+import nz.ac.canterbury.seng302.identityprovider.model.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.Role;
 import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -23,7 +24,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -48,6 +48,12 @@ public class AccountServerServiceTests {
     @Autowired
     static RolesRepository roleRepo = mock(RolesRepository.class);
 
+    @Autowired
+    static GroupRepository groupRepo = mock(GroupRepository.class);
+
+    @Autowired
+    static GroupMembershipRepository groupMembershipRepo = mock(GroupMembershipRepository.class);
+
     /**
      * Mocked utils so the call to make changes does nothing
      */
@@ -67,8 +73,8 @@ public class AccountServerServiceTests {
 
     // setup test account profile and a list of said profiles to mock the repo with
     private static AccountProfile testAccountProfile = new AccountProfile("test username",
-        "test hash", new Date(), "test bio", "test email",
-        "test/photopath/", "firstname", "lastname", "pronouns");
+            "test hash", new Date(), "test bio", "test email",
+            "test/photopath/", "firstname", "lastname", "pronouns");
     private static ArrayList<AccountProfile> testProfiles = new ArrayList<>();
 
     // setup test role and a list of said roles to mock the repo with
@@ -119,6 +125,8 @@ public class AccountServerServiceTests {
         ass.roleRepo = roleRepo;
         ass.repo = repo;
         ass.accountService = as;
+        ass.groupRepo = groupRepo;
+        ass.groupMembershipRepo = groupMembershipRepo;
         ass.fsUtils = fsUtils;
     }
 
@@ -162,6 +170,16 @@ public class AccountServerServiceTests {
     void createAccountWithValidAttributes() throws Exception {
         when(as.getAccountByUsername("testusername3")).thenThrow(new Exception("Account profile not found")); // Simulates username not found
         when(as.getAccountByEmail("test@email3")).thenThrow(new Exception("Account profile not found")); // Simulates email not found
+
+        // mocking default group checking
+        Groups teacherGroup = new Groups("Teacher Group", "TG");
+        Mockito.when(ass.groupRepo.findAllByGroupShortName("TG"))
+                .thenReturn(new ArrayList<>(List.of(teacherGroup)));
+
+        Groups noGroup = new Groups("Members without a group", "MWAG");
+        Mockito.when(ass.groupRepo.findAllByGroupShortName("MWAG"))
+                .thenReturn(new ArrayList<>(List.of(noGroup)));
+
         ass.register(testRequest3, testObserver);
         verify(testObserver, times(1)).onCompleted();
         ArgumentCaptor<UserRegisterResponse> captor = ArgumentCaptor.forClass(UserRegisterResponse.class);
@@ -191,8 +209,8 @@ public class AccountServerServiceTests {
 
         // make the request
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder()
-            .setLimit(50)
-            .setOffset(0);
+                .setLimit(50)
+                .setOffset(0);
 
         when(as.buildUserResponse(testAccountProfile)).thenReturn(UserResponse.newBuilder().build());
 
@@ -225,8 +243,8 @@ public class AccountServerServiceTests {
 
         // make the request
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder()
-            .setLimit(50)
-            .setOffset(50);
+                .setLimit(50)
+                .setOffset(50);
 
         // run the method we are testing with the mocked observer
         ass.getPaginatedUsers(request.build(), testPaginatedObserver);
@@ -260,8 +278,8 @@ public class AccountServerServiceTests {
 
         // make the request
         GetPaginatedUsersRequest.Builder request = GetPaginatedUsersRequest.newBuilder()
-            .setLimit(50)
-            .setOffset(50);
+                .setLimit(50)
+                .setOffset(50);
 
         when(as.buildUserResponse(testAccountProfile)).thenReturn(UserResponse.newBuilder().build());
 
@@ -301,7 +319,7 @@ public class AccountServerServiceTests {
 
         // make the request
         GetUserByIdRequest.Builder request = GetUserByIdRequest.newBuilder()
-            .setId(1);
+                .setId(1);
 
         when(as.buildUserResponse(testAccountProfile)).thenReturn(UserResponse.newBuilder().setUsername("test username").build());
 
@@ -334,7 +352,7 @@ public class AccountServerServiceTests {
 
         // make the request
         GetUserByIdRequest.Builder request = GetUserByIdRequest.newBuilder()
-            .setId(1);
+                .setId(1);
 
         // run the method we are testing with the mocked observer
         ass.getUserAccountById(request.build(), testUserResponseObserver);
@@ -371,8 +389,8 @@ public class AccountServerServiceTests {
 
         // make the request
         EditUserRequest.Builder request = EditUserRequest.newBuilder()
-            .setUserId(1)
-            .setEmail(expected);
+                .setUserId(1)
+                .setEmail(expected);
 
         // run the method we are testing with the mocked observer
         ass.editUser(request.build(), testUserEditObserver);
@@ -407,8 +425,8 @@ public class AccountServerServiceTests {
 
         // make the request
         EditUserRequest.Builder request = EditUserRequest.newBuilder()
-            .setUserId(1)
-            .setEmail(hopes);
+                .setUserId(1)
+                .setEmail(hopes);
 
         // run the method we are testing with the mocked observer
         ass.editUser(request.build(), testUserEditObserver);
@@ -419,6 +437,87 @@ public class AccountServerServiceTests {
 
         // as nothing has been captured it should throw an error that we haven't caught anything
         assertThrows(MockitoException.class, captor::getValue);
+    }
+
+    /**
+     * The account server service we are testing in this class
+     */
+    @Autowired
+    private static GroupsServerService groupss = new GroupsServerService();
+
+    /**
+     * The request and response to modify a user role.
+     * Set up for testing removeRoleFromUser and addRoleToUser.
+     */
+    private ModifyRoleOfUserRequest modifyRoleOfUserRequest = ModifyRoleOfUserRequest.newBuilder()
+            .setUserId(1)
+            .setRole(UserRole.TEACHER)
+            .build();
+    private StreamObserver<UserRoleChangeResponse> UserRoleChangeResponse = mock(StreamObserver.class);
+    Groups teacherGroup = new Groups(groupss.TEACHER_GROUP_NAME_LONG, groupss.TEACHER_GROUP_NAME_SHORT);
+    Groups noGroup = new Groups(groupss.MWAG_GROUP_NAME_LONG, groupss.MWAG_GROUP_NAME_SHORT);
+
+
+    /**
+     * Given a user that has a role of a teacher, and belonging to the teacher group only.
+     * This will test if removing the teacher role will successfully update this removal in the
+     * roleRepo, groupRepo, and groupMembershipRepo.
+     * The user should not have the role of the teacher, and stop belonging to the teacher group.
+     * Instead, it will belong to the Members Without a Group.
+     */
+    @Test
+    void removeRoleFromUserTest() {
+
+        AccountProfile user = new AccountProfile();
+        Role studentRole = new Role(user, groupss.STUDENT_ROLE);
+        Role teacherRole = new Role(user, groupss.TEACHER_ROLE);
+        List<Role> rolesOfUser = new ArrayList<Role>();
+        rolesOfUser.add(studentRole);
+        rolesOfUser.add(teacherRole);
+
+        Mockito.when(repo.findById(1)).thenReturn(user);
+
+        Mockito.when(roleRepo.findAllByRegisteredUser(user)).thenReturn(rolesOfUser);
+
+        Mockito.when(ass.groupRepo.findAllByGroupShortName(groupss.TEACHER_GROUP_NAME_SHORT))
+                .thenReturn(new ArrayList<>(List.of(teacherGroup)));
+
+        Mockito.when(ass.groupRepo.findAllByGroupShortName(groupss.MWAG_GROUP_NAME_SHORT))
+                .thenReturn(new ArrayList<>(List.of(noGroup)));
+
+        ass.removeRoleFromUser(modifyRoleOfUserRequest, UserRoleChangeResponse);
+
+        Mockito.verify(groupMembershipRepo).save(refEq(new GroupMembership(user, noGroup)));
+    }
+
+    /**
+     * Given a user that does not have the role of a teacher, and belonging to the MWAG group only.
+     * This will test if adding the teacher role will successfully update this removal in the
+     * roleRepo, groupRepo, and groupMembershipRepo.
+     * The user will not belong to the Members Without a Group.
+     * The user should have the role of the teacher, and belong to the teacher group.
+     */
+    @Test
+    void addRoleToUserTest() {
+
+        AccountProfile user = new AccountProfile();
+        Mockito.when(repo.findById(1)).thenReturn(user);
+
+        Role newRoleToAdd = new Role(user, groupss.TEACHER_ROLE);
+
+        Mockito.when(ass.groupRepo.findAllByGroupShortName(groupss.TEACHER_GROUP_NAME_SHORT))
+                .thenReturn(new ArrayList<>(List.of(teacherGroup)));
+
+        Mockito.when(ass.groupRepo.findAllByGroupShortName(groupss.MWAG_GROUP_NAME_SHORT))
+                .thenReturn(new ArrayList<>(List.of(noGroup)));
+
+        ass.addRoleToUser(modifyRoleOfUserRequest, UserRoleChangeResponse);
+
+        Mockito.verify(groupMembershipRepo).save(refEq(new GroupMembership(user, teacherGroup)));
+
+        Mockito.verify(groupMembershipRepo).deleteByRegisteredGroupsAndRegisteredGroupUser(noGroup, user);
+
+        Mockito.verify(roleRepo).save(refEq(newRoleToAdd));
     }
 
     List<AccountProfile> expected = new ArrayList<>(List.of(testAccountProfile));
@@ -554,9 +653,9 @@ public class AccountServerServiceTests {
 
         // make the request
         ChangePasswordRequest.Builder request = ChangePasswordRequest.newBuilder()
-            .setUserId(1)
-            .setCurrentPassword("password")
-            .setNewPassword("SecurePurplePlatypusPassword");
+                .setUserId(1)
+                .setCurrentPassword("password")
+                .setNewPassword("SecurePurplePlatypusPassword");
 
         // run the method we are testing with the mocked observer
         ass.changeUserPassword(request.build(), changePasswordObserver);
@@ -587,9 +686,9 @@ public class AccountServerServiceTests {
 
         // make the request
         ChangePasswordRequest.Builder request = ChangePasswordRequest.newBuilder()
-            .setUserId(1)
-            .setCurrentPassword("password")
-            .setNewPassword("SecurePurplePlatypusPassword");
+                .setUserId(1)
+                .setCurrentPassword("password")
+                .setNewPassword("SecurePurplePlatypusPassword");
 
         // run the method we are testing with the mocked observer
         ass.changeUserPassword(request.build(), changePasswordObserver);
@@ -616,9 +715,9 @@ public class AccountServerServiceTests {
 
         // make the request
         ChangePasswordRequest.Builder request = ChangePasswordRequest.newBuilder()
-            .setUserId(0)
-            .setCurrentPassword("password")
-            .setNewPassword("SecurePurplePlatypusPassword");
+                .setUserId(0)
+                .setCurrentPassword("password")
+                .setNewPassword("SecurePurplePlatypusPassword");
 
         // run the method we are testing with the mocked observer
         ass.changeUserPassword(request.build(), changePasswordObserver);
@@ -652,17 +751,17 @@ public class AccountServerServiceTests {
     void uploadUserProfilePhoto_onNextMetaData() {
 
         when(fsUtils.userProfilePhotoAbsolutePath(-1, FILE_TYPE)).thenReturn(
-            Path.of(System.getProperty("user.dir")).resolve(TEST_IMAGE_PATH));
+                Path.of(System.getProperty("user.dir")).resolve(TEST_IMAGE_PATH));
 
         StreamObserver<UploadUserProfilePhotoRequest> subjectObserver = ass.uploadUserProfilePhoto(fileObserver);
 
         // -1 so that any read/write will not affect any in use actual data
         ProfilePhotoUploadMetadata metadata = ProfilePhotoUploadMetadata.newBuilder()
-            .setUserId(-1)
-            .setFileType(FILE_TYPE).build();
+                .setUserId(-1)
+                .setFileType(FILE_TYPE).build();
 
         UploadUserProfilePhotoRequest request = UploadUserProfilePhotoRequest.newBuilder()
-            .setMetaData(metadata).build();
+                .setMetaData(metadata).build();
         // call the subject's functionality
         subjectObserver.onNext(request);
 
@@ -673,3 +772,4 @@ public class AccountServerServiceTests {
         assertEquals(FileUploadStatus.PENDING, response.getStatus());
     }
 }
+
