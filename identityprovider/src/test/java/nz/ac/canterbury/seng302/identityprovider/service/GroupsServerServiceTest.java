@@ -52,6 +52,21 @@ class GroupsServerServiceTest {
     private StreamObserver<DeleteGroupResponse> testDeleteObserver = mock(StreamObserver.class);
 
     /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<GroupDetailsResponse> testGetObserver = mock(StreamObserver.class);
+
+    /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<PaginatedGroupsResponse> testGetPaginatedObserver = mock(StreamObserver.class);
+
+    /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<ModifyGroupDetailsResponse> testModifyObserver = mock(StreamObserver.class);
+
+    /**
      * Tests to make a valid group
      */
     @Test
@@ -239,4 +254,183 @@ class GroupsServerServiceTest {
         assertEquals("The Society of Pompous Rapscallions", repsonse.getLongName());
         assertEquals(0, repsonse.getMembersCount());
     }
+    /**
+     * Test that a group can be retrieved
+     */
+    @Test
+    void get_group_validGroup() {
+        Groups testGroup = new Groups();
+        testGroup.setGroupShortName("TestShort");
+        testGroup.setGroupLongName("TestLong");
+
+        List<GroupMembership> members = new ArrayList<>();
+
+        GetGroupDetailsRequest request = GetGroupDetailsRequest.newBuilder().setGroupId(1).build();
+        when(groupRepo.findByGroupId(1)).thenReturn(testGroup);
+        when(groupMembershipRepo.findAllByRegisteredGroups(testGroup)).thenReturn(members);
+
+        gss.getGroupDetails(request, testGetObserver);
+
+        verify(testGetObserver, times(1)).onCompleted();
+        ArgumentCaptor<GroupDetailsResponse> captor = ArgumentCaptor.forClass(GroupDetailsResponse.class);
+        verify(testGetObserver, times(1)).onNext(captor.capture());
+        GroupDetailsResponse response = captor.getValue();
+        assertEquals(response.getGroupId(), 0);
+        assertEquals(response.getShortName(), "TestShort");
+        assertEquals(response.getLongName(), "TestLong");
+        assertEquals(response.getMembersList().size(), 0);
+
+    }
+
+    /**
+     * Test getting a group that doesn't exist to get an error
+     */
+    @Test
+    void get_group_invalidGroup() {
+
+        List<GroupMembership> members = new ArrayList<>();
+
+        GetGroupDetailsRequest request = GetGroupDetailsRequest.newBuilder().setGroupId(1).build();
+        when(groupRepo.findByGroupId(1)).thenReturn(null);
+        when(groupMembershipRepo.findAllByRegisteredGroups(null)).thenReturn(members);
+
+        gss.getGroupDetails(request, testGetObserver);
+
+        verify(testGetObserver, times(1)).onCompleted();
+        ArgumentCaptor<GroupDetailsResponse> captor = ArgumentCaptor.forClass(GroupDetailsResponse.class);
+        verify(testGetObserver, times(1)).onNext(captor.capture());
+        GroupDetailsResponse response = captor.getValue();
+        assertEquals(response.getGroupId(), -1);
+        assertEquals(response.getShortName(), "");
+        assertEquals(response.getLongName(), "");
+        assertEquals(response.getMembersList().size(), 0);
+
+    }
+
+    /**
+     * Test getting a group via pagination
+     */
+    @Test
+    void get_group_paginated() {
+
+        List<Groups> groupList = new ArrayList<>();
+        Groups testGroup = new Groups();
+        testGroup.setGroupShortName("TestShort");
+        testGroup.setGroupLongName("TestLong");
+
+        groupList.add(testGroup);
+
+        List<GroupMembership> members = new ArrayList<>();
+
+
+        GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest.newBuilder().setOffset(0).setOrderBy("groupLongName").setLimit(1).setIsAscendingOrder(true).build();
+        when(groupRepo.findAll(PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "groupLongName")))).thenReturn(groupList);
+        when(groupMembershipRepo.findAllByRegisteredGroups(testGroup)).thenReturn(members);
+
+        gss.getPaginatedGroups(request, testGetPaginatedObserver);
+
+        verify(testGetPaginatedObserver, times(1)).onCompleted();
+        ArgumentCaptor<PaginatedGroupsResponse> captor = ArgumentCaptor.forClass(PaginatedGroupsResponse.class);
+        verify(testGetPaginatedObserver, times(1)).onNext(captor.capture());
+        PaginatedGroupsResponse response = captor.getValue();
+
+        assertEquals(response.getResultSetSize(), 1);
+
+    }
+
+    /**
+     * Test getting no groups via pagination
+     */
+    @Test
+    void get_group_paginated_none() {
+
+        List<Groups> groupList = new ArrayList<>();
+
+
+        List<GroupMembership> members = new ArrayList<>();
+
+
+        GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest.newBuilder().setOffset(0).setOrderBy("groupLongName").setLimit(1).setIsAscendingOrder(true).build();
+        when(groupRepo.findAll(PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "groupLongName")))).thenReturn(groupList);
+
+
+        gss.getPaginatedGroups(request, testGetPaginatedObserver);
+
+        verify(testGetPaginatedObserver, times(1)).onCompleted();
+        ArgumentCaptor<PaginatedGroupsResponse> captor = ArgumentCaptor.forClass(PaginatedGroupsResponse.class);
+        verify(testGetPaginatedObserver, times(1)).onNext(captor.capture());
+        PaginatedGroupsResponse response = captor.getValue();
+
+        assertEquals(response.getResultSetSize(), 0);
+
+    }
+
+    /**
+     * Test that a group can have just its long name modified
+     */
+    @Test
+    void modify_groupDetails_validGroup_longName() {
+
+        Groups testGroup = new Groups();
+        testGroup.setGroupShortName("TestShort");
+        testGroup.setGroupLongName("TestLong");
+
+        ModifyGroupDetailsRequest request = ModifyGroupDetailsRequest.newBuilder().setGroupId(1).setLongName("EditLong").build();
+        when(groupRepo.findByGroupId(1)).thenReturn(testGroup);
+
+        gss.modifyGroupDetails(request, testModifyObserver);
+
+        verify(testModifyObserver, times(1)).onCompleted();
+        ArgumentCaptor<ModifyGroupDetailsResponse> captor = ArgumentCaptor.forClass(ModifyGroupDetailsResponse.class);
+        verify(testModifyObserver, times(1)).onNext(captor.capture());
+        ModifyGroupDetailsResponse response = captor.getValue();
+        assertEquals(response.getIsSuccess(), true);
+        assertEquals(response.getMessage(), "Edit successful");
+
+    }
+
+    /**
+     * Test that the correct message is returned when a non-existent group is modified
+     */
+    @Test
+    void modify_groupDetails_invalidGroup() {
+
+
+        ModifyGroupDetailsRequest request = ModifyGroupDetailsRequest.newBuilder().setGroupId(1).setLongName("EditLong").build();
+        when(groupRepo.findByGroupId(1)).thenReturn(null);
+
+        gss.modifyGroupDetails(request, testModifyObserver);
+
+        verify(testModifyObserver, times(1)).onCompleted();
+        ArgumentCaptor<ModifyGroupDetailsResponse> captor = ArgumentCaptor.forClass(ModifyGroupDetailsResponse.class);
+        verify(testModifyObserver, times(1)).onNext(captor.capture());
+        ModifyGroupDetailsResponse response = captor.getValue();
+        assertEquals(response.getIsSuccess(), false);
+        assertEquals(response.getMessage(), "Edit failed, Group does not exist");
+    }
+
+    /**
+     * Test modifying both names of a group that exists
+     */
+    @Test
+    void modify_groupDetails_validGroup_longShortNames() {
+
+        Groups testGroup = new Groups();
+        testGroup.setGroupShortName("TestShort");
+        testGroup.setGroupLongName("TestLong");
+
+        ModifyGroupDetailsRequest request = ModifyGroupDetailsRequest.newBuilder().setGroupId(1).setLongName("EditLong").setShortName("EditShort").build();
+        when(groupRepo.findByGroupId(1)).thenReturn(testGroup);
+
+        gss.modifyGroupDetails(request, testModifyObserver);
+
+        verify(testModifyObserver, times(1)).onCompleted();
+        ArgumentCaptor<ModifyGroupDetailsResponse> captor = ArgumentCaptor.forClass(ModifyGroupDetailsResponse.class);
+        verify(testModifyObserver, times(1)).onNext(captor.capture());
+        ModifyGroupDetailsResponse response = captor.getValue();
+        assertEquals(response.getIsSuccess(), true);
+        assertEquals(response.getMessage(), "Edit successful");
+
+    }
+
 }

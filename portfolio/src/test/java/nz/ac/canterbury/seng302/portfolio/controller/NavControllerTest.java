@@ -1,8 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.protobuf.Timestamp;
-import com.google.protobuf.TimestampOrBuilder;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -13,7 +10,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.ui.Model;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 

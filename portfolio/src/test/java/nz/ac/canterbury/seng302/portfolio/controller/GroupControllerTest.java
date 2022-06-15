@@ -3,8 +3,6 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
@@ -24,7 +22,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateAdmin;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -33,16 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = GroupController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class GroupControllerTest {
-
-    public AuthState validAuthState = AuthState.newBuilder()
-            .setIsAuthenticated(true)
-            .setNameClaimType("name")
-            .setRoleClaimType("role")
-            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
-            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-            .setAuthenticationType("AuthenticationTypes.Federation")
-            .setName("validtesttoken")
-            .build();
 
     PaginatedGroupsResponse response = PaginatedGroupsResponse.newBuilder().build();
 
@@ -81,9 +69,9 @@ class GroupControllerTest {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateAdmin, ""));
 
-        utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("admin");
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateAdmin)).thenReturn("admin");
         when(groupsService.getGroups(10, 0, true)).thenReturn(response);
 
         // Configuring Spring to use the mocked SecurityContext
@@ -99,9 +87,9 @@ class GroupControllerTest {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateAdmin, ""));
 
-        utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("admin");
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateAdmin)).thenReturn("admin");
         when(groupsService.getGroups(10, 1, true)).thenReturn(response);
         when(groupsService.getGroups(10, 0, true)).thenReturn(response);
 
@@ -118,9 +106,9 @@ class GroupControllerTest {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateAdmin, ""));
 
-        utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("admin");
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateAdmin)).thenReturn("admin");
         when(groupsService.getGroups(10, 0, true)).thenReturn(response);
 
         // Configuring Spring to use the mocked SecurityContext
@@ -136,9 +124,9 @@ class GroupControllerTest {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateAdmin, ""));
 
-        utilities.when(() -> AuthStateInformer.getRole(validAuthState)).thenReturn("admin");
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateAdmin)).thenReturn("admin");
         when(groupsService.getGroups(10, 0, true)).thenReturn(response);
 
         // Configuring Spring to use the mocked SecurityContext

@@ -91,6 +91,12 @@
                                 <a href="#" class="dropdown-item table_text" th:if="${not user.listRoles().contains('admin')}">
                                     <form style="display:inline;" th:action="@{add-role(roleAdd=${'course_administrator'},username=${user.username})}" method="post" ><button class="table_text button_none">Add Admin</button></form>
                                 </a>
+                                <div style="text-decoration: none; padding: 10px 10px 10px 10px;"
+                                   th:if="${user.listRoles().contains('teacher') and
+                                            user.listRoles().contains('student') and
+                                            user.listRoles().contains('admin')}">
+                                    All possible roles are added already, no more choices to add.
+                                </div>
                             </div>
                         </div>
                     </td>

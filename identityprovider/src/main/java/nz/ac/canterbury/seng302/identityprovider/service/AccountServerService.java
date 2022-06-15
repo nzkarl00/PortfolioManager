@@ -4,17 +4,19 @@ import com.google.protobuf.Timestamp;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import nz.ac.canterbury.seng302.identityprovider.model.Role;
-import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
+import nz.ac.canterbury.seng302.identityprovider.model.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
-import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
-import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,13 +35,106 @@ public class AccountServerService extends UserAccountServiceImplBase{
     Account accountService;
 
     @Autowired
-    AccountProfileRepository repo;
+    FileSystemUtils fsUtils;
 
+    @Autowired
+    GroupsServerService groupsServerService;
+
+    // Repositories required
+    @Autowired
+    AccountProfileRepository repo;
     @Autowired
     RolesRepository roleRepo;
-
     @Autowired
-    private FileSystemUtils fsUtils;
+    GroupMembershipRepository groupMembershipRepo;
+    @Autowired
+    GroupRepository groupRepo;
+
+    /**
+     * if there are no users in the db, build a set of 5001 default users
+     */
+    @PostConstruct
+    private void buildDefaultUsers() {
+        // if no users exist
+        if (repo.findById(1) == null) {
+
+            //https://www.baeldung.com/java-random-string
+            int leftLimit = 48; // letter 'a'
+            int rightLimit = 122; // letter 'z'
+            int targetStringLength = 10;
+            Random random = new Random();
+            StringBuilder buffer = new StringBuilder(targetStringLength);
+            for (int i = 0; i < targetStringLength; i++) {
+                int randomLimitedInt = leftLimit + (int)
+                        (random.nextFloat() * (rightLimit - leftLimit + 1));
+                buffer.append((char) randomLimitedInt);
+            }
+            String generatedString = buffer.toString();
+            String hashedPassword = Hasher.hashPassword(generatedString);
+
+            // add a default admin password to the file directory
+            // if a malicious user gets into this server
+            // an admin privileged user shouldn't aid them in their attacks
+
+            // System.outs here are fine in my books currently as this will only be run once
+            // feel free to disagree though
+            try {
+                File admin = new File(System.getProperty("user.dir") + "/defaultAdminPassword.txt");
+                // make sure new file can be made
+                if (admin.exists()) {
+                    admin.delete();
+                }
+                if (admin.createNewFile()) {
+                    //
+                    System.out.println("default admin file created: " + admin.getName());
+                    System.out.println(generatedString);
+                    FileWriter myWriter = new FileWriter(System.getProperty("user.dir") + "/defaultAdminPassword.txt");
+                    myWriter.write(generatedString);
+                    myWriter.close();
+                    createNewUsers(hashedPassword);
+                } else {
+                    System.out.println("default admin file already exists.");
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred in creating the default admin file.");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void createNewUsers(String hashedPassword) {
+        AccountProfile newAdmin = repo.save(
+                new AccountProfile(
+                        "admin", hashedPassword, new Date(), "", "admin@defaultAdmin",
+                        null, "admin", "admin", "He/Him"));
+        roleRepo.save(new Role(newAdmin, "3admin"));
+
+        try {
+            // open the names to build users from
+            File firstNames = new File(System.getProperty("user.dir") + "/src/main/resources/buildUsers/firstNames.txt");
+            Scanner firstNamesReader = new Scanner(firstNames);
+
+            File lastNames = new File(System.getProperty("user.dir") + "/src/main/resources/buildUsers/lastNames.txt");
+            Scanner lastNamesReader = new Scanner(firstNames);
+
+            // loop through the names and build the users
+            while (firstNamesReader.hasNextLine()) {
+                String firstName = firstNamesReader.nextLine();
+                while (lastNamesReader.hasNextLine()) {
+                    String lastName = lastNamesReader.nextLine();
+                    AccountProfile newAccount = repo.save(
+                            new AccountProfile(
+                                    firstName + lastName, hashedPassword, new Date(), "", firstName + "." + lastName + "@default",
+                                    null, firstName, lastName, "He/Him"));
+                    roleRepo.save(new Role(newAccount, "1student"));
+                }
+            }
+            firstNamesReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File could not be found");
+            e.printStackTrace();
+        }
+    }
 
 
     /**
@@ -62,7 +157,9 @@ public class AccountServerService extends UserAccountServiceImplBase{
                     new AccountProfile(
                             request.getUsername(), hashedPassword, new Date(), "", request.getEmail(),
                             null, request.getFirstName(), request.getLastName(), request.getPersonalPronouns()));
-            roleRepo.save(new Role(newAccount, "1student")); // TODO change this from the default
+            roleRepo.save(new Role(newAccount, "1student"));
+            List<Groups> noMembers = groupRepo.findAllByGroupShortName("MWAG");
+            groupMembershipRepo.save(new GroupMembership(noMembers.get(0), newAccount));
             reply.setMessage("Created account " + request.getUsername()).setIsSuccess(true);
         }
         responseObserver.onNext(reply.build());
@@ -271,7 +368,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
     public void changeUserPassword(ChangePasswordRequest request, StreamObserver<ChangePasswordResponse> observer) {
         ChangePasswordResponse.Builder response = ChangePasswordResponse.newBuilder();
         try {
-            AccountProfile profile = accountService.getAccountById(request.getUserId());
+            AccountProfile profile = repo.findById(request.getUserId());
             if (Hasher.verify(request.getCurrentPassword(), profile.getPasswordHash())) {
                 profile.setPasswordHash(Hasher.hashPassword(request.getNewPassword()));
                 repo.save(profile);
@@ -288,59 +385,87 @@ public class AccountServerService extends UserAccountServiceImplBase{
         observer.onNext(response.build());
         observer.onCompleted();
     }
+
+    /**
+     * Gets the role the user wish to modify (added or removed) to be returned as a string.
+     * @param roleToModify the UserRole from the grpc request, that was requested to be modified (added or removed)
+     */
+    public String getRoleToModify(UserRole roleToModify) {
+
+        return switch (roleToModify) {
+            case TEACHER -> groupsServerService.TEACHER_ROLE;
+            case COURSE_ADMINISTRATOR -> groupsServerService.ADMIN_ROLE;
+            default -> groupsServerService.STUDENT_ROLE;
+        };
+    }
+
+
+    /**
+     * Remove the role from a user with details specified by the request.
+     * The action to remove a role from a user will be reflected in the DB, for both Role, Group, and GroupMembership repos.
+     * @param request the grpc request containing the change details
+     * @param responseObserver the observer to send the response to
+     */
+    @Transactional
     @Override
     public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
 
-        String roleString;
-        switch (request.getRole()) {
-            case TEACHER:
-                roleString = "2teacher";
-                break;
-            case COURSE_ADMINISTRATOR:
-                roleString = "3admin";
-                break;
-            default:
-                roleString = "1student";
-                break;
+        String roleToRemove = getRoleToModify(request.getRole()); // The role to remove from the user as given from the request.
 
-        }
+        Long roleIdToRemove = null;
 
-        Long roleId = null;
+        List<Role> rolesOfUser = roleRepo.findAllByRegisteredUser(user); // List of roles held by that user
+        for (Role role: rolesOfUser) {
 
-        List<Role> roles = roleRepo.findAllByRegisteredUser(user);
-        for (Role role: roles) {
-            if (role.getRole().equals(roleString)) {
-                roleId = role.getUserRoleId();
-                roleRepo.deleteById(roleId);
+            // Out of the roles held by that user, update the repos with the requested role to be removed.
+            if (role.getRole().equals(roleToRemove)) {
+                roleIdToRemove = role.getUserRoleId();
+                roleRepo.deleteById(roleIdToRemove);
+
+                // if the role removal is a teacher also remove them from the teacher group
+                if (roleToRemove.equals(groupsServerService.TEACHER_ROLE)) {
+                    Groups teacherGroup = groupRepo.findAllByGroupShortName(groupsServerService.TEACHER_GROUP_NAME_SHORT).get(0);
+                    groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(teacherGroup, user);
+
+                    // if there are no groups left for the user add them to Members Without A Group (MWAG)
+                    if (groupMembershipRepo.findAllByRegisteredGroupUser(user).isEmpty()) {
+                        Groups noGroup = groupRepo.findAllByGroupShortName(groupsServerService.MWAG_GROUP_NAME_SHORT).get(0);
+                        groupMembershipRepo.save(new GroupMembership(user, noGroup));
+                    }
+                }
             }
         }
 
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
-
     }
 
+    /**
+     * Add the role from a user with details specified by the request.
+     * The action to add a role from a user will be reflected in the DB, for both Role, Group, and GroupMembership repos.
+     * @param request the grpc request containing the change details
+     * @param responseObserver the observer to send the response to
+     */
+    @Transactional
     @Override
     public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         AccountProfile user = repo.findById(request.getUserId());
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
-        String role;
-        switch (request.getRole()) {
-            case TEACHER:
-                role = "2teacher";
-                break;
-            case COURSE_ADMINISTRATOR:
-                role = "3admin";
-                break;
-            default:
-                role = "1student";
-                break;
-        }
 
+        String role = getRoleToModify(request.getRole()); // The role to add to the user as given from the request.
         Role roleForRepo = new Role(user, role);
         roleRepo.save(roleForRepo);
+
+        // if the role to add is a teacher, add them to the teacher group and remove from the members without a group.
+        if (role.equals(groupsServerService.TEACHER_ROLE)) {
+            Groups teacherGroup = groupRepo.findAllByGroupShortName(groupsServerService.TEACHER_GROUP_NAME_SHORT).get(0);
+            groupMembershipRepo.save(new GroupMembership(user, teacherGroup));
+
+            Groups noMembers = groupRepo.findAllByGroupShortName(groupsServerService.MWAG_GROUP_NAME_SHORT).get(0);
+            groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers, user);
+        }
 
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();

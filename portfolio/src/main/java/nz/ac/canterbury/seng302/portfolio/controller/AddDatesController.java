@@ -28,6 +28,8 @@ public class AddDatesController {
     @Autowired
     private DeadlineRepository deadlineRepository;
     @Autowired
+    private MilestoneRepository milestoneRepository;
+    @Autowired
     private ProjectService projectService;
     @Autowired
     private SprintService sprintService;
@@ -35,6 +37,8 @@ public class AddDatesController {
     private AccountClientService accountClientService;
     @Autowired
     private NavController navController;
+    @Autowired
+    private EventRepository eventRepository;
 
     String errorShow = "display:none;";
     String errorCode = "";
@@ -111,6 +115,10 @@ public class AddDatesController {
                 messageReturned = addDeadlines(project, eventName, eventDescription, eventStartDate, eventEndDate);
             } else if (event.equals("Sprint") || event.equals("")){
                 messageReturned = addSprint(project, eventName, eventDescription, eventStartDate, eventEndDate);
+            } else if (event.equals("Milestone")) {
+                messageReturned = addMilestone(project, eventName, eventDescription, eventStartDate);
+            } else if (event.equals("Event")) {
+                messageReturned = addEvent(project, eventName, eventDescription, eventStartDate, eventEndDate);
             }
         }
 
@@ -183,13 +191,95 @@ public class AddDatesController {
     }
 
     /**
+     * Saves a new date supplied by the user and redirects to the project page afterwards
+     * @param project project in which a deadline is being added
+     * @param eventName name of event
+     * @param eventStartDate event start date
+     * @param eventDescription event description
+     * @return project details page on successful update, return string to indicate success or failure
+     */
+    private String addMilestone(Project project, String eventName, String eventDescription, String eventStartDate){
+        Date projStart = DateParser.stringToDate(project.getStartDateString());
+        Date projEnd = DateParser.stringToDate(project.getEndDateString());
+        LocalDateTime endDate = DateParser.stringToLocalDateTime(eventStartDate, "");
+        Date checkForValidationDate = DateParser.stringToDate(eventStartDate);
+
+        if (eventName.isBlank()) {
+            List<Milestone> milestones = milestoneRepository.findAllByParentProject(project);
+            eventName = "Milestone " + (milestones.size() + 1);
+        }
+
+        if (checkForValidationDate.before(projStart) || checkForValidationDate.after(projEnd)){
+            errorShow="";
+            errorCode="Milestone date must be within the project dates";
+            return "redirect:add-dates?projectId=";
+        }
+
+        Milestone milestone = new Milestone(project, eventName, eventDescription, endDate);
+        milestoneRepository.save(milestone);
+        sendMilestoneCalendarChange(project, milestone);
+        return "redirect:details?id=";
+    }
+
+    /**
+     * Saves new event supplied by the user and redirects to the project page afterwards
+     * @param project project in which a event is being added
+     * @param eventName name of event
+     * @param eventStartDate event start date
+     * @param eventEndDate event end date
+     * @param eventDescription event description
+     * @return project details page on successful update, return string to indicate success or failure
+     */
+    private String addEvent(Project project, String eventName, String eventDescription, String eventStartDate, String eventEndDate){
+        Date projStart = DateParser.stringToDate(project.getStartDateString());
+        Date projEnd = DateParser.stringToDate(project.getEndDateString());
+        LocalDateTime startDate = DateParser.stringToLocalDateTime(eventStartDate, "");
+        LocalDateTime endDate = DateParser.stringToLocalDateTime(eventEndDate, "");
+        Date checkForValidationDate = DateParser.stringToDate(eventStartDate);
+
+        if (eventName.isBlank()) {
+            List<Event> events = eventRepository.findAllByParentProject(project);
+            eventName = "Event " + (events.size() + 1);
+        }
+
+        if (checkForValidationDate.before(projStart) || checkForValidationDate.after(projEnd)){
+            errorShow="";
+            errorCode="Event dates must be within the project dates";
+            return "redirect:add-dates?projectId=";
+        }
+
+        Event event = new Event(project, eventName, eventDescription, startDate, endDate);
+        eventRepository.save(event);
+        sendEventCalendarChange(project, event);
+        return "redirect:details?id=";
+    }
+
+    /**
      * Send an update sprint message through websockets to all the users on the same project details page
      */
     public void sendSprintCalendarChange(int id) {
         this.template.convertAndSend("/topic/calendar/" + id, new EventUpdate(FetchUpdateType.SPRINT));
     }
 
-        /**
+    /**
+     * Send an update event message through websockets to all the users on the same project details page
+     */
+    public void sendEventCalendarChange(Project project, Event event) {
+        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
+        // loop through sprints
+        for (Sprint sprint: sprints) {
+            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.getStartDate());
+            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.getEndDate());
+            // if deadline is within sprint
+            if (event.getEndDate().isAfter(startDate) && event.getStartDate().isBefore(endDate)) {
+                /// send a deadline update
+                this.template.convertAndSend("/topic/calendar/" + project.getId()
+                    , new EventUpdate(FetchUpdateType.EVENT, sprint.getId()));
+            }
+        }
+    }
+
+    /**
      * Send an update deadline message through websockets to all the users on the same project details page
      */
     public void sendDeadlineCalendarChange(Project project, Deadline deadline) {
@@ -202,7 +292,25 @@ public class AddDatesController {
             if (deadline.getEndDate().isAfter(startDate) && deadline.getStartDate().isBefore(endDate)) {
                 /// send a deadline update
                 this.template.convertAndSend("/topic/calendar/" + project.getId()
-                    , new EventUpdate(FetchUpdateType.DEADLINE, sprint.getId()));
+                        , new EventUpdate(FetchUpdateType.DEADLINE, sprint.getId()));
+            }
+        }
+    }
+
+    /**
+     * Send an update milestone message through websockets to all the users on the same project details page
+     */
+    public void sendMilestoneCalendarChange(Project project, Milestone milestone) {
+        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
+        // loop through sprints
+        for (Sprint sprint: sprints) {
+            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.getStartDate());
+            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.getEndDate());
+            // if deadline is within sprint
+            if (milestone.getEndDate().isAfter(startDate) && milestone.getStartDate().isBefore(endDate)) {
+                /// send a deadline update
+                this.template.convertAndSend("/topic/calendar/" + project.getId()
+                        , new EventUpdate(FetchUpdateType.MILESTONE, sprint.getId()));
             }
         }
     }

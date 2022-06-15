@@ -43,7 +43,7 @@
         <!-- Groups Section -->
             <div class="col-lg-8 col-md-10 col-sm-12 portion_body" >
                 <a class="project_a" th:href="@{editGroup(id=${group.getId})}" >
-                    <h3 class="project_subhead" th:text="${(group.shortName) + ' ' + group.longName}"/>
+                    <h3 class="project_subhead" th:text="${'(' + (group.shortName) + ') ' + group.longName}"/>
                 </a>
                 <br>
                 <div>

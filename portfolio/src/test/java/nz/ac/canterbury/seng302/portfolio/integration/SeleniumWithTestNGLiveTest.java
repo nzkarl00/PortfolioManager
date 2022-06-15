@@ -1,5 +1,6 @@
-package nz.ac.canterbury.seng302.portfolio;
+package nz.ac.canterbury.seng302.portfolio.integration;
 
+import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -9,12 +10,17 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.testng.AssertJUnit.*;
 
+/**
+ * Note this is a template to pull from
+ * import org.testng.annotations.Test;
+ * use this test annotation to intiate your actual tests
+ * do not remove the existing tests
+ * they are needed to setup and login to an account
+ */
 public class SeleniumWithTestNGLiveTest {
 
         private SeleniumExample seleniumExample;
-        private String expectedTitle = "About Baeldung | Baeldung";
 
         @BeforeSuite
         public void setUp() {
@@ -58,7 +64,6 @@ public class SeleniumWithTestNGLiveTest {
         /**
          * load up the page then login to the user lra63, with the set password, note if this is not on your machine you will get errors
          */
-        @Test
         public void whenPortfolioIsLoaded_thenLoginWorks() {
                 seleniumExample.config.getDriver().get(seleniumExample.url);
                 WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
