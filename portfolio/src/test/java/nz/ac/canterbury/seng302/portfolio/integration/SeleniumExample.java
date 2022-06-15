@@ -8,6 +8,9 @@ public class SeleniumExample {
     @LocalServerPort
     private int port = 9000;
     public String url = "http://localhost:" + port;
+    public String url3 = "http://localhost:" + port + "/landing";
+    public String url2 = "http://localhost:" + port + "/details?id=1";
+    public String urlDates;
 
     public SeleniumExample(String contextPath) {
         config = new SeleniumConfig();

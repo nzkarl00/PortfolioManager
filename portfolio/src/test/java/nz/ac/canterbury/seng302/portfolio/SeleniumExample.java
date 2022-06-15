@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio;
 
+import nz.ac.canterbury.seng302.portfolio.integration.SeleniumConfig;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -17,8 +18,6 @@ public class SeleniumExample {
     @LocalServerPort
     private int port = 9000;
     public String url = "http://localhost:" + port;
-    public String url2 = "http://localhost:" + port + "/details?id=1";
-    public String urlDates;
 
     public SeleniumExample(String contextPath) {
         config = new SeleniumConfig();

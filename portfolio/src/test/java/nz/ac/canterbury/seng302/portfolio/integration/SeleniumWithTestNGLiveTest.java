@@ -27,7 +27,8 @@ public class SeleniumWithTestNGLiveTest {
                 seleniumExample = new SeleniumExample("");
                 whenPortfolioIsLoaded_thenRegisterWorks();
                 whenPortfolioIsLoaded_thenLoginWorks();
-                whenPortfolioIsLoaded_thenLoginWorks_two();
+
+                whenPortfolioIsLoaded_thenLoginAdmin_forTests();
                 whenProjectIsAccessed_thenGoToAddDates();
                 whenAddingDate_CheckTitleLen();
         }
@@ -77,19 +78,20 @@ public class SeleniumWithTestNGLiveTest {
         }
 
         /**
-         * load up the page then login to the user FAKE, with the set password, note if this is not on your machine you will get errors
+         * load up the page then login to the admin user
          */
         @Test
-        public void whenPortfolioIsLoaded_thenLoginWorks_two() {
+        public void whenPortfolioIsLoaded_thenLoginAdmin_forTests() {
                 seleniumExample.config.getDriver().get(seleniumExample.url);
                 WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
-                username.sendKeys("FAKE");
+                username.sendKeys("admin");
                 WebElement password = seleniumExample.config.getDriver().findElement(By.id("password"));
-                password.sendKeys("password");
+                password.sendKeys("w^mwFS38<C");
                 WebElement loginButton = seleniumExample.config.getDriver().findElement(By.id("login-button"));
                 loginButton.click();
                 WebElement fullName = seleniumExample.config.getDriver().findElement(By.id("full-name"));
-                Assertions.assertEquals("Lane Edwards-Brown", fullName.getText());
+                Assertions.assertEquals("admin admin", fullName.getText());
+                seleniumExample.config.getDriver().get(seleniumExample.url2);
         }
 
         /**
@@ -97,6 +99,7 @@ public class SeleniumWithTestNGLiveTest {
          */
         @Test
         public void whenProjectIsAccessed_thenGoToAddDates() {
+                seleniumExample.config.getDriver().get(seleniumExample.url3);
                 seleniumExample.config.getDriver().get(seleniumExample.url2);
                 WebElement detailAccess = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
                 detailAccess.click();
