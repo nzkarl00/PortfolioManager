@@ -140,8 +140,24 @@ public class SeleniumWithTestNGLiveTest {
                 WebElement milestone = seleniumExample.config.getDriver().findElement(By.id("evenMilestone"));
                 milestone.click();
                 Assertions.assertEquals(dateLen.getText(), "Your title is 6 characters too long");
+                dateName.sendKeys(Keys.BACK_SPACE);
+                dateName.sendKeys(Keys.BACK_SPACE);
+                dateName.sendKeys(Keys.BACK_SPACE);
+                Assertions.assertEquals(dateLen.getText(), "Your title is 3 characters too long");
+                dateName.sendKeys("123456789");
+                Assertions.assertEquals(dateLen.getText(), "Your title is 3 characters too long");
+                dateName.sendKeys(Keys.BACK_SPACE);
+                dateName.sendKeys(Keys.BACK_SPACE);
+                dateName.sendKeys(Keys.BACK_SPACE);
+                Assertions.assertEquals(dateLen.getText(), "Characters Remaining: 0");
+                dateName.sendKeys("123456789");
+                Assertions.assertEquals(dateLen.getText(), "Characters Remaining: 0");
+                dateName.sendKeys(Keys.BACK_SPACE);
+                Assertions.assertEquals(dateLen.getText(), "Characters Remaining: 1");
+                dateName.sendKeys("123456789");
+                Assertions.assertEquals(dateLen.getText(), "Characters Remaining: 0");
                 eventType.click();
                 sprint.click();
-                Assertions.assertEquals(dateLen.getText(), "Characters Remaining: 34");
+                Assertions.assertEquals(dateLen.getText(), "Characters Remaining: 40");
         }
 }
