@@ -274,12 +274,6 @@
         deadlines.innerText = "Deadlines:"
         col3.appendChild(deadlines)
 
-        const milestones = document.createElement("div")
-        milestones.className = "sprint-description display_data"
-        milestones.id = "milestones" + sprint.id
-        milestones.innerText = "Milestones:"
-        col3.appendChild(milestones)
-
         const col4 = document.createElement("div")
         col4.className = "col-2"
         sprintDiv.appendChild(col4)
@@ -317,38 +311,6 @@
         eachDeadline.appendChild(deleteDeadline)
     }
 
-    function buildMilestone(milestone, sprintId) {
-        const mainDiv = document.getElementById("milestones" + sprintId)
-        const eachMilestone = document.createElement("form")
-        const deleteMilestone = document.createElement("button")
-        const projectId = document.createElement("input")
-        const milestoneId = document.createElement("input")
-        projectId.style = "display:none;"
-        projectId.name = "projectId"
-        projectId.id = "projectId"
-        projectId.value = [[${project.getId()}]]
-        projectId.type = "number"
-
-        milestoneId.style = "display:none;"
-        milestoneId.name = "milestoneId"
-        milestoneId.id = "milestoneId"
-        milestoneId.value = milestone.id
-        milestoneId.type = "number"
-
-        deleteMilestone.type = "submit"
-        deleteMilestone.className = "fa fa-trash each-milestone"
-
-        eachMilestone.method = "post"
-        eachMilestone.action = "delete-milestone"
-
-        eachMilestone.innerText = milestone.name
-
-        mainDiv.appendChild(eachMilestone)
-        eachMilestone.appendChild(projectId)
-        eachMilestone.appendChild(milestoneId)
-        eachMilestone.appendChild(deleteMilestone)
-    }
-
     var stompClient = null;
 
     function connect() {
@@ -371,12 +333,6 @@
                                     buildDeadline(deadline, sprint.id)
                                 }
                             })
-                            axios.get("/milestones", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
-                            .then((response) => {
-                                for (const milestone of response.data) {
-                                    buildMilestone(milestone, sprint.id)
-                                }
-                            })
                         }
                         renderCalendar(response.data)
                     })
@@ -388,17 +344,6 @@
                             deleteAllDeadlines(JSON.parse(update.body).sprintId)
                             for (const deadline of response.data) {
                                 buildDeadline(deadline, JSON.parse(update.body).sprintId)
-                            }
-                        })
-                }
-
-                if (JSON.parse(update.body).updateType == "MILESTONE") {
-                    axios.get("/milestones", {params:{"id":[[${project.getId()}]], "sprintId":JSON.parse(update.body).sprintId}})
-                        .then((response) => {
-
-                            deleteAllMilestones(JSON.parse(update.body).sprintId)
-                            for (const milestone of response.data) {
-                                buildMilestone(milestone, JSON.parse(update.body).sprintId)
                             }
                         })
                 }
@@ -530,17 +475,6 @@
         }
     }
 
-    function deleteAllMilestones(id) {
-        var e = document.getElementById("milestones" + id);
-
-        //e.firstElementChild can be used.
-        var child = e.lastElementChild;
-        while (child) {
-            e.removeChild(child);
-            child = e.lastElementChild;
-        }
-    }
-
     // initial loading, base the sprints off of thymeleaf
     // then set the calendar and the details tabs with the correct data
     let initialSprintList = [[${sprints}]];
@@ -552,13 +486,6 @@
                 for (const deadline of response.data) {
                     this.sprint = sprint
                     buildDeadline(deadline, sprint.id)
-                }
-            })
-        axios.get("/milestones", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
-            .then((response) => {
-                for (const milestone of response.data) {
-                    this.sprint = sprint
-                    buildMilestone(milestone, sprint.id)
                 }
             })
     }
