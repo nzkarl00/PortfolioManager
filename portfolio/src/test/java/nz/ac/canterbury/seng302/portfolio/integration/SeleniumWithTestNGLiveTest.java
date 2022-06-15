@@ -9,6 +9,10 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -22,11 +26,18 @@ public class SeleniumWithTestNGLiveTest {
 
         private SeleniumExample seleniumExample;
 
+        String passwordText = "";
+
         @BeforeSuite
-        public void setUp() {
+        public void setUp() throws FileNotFoundException {
                 seleniumExample = new SeleniumExample("");
                 whenPortfolioIsLoaded_thenRegisterWorks();
                 whenPortfolioIsLoaded_thenLoginWorks();
+
+                String originpath = System.getProperty("user.dir");
+                File passwordFile = new File(originpath.substring(0, originpath.length()-9) + "identityprovider/defaultAdminPassword.txt");
+                Scanner passwordReader = new Scanner(passwordFile);
+                passwordText = passwordReader.nextLine();
 
                 whenPortfolioIsLoaded_thenLoginAdmin_forTests();
                 whenProjectIsAccessed_thenGoToAddDates();
