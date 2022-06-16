@@ -34,11 +34,8 @@ public class SeleniumWithTestNGLiveTest {
                 whenPortfolioIsLoaded_thenRegisterWorks();
                 whenPortfolioIsLoaded_thenLoginWorks();
 
-                String originpath = System.getProperty("user.dir");
-                File passwordFile = new File(originpath.substring(0, originpath.length()-9) + "identityprovider/defaultAdminPassword.txt");
-                Scanner passwordReader = new Scanner(passwordFile);
-                passwordText = passwordReader.nextLine();
 
+                getPassword_ForAdmin_FromTextFile();
                 whenPortfolioIsLoaded_thenLoginAdmin_forTests();
                 whenProjectIsAccessed_thenGoToAddDates();
                 whenAddingDate_CheckTitleLen();
@@ -49,6 +46,13 @@ public class SeleniumWithTestNGLiveTest {
                 seleniumExample.closeWindow();
         }
 
+
+        public void getPassword_ForAdmin_FromTextFile() throws FileNotFoundException {
+                String originpath = System.getProperty("user.dir");
+                File passwordFile = new File(originpath.substring(0, originpath.length()-9) + "identityprovider/defaultAdminPassword.txt");
+                Scanner passwordReader = new Scanner(passwordFile);
+                passwordText = passwordReader.nextLine();
+        }
 
         /**
          * load up the page to register a new uesr lra63
