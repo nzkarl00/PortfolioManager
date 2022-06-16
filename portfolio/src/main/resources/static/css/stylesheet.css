@@ -201,6 +201,22 @@
 
 }
 
+.project_inputAlertBlue {
+
+  font-family: nexaLight !important;
+  color: #19DAFF !important;
+  font-size: 100% !important;
+
+}
+
+.project_inputAlertRed {
+
+  font-family: nexaLight !important;
+  color: #FF202E !important;
+  font-size: 100% !important;
+
+}
+
 .centered {
 
     content-align: center !important;
