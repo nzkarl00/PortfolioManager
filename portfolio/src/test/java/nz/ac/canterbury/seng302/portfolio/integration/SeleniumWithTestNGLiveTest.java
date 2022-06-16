@@ -175,7 +175,6 @@ public class SeleniumWithTestNGLiveTest {
         /**
          * enter sprint details and make the sprint from add dates
          */
-        @Test
         public void whenAddingDate_addSprint() {
                 seleniumExample.config.getDriver().get(seleniumExample.urlDates);
                 WebElement dateName = seleniumExample.config.getDriver().findElement(By.id("eventName"));
@@ -192,7 +191,6 @@ public class SeleniumWithTestNGLiveTest {
         /**
          * enter dealine details and make the dealine from add dates
          */
-        @Test
         public void whenAddingDate_addDeadline() {
                 seleniumExample.config.getDriver().get(seleniumExample.urlDates);
                 WebElement dateName = seleniumExample.config.getDriver().findElement(By.id("eventName"));
