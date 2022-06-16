@@ -191,4 +191,25 @@ public class SeleniumWithTestNGLiveTest {
                 dateEnd.sendKeys("2022-06-25");
                 submitButton.click();
         }
+
+
+        /**
+         * enter dealine details and make the dealine from add dates
+         */
+        @Test
+        public void whenAddingDate_addDeadline() {
+                seleniumExample.config.getDriver().get(seleniumExample.urlDates);
+                WebElement dateName = seleniumExample.config.getDriver().findElement(By.id("eventName"));
+                WebElement dateStart = seleniumExample.config.getDriver().findElement(By.id("eventStartDate"));
+                WebElement dateEnd = seleniumExample.config.getDriver().findElement(By.id("eventEndDate"));
+                WebElement type = seleniumExample.config.getDriver().findElement(By.id("eventType"));
+                WebElement deadline = seleniumExample.config.getDriver().findElement(By.id("eventDeadline"));
+                WebElement submitButton = seleniumExample.config.getDriver().findElement(By.id("submitButton"));
+                type.click();
+                deadline.click();
+                dateName.sendKeys("Sprint Test");
+                dateStart.sendKeys("2022-06-24");
+                dateEnd.sendKeys("18:20");
+                submitButton.click();
+        }
 }
