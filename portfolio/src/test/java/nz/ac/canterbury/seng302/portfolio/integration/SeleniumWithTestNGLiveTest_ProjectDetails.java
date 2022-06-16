@@ -93,12 +93,12 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement deadlineDesc = seleniumExample.config.getDriver().findElement(By.id("eventDescription"));
         WebElement dateSave = seleniumExample.config.getDriver().findElement(By.id("dateSave"));
         deadlineName.sendKeys("TestOne");
+        deadlineStart.click();
         deadlineStart.sendKeys("2022-06-23");
-        deadlineEnd.sendKeys("08:00:00");
+        deadlineEnd.click();
+        deadlineEnd.sendKeys("08:00");
         deadlineDesc.sendKeys("TestOne");
         dateSave.click();
-        Thread.sleep(2000);
-
     }
 
     /**
