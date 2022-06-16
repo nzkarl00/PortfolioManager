@@ -95,7 +95,6 @@ public class SeleniumWithTestNGLiveTest {
         /**
          * load up the page then login to the admin user
          */
-        @Test
         public void whenPortfolioIsLoaded_thenLoginAdmin_forTests() {
                 seleniumExample.config.getDriver().get(seleniumExample.url);
                 WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
@@ -112,7 +111,6 @@ public class SeleniumWithTestNGLiveTest {
         /**
          * access the add dates page for the project
          */
-        @Test
         public void whenProjectIsAccessed_thenGoToAddDates() {
                 seleniumExample.config.getDriver().get(seleniumExample.url3);
                 seleniumExample.config.getDriver().get(seleniumExample.url2);
@@ -127,7 +125,6 @@ public class SeleniumWithTestNGLiveTest {
          * enter title and check length, see how the alert message changes when adding/removing characters and switching
          * between different event types of different max title lengths
          */
-        @Test
         public void whenAddingDate_CheckTitleLen() {
                 seleniumExample.config.getDriver().get(seleniumExample.urlDates);
                 WebElement dateLen = seleniumExample.config.getDriver().findElement(By.id("maxLen"));
@@ -179,7 +176,6 @@ public class SeleniumWithTestNGLiveTest {
         /**
          * enter sprint details and make the sprint from add dates
          */
-        @Test
         public void whenAddingDate_addSprint() {
                 seleniumExample.config.getDriver().get(seleniumExample.urlDates);
                 WebElement dateName = seleniumExample.config.getDriver().findElement(By.id("eventName"));
@@ -196,7 +192,6 @@ public class SeleniumWithTestNGLiveTest {
         /**
          * enter dealine details and make the dealine from add dates
          */
-        @Test
         public void whenAddingDate_addDeadline() {
                 seleniumExample.config.getDriver().get(seleniumExample.urlDates);
                 WebElement dateName = seleniumExample.config.getDriver().findElement(By.id("eventName"));
