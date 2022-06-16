@@ -97,7 +97,7 @@ public class SeleniumWithTestNGLiveTest {
                 WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
                 username.sendKeys("admin");
                 WebElement password = seleniumExample.config.getDriver().findElement(By.id("password"));
-                password.sendKeys("w^mwFS38<C");
+                password.sendKeys(passwordText);
                 WebElement loginButton = seleniumExample.config.getDriver().findElement(By.id("login-button"));
                 loginButton.click();
                 WebElement fullName = seleniumExample.config.getDriver().findElement(By.id("full-name"));
