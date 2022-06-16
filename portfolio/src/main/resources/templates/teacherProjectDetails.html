@@ -104,7 +104,7 @@
                             <div class="col-lg-8 col-md-10 col-sm-12" >
                                 <form th:action="@{add-dates}" method="get">
                                     <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
-                                    <button class="add" type="submit">
+                                    <button class="add" id="addDateButton" type="submit">
                                         <i class="fa fa-plus"></i>&nbsp;
                                         Add Dates
                                     </button>

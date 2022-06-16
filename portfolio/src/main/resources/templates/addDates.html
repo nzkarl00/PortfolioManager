@@ -40,7 +40,7 @@
                     <option selected="true" disabled="disabled">Choose a date type to add</option>
                     <option value="Sprint">Sprint</option>
                     <option value="Milestone">Milestone</option>
-                    <option value="Deadline">Deadline</option>
+                    <option id="eventDeadline" value="Deadline">Deadline</option>
                     <option value="Event">Event</option>
                 </select>
                 <label class="project_subhead" id="eventNameLabel" for="eventName">Sprint Name</label> <br/>
@@ -75,7 +75,7 @@
                 <button class="cancel" type="button">
                     <a class="button_a" th:href="@{details(id=${project.getId})}">CANCEL</a>
                 </button>
-                <button class="save" type="submit">SAVE</button>
+                <button class="save" id="dateSave" type="submit">SAVE</button>
             </div>
 
 
