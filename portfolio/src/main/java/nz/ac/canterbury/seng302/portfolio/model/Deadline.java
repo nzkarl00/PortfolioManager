@@ -81,4 +81,10 @@ public class Deadline extends ProjectTimeBoundItem {
      * @return
      */
     public Integer getId() {return this.id; }
+
+    /**
+     * Get the description of the deadline
+     * @return desc
+     */
+    public String getDescription() {return this.description; }
 }

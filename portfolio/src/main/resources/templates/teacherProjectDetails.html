@@ -283,6 +283,7 @@
         const mainDiv = document.getElementById("deadlines" + sprintId)
         const eachDeadline = document.createElement("form")
         const deleteDeadline = document.createElement("button")
+        const editDeadline = document.createElement("button")
         const projectId = document.createElement("input")
         const deadlineId = document.createElement("input")
         projectId.style = "display:none;"
@@ -297,6 +298,11 @@
         deadlineId.value = deadline.id
         deadlineId.type = "number"
 
+        editDeadline.type = "submit"
+        editDeadline.className = "fa fa-edit each-deadline"
+        editDeadline.formMethod = "get"
+        editDeadline.formAction = "edit-deadline"
+
         deleteDeadline.type = "submit"
         deleteDeadline.className = "fa fa-trash each-deadline"
 
@@ -308,6 +314,7 @@
         mainDiv.appendChild(eachDeadline)
         eachDeadline.appendChild(projectId)
         eachDeadline.appendChild(deadlineId)
+        eachDeadline.appendChild(editDeadline)
         eachDeadline.appendChild(deleteDeadline)
     }
 

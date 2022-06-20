@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.Duration;
@@ -41,6 +42,8 @@ public class DetailsController {
     private AccountClientService accountClientService;
     @Autowired
     private NavController navController;
+    @Autowired
+    private DeadlineService deadlineService;
 
 
     String errorShow = "display:none;";
@@ -168,6 +171,46 @@ public class DetailsController {
         }
 
         return "redirect:details?id=" + projectId;
+    }
+
+    /**
+     * Deadline deletion put request
+     * @param principal
+     * @param projectId
+     * @param deadlineId
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("edit-deadline")
+    public String deadlineEdit(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value = "projectId") Integer projectId,
+            @RequestParam(value = "deadlineId") Integer deadlineId,
+            Model model
+    ) throws Exception {
+        Integer id = AuthStateInformer.getId(principal);
+        String role = AuthStateInformer.getRole(principal);
+        // Attributes For header
+        UserResponse userReply;
+        userReply = accountClientService.getUserById(id);
+
+        navController.updateModelForNav(principal, model, userReply, id);
+        if (role.equals("teacher") || role.equals("admin")) {
+            Deadline deadline = deadlineService.getDeadlineById(deadlineId);
+            Project project = projectService.getProjectById(projectId);
+            model.addAttribute("dateName", deadline.getName());
+            model.addAttribute("dateStart", deadline.getStartDate());
+            model.addAttribute("dateEnd", deadline.getEndDate());
+            model.addAttribute("dateDesc", deadline.getDescription());
+            model.addAttribute("roleName", "teacher");
+            model.addAttribute("deadline", deadline);
+            model.addAttribute("project", project);
+            return "editDates";
+        } else {
+            model.addAttribute("roleName", "student");
+            return "error";
+        }
     }
 
     /**

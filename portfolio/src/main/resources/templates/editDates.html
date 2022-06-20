@@ -1,0 +1,163 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head.html :: head('Edit Dates')"></head>
+<body>
+
+
+
+<!-- Navigation Bar -->
+<div th:replace="fragments/validUser.html :: navbar"></div>
+
+
+
+<!-- Body -->
+<div class="main">
+    <div class="container">
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+
+        <!-- Editing heading -->
+
+        <div class="row-1">
+
+            <div class="col-12">
+                <p class="body_title_large">Edit Dates</p>
+            </div>
+
+        </div>
+
+        <!-- Editing body -->
+
+
+        <form class="row" id="eventForm" th:action="@{edit-dates}" method="put">
+
+            <div class="col-2"></div>
+
+            <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
+                <select class="project_edit_data horizontal_field" name="eventType" id="eventType" onchange="updateForm()">
+                    <option id="eventNone" selected="true" disabled="disabled" value="Deadline">Deadline</option>
+                </select>
+                <label class="project_subhead" id="eventNameLabel" for="eventName">Date Name</label> <br/>
+                <input class="project_edit_data horizontal_field" id="eventName" type="text" maxlength="100" oninput="updateTitle()" th:name="eventName">
+                <label class="project_inputAlertBlue" id="maxLen">Characters Remaining: 100</label>
+
+                <div class="horizontal-group">
+                    <div class="horizontal-group-element" >
+                        <label class="project_subhead" id="eventStartDateLabel" for="eventStartDate">Date Start</label> <br/>
+                        <input class="project_edit_data" id="eventStartDate" type="date" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventStartDate" required>
+                    </div>
+                    <!-- https://dzone.com/articles/disable-dates-in-datepicker -->
+                    <div class="horizontal-group-element" >
+                        <label class="project_subhead" id="eventEndDateLabel" for="eventEndDate">Date End</label> <br/>
+                        <input class="project_edit_data" id="eventEndDate" type="date" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventEndDate" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="project_subhead" id="eventDescriptionLabel" for="eventDescription">Sprint Description</label> <br/>
+                    <textarea class="description-input project_edit_data horizontal_field bio" id="eventDescription" th:name="eventDescription"></textarea>
+                </div>
+
+
+                <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId()}" type="number">
+
+
+            </div>
+
+            <!-- Form Submission -->
+
+            <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
+
+                <button class="cancel" type="button">
+                    <a class="button_a" th:href="@{details(id=${project.getId})}">CANCEL</a>
+                </button>
+                <button class="save" id="submitButton" type="submit">SAVE</button>
+            </div>
+
+
+            <div class="col-2"></div>
+
+        </form>
+
+        <script type="text/javascript" th:inline="javascript">
+            /**
+             * Updates the names of labels and inputs to match what is required for the type selected by the event type picker.
+             */
+            function updateForm() {
+                let type = document.getElementById("eventType").value;
+                updateTitle();
+                document.getElementById("eventNameLabel").innerHTML =type + " Name";
+                document.getElementById("eventDescriptionLabel").innerHTML =type + " Description";
+                if (type === "Milestone") { // Disables end date selection and hides it
+
+                    document.getElementById("eventEndDate").setAttribute("type", "hidden");
+                    document.getElementById("eventEndDateLabel").innerHTML = "";
+                    document.getElementById("eventStartDateLabel").innerHTML =type + " Date";
+                } else if (type === "Deadline") { // Changes end date to represent the time instead
+                    document.getElementById("eventStartDateLabel").innerHTML =type + " Date";
+                    document.getElementById("eventEndDateLabel").innerHTML =type + " Time";
+                    document.getElementById("eventEndDate").setAttribute("type", "time");
+                } else { // All fields visible as normal
+                    document.getElementById("eventStartDateLabel").innerHTML =type + " Start Date";
+                    document.getElementById("eventEndDateLabel").innerHTML =type + " End Date";
+                    document.getElementById("eventEndDate").setAttribute("type", "date");
+                }
+            }
+            /**
+             * Updates the number of characters remaining for the title based on the current event type and title length
+             */
+            function updateTitle() {
+                let maxLen = 0;
+
+                let type = document.getElementById("eventType").value;
+                if ((type === "Sprint")  || (type === "")) {maxLen = 100;} else {maxLen = 60;}
+
+                document.getElementById("eventName").maxLength = maxLen;
+                let titleVal = (document.getElementById("eventName"));
+                let titleLen = titleVal.value.length;
+
+                if ((maxLen - titleLen) < 0) {
+                    document.getElementById("maxLen").innerHTML = "Your title is " + (Math.abs(maxLen - titleLen)).toString() + " characters too long";
+                    document.getElementById("maxLen").classList.add('project_inputAlertRed');
+                    document.getElementById("maxLen").classList.remove('project_inputAlertBlue');
+                } else {
+                    document.getElementById("maxLen").innerHTML = "Characters Remaining: " + (maxLen - titleLen).toString();
+                    document.getElementById("maxLen").classList.add('project_inputAlertBlue');
+                    document.getElementById("maxLen").classList.remove('project_inputAlertRed');
+                }
+
+            }
+        </script>
+        <br>
+
+        <div class="row">
+
+            <div class="col-2"></div>
+
+            <div class="col-lg-7 col-md-8 col-sm-12">
+
+                <button class="login_box "th:style="${errorShow}">
+                    <p class="login_error" th:text="${errorCode}"/>
+                </button>
+
+            </div>
+
+            <div class="col-2"></div>
+
+
+        </div>
+
+        <div class="row-1">
+            <br><br><br>
+        </div>
+
+    </div>
+</div>
+
+
+
+<!-- JS -->
+<script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
