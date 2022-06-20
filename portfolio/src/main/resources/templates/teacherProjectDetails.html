@@ -42,7 +42,7 @@
         <div class="row-1">
 
             <div class="col-12 ">
-                <p class="body_title_large " th:text="${project.getName}" />
+                <p class="body_title_large " id="projectFullName" th:text="${project.getName}" />
                 <p class="header_project_dates" th:text="'Start Date: ' + ${project.getStartDateString} + ' - ' + 'End Date: ' + ${project.getEndDateString}"/>
 
                 <!-- Edit project button-->
@@ -104,7 +104,7 @@
                             <div class="col-lg-8 col-md-10 col-sm-12" >
                                 <form th:action="@{add-dates}" method="get">
                                     <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
-                                    <button class="add" type="submit">
+                                    <button id="addDateButton" class="add" type="submit">
                                         <i class="fa fa-plus"></i>&nbsp;
                                         Add Dates
                                     </button>
@@ -280,13 +280,35 @@
     }
 
     function buildDeadline(deadline, sprintId) {
-    const mainDiv = document.getElementById("deadlines" + sprintId)
-        const deadlineText = document.createElement("div")
-        deadlineText.className = "fa fa-edit"
-        // deadlineText.innerHTML = deadline.name + " - " + deadline.startDate +
-        //     " <i size='10px' class='fa fa-edit' th:action='@{edit-deadline}' method='get'></i>"
-        deadlineText.href = "/edit-dates?id=" + sprint.parentProjectId + '&ids=' + deadline.Id
-        mainDiv.appendChild(deadlineText)
+        const mainDiv = document.getElementById("deadlines" + sprintId)
+        const eachDeadline = document.createElement("form")
+        const deleteDeadline = document.createElement("button")
+        const projectId = document.createElement("input")
+        const deadlineId = document.createElement("input")
+        projectId.style = "display:none;"
+        projectId.name = "projectId"
+        projectId.id = "projectId"
+        projectId.value = [[${project.getId()}]]
+        projectId.type = "number"
+
+        deadlineId.style = "display:none;"
+        deadlineId.name = "deadlineId"
+        deadlineId.id = "deadlineId"
+        deadlineId.value = deadline.id
+        deadlineId.type = "number"
+
+        deleteDeadline.type = "submit"
+        deleteDeadline.className = "fa fa-trash each-deadline"
+
+        eachDeadline.method = "post"
+        eachDeadline.action = "delete-deadline"
+
+        eachDeadline.innerText = deadline.name
+
+        mainDiv.appendChild(eachDeadline)
+        eachDeadline.appendChild(projectId)
+        eachDeadline.appendChild(deadlineId)
+        eachDeadline.appendChild(deleteDeadline)
     }
 
     var stompClient = null;
@@ -462,6 +484,7 @@
         axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
                 for (const deadline of response.data) {
+                    this.sprint = sprint
                     buildDeadline(deadline, sprint.id)
                 }
             })

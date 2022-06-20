@@ -16,7 +16,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticationServiceGrp
 public class AuthenticateServerService extends AuthenticationServiceImplBase{
 
     @Autowired
-    private Account accountService;
+    Account accountService;
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
 
 

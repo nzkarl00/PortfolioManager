@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 import java.util.List;
 
 import java.util.List;
@@ -32,28 +34,92 @@ public class GroupsServerService extends GroupsServiceImplBase {
     GroupMembershipRepository groupMembershipRepo;
 
     @Autowired
-    RolesRepository roleRepo;
-
-    @Autowired
     AccountProfileRepository repo;
 
     @Autowired
-    private FileSystemUtils fsUtils;
+    RolesRepository roleRepo;
+
+    // Constant strings to set.
+    public static String TEACHER_GROUP_NAME_LONG = "Teachers Group";
+    public static String TEACHER_GROUP_NAME_SHORT = "TG";
+    public static String MWAG_GROUP_NAME_LONG = "Members Without a Group";
+    public static String MWAG_GROUP_NAME_SHORT = "MWAG";
+    public static String STUDENT_ROLE = "1student";
+    public static String TEACHER_ROLE = "2teacher";
+    public static String ADMIN_ROLE = "3admin";
 
     /**
-     * Takes a request and adds a list of users to a given group through the Group Membership table
+     * The function that initialize all the special groups required for the application
+     * if they don't exist already. E.g. Teacher Group & Members Without A Group
+     */
+    @PostConstruct
+    private void initAllSpecialGroup() {
+        Groups teachers = initGroup(TEACHER_GROUP_NAME_LONG, TEACHER_GROUP_NAME_SHORT);
+        Groups noGroup = initGroup(MWAG_GROUP_NAME_LONG, MWAG_GROUP_NAME_SHORT);
+    }
+
+    /**
+     * Initialize the group into the Group repo by either creating a new group,
+     * or retrieving an existing one, and then returning that group.
+     * @param longName of the Group name to initialize
+     * @param shortName of the Group name to initialize
+     */
+    private Groups initGroup(String longName, String shortName) {
+        List<Groups> currentGroup = groupRepo.findAllByGroupLongName(longName);
+        Groups group;
+        if (currentGroup.isEmpty()) {
+            group = new Groups(longName, shortName);
+            groupRepo.save(group);
+        } else {
+            group = currentGroup.get(0);
+        }
+        return group;
+    }
+
+    /**
+     * A function to check if the given group is a teacher group and return the answer as a boolean.
+     * Checks by comparing the IDs.
+     * Identifying the teacher group so any updates to this group can be reflected in the teacher role too.
+     * @param groupToCheck
+     */
+    public boolean checkIsTeacherGroup(Groups groupToCheck) {
+        boolean isTeacherGroup = false;
+        Integer teacherGroupId = groupRepo.findAllByGroupShortName(TEACHER_GROUP_NAME_SHORT).get(0).getId();
+        if (groupToCheck.getId() == teacherGroupId) {
+            isTeacherGroup = true;
+        }
+
+        return isTeacherGroup;
+    }
+
+    /**
+     * Takes a request and adds a list of users to a given group through the Group Membership table.
+     * Adding a user to a group involves to remove it from the Members Without A Group.
+     * Adding a user to a teacher group involves updating the role for that user to a teacher too.
      * @param request the request, containing the ids of the group and list of user ids
      * @param responseObserver sends a response back to the client
      */
+    @Transactional
     @Override
     public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
 
-        Groups currentGroup = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
+        Groups groupToAddTo = groupRepo.findByGroupId(request.getGroupId());
+        boolean isTeacherGroup = checkIsTeacherGroup(groupToAddTo);
 
         for (int userId : request.getUserIdsList()) {
             AccountProfile user = repo.findById(userId);
-            GroupMembership newGroupUser = new GroupMembership(user, currentGroup);
-            groupMembershipRepo.save(newGroupUser);
+
+            // if a group membership contains MWAG, remove it, see @PostConstruct
+            List<Groups> noMembers = groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT);
+            groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers.get(0), user);
+
+            // if the user is being added to the teacher group, then update this change for the user role too.
+            if (isTeacherGroup) {
+                roleRepo.save(new Role(user, TEACHER_ROLE));
+            }
+
+            GroupMembership groupMemberToAdd = new GroupMembership(user, groupToAddTo);
+            groupMembershipRepo.save(groupMemberToAdd);
         }
 
 
@@ -77,7 +143,6 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
-
     }
 
 
@@ -86,17 +151,39 @@ public class GroupsServerService extends GroupsServiceImplBase {
      * @param request the request, containing the ids of the group and list of user ids
      * @param responseObserver sends a response back to the client
      */
+    @Transactional
     @Override
     public void removeGroupMembers(RemoveGroupMembersRequest request, StreamObserver<RemoveGroupMembersResponse> responseObserver) {
 
-        Groups parentGroup = groupRepo.findByGroupId(Long.valueOf(request.getGroupId()));
+        Groups groupToRemoveFrom = groupRepo.findByGroupId(request.getGroupId());
+        boolean isTeacherGroup = checkIsTeacherGroup(groupToRemoveFrom);
 
-        List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroups(parentGroup);
-        for (GroupMembership userGroup : groupMemberships) {
-            AccountProfile userAccount = userGroup.getRegisteredGroupUser();
-            if ((request.getUserIdsList()).contains(userAccount.getId())) {
-                Long membershipId = userGroup.getGroupMembershipId();
-                groupMembershipRepo.deleteById(membershipId);
+        List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroups(groupToRemoveFrom);
+
+        for (GroupMembership groupMember : groupMemberships) {
+            AccountProfile user = groupMember.getRegisteredGroupUser();
+
+            // If this user from the groupToRemoveFrom is the actual user requested for removal.
+            if ((request.getUserIdsList()).contains(user.getId())) {
+                Long membershipIdToRemove = groupMember.getGroupMembershipId();
+                groupMembershipRepo.deleteById(membershipIdToRemove);
+
+                //if the user has no groups left, add the to the MWAG
+                if (user.getGroups().isEmpty()) {
+                    List<Groups> noMembership = groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT);
+                    groupMembershipRepo.save(new GroupMembership(noMembership.get(0), user));
+                }
+
+                // if the groupToRemoveFrom is the teacher group, remove their teacher role
+                if (isTeacherGroup) {
+                    List<Role> rolesOfUser = roleRepo.findAllByRegisteredUser(user);
+                    for (Role role: rolesOfUser) {
+                        if (role.getRole().equals(TEACHER_ROLE)) {
+                            Long roleIdToRemove = role.getUserRoleId();
+                            roleRepo.deleteById(roleIdToRemove);
+                        }
+                    }
+                }
             }
         }
 
@@ -133,7 +220,9 @@ public class GroupsServerService extends GroupsServiceImplBase {
     public void createGroup(CreateGroupRequest request, StreamObserver<CreateGroupResponse> responseObserver) {
         CreateGroupResponse.Builder reply = CreateGroupResponse.newBuilder();
 
-        if (groupRepo.findAllByGroupShortName(request.getShortName()).isEmpty() && groupRepo.findAllByGroupLongName(request.getLongName()).isEmpty() && groupRepo.findAllByGroupLongName(request.getShortName()).isEmpty())  {
+        if (groupRepo.findAllByGroupShortName(request.getShortName()).isEmpty() &&
+                groupRepo.findAllByGroupLongName(request.getLongName()).isEmpty() &&
+                groupRepo.findAllByGroupLongName(request.getShortName()).isEmpty())  {
             Groups newGroup = new Groups(request.getLongName(), request.getShortName());
             groupRepo.save(newGroup);
             reply
@@ -160,6 +249,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
     public void deleteGroup(DeleteGroupRequest request, StreamObserver<DeleteGroupResponse> responseObserver) {
         groupRepo.deleteById((long) request.getGroupId());
         DeleteGroupResponse.Builder reply = DeleteGroupResponse.newBuilder();
+
         if (!(groupRepo.findAllByGroupId(request.getGroupId()).isEmpty())){
             reply
                     .setIsSuccess(true)
@@ -172,6 +262,33 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
+    }
+
+    /**
+     * Modifies a given group
+     * @param request contains the details of the groups we are changing and what to change it to
+     * @param observer where to send the groups to
+     */
+    @Override
+    public void modifyGroupDetails(ModifyGroupDetailsRequest request, StreamObserver<ModifyGroupDetailsResponse> observer) {
+        ModifyGroupDetailsResponse.Builder reply = ModifyGroupDetailsResponse.newBuilder();
+        Groups targetGroup = groupRepo.findByGroupId(request.getGroupId());
+        if (!(targetGroup == null)) {
+            if (!request.getShortName().isEmpty()) { targetGroup.setGroupShortName(request.getShortName()); }
+            if (!request.getLongName().isEmpty()) { targetGroup.setGroupLongName(request.getLongName()); }
+            groupRepo.save(targetGroup);
+            reply.setIsSuccess(true)
+                    .setMessage("Edit successful");
+
+            observer.onNext(reply.build());
+            observer.onCompleted();
+        } else {
+            reply.setIsSuccess(false)
+                    .setMessage("Edit failed, Group does not exist");
+
+            observer.onNext(reply.build());
+            observer.onCompleted();
+        }
     }
 
     /**
@@ -197,6 +314,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
         List<Groups> groups = groupRepo.findAll(PageRequest.of(request.getOffset(), request.getLimit(), Sort.by(direction, "groupLongName")));
 
         PaginatedGroupsResponse.Builder reply = PaginatedGroupsResponse.newBuilder();
+        reply.setResultSetSize(groups.size());
 
         // build the group responses for the paginated response
         for (Groups group: groups) {
@@ -208,6 +326,21 @@ public class GroupsServerService extends GroupsServiceImplBase {
         observer.onCompleted();
     }
 
+
+    @Override
+    public void getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> observer) {
+        Groups targetGroup = groupRepo.findByGroupId(request.getGroupId());
+        GroupDetailsResponse groupInfo;
+        if (!(targetGroup == null)) {
+            groupInfo = buildGroup(targetGroup);
+        } else {
+            groupInfo = GroupDetailsResponse.newBuilder().setGroupId(-1).setLongName("").setLongName("").build();
+        }
+        observer.onNext(groupInfo);
+        observer.onCompleted();
+
+    }
+
     /**
      * build a group response to send to portfolio
      * @param group the group to build the response from
@@ -216,9 +349,9 @@ public class GroupsServerService extends GroupsServiceImplBase {
     public GroupDetailsResponse buildGroup(Groups group) {
         // set the group details
         GroupDetailsResponse.Builder response = GroupDetailsResponse.newBuilder()
-            .setGroupId(group.getId())
-            .setLongName(group.getGroupLongName())
-            .setShortName(group.getGroupShortName());
+                .setGroupId(group.getId())
+                .setLongName(group.getGroupLongName())
+                .setShortName(group.getGroupShortName());
 
         // get all the memberships, from that build the details response members
         List<GroupMembership> members = groupMembershipRepo.findAllByRegisteredGroups(group);

@@ -1,7 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.authentication.AuthenticationClientInterceptor;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
@@ -24,13 +22,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.servlet.HandlerInterceptor;
 
+import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.testUserStudent;
+import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateStudent;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = EditPasswordController.class)
@@ -48,28 +46,6 @@ public class EditPasswordTest {
 
     @MockBean
     NavController navController;
-
-    public AuthState validAuthState = AuthState.newBuilder()
-            .setIsAuthenticated(true)
-            .setNameClaimType("name")
-            .setRoleClaimType("role")
-            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
-            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-            .setAuthenticationType("AuthenticationTypes.Federation")
-            .setName("validtesttoken")
-            .build();
-
-    private UserResponse testUser = UserResponse.newBuilder()
-        .setBio("testbio")
-        .setCreated(Timestamp.newBuilder().setSeconds(10))
-        .setEmail("test@email")
-        .setFirstName("testfirstname")
-        .setLastName("testlastname")
-        .setMiddleName("testmiddlename")
-        .setNickname("testnickname")
-        .setPersonalPronouns("test/test")
-        .addRoles(UserRole.STUDENT)
-        .build();
 
     private ChangePasswordResponse changePasswordResponse = ChangePasswordResponse.newBuilder()
         .setIsSuccess(true)
@@ -104,13 +80,13 @@ public class EditPasswordTest {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(mockedSecurityContext.getAuthentication())
-                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
-        when(accountClientService.getUserById(1)).thenReturn(testUser);
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateStudent)).thenReturn(1);
+        when(accountClientService.getUserById(1)).thenReturn(testUserStudent);
 
         mockMvc.perform(get("/edit-password"))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
@@ -126,12 +102,12 @@ public class EditPasswordTest {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(mockedSecurityContext.getAuthentication())
-            .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+            .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        utilities.when(() -> AuthStateInformer.getId(validAuthState)).thenReturn(1);
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateStudent)).thenReturn(1);
         when(accountClientService.editPassword(1, currentPassword, newPassword)).thenReturn(changePasswordResponse);
 
         mockMvc.perform(post("/edit-password")

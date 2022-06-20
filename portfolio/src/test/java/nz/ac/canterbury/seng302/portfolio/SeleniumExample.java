@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio;
 
+import nz.ac.canterbury.seng302.portfolio.integration.SeleniumConfig;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;

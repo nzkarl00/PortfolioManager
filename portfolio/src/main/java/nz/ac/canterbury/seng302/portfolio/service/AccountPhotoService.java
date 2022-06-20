@@ -22,7 +22,7 @@ import java.util.List;
 public class AccountPhotoService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     @GrpcClient("identity-provider-grpc-server")
-    private UserAccountServiceGrpc.UserAccountServiceStub accountStub;
+    UserAccountServiceGrpc.UserAccountServiceStub accountStub;
 
     public ProfilePhotoUploadMetadata createPhotoMetaData(int id, String fileType) {
         return ProfilePhotoUploadMetadata.newBuilder()
