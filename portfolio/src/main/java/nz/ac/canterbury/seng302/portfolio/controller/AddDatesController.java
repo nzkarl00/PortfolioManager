@@ -42,6 +42,7 @@ public class AddDatesController {
 
     String errorShow = "display:none;";
     String errorCode = "";
+    Integer nameLen = 0;
 
     /**
      * Gets the page for adding dates to a project and passes date boundaries to the model.

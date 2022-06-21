@@ -38,8 +38,8 @@
       <!-- Project Section -->
       <div class="col-lg-8 col-md-10 col-sm-12 portion_body" >
 
-        <a class="project_a" th:href="@{details(id=${project.getId})}" >
-          <h3 class="project_subhead" th:text="${project.getName}"/>
+        <a class="project_a" id="projectRedirect" th:href="@{details(id=${project.getId})}" >
+          <h3 class="project_subhead" id="projectName" th:text="${project.getName}"/>
         </a>
         <br>
         <div class="profile_data">

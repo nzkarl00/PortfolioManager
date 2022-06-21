@@ -201,6 +201,22 @@
 
 }
 
+.project_inputAlertBlue {
+
+  font-family: nexaLight !important;
+  color: #19DAFF !important;
+  font-size: 100% !important;
+
+}
+
+.project_inputAlertRed {
+
+  font-family: nexaLight !important;
+  color: #FF202E !important;
+  font-size: 100% !important;
+
+}
+
 .centered {
 
     content-align: center !important;
@@ -669,17 +685,6 @@
 }
 
 .each-deadline {
-    border: none;
-    padding: 2px 10px;
-    text-decoration: none !important;
-    background: #FF202E  !important;
-    margin-left: 10px;
-    margin-top: 10px;
-    border-radius: 10px;
-    color: white;
-}
-
-.each-milestone {
     border: none;
     padding: 2px 10px;
     text-decoration: none !important;
