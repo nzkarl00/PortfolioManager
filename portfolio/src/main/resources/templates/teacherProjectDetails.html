@@ -42,8 +42,8 @@
         <div class="row-1">
 
             <div class="col-12 ">
-                <p class="body_title_large " th:text="${project.getName}" />
-                <p class="header_project_dates" th:text="'Start Date: ' + ${project.getStartDateString} + ' - ' + 'End Date: ' + ${project.getEndDateString}"/>
+                <p class="body_title_large " id="projectTitle" th:text="${project.getName}" />
+                <p class="header_project_dates" id="projectDate" th:text="'Start Date: ' + ${project.getStartDateString} + ' - ' + 'End Date: ' + ${project.getEndDateString}"/>
 
                 <!-- Edit project button-->
                 <div class="row">
@@ -119,7 +119,6 @@
 
                     <div id="sprints">
                         <!-- where to insert all the sprint details in the js method buildSprint-->
-                        <!-- where to insert all the sprint details in the js method buildSpdetarint-->
                     </div>
 
                     <div class="row">
@@ -254,16 +253,19 @@
         sprintDiv.appendChild(col3)
 
         const name = document.createElement("div")
+        name.id = "sprintName"
         name.className = "sprint-title project_subhead "
         name.innerText = sprint.name
         col3.appendChild(name)
 
         const date = document.createElement("div")
+        date.id = "sprintDate"
         date.className = "sprint-date display_data"
         date.innerText = sprint.startDateString + "-" + sprint.endDateString
         col3.appendChild(date)
 
         const description = document.createElement("div")
+        description.id = "sprintDesc"
         description.className = "sprint-description display_data"
         description.innerText = "Description: " + sprint.description
         col3.appendChild(description)
@@ -304,6 +306,7 @@
         deadlineId.type = "number"
 
         deleteDeadline.type = "submit"
+        deleteDeadline.id = "deleteButton"
         deleteDeadline.className = "fa fa-trash each-deadline"
 
         eachDeadline.method = "post"
@@ -336,6 +339,7 @@
         milestoneId.type = "number"
 
         deleteMilestone.type = "submit"
+        deleteMilestone.id = "deleteButton"
         deleteMilestone.className = "fa fa-trash each-milestone"
 
         eachMilestone.method = "post"
