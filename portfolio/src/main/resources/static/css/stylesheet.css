@@ -694,3 +694,31 @@
     border-radius: 10px;
     color: white;
 }
+
+.name{
+    float:left;
+    margin:100px;
+    border:1px solid black;
+}
+
+.tooltipVisible{
+    font-size: 100% !important;
+    position: absolute;
+    border-radius: 35px;
+    left: 50%;
+    width: fit-content;
+    padding: 2% !important;
+    background-color: #D9F9FF;
+    color: #000;
+    padding: 8px 0;
+    display: inline;
+}
+
+.tooltipInVisible{
+    display: none;
+    font-size: 0% !important;
+}
+
+.posAbsolute{
+    positive: relative;
+}

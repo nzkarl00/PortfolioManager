@@ -285,6 +285,7 @@
         const deleteDeadline = document.createElement("button")
         const projectId = document.createElement("input")
         const deadlineId = document.createElement("input")
+        const deadlineHover = document.createElement("span")
         projectId.style = "display:none;"
         projectId.name = "projectId"
         projectId.id = "projectId"
@@ -304,12 +305,31 @@
         eachDeadline.action = "delete-deadline"
 
         eachDeadline.innerText = deadline.name
+        eachDeadline.className = "posAbsolute"
+        eachDeadline.addEventListener("mouseover",function(){
+            var element = document.getElementById("displayTextDeadline"+deadline.id);
+            element.classList.remove("tooltipInVisible");
+            element.style.border = "5px solid " + colors[sprintId % colors.length];
+            element.style.zIndex = "999";
+            element.classList.add("tooltipVisible")
+        });
+        eachDeadline.addEventListener("mouseout",function(){
+            var element = document.getElementById("displayTextDeadline"+deadline.id);
+            element.classList.remove("tooltipVisible");
+            element.classList.add("tooltipInVisible")
+        });
+
+        deadlineHover.id = "displayTextDeadline"+deadline.id
+        deadlineHover.classList.add("tooltipInVisible")
+        deadlineHover.innerText = deadline.name + "\n" + "Due: " + deadline.startDate + "\n" + deadline.description
 
         mainDiv.appendChild(eachDeadline)
         eachDeadline.appendChild(projectId)
         eachDeadline.appendChild(deadlineId)
         eachDeadline.appendChild(deleteDeadline)
+        eachDeadline.appendChild(deadlineHover)
     }
+
 
     var stompClient = null;
 
