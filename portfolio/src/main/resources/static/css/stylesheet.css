@@ -722,3 +722,8 @@
 .posAbsolute{
     positive: relative;
 }
+
+.tooltip-inner {
+    white-space: pre-line;
+    width: fit-content;
+}

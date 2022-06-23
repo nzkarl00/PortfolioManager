@@ -285,7 +285,6 @@
         const deleteDeadline = document.createElement("button")
         const projectId = document.createElement("input")
         const deadlineId = document.createElement("input")
-        const deadlineHover = document.createElement("span")
         projectId.style = "display:none;"
         projectId.name = "projectId"
         projectId.id = "projectId"
@@ -303,31 +302,28 @@
 
         eachDeadline.method = "post"
         eachDeadline.action = "delete-deadline"
-
         eachDeadline.innerText = deadline.name
         eachDeadline.className = "posAbsolute"
-        eachDeadline.addEventListener("mouseover",function(){
-            var element = document.getElementById("displayTextDeadline"+deadline.id);
-            element.classList.remove("tooltipInVisible");
-            element.style.border = "5px solid " + colors[sprintId % colors.length];
-            element.style.zIndex = "999";
-            element.classList.add("tooltipVisible")
-        });
-        eachDeadline.addEventListener("mouseout",function(){
-            var element = document.getElementById("displayTextDeadline"+deadline.id);
-            element.classList.remove("tooltipVisible");
-            element.classList.add("tooltipInVisible")
-        });
 
-        deadlineHover.id = "displayTextDeadline"+deadline.id
-        deadlineHover.classList.add("tooltipInVisible")
-        deadlineHover.innerText = deadline.name + "\n" + "Due: " + deadline.startDate + "\n" + deadline.description
+        var deadlineTooltip;
+        if (deadline.description !== 'undefined') {
+            deadlineTooltip = deadline.name + " &#10;" + "Due: " + deadline.startDate + " &#10;" + deadline.description
+        } else {
+            deadlineTooltip = deadline.name + " &#10;" + "Due: " + deadline.startDate + " &#10;" + deadline.description
+        }
+
+        $(eachDeadline).tooltip({
+                    title: deadline.name + " &#10;" + "Due: " + deadline.startDate + " &#10;" + deadline.description,
+                    placement: "top",
+                    trigger: "hover",
+                    container: "body",
+                    html: true
+                });
 
         mainDiv.appendChild(eachDeadline)
         eachDeadline.appendChild(projectId)
         eachDeadline.appendChild(deadlineId)
         eachDeadline.appendChild(deleteDeadline)
-        eachDeadline.appendChild(deadlineHover)
     }
 
 
@@ -410,6 +406,7 @@
             sprintEvents.push( {
                 id: sprintList[sprintIndex].id,
                 title: sprintList[sprintIndex].label,
+                description: sprintList[sprintIndex].description,
                 start: sprintList[sprintIndex].startDate,
                 allDay: true,  //Can't resize from calendar view without this parameter
                 end: sprintEndDate,
@@ -429,6 +426,21 @@
                 info.event.setProp("durationEditable", true);
                 info.event.setProp("borderColor", 'black');
                 selectedEvent = info.event;
+            },
+            eventMouseEnter: function (info) {
+                var sprintTooltip;
+                if (info.event.extendedProps.description !== 'undefined') {
+                    sprintTooltip = info.event.title + " &#10;" + info.event.start.toLocaleDateString('en-GB') + " to " + info.event.end.toLocaleDateString('en-GB') + " &#10;" + info.event.extendedProps.description
+                } else {
+                    sprintTooltip = info.event.title + " &#10;" + info.event.start.toLocaleDateString('en-GB') + " to " + info.event.end.toLocaleDateString('en-GB')
+                }
+                $(info.el).tooltip({
+                    title: sprintTooltip,
+                    placement: "top",
+                    trigger: "hover",
+                    container: "body",
+                    html: true
+                });
             },
             initialView: 'dayGridMonth',
 
