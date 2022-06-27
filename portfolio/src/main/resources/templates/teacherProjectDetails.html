@@ -305,19 +305,21 @@
         eachDeadline.innerText = deadline.name
         eachDeadline.className = "posAbsolute"
 
+        const deadlineDate = String(deadline.startDate).substring(0,10);
+        const deadlineTime = String(deadline.startDate).substring(11);
         var deadlineTooltip;
         if (deadline.description !== 'undefined') {
-            deadlineTooltip = deadline.name + " &#10;" + "Due: " + deadline.startDate + " &#10;" + deadline.description
+            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + '</p> <p class="tooltip_body">' + deadline.description + "</p>"
         } else {
-            deadlineTooltip = deadline.name + " &#10;" + "Due: " + deadline.startDate + " &#10;" + deadline.description
+            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + '</p>'
         }
 
         $(eachDeadline).tooltip({
-                    title: deadline.name + " &#10;" + "Due: " + deadline.startDate + " &#10;" + deadline.description,
-                    placement: "top",
+                    title: deadlineTooltip,
+                    placement: "right",
                     trigger: "hover",
                     container: "body",
-                    html: true
+                    html: true,
                 });
 
         mainDiv.appendChild(eachDeadline)
@@ -428,11 +430,13 @@
                 selectedEvent = info.event;
             },
             eventMouseEnter: function (info) {
+                const startDate = String(info.event.start.toLocaleDateString('en-GB'));
+                const endDate = String(info.event.end.toLocaleDateString('en-GB'));
                 var sprintTooltip;
                 if (info.event.extendedProps.description !== 'undefined') {
-                    sprintTooltip = info.event.title + " &#10;" + info.event.start.toLocaleDateString('en-GB') + " to " + info.event.end.toLocaleDateString('en-GB') + " &#10;" + info.event.extendedProps.description
+                    sprintTooltip = '<p class="tooltip_title">' + info.event.title + "</p>" + '<p class="tooltip_body"> Starts:' + startDate + '</p><p class="tooltip_body"> Ends:' + endDate + '</p><p class="tooltip_body">' + info.event.extendedProps.description + "</p>"
                 } else {
-                    sprintTooltip = info.event.title + " &#10;" + info.event.start.toLocaleDateString('en-GB') + " to " + info.event.end.toLocaleDateString('en-GB')
+                    sprintTooltip = '<p class="tooltip_title">' + info.event.title + "</p>" + '<p class="tooltip_body"> Starts:' + startDate + '</p><p class="tooltip_body"> Ends:' + endDate + '</p>'
                 }
                 $(info.el).tooltip({
                     title: sprintTooltip,

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 public abstract class ProjectTimeBoundItem {
     public static final int MAX_NAME_LENGTH = 60;
-    public static final int MAX_DESCRIPTION_LENGTH = 60;
+    public static final int MAX_DESCRIPTION_LENGTH = 240;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
