@@ -115,7 +115,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             Scanner firstNamesReader = new Scanner(firstNames);
 
             File lastNames = new File(System.getProperty("user.dir") + "/src/main/resources/buildUsers/lastNames.txt");
-            Scanner lastNamesReader = new Scanner(lastNames);
+            Scanner lastNamesReader = new Scanner(firstNames);
 
             // loop through the names and build the users
             while (firstNamesReader.hasNextLine()) {
