@@ -33,8 +33,8 @@ class EventTest {
     @Test
     public void validateProperties_longDesc_throwsError() {
         String deadlineName = "A".repeat(5);
-        String deadlineDescription = "A".repeat(61);
-        String expectedMessage = "Description length must not exceed 60 characters";
+        String deadlineDescription = "A".repeat(241);
+        String expectedMessage = "Description length must not exceed 240 characters";
         Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
             event.validateProperties(deadlineName, deadlineDescription);
         });

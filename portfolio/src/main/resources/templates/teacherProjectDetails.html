@@ -394,6 +394,8 @@
         endDate.setDate(endDate.getDate() + 1);
         let selectedEvent;
 
+
+
         let sprintEvents = [];
 
         // Colors for the sprints
@@ -417,6 +419,8 @@
                 color: colors[sprintList[sprintIndex].id % colors.length],
                 borderColor: 'white'
             });
+
+
         }
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -445,6 +449,9 @@
                     container: "body",
                     html: true
                 });
+            },
+            eventDidMount: function(info) {
+                console.log(info.event.title)
             },
             initialView: 'dayGridMonth',
 
