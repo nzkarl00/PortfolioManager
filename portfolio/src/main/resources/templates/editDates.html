@@ -34,29 +34,26 @@
         <form class="row" id="eventForm" th:action="@{edit-dates}" method="put">
 
             <div class="col-2"></div>
-
+            <input type="hidden" id="dateType" th:value="${date.getType()}" />
             <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
-                <select class="project_edit_data horizontal_field" name="eventType" id="eventType" onchange="updateForm()">
-                    <option id="eventNone" selected="true" disabled="disabled" value="Deadline">Deadline</option>
-                </select>
                 <label class="project_subhead" id="eventNameLabel" for="eventName">Date Name</label> <br/>
-                <input class="project_edit_data horizontal_field" id="eventName" type="text" maxlength="100" oninput="updateTitle()" th:name="eventName">
+                <input class="project_edit_data horizontal_field" id="eventName" type="text" maxlength="100" th:value="*{date.getName()}" oninput="updateTitle()" th:name="eventName">
                 <label class="project_inputAlertBlue" id="maxLen">Characters Remaining: 100</label>
 
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" id="eventStartDateLabel" for="eventStartDate">Date Start</label> <br/>
-                        <input class="project_edit_data" id="eventStartDate" type="date" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventStartDate" required>
+                        <input class="project_edit_data" id="eventStartDate" type="date" th:value="*{date.getStartDate()}" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventStartDate" required>
                     </div>
                     <!-- https://dzone.com/articles/disable-dates-in-datepicker -->
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" id="eventEndDateLabel" for="eventEndDate">Date End</label> <br/>
-                        <input class="project_edit_data" id="eventEndDate" type="date" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventEndDate" required>
+                        <input class="project_edit_data" id="eventEndDate" type="date" th:value="*{date.getEndDate()}" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventEndDate" required>
                     </div>
                 </div>
                 <div>
                     <label class="project_subhead" id="eventDescriptionLabel" for="eventDescription">Sprint Description</label> <br/>
-                    <textarea class="description-input project_edit_data horizontal_field bio" id="eventDescription" th:name="eventDescription"></textarea>
+                    <textarea class="description-input project_edit_data horizontal_field bio" th:value="*{date.getDescription()}" id="eventDescription" th:name="eventDescription"></textarea>
                 </div>
 
 
@@ -85,16 +82,17 @@
              * Updates the names of labels and inputs to match what is required for the type selected by the event type picker.
              */
             function updateForm() {
-                let type = document.getElementById("eventType").value;
+                let type = document.getElementById("dateType").value;
+                console.log(type);
                 updateTitle();
                 document.getElementById("eventNameLabel").innerHTML =type + " Name";
                 document.getElementById("eventDescriptionLabel").innerHTML =type + " Description";
                 if (type === "Milestone") { // Disables end date selection and hides it
-
                     document.getElementById("eventEndDate").setAttribute("type", "hidden");
                     document.getElementById("eventEndDateLabel").innerHTML = "";
                     document.getElementById("eventStartDateLabel").innerHTML =type + " Date";
                 } else if (type === "Deadline") { // Changes end date to represent the time instead
+                    console.log(type);
                     document.getElementById("eventStartDateLabel").innerHTML =type + " Date";
                     document.getElementById("eventEndDateLabel").innerHTML =type + " Time";
                     document.getElementById("eventEndDate").setAttribute("type", "time");
@@ -110,7 +108,7 @@
             function updateTitle() {
                 let maxLen = 0;
 
-                let type = document.getElementById("eventType").value;
+                let type = document.getElementById("dateType").value;
                 if ((type === "Sprint")  || (type === "")) {maxLen = 100;} else {maxLen = 60;}
 
                 document.getElementById("eventName").maxLength = maxLen;
@@ -128,6 +126,10 @@
                 }
 
             }
+
+            document.addEventListener("DOMContentLoaded", function() {
+                updateForm();
+            });
         </script>
         <br>
 

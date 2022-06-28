@@ -139,4 +139,10 @@ public abstract class ProjectTimeBoundItem {
      * @return
      */
     abstract LocalDateTime getEndDate();
+
+    /**
+     * Gets the type of date
+     * @return
+     */
+    abstract String getType();
 }

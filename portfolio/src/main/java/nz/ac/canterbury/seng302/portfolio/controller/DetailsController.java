@@ -204,7 +204,7 @@ public class DetailsController {
             model.addAttribute("dateEnd", deadline.getEndDate());
             model.addAttribute("dateDesc", deadline.getDescription());
             model.addAttribute("roleName", "teacher");
-            model.addAttribute("deadline", deadline);
+            model.addAttribute("date", deadline);
             model.addAttribute("project", project);
             return "editDates";
         } else {
