@@ -217,7 +217,7 @@ public class DetailsController {
         }
     }
     /**
-     * Send an update deadline message through websockets to all the users on the same project details page
+     * Send an update milestone message through websockets to all the users on the same project details page
      */
     public void sendMilestoneCalendarChange(Project project) {
         List<Sprint> sprints = repository.findByParentProjectId(project.getId());
@@ -338,7 +338,8 @@ public class DetailsController {
         List<Milestone> sendingMilestones = new ArrayList<>();
         for (Milestone milestone : milestones) {
             LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
-            if (milestone.getStartDate().isAfter(startDate)) {
+            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
+            if ((milestone.getStartDate().isAfter(startDate)) && (milestone.getStartDate().isBefore(endDate))) {
                 sendingMilestones.add(milestone);
             }
         }
