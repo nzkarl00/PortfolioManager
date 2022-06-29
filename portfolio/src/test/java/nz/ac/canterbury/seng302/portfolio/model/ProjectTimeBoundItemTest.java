@@ -27,8 +27,8 @@ public class ProjectTimeBoundItemTest {
     @Test
     public void validateProperties_descriptionTooLong_shouldThrowError() {
         String itemName = "A".repeat(5);
-        String itemDescription = "A".repeat(61);
-        String expectedMessage = "Description length must not exceed 60 characters";
+        String itemDescription = "A".repeat(241);
+        String expectedMessage = "Description length must not exceed 240 characters";
         Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
             ProjectTimeBoundItem.validateProperties(itemName, itemDescription);
         });

@@ -87,4 +87,11 @@ public class Milestone extends ProjectTimeBoundItem {
     public Integer getId() {
         return this.id;
     }
+
+
+    /**
+     * Get the description of the deadline
+     * @return
+     */
+    public String getDescription() {return this.description; }
 }

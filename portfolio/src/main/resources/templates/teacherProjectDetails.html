@@ -362,8 +362,24 @@
 
         eachMilestone.method = "post"
         eachMilestone.action = "delete-milestone"
-
         eachMilestone.innerText = milestone.name
+        eachMilestone.className = "posAbsolute"
+
+        const milestoneDate = String(milestone.startDate).substring(0,10);
+        var milestoneToolTip;
+        if (milestone.description !== undefined) {
+            milestoneToolTip = '<p class="tooltip_title">' + milestone.name.substring(0,25) + "</p>" + '<p class="tooltip_body">By: ' + milestoneDate + '</p> <p class="tooltip_body">' + milestone.description + "</p>"
+        } else {
+            milestoneToolTip = '<p class="tooltip_title">' + milestone.name.substring(0,25) + "</p>" + '<p class="tooltip_body">By: ' + milestoneDate + '</p>'
+        }
+
+        $(eachMilestone).tooltip({
+                    title: milestoneToolTip,
+                    placement: "right",
+                    trigger: "hover",
+                    container: "body",
+                    html: true,
+                });
 
         mainDiv.appendChild(eachMilestone)
         eachMilestone.appendChild(projectId)
