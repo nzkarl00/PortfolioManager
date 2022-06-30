@@ -205,7 +205,7 @@ public class DetailsController {
      * Deadline deletion put request
      * @param principal
      * @param projectId
-     * @param deadlineId
+     * @param dateId
      * @param model
      * @return
      * @throws Exception
@@ -214,7 +214,7 @@ public class DetailsController {
     public String deadlineEdit(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "projectId") Integer projectId,
-            @RequestParam(value = "deadlineId") Integer deadlineId,
+            @RequestParam(value = "dateId") Integer dateId,
             Model model
     ) throws Exception {
         Integer id = AuthStateInformer.getId(principal);
@@ -224,7 +224,7 @@ public class DetailsController {
         userReply = accountClientService.getUserById(id);
         navController.updateModelForNav(principal, model, userReply, id);
         if (role.equals("teacher") || role.equals("admin")) {
-            Deadline deadline = deadlineService.getDeadlineById(deadlineId);
+            Deadline deadline = deadlineService.getDeadlineById(dateId);
             Project project = projectService.getProjectById(projectId);
             model.addAttribute("dateName", deadline.getName());
             model.addAttribute("dateStart", deadline.getStartDate());

@@ -43,7 +43,7 @@
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" id="eventStartDateLabel" for="eventStartDate">Date Start</label> <br/>
-                        <input class="project_edit_data" id="eventStartDate" type="date" th:value="*{date.getStartDate()}" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventStartDate" required>
+                        <input class="project_edit_data" id="eventStartDate" type="date" th:value="*{date.getHTMLStartDate()}" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventStartDate" required>
                     </div>
                     <!-- https://dzone.com/articles/disable-dates-in-datepicker -->
                     <div class="horizontal-group-element" >
@@ -53,7 +53,7 @@
                 </div>
                 <div>
                     <label class="project_subhead" id="eventDescriptionLabel" for="eventDescription">Sprint Description</label> <br/>
-                    <textarea class="description-input project_edit_data horizontal_field bio" th:value="*{date.getDescription()}" id="eventDescription" th:name="eventDescription"></textarea>
+                    <textarea class="description-input project_edit_data horizontal_field bio" th:value="*{date.getDescription() + date.getStartDate() + date.getEndDate()}" id="eventDescription" th:name="eventDescription"></textarea>
                 </div>
 
 
@@ -96,6 +96,7 @@
                     document.getElementById("eventStartDateLabel").innerHTML =type + " Date";
                     document.getElementById("eventEndDateLabel").innerHTML =type + " Time";
                     document.getElementById("eventEndDate").setAttribute("type", "time");
+                    document.getElementById("eventEndDate").setAttribute("class", "project_edit_data bootstrap-timepicker")
                 } else { // All fields visible as normal
                     document.getElementById("eventStartDateLabel").innerHTML =type + " Start Date";
                     document.getElementById("eventEndDateLabel").innerHTML =type + " End Date";
