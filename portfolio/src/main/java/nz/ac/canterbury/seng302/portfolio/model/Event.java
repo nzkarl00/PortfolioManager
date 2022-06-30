@@ -67,6 +67,14 @@ public class Event extends ProjectTimeBoundItem {
         return this.endDate;
     }
 
+    @Override
+    /**
+     * Gets the type of date
+     */
+    public String getType() {
+        return "Event";
+    }
+
     /**
      * get the name of the event
      * @return the name
