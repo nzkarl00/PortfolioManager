@@ -1,9 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Deadline;
-import nz.ac.canterbury.seng302.portfolio.model.DeadlineRepository;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
@@ -40,6 +37,7 @@ public class DetailsControllerTest {
 
     private final Project testProject = new Project("testName", "testDescription", new Date(), new Date());
     private final Deadline deadline = new Deadline(testProject, "Deadline 1", "This is a deadline for project 1", DateParser.stringToLocalDateTime("2022-05-04", "16:20"));
+    private final Milestone milestone = new Milestone(testProject, "Milestone 1", "This is a milestone for project 1", DateParser.stringToLocalDateTime("2022-05-05", "08:20"));
 
     @Autowired
     private MockMvc mockMvc;
@@ -67,6 +65,9 @@ public class DetailsControllerTest {
 
     @MockBean
     DeadlineRepository deadlineRepository;
+
+    @MockBean
+    MilestoneRepository milestoneRepository;
 
     @Before
     public void setup() throws Exception {
@@ -259,4 +260,76 @@ public class DetailsControllerTest {
                 .andExpect(view().name("redirect:details?id=1"));
         verify(deadlineRepository, never()).deleteById(deadline.getId()); // Just checks that the deadline repo was never called
     }
+
+
+    /**
+     * Mocks the post from details and trys to delete a milestone as a teacher
+     * @throws Exception
+     */
+    @Test
+    public void postDetailsDeleteMilestoneAsTeacher() throws Exception {
+
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+
+        when(projectService.getProjectById(0)).thenReturn(testProject);
+        when(milestoneRepository.findById(0)).thenReturn(milestone);
+        mockMvc.perform(post("/delete-milestone").param("projectId", String.valueOf(0)).param("milestoneId", String.valueOf(0)))
+                .andExpect(status().is3xxRedirection()) // given this should move to details once deleted redirection is expected
+                .andExpect(view().name("redirect:details?id=0")); // page is moved
+        verify(milestoneRepository).deleteById(milestone.getId()); // Just checks that the deadline repo was called to delete the deadline given the id
+    }
+
+    /**
+     * Mocks the post from details and trys to delete a milestone as an admin
+     * @throws Exception
+     */
+    @Test
+    public void postDetailsDeleteMilestoneAsAdmin() throws Exception {
+
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateAdmin, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateAdmin)).thenReturn("admin");
+
+        when(projectService.getProjectById(0)).thenReturn(testProject);
+        when(milestoneRepository.findById(0)).thenReturn(milestone);
+        mockMvc.perform(post("/delete-milestone").param("projectId", String.valueOf(0)).param("milestoneId", String.valueOf(0)))
+                .andExpect(status().is3xxRedirection()) // given this should move to details once deleted redirection is expected
+                .andExpect(view().name("redirect:details?id=0")); // page is moved
+        verify(milestoneRepository).deleteById(milestone.getId()); // Just checks that the deadline repo was called to delete the deadline given the id
+    }
+
+    /**
+     * Mocks the post from details and trys to delete a milestone as a student - should not delete the milestone
+     * @throws Exception
+     */
+    @Test
+    public void postDetailsDeleteMilestoneAsStudent() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn("student");
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateStudent)).thenReturn(1);
+        when(projectService.getProjectById(1)).thenReturn(testProject);
+
+        mockMvc.perform(post("/delete-milestone").param("projectId", String.valueOf(1)).param("milestoneId", String.valueOf(1)))
+                .andExpect(status().is3xxRedirection()) // given this should redirect to the details once attempted redirection is expected
+                .andExpect(view().name("redirect:details?id=1"));
+        verify(milestoneRepository, never()).deleteById(milestone.getId()); // Just checks that the deadline repo was never called
+    }
+
 }
