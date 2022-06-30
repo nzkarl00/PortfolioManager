@@ -194,7 +194,6 @@ public class DetailsController {
         // Attributes For header
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
-
         navController.updateModelForNav(principal, model, userReply, id);
         if (role.equals("teacher") || role.equals("admin")) {
             Deadline deadline = deadlineService.getDeadlineById(deadlineId);
@@ -206,6 +205,10 @@ public class DetailsController {
             model.addAttribute("roleName", "teacher");
             model.addAttribute("date", deadline);
             model.addAttribute("project", project);
+            model.addAttribute("errorShow",errorShow);
+            model.addAttribute("errorCode",errorCode);
+            errorShow ="display:none;";
+            errorCode ="";
             return "editDates";
         } else {
             model.addAttribute("roleName", "student");

@@ -702,9 +702,21 @@
     border: none;
     padding: 2px 10px;
     text-decoration: none !important;
-    background: #FF202E  !important;
+    background: #FF202E;
     margin-left: 10px;
     margin-top: 10px;
     border-radius: 10px;
     color: white;
 }
+
+.each-deadline-edit {
+    border: none;
+    padding: 2px 10px;
+    text-decoration: none !important;
+    background: #FF48CF !important;
+    margin-left: 10px;
+    margin-top: 10px;
+    border-radius: 10px;
+    color: white;
+}
+
