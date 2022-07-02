@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Controller used to handle editing of projects dates, including events, deadlines and milestones.
+ * Controller used to handle editing of projects items, including events, deadlines and milestones.
  */
 @Controller
 public class EditDatesController {
@@ -36,7 +37,21 @@ public class EditDatesController {
     String errorShow = "display:none;";
     String errorCode = "";
 
-    @PostMapping("/edit-deadline")
+    /**
+     * Method to save edits made to dates to the database, CURRENTLY ONLY WORKS FOR DEADLINES.
+     * @param principal auth token
+     * @param projectId unique id for the project which the project item belongs to
+     * @param dateId unique id for the project item
+     * @param dateName project item name
+     * @param dateType project item type, should be one of Deadline, Event, Milestone
+     * @param dateStartDate start date for the project item
+     * @param dateEndDate end date for the project item, in the case of a deadline this will be a time instead
+     * @param dateDescription description of the project item
+     * @param model
+     * @return Project details page for the project which the date belongs to.
+     * @throws Exception
+     */
+    @PostMapping("/edit-date")
     public String sprintSave(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "projectId") Integer projectId,
@@ -52,7 +67,7 @@ public class EditDatesController {
         if (role.equals("teacher") || role.equals("admin")) {
             Deadline date = deadlineService.getDeadlineById(dateId);
             Project project = projectService.getProjectById(projectId);
-            Date dateStart = DateParser.stringToDate(dateStartDate);
+            LocalDateTime dateStart = DateParser.stringToLocalDateTime(dateStartDate, dateEndDate);
             errorShow = "";
             String redirect = "redirect:edit-sprint?id=" + projectId + "&ids=" + dateId;
             // Validates new name
@@ -63,15 +78,16 @@ public class EditDatesController {
             date.setName(dateName);
             date.setDescription(dateDescription);
             // Validates new date
-            if (dateStart.after(project.getEndDate()) || dateStart.before(project.getStartDate())) {
+            if (dateStart.isAfter(DateParser.convertToLocalDateTime(project.getEndDate())) || dateStart.isBefore(DateParser.convertToLocalDateTime(project.getStartDate()))) {
                 errorCode = "Deadline is outside of the project's timeline";
                 return redirect;
             }
             // Updates the deadline in the database
             errorShow = "display:none;";
             date.setStartDate(dateStart);
-            sprint.setEndDate(checkEndDate);
-            repository.save(sprint);
+            date.setDescription(dateDescription);
+            date.setName(dateName);
+            deadlineRepo.save(date);
         }
         return "redirect:details?id=" + projectId;
     }
