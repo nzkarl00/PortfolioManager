@@ -202,49 +202,6 @@ public class DetailsController {
     }
 
     /**
-     * Deadline deletion put request
-     * @param principal
-     * @param projectId
-     * @param dateId
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @GetMapping("edit-deadline")
-    public String deadlineEdit(
-            @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value = "projectId") Integer projectId,
-            @RequestParam(value = "dateId") Integer dateId,
-            Model model
-    ) throws Exception {
-        Integer id = AuthStateInformer.getId(principal);
-        String role = AuthStateInformer.getRole(principal);
-        // Attributes For header
-        UserResponse userReply;
-        userReply = accountClientService.getUserById(id);
-        navController.updateModelForNav(principal, model, userReply, id);
-        if (role.equals("teacher") || role.equals("admin")) {
-            Deadline deadline = deadlineService.getDeadlineById(dateId);
-            Project project = projectService.getProjectById(projectId);
-            model.addAttribute("dateName", deadline.getName());
-            model.addAttribute("dateStart", deadline.getStartDate());
-            model.addAttribute("dateEnd", deadline.getEndDate());
-            model.addAttribute("dateDesc", deadline.getDescription());
-            model.addAttribute("roleName", "teacher");
-            model.addAttribute("date", deadline);
-            model.addAttribute("project", project);
-            model.addAttribute("errorShow",errorShow);
-            model.addAttribute("errorCode",errorCode);
-            errorShow ="display:none;";
-            errorCode ="";
-            return "editDates";
-        } else {
-            model.addAttribute("roleName", "student");
-            return "error";
-        }
-    }
-
-    /**
      * Send an update sprint message through websockets to all the users on the same project details page
      */
     public void sendSprintCalendarChange(int id) {
