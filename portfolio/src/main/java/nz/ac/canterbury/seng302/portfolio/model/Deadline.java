@@ -68,6 +68,14 @@ public class Deadline extends ProjectTimeBoundItem {
         return this.startDate;
     }
 
+    @Override
+    /**
+     * Gets the type of date
+     */
+    public String getType() {
+        return "Deadline";
+    }
+
     /**
      * Get the name of the deadline
      * @return
@@ -84,7 +92,8 @@ public class Deadline extends ProjectTimeBoundItem {
 
     /**
      * Get the description of the deadline
-     * @return
+     * @return desc
      */
     public String getDescription() {return this.description; }
+
 }

@@ -72,6 +72,14 @@ public class Milestone extends ProjectTimeBoundItem {
         return this.startDate;
     }
 
+    @Override
+    /**
+     * Gets the type of date
+     */
+    public String getType() {
+        return "Milestone";
+    }
+
     /**
      * Get the name of the milestone.
      * @return
