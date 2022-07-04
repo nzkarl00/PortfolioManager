@@ -72,6 +72,14 @@ public class Milestone extends ProjectTimeBoundItem {
         return this.startDate;
     }
 
+    @Override
+    /**
+     * Gets the type of date
+     */
+    public String getType() {
+        return "Milestone";
+    }
+
     /**
      * Get the name of the milestone.
      * @return
@@ -87,4 +95,11 @@ public class Milestone extends ProjectTimeBoundItem {
     public Integer getId() {
         return this.id;
     }
+
+
+    /**
+     * Get the description of the deadline
+     * @return
+     */
+    public String getDescription() {return this.description; }
 }

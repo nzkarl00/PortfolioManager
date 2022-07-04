@@ -148,7 +148,7 @@ public class SeleniumWithTestNGLiveTest {
                 Assertions.assertEquals(dateLen.getText(), "Characters Remaining: 87");
                 dateName.sendKeys("This is a long title to remove characters for testing");
                 eventType.click();
-                WebElement milestone = seleniumExample.config.getDriver().findElement(By.id("evenMilestone"));
+                WebElement milestone = seleniumExample.config.getDriver().findElement(By.id("eventMilestone"));
                 milestone.click();
                 Assertions.assertEquals(dateLen.getText(), "Your title is 6 characters too long");
                 dateName.sendKeys(Keys.BACK_SPACE);

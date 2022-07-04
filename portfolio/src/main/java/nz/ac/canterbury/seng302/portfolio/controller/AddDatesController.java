@@ -104,6 +104,8 @@ public class AddDatesController {
             @RequestParam(value = "eventEndDate") String eventEndDate,
             @RequestParam(value = "eventDescription") String eventDescription
     ) throws Exception {
+
+
         String role = AuthStateInformer.getRole(principal);
         Project project = projectService.getProjectById(projectId);
         String messageReturned = "redirect:details?id=";

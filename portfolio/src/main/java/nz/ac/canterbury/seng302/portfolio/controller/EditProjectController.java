@@ -28,18 +28,18 @@ import java.util.List;
  * Controller for the edit project details page
  */
 @Controller
-public class EditProjectController {
+    public class EditProjectController {
 
-    @Autowired
-    private ProjectRepository repository;
-    @Autowired
-    private ProjectService projectService;
-    @Autowired
-    private SprintService sprintService;
-    @Autowired
-    private AccountClientService accountClientService;
-    @Autowired
-    private NavController navController;
+        @Autowired
+        private ProjectRepository repository;
+        @Autowired
+        private ProjectService projectService;
+        @Autowired
+        private SprintService sprintService;
+        @Autowired
+        private AccountClientService accountClientService;
+        @Autowired
+        private NavController navController;
 
 
     String errorShow = "display:none;";
