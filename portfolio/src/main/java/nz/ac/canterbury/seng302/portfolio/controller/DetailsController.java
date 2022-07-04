@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -366,6 +368,18 @@ public class DetailsController {
                 sendingDeadlines.add(deadline);
             }
         }
+        return ResponseEntity.ok(sendingDeadlines);
+    }
+    /**
+     * Sends all the deadlines in JSON for a given project
+     * @param principal authstate to validate the user
+     * @return the list of deadlines in JSON
+     */
+    @GetMapping("/deadlines-count")
+    public ResponseEntity<Integer> getDayDeadlines(@AuthenticationPrincipal AuthState principal,
+                                                              @RequestParam(value="date") Date date) throws Exception {
+        Integer sendingDeadlines = (deadlineRepo.findAllByStartDate("2033-02-05 00:00:00\t")).size();
+
         return ResponseEntity.ok(sendingDeadlines);
     }
 

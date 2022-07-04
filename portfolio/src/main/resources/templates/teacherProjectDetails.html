@@ -326,7 +326,7 @@
         if (deadline.description !== 'undefined') {
             deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + '</p> <p class="tooltip_body">' + deadline.description + "</p>"
         } else {
-            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + '</p>'
+            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + "</p>"
         }
 
         $(eachDeadline).tooltip({
@@ -334,7 +334,7 @@
                     placement: "right",
                     trigger: "hover",
                     container: "body",
-                    html: true,
+                    html: true
                 });
 
         mainDiv.appendChild(eachDeadline)
@@ -536,6 +536,33 @@
                 console.log(info.event.title)
             },
             initialView: 'dayGridMonth',
+            dayCellDidMount : function ( dayRenderInfo ) {
+                console.log(dayRenderInfo);
+
+                const events = document.createElement("div")
+                events.id = dayRenderInfo.el.id + "eventList"
+                events.className = ""
+                events.innerText = "Events: 0"
+
+                const deadlines = document.createElement("div")
+                deadlines.id = dayRenderInfo.el.id + "deadlineList"
+                deadlines.className = ""
+                console.log(dayRenderInfo.date);
+                axios.get("/deadlines-count", {params:{"date":dayRenderInfo.date}})
+                    .then((response) => {
+
+                        deadlines.innerText = "Deadlines: " + (response.data).toString();
+                    })
+
+                const milestones = document.createElement("div")
+                milestones.id = dayRenderInfo.el.id + "milestoneList"
+                milestones.className = ""
+                milestones.innerText = "Milestones: 0"
+
+                dayRenderInfo.el.appendChild(events)
+                dayRenderInfo.el.appendChild(deadlines)
+                dayRenderInfo.el.appendChild(milestones)
+            },
 
             // Greys out area's not in use by the project
             validRange: {
