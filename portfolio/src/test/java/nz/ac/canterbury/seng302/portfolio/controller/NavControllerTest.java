@@ -10,6 +10,9 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.ui.Model;
 
+import java.util.Date;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -35,7 +38,7 @@ class NavControllerTest {
 
         UserResponse userResponse = UserResponse.newBuilder().setUsername("timmy").build();
 
-        utilities.when(() -> DateParser.displayDate(userResponse)).thenReturn(" 28 April 2022 (1 Month)"); // not actually correct but hey
+        utilities.when(() -> DateParser.displayDate(any(UserResponse.class), any(Date.class))).thenReturn(" 28 April 2022 (1 Month)"); // not actually correct but hey
 
         NavController navController = new NavController();
         navController.updateModelForNav(principal, model, userResponse, 1);
