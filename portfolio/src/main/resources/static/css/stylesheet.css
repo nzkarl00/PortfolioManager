@@ -772,6 +772,16 @@
     word-break: break-all !important;
 }
 
+.tooltip_end {
+    font-family: Nexa !important;
+    font-size: 125% !important;
+    color: #19DAFF !important;
+    text-align: left !important;
+    margin-top: -10px !important;
+    margin-bottom: -10px !important;
+    word-break: break-all !important;
+}
+
 .tooltip-arrow{
     color: #19DAFF !important;
 }

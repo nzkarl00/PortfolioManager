@@ -533,11 +533,9 @@
                 });
             },
             eventDidMount: function(info) {
-                console.log(info.event.title)
             },
             initialView: 'dayGridMonth',
             dayCellDidMount : function ( dayRenderInfo ) {
-                console.log(dayRenderInfo);
 
                 const events = document.createElement("div")
                 events.id = dayRenderInfo.el.id + "eventList"
@@ -547,11 +545,29 @@
                 const deadlines = document.createElement("div")
                 deadlines.id = dayRenderInfo.el.id + "deadlineList"
                 deadlines.className = ""
-                console.log(dayRenderInfo.date);
-                axios.get("/deadlines-count", {params:{"date":dayRenderInfo.date}})
+                axios.get("/deadlines-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
+                        console.log(response)
+                        deadlines.innerText = "Deadlines: " + (response.data.length).toString();
+                        var deadlineDayTooltip = ""
 
-                        deadlines.innerText = "Deadlines: " + (response.data).toString();
+                        if (response.data.length === 0){
+                            deadlineDayTooltip = '<p class="tooltip_body">' + "No Deadlines For This Day" + "</p>" + '<p class="tooltip_end"></p>'
+                        } else {
+                            deadlineDayTooltip += '<p class="tooltip_title"> Deadlines </p>'
+                            for (let i = 0; i < response.data.length; i++) {
+                                deadlineDayTooltip += '<p class="tooltip_body">' + response.data[i].name + "</p>"
+                            }
+                            deadlineDayTooltip += '<p class="tooltip_end"></p>'
+                        }
+
+                        $(deadlines).tooltip({
+                            title: deadlineDayTooltip,
+                            placement: "right",
+                            trigger: "hover",
+                            container: "body",
+                            html: true
+                        });
                     })
 
                 const milestones = document.createElement("div")

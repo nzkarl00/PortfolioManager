@@ -16,13 +16,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Controller for the display project details page
@@ -376,11 +374,31 @@ public class DetailsController {
      * @return the list of deadlines in JSON
      */
     @GetMapping("/deadlines-count")
-    public ResponseEntity<Integer> getDayDeadlines(@AuthenticationPrincipal AuthState principal,
-                                                              @RequestParam(value="date") Date date) throws Exception {
-        Integer sendingDeadlines = (deadlineRepo.findAllByStartDate("2033-02-05 00:00:00\t")).size();
+    public ResponseEntity<List<Deadline>> getDayDeadlines(@AuthenticationPrincipal AuthState principal,
+                                                          @RequestParam(value="date") String stringDate,
+                                                          @RequestParam(value="project") Integer projectId) throws Exception {
+        String formattedDate = stringDate.substring(0, 10) + " 00:00:00";
+        String formattedEndDate = stringDate.substring(0, 10) + " 23:59:59";
+        SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = formatter.parse(formattedDate);
+        Date end = formatter.parse(formattedEndDate);
 
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, 1);
+        date = cal.getTime();
+        cal.setTime(end);
+        cal.add(Calendar.DATE, 1);
+        end = cal.getTime();
+
+        List<Deadline> sendingDeadlines = deadlineRepo.findAllByParentProjectAndStartDateBetween(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
         return ResponseEntity.ok(sendingDeadlines);
+    }
+
+    public LocalDateTime convertToLocalDateTimeViaInstant(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 
     /**

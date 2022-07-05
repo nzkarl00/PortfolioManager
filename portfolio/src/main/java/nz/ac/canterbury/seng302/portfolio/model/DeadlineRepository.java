@@ -18,5 +18,6 @@ public interface DeadlineRepository extends CrudRepository<Deadline, Integer> {
     Deadline findById(int id);
     Deadline findByParentProject(int id);
     List<Deadline> findAllByParentProject(Project project);
-    List<Deadline> findAllByStartDate(String eventDate);
+
+    List<Deadline> findAllByParentProjectAndStartDateBetween(Project project, LocalDateTime startDate, LocalDateTime endDate);
 }
