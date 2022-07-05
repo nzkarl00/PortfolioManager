@@ -537,6 +537,9 @@
             initialView: 'dayGridMonth',
             dayCellDidMount : function ( dayRenderInfo ) {
 
+                var childNode = dayRenderInfo.el.firstChild;
+                console.log(childNode)
+
                 const events = document.createElement("div")
                 events.id = dayRenderInfo.el.id + "eventList"
                 axios.get("/events-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
@@ -564,6 +567,7 @@
                             container: "body",
                             html: true
                         });
+
                     })
 
                 const deadlines = document.createElement("div")
@@ -593,6 +597,7 @@
                             container: "body",
                             html: true
                         });
+
                     })
 
                 const milestones = document.createElement("div")
@@ -622,11 +627,15 @@
                             container: "body",
                             html: true
                         });
+
                     })
 
-                dayRenderInfo.el.appendChild(events)
-                dayRenderInfo.el.appendChild(deadlines)
-                dayRenderInfo.el.appendChild(milestones)
+
+                childNode.appendChild(events)
+
+                childNode.appendChild(deadlines)
+
+                childNode.appendChild(milestones)
             },
 
             // Greys out area's not in use by the project
