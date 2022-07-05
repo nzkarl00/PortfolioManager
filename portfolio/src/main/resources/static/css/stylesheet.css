@@ -843,3 +843,31 @@
     border-radius: 10px;
     color: white;
 }
+
+.hiddenCalendar {
+    visibility:hidden !important;
+}
+
+.calendarDeadline {
+    background: #D9F9FF !important;
+    font-family: NexaBold !important;
+    font-size: 100% !important;
+    color: #19DAFF !important;
+    border-radius: 10px;
+    width: fit-content !important;
+    padding: 5px !important;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+.calendarMilestone {
+    background: #D9F9FF !important;
+    font-family: NexaBold !important;
+    font-size: 100% !important;
+    color: #19DAFF !important;
+    border-radius: 10px;
+    width: fit-content !important;
+    padding: 5px !important;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

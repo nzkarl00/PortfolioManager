@@ -539,26 +539,51 @@
 
                 const events = document.createElement("div")
                 events.id = dayRenderInfo.el.id + "eventList"
-                events.className = ""
-                events.innerText = "Events: 0"
+                axios.get("/events-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
+                    .then((response) => {
+                        events.innerHTML = '&#128197 E - ' + (response.data.length).toString();
+                        var eventDayTooltip = ""
+
+                        if (response.data.length === 0){
+                            eventDayTooltip = '<p class="tooltip_body">' + "No Events For This Day" + "</p>" + '<p class="tooltip_end"></p>'
+                            events.className = "hiddenCalendar calendarDeadline"
+                        } else {
+                            eventDayTooltip += '<p class="tooltip_title"> Events </p>'
+                            for (let i = 0; i < response.data.length; i++) {
+                                eventDayTooltip += '<p class="tooltip_body">' + (i+1).toString() + " - " + response.data[i].name + "</p>"
+                            }
+                            eventDayTooltip += '<p class="tooltip_end"></p>'
+
+                            events.className = "calendarDeadline"
+                        }
+
+                        $(events).tooltip({
+                            title: eventDayTooltip,
+                            placement: "right",
+                            trigger: "hover",
+                            container: "body",
+                            html: true
+                        });
+                    })
 
                 const deadlines = document.createElement("div")
                 deadlines.id = dayRenderInfo.el.id + "deadlineList"
-                deadlines.className = ""
                 axios.get("/deadlines-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
-                        console.log(response)
-                        deadlines.innerText = "Deadlines: " + (response.data.length).toString();
+                        deadlines.innerHTML = '&#128197 D - ' + (response.data.length).toString();
                         var deadlineDayTooltip = ""
 
                         if (response.data.length === 0){
                             deadlineDayTooltip = '<p class="tooltip_body">' + "No Deadlines For This Day" + "</p>" + '<p class="tooltip_end"></p>'
+                            deadlines.className = "hiddenCalendar calendarDeadline"
                         } else {
                             deadlineDayTooltip += '<p class="tooltip_title"> Deadlines </p>'
                             for (let i = 0; i < response.data.length; i++) {
-                                deadlineDayTooltip += '<p class="tooltip_body">' + response.data[i].name + "</p>"
+                                deadlineDayTooltip += '<p class="tooltip_body">' + (i+1).toString() + " - " + response.data[i].name + "</p>"
                             }
                             deadlineDayTooltip += '<p class="tooltip_end"></p>'
+
+                            deadlines.className = "calendarDeadline"
                         }
 
                         $(deadlines).tooltip({
@@ -572,8 +597,32 @@
 
                 const milestones = document.createElement("div")
                 milestones.id = dayRenderInfo.el.id + "milestoneList"
-                milestones.className = ""
-                milestones.innerText = "Milestones: 0"
+                axios.get("/milestones-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
+                    .then((response) => {
+                        milestones.innerHTML = '&#128197 M - ' + (response.data.length).toString();
+                        var milestonesDayTooltip = ""
+
+                        if (response.data.length === 0){
+                            milestonesDayTooltip = '<p class="tooltip_body">' + "No Milestones For This Day" + "</p>" + '<p class="tooltip_end"></p>'
+                            milestones.className = "hiddenCalendar calendarDeadline"
+                        } else {
+                            milestonesDayTooltip += '<p class="tooltip_title"> Milestones </p>'
+                            for (let i = 0; i < response.data.length; i++) {
+                                milestonesDayTooltip += '<p class="tooltip_body">' + (i+1).toString() + " - " + response.data[i].name + "</p>"
+                            }
+                            milestonesDayTooltip += '<p class="tooltip_end"></p>'
+
+                            milestones.className = "calendarMilestone"
+                        }
+
+                        $(milestones).tooltip({
+                            title: milestonesDayTooltip,
+                            placement: "right",
+                            trigger: "hover",
+                            container: "body",
+                            html: true
+                        });
+                    })
 
                 dayRenderInfo.el.appendChild(events)
                 dayRenderInfo.el.appendChild(deadlines)
