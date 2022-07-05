@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 
@@ -12,6 +13,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DateParsingTests {
 
+    static Date testDate;
+
+    @BeforeAll
+    static void setup() {
+        Calendar c = Calendar.getInstance();
+        c.set(2022, 5, 28, 0, 0);
+        Long seconds = c.getTime().getTime();
+        testDate = new Date(seconds);
+    }
+
     @Test
     void displayDateCurrentMonth() {
         String expectedString = " 28 June 2022";
@@ -20,7 +31,7 @@ class DateParsingTests {
         Long seconds = c.getTime().getTime();
         UserResponse.Builder response = UserResponse.newBuilder().setCreated(
             Timestamp.newBuilder().setSeconds(seconds/1000));
-        assertEquals(expectedString, DateParser.displayDate(response.build()));
+        assertEquals(expectedString, DateParser.displayDate(response.build(), testDate));
     }
 
     @Test
@@ -31,7 +42,7 @@ class DateParsingTests {
         Long seconds = c.getTime().getTime();
         UserResponse.Builder response = UserResponse.newBuilder().setCreated(
             Timestamp.newBuilder().setSeconds(seconds/1000));
-        assertEquals(expectedString, DateParser.displayDate(response.build()));
+        assertEquals(expectedString, DateParser.displayDate(response.build(), testDate));
     }
 
     @Test
@@ -42,7 +53,7 @@ class DateParsingTests {
         Long seconds = c.getTime().getTime();
         UserResponse.Builder response = UserResponse.newBuilder().setCreated(
             Timestamp.newBuilder().setSeconds(seconds/1000));
-        assertEquals(expectedString, DateParser.displayDate(response.build()));
+        assertEquals(expectedString, DateParser.displayDate(response.build(), testDate));
     }
 
     @Test
@@ -53,7 +64,7 @@ class DateParsingTests {
         Long seconds = c.getTime().getTime();
         UserResponse.Builder response = UserResponse.newBuilder().setCreated(
             Timestamp.newBuilder().setSeconds(seconds/1000));
-        assertEquals(expectedString, DateParser.displayDate(response.build()));
+        assertEquals(expectedString, DateParser.displayDate(response.build(), testDate));
     }
 
     @Test
@@ -64,7 +75,7 @@ class DateParsingTests {
         Long seconds = c.getTime().getTime();
         UserResponse.Builder response = UserResponse.newBuilder().setCreated(
                 Timestamp.newBuilder().setSeconds(seconds/1000));
-        assertEquals(expectedString, DateParser.displayDate(response.build()));
+        assertEquals(expectedString, DateParser.displayDate(response.build(), testDate));
     }
 
     @Test
@@ -75,7 +86,7 @@ class DateParsingTests {
         Long seconds = c.getTime().getTime();
         UserResponse.Builder response = UserResponse.newBuilder().setCreated(
                 Timestamp.newBuilder().setSeconds(seconds / 1000));
-        assertEquals(expectedString, DateParser.displayDate(response.build()));
+        assertEquals(expectedString, DateParser.displayDate(response.build(), testDate));
     }
 
     @Test
@@ -86,7 +97,7 @@ class DateParsingTests {
         Long seconds = c.getTime().getTime();
         UserResponse.Builder response = UserResponse.newBuilder().setCreated(
             Timestamp.newBuilder().setSeconds(seconds/1000));
-        assertEquals(expectedString, DateParser.displayDate(response.build()));
+        assertEquals(expectedString, DateParser.displayDate(response.build(), testDate));
     }
 
     @Test
