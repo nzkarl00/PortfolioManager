@@ -27,6 +27,7 @@ import java.util.Date;
 
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.*;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateTeacher;
+import static nz.ac.canterbury.seng302.portfolio.common.CommonProjectItems.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.*;
@@ -46,10 +47,6 @@ public class EditDatesControllerTest {
 
     private final Project testProject = new Project("testName", "testDescription", may1, june1);
     private final Deadline testDeadline = new Deadline(testProject, "Deadline 1", "This is a deadline for project 1", may4);
-
-    private static MultiValueMap<String, String> validParamsDeadline = new LinkedMultiValueMap<>();
-    private static MultiValueMap<String, String> deadlineBeforeProjectParams = new LinkedMultiValueMap<>();
-    private static MultiValueMap<String, String> deadlineAfterProjectParams = new LinkedMultiValueMap<>();
 
     private final Deadline validDeadline = new Deadline(testProject, "Deadline 1", "This is a deadline for project 1", may4);
 
@@ -83,34 +80,14 @@ public class EditDatesControllerTest {
     @BeforeAll
     public static void open() {
         utilities = Mockito.mockStatic(AuthStateInformer.class);
-
-        validParamsDeadline.add("projectId", String.valueOf(0));
-        validParamsDeadline.add("dateId", String.valueOf(0));
-        validParamsDeadline.add("eventName", "Deadline 1");
-        validParamsDeadline.add("eventType", "Deadline");
-        validParamsDeadline.add("eventStartDate", "2022-05-04");
-        validParamsDeadline.add("eventEndDate", "16:20");
-        validParamsDeadline.add("eventDescription", "This is a deadline for project 1");
-
-        deadlineBeforeProjectParams.add("projectId", String.valueOf(0));
-        deadlineBeforeProjectParams.add("dateId", String.valueOf(0));
-        deadlineBeforeProjectParams.add("eventName", "Deadline 1");
-        deadlineBeforeProjectParams.add("eventType", "Deadline");
-        deadlineBeforeProjectParams.add("eventStartDate", "2022-04-01");
-        deadlineBeforeProjectParams.add("eventEndDate", "16:20");
-        deadlineBeforeProjectParams.add("eventDescription", "This is a deadline for project 1");
-
-        deadlineAfterProjectParams.add("projectId", String.valueOf(0));
-        deadlineAfterProjectParams.add("dateId", String.valueOf(0));
-        deadlineAfterProjectParams.add("eventName", "Deadline 1");
-        deadlineAfterProjectParams.add("eventType", "Deadline");
-        deadlineAfterProjectParams.add("eventStartDate", "2022-07-01");
-        deadlineAfterProjectParams.add("eventEndDate", "16:20");
-        deadlineAfterProjectParams.add("eventDescription", "This is a deadline for project 1");
     }
 
+    /**
+     * Testing if a course admin can load the edit dates page, result should be the edit dates page loads
+     * @throws Exception
+     */
     @Test
-    public void getAddDatesWithAdminCredentials() throws Exception {
+    public void getEditDatesWithAdminCredentials() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication())
@@ -128,8 +105,12 @@ public class EditDatesControllerTest {
                 .andExpect(view().name("editDates"));
     }
 
+    /**
+     * Testing if a teacher can load the date editing page, result should be a redirect to the editing page.
+     * @throws Exception
+     */
     @Test
-    public void getAddDatesWithTeacherCredentials() throws Exception {
+    public void getEditDatesWithTeacherCredentials() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication())
@@ -147,6 +128,10 @@ public class EditDatesControllerTest {
                 .andExpect(view().name("editDates"));
     }
 
+    /**
+     * Testing if a student can load the date editing page, result should be a redirect to the error page instead
+     * @throws Exception
+     */
     @Test
     public void getEditDatesWithStudentCredentials() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
@@ -165,6 +150,10 @@ public class EditDatesControllerTest {
                 .andExpect(view().name("error")); // Returns the error page as a student should not be able to access date editing
     }
 
+    /**
+     * Testing a valid deadline edit with teacher permissions, result should be the deadline is saved and redirect to the project details page
+     * @throws Exception
+     */
     @Test
     public void validDeadlineEditAsTeacher() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
@@ -183,6 +172,10 @@ public class EditDatesControllerTest {
         verify(deadlineRepo).save(refEq(validDeadline)); // Verifies deadline was saved with correct details
     }
 
+    /**
+     * Testing a valid deadline edit with course admin permissions, result should be the edit is saved and a redirect to the project details page
+     * @throws Exception
+     */
     @Test
     public void validDeadlineEditAsAdmin() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
@@ -201,6 +194,10 @@ public class EditDatesControllerTest {
         verify(deadlineRepo).save(refEq(validDeadline)); // Verifies deadline was saved with correct details
     }
 
+    /**
+     * Testing a deadline edit where the new date is before the start of the project, result should be a redirect back to the edit page
+     * @throws Exception
+     */
     @Test
     public void deadlineEditBeforeProjectAsTeacher() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
@@ -219,6 +216,10 @@ public class EditDatesControllerTest {
         verify(deadlineRepo, never()).save(any(Deadline.class)); // Verifies deadline was not saved
     }
 
+    /**
+     * Testing a deadline edit where the new date is after the end of the project, result should be a redirect back to the edit page.
+     * @throws Exception
+     */
     @Test
     public void deadlineEditAfterProjectAsTeacher() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
@@ -237,6 +238,10 @@ public class EditDatesControllerTest {
         verify(deadlineRepo, never()).save(any(Deadline.class)); // Verifies dealdine was not saved
     }
 
+    /**
+     * Testing a valid deadline edit as a student, result should be no changes are saved.
+     * @throws Exception
+     */
     @Test
     public void validDeadlinesEditAsStudent() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
