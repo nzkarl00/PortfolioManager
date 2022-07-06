@@ -24,7 +24,7 @@ public class DateParser {
      * @param userReply The UserResponse with a date to parse
      * @return the readable string
      */
-    public static String displayDate(UserResponse userReply) {
+    public static String displayDate(UserResponse userReply, Date currentDate) {
         Long seconds = userReply.getCreated().getSeconds(); //Format the date
         Date date = new Date(seconds * 1000); // turn into millis
         SimpleDateFormat dateFormat = new SimpleDateFormat( "dd LLLL yyyy" ); //Correct string format
@@ -34,7 +34,7 @@ public class DateParser {
         int month = cal.get(Calendar.MONTH); //Month registered variables
         int year = cal.get(Calendar.YEAR);
         Calendar currentCalendar = Calendar.getInstance();
-        cal.setTime(new Date());
+        currentCalendar.setTime(currentDate);
         int currentMonth = currentCalendar.get(Calendar.MONTH);
         int currentYear = currentCalendar.get(Calendar.YEAR);
 
