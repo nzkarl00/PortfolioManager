@@ -31,7 +31,7 @@
         <!-- Editing body -->
 
 
-        <form class="row" id="eventForm" th:action="@{edit-dates}" method="put">
+        <form class="row" id="eventForm" th:action="@{edit-date}" method="post">
 
             <div class="col-2"></div>
             <input type="hidden" id="dateType" th:value="${date.getType()}" />
@@ -43,22 +43,22 @@
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" id="eventStartDateLabel" for="eventStartDate">Date Start</label> <br/>
-                        <input class="project_edit_data" id="eventStartDate" type="date" th:value="*{date.getStartDate()}" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventStartDate" required>
+                        <input class="project_edit_data" id="eventStartDate" type="date" th:value="*{date.getHTMLStartDate()}" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventStartDate" required>
                     </div>
                     <!-- https://dzone.com/articles/disable-dates-in-datepicker -->
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" id="eventEndDateLabel" for="eventEndDate">Date End</label> <br/>
-                        <input class="project_edit_data" id="eventEndDate" type="date" th:value="*{date.getEndDate()}" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventEndDate" required>
+                        <input class="project_edit_data" id="eventEndDate" type="date" th:value="*{date.getStartDate().toLocalTime()}" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventEndDate" required>
                     </div>
                 </div>
                 <div>
                     <label class="project_subhead" id="eventDescriptionLabel" for="eventDescription">Sprint Description</label> <br/>
-                    <textarea class="description-input project_edit_data horizontal_field bio" th:value="*{date.getDescription()}" id="eventDescription" th:name="eventDescription"></textarea>
+                    <textarea class="description-input project_edit_data horizontal_field bio" th:text="*{date.getDescription()}" id="eventDescription" th:name="eventDescription"></textarea>
                 </div>
 
 
                 <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId()}" type="number">
-
+                <input style="display:none;" th:name="dateId" id="dateId" th:value="${date.getId()}" type="number">
 
             </div>
 
@@ -96,6 +96,7 @@
                     document.getElementById("eventStartDateLabel").innerHTML =type + " Date";
                     document.getElementById("eventEndDateLabel").innerHTML =type + " Time";
                     document.getElementById("eventEndDate").setAttribute("type", "time");
+                    document.getElementById("eventEndDate").setAttribute("class", "project_edit_data bootstrap-timepicker")
                 } else { // All fields visible as normal
                     document.getElementById("eventStartDateLabel").innerHTML =type + " Start Date";
                     document.getElementById("eventEndDateLabel").innerHTML =type + " End Date";

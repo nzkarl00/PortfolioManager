@@ -6,6 +6,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 
+import java.util.Date;
+
 /**
  * Note this isn't exactly a controller but something that will allow all controllers to feed the correct data to the nav
  * by updating the model
@@ -25,6 +27,6 @@ public class NavController {
         String request = idpLocation + "/image/" + id;
         model.addAttribute("photo", request);
         model.addAttribute("username", userReply.getUsername());
-        model.addAttribute("date", DateParser.displayDate(userReply));
+        model.addAttribute("date", DateParser.displayDate(userReply, new Date()));
     }
 }

@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * An abstract class designed to provide a base for the three specific types of time bound items related to a project.
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 public abstract class ProjectTimeBoundItem {
     public static final int MAX_NAME_LENGTH = 60;
     public static final int MAX_DESCRIPTION_LENGTH = 240;
+    public static final DateTimeFormatter htmlDateFormat = DateTimeFormatter.ofPattern("YYYY-MM-dd");
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -86,7 +88,7 @@ public abstract class ProjectTimeBoundItem {
      * Set the name of the item
      * @param name
      */
-    void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -94,7 +96,7 @@ public abstract class ProjectTimeBoundItem {
      * Set the description of the item.
      * @param description
      */
-    void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
