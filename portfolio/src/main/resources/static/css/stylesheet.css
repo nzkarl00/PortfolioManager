@@ -701,13 +701,120 @@
     border: none;
     padding: 2px 10px;
     text-decoration: none !important;
-    background: #FF202E;
+    background: #FF202E  !important;
     margin-left: 10px;
     margin-top: 10px;
     border-radius: 10px;
     color: white;
 }
 
+.name{
+    float:left;
+    margin:100px;
+    border:1px solid black;
+}
+
+.tooltipVisible{
+    font-size: 100% !important;
+    position: absolute;
+    border-radius: 35px;
+    left: 50%;
+    width: fit-content;
+    padding: 2% !important;
+    background-color: #D9F9FF;
+    color: #000;
+    padding: 8px 0;
+    display: inline;
+}
+
+.tooltipInVisible{
+    display: none;
+    font-size: 0% !important;
+}
+
+.posAbsolute{
+    positive: relative;
+    width: fit-content;
+}
+
+.tooltip-inner {
+    background-color: #D9F9FF !important;
+    border-radius: 15px !important;
+    max-width: 250px !important;
+    padding: 10px 20px 10px 20px !important;
+    border: 5px solid #19DAFF !important;
+    word-break: break-all !important;
+    left: 6% !important;
+}
+
+.tooltip {
+    position: absolute !important;
+    left: 2% !important;
+}
+
+.tooltip.show /* The CSS classes that the tooltip has */ {
+    opacity: 1; /* or whatever */
+}
+
+.tooltip_title {
+    font-family: NexaBold !important;
+    font-size: 200% !important;
+    color: #19DAFF !important;
+    text-align: center !important;
+}
+
+.tooltip_body {
+    font-family: Nexa !important;
+    font-size: 125% !important;
+    color: #19DAFF !important;
+    text-align: left !important;
+    word-break: break-all !important;
+}
+
+.tooltip-arrow{
+    color: #19DAFF !important;
+}
+
+.tooltip.bs-tooltip-right .tooltip-arrow::before {
+    border-right-color: #19DAFF !important;
+}
+.tooltip.bs-tooltip-left .tooltip-arrow::before {
+    border-left-color: #19DAFF !important;
+}
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+    border-bottom-color: #19DAFF !important;
+}
+.tooltip.bs-tooltip-top .tooltip-arrow::before {
+    border-top-color: #19DAFF !important;
+}
+
+.tooltip > .tooltip-inner::after {
+  border-color: #19DAFF !important;
+}
+
+.bs-tooltip-end .tooltip-arrow::before, .bs-tooltip-auto[data-popper-placement^=right] .tooltip-arrow::before {
+  right: -1px;
+  border-width: 0.4rem 0.4rem 0.4rem 0;
+  border-right-color: #19DAFF !important;
+}
+
+.bs-tooltip-start .tooltip-arrow::before, .bs-tooltip-auto[data-popper-placement^=left] .tooltip-arrow::before {
+  left: -1px;
+  border-width: 0.4rem 0 0.4rem 0.4rem;
+  border-left-color: #19DAFF !important;
+}
+
+.bs-tooltip-bottom .tooltip-arrow::before, .bs-tooltip-auto[data-popper-placement^=bottom] .tooltip-arrow::before {
+  bottom: -1px;
+  border-width: 0 0.4rem 0.4rem;
+  border-bottom-color: #19DAFF !important;
+}
+
+.bs-tooltip-top .tooltip-arrow::before, .bs-tooltip-auto[data-popper-placement^=top] .tooltip-arrow::before {
+  top: -1px;
+  border-width: 0.4rem 0.4rem 0;
+  border-top-color: #19DAFF !important;
+}
 .each-deadline-edit {
     border: none;
     padding: 2px 10px;

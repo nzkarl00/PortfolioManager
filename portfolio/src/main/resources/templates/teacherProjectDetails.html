@@ -317,8 +317,25 @@
 
         eachDeadline.method = "post"
         eachDeadline.action = "delete-deadline"
-
         eachDeadline.innerText = deadline.name
+        eachDeadline.className = "posAbsolute"
+
+        const deadlineDate = String(deadline.startDate).substring(0,10);
+        const deadlineTime = String(deadline.startDate).substring(11);
+        var deadlineTooltip;
+        if (deadline.description !== 'undefined') {
+            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + '</p> <p class="tooltip_body">' + deadline.description + "</p>"
+        } else {
+            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + '</p>'
+        }
+
+        $(eachDeadline).tooltip({
+                    title: deadlineTooltip,
+                    placement: "right",
+                    trigger: "hover",
+                    container: "body",
+                    html: true,
+                });
 
         mainDiv.appendChild(eachDeadline)
         eachDeadline.appendChild(projectId)
@@ -326,6 +343,7 @@
         eachDeadline.appendChild(editDeadline)
         eachDeadline.appendChild(deleteDeadline)
     }
+
 
     function buildMilestone(milestone, sprintId) {
         const mainDiv = document.getElementById("milestones" + sprintId)
@@ -351,8 +369,24 @@
 
         eachMilestone.method = "post"
         eachMilestone.action = "delete-milestone"
-
         eachMilestone.innerText = milestone.name
+        eachMilestone.className = "posAbsolute"
+
+        const milestoneDate = String(milestone.startDate).substring(0,10);
+        var milestoneToolTip;
+        if (milestone.description !== undefined) {
+            milestoneToolTip = '<p class="tooltip_title">' + milestone.name.substring(0,25) + "</p>" + '<p class="tooltip_body">By: ' + milestoneDate + '</p> <p class="tooltip_body">' + milestone.description + "</p>"
+        } else {
+            milestoneToolTip = '<p class="tooltip_title">' + milestone.name.substring(0,25) + "</p>" + '<p class="tooltip_body">By: ' + milestoneDate + '</p>'
+        }
+
+        $(eachMilestone).tooltip({
+                    title: milestoneToolTip,
+                    placement: "right",
+                    trigger: "hover",
+                    container: "body",
+                    html: true
+                });
 
         mainDiv.appendChild(eachMilestone)
         eachMilestone.appendChild(projectId)
@@ -456,6 +490,7 @@
             sprintEvents.push( {
                 id: sprintList[sprintIndex].id,
                 title: sprintList[sprintIndex].label,
+                description: sprintList[sprintIndex].description,
                 start: sprintList[sprintIndex].startDate,
                 allDay: true,  //Can't resize from calendar view without this parameter
                 end: sprintEndDate,
@@ -475,6 +510,23 @@
                 info.event.setProp("durationEditable", true);
                 info.event.setProp("borderColor", 'black');
                 selectedEvent = info.event;
+            },
+            eventMouseEnter: function (info) {
+                const startDate = String(info.event.start.toLocaleDateString('en-GB'));
+                const endDate = String(info.event.end.toLocaleDateString('en-GB'));
+                var sprintTooltip;
+                if (info.event.extendedProps.description !== 'undefined') {
+                    sprintTooltip = '<p class="tooltip_title">' + info.event.title + "</p>" + '<p class="tooltip_body"> Starts:' + startDate + '</p><p class="tooltip_body"> Ends:' + endDate + '</p><p class="tooltip_body">' + info.event.extendedProps.description + "</p>"
+                } else {
+                    sprintTooltip = '<p class="tooltip_title">' + info.event.title + "</p>" + '<p class="tooltip_body"> Starts:' + startDate + '</p><p class="tooltip_body"> Ends:' + endDate + '</p>'
+                }
+                $(info.el).tooltip({
+                    title: sprintTooltip,
+                    placement: "top",
+                    trigger: "hover",
+                    container: "body",
+                    html: true
+                });
             },
             initialView: 'dayGridMonth',
 

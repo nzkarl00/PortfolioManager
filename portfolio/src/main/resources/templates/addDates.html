@@ -60,7 +60,7 @@
                 </div>
                 <div>
                     <label class="project_subhead" id="eventDescriptionLabel" for="eventDescription">Sprint Description</label> <br/>
-                    <textarea class="description-input project_edit_data horizontal_field bio" id="eventDescription" th:name="eventDescription"></textarea>
+                    <textarea class="description-input project_edit_data horizontal_field bio" id="eventDescription" maxlength="240" th:name="eventDescription"></textarea>
                 </div>
 
 
@@ -94,7 +94,6 @@
                         document.getElementById("eventNameLabel").innerHTML =type + " Name";
                         document.getElementById("eventDescriptionLabel").innerHTML =type + " Description";
                         if (type === "Milestone") { // Disables end date selection and hides it
-
                             document.getElementById("eventEndDate").setAttribute("type", "hidden");
                             document.getElementById("eventEndDateLabel").innerHTML = "";
                             document.getElementById("eventStartDateLabel").innerHTML =type + " Date";
