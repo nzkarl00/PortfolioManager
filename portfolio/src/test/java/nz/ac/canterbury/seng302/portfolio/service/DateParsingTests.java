@@ -36,7 +36,7 @@ class DateParsingTests {
 
     @Test
     void displayDatePastMonth() {
-        String expectedString = " 28 May 2022 (2 Months)";
+        String expectedString = " 28 May 2022 (1 Month)";
         Calendar c = Calendar.getInstance();
         c.set(2022, 4, 28, 0, 0);
         Long seconds = c.getTime().getTime();
@@ -47,7 +47,7 @@ class DateParsingTests {
 
     @Test
     void displayDateLongPastMonth() {
-        String expectedString = " 28 January 2022 (6 Months)";
+        String expectedString = " 28 January 2022 (5 Months)";
         Calendar c = Calendar.getInstance();
         c.set(2022, 0, 28, 0, 0);
         Long seconds = c.getTime().getTime();
@@ -69,7 +69,7 @@ class DateParsingTests {
 
     @Test
     void displayDateCrossingMonth() {
-        String expectedString = " 28 December 2021 (7 Months)";
+        String expectedString = " 28 December 2021 (6 Months)";
         Calendar c = Calendar.getInstance();
         c.set(2021, 11, 28, 0, 0);
         Long seconds = c.getTime().getTime();
@@ -80,7 +80,7 @@ class DateParsingTests {
 
     @Test
     void displayDateFutureYear() {
-        String expectedString = " 28 January 2021 (1 Year and 6 Months)";
+        String expectedString = " 28 January 2021 (1 Year and 5 Months)";
         Calendar c = Calendar.getInstance();
         c.set(2021, 0, 28, 0, 0);
         Long seconds = c.getTime().getTime();
@@ -91,7 +91,7 @@ class DateParsingTests {
 
     @Test
     void displayDateFutureYears() {
-        String expectedString = " 28 January 2020 (2 Years and 6 Months)";
+        String expectedString = " 28 January 2020 (2 Years and 5 Months)";
         Calendar c = Calendar.getInstance();
         c.set(2020, 0, 28, 0, 0);
         Long seconds = c.getTime().getTime();
