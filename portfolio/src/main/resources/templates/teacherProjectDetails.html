@@ -154,6 +154,8 @@
 <script src="/webjars/sockjs-client/sockjs.min.js"></script>
 <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script th:src="@{js/fullcalendar.js}"></script>
 <script type="text/javascript" th:inline="javascript">
 
 
@@ -434,7 +436,20 @@
                             for (const deadline of response.data) {
                                 buildDeadline(deadline, JSON.parse(update.body).sprintId)
                             }
+
+                            axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
+                            .then((response) => {
+                                renderCalendar(response.data)
+                            })
+
                         })
+                }
+
+                if (JSON.parse(update.body).updateType == "EVENT") {
+                            axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
+                            .then((response) => {
+                                renderCalendar(response.data)
+                            })
                 }
 
                 if (JSON.parse(update.body).updateType == "MILESTONE") {
@@ -445,6 +460,11 @@
                             for (const milestone of response.data) {
                                 buildMilestone(milestone, JSON.parse(update.body).sprintId)
                             }
+
+                            axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
+                            .then((response) => {
+                                renderCalendar(response.data)
+                            })
                         })
                 }
             });
@@ -506,6 +526,7 @@
         }
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
+
             eventClick: function (info) {
                 if (selectedEvent) {
                     selectedEvent.setProp("durationEditable", false);
@@ -538,7 +559,6 @@
             dayCellDidMount : function ( dayRenderInfo ) {
 
                 var childNode = dayRenderInfo.el.firstChild;
-                console.log(childNode)
 
                 const events = document.createElement("div")
                 events.id = dayRenderInfo.el.id + "eventList"
@@ -676,6 +696,8 @@
             }
         });
         calendar.render();
+        calendar.next();
+        calendar.prev();
         return calendar
     }
 
@@ -743,6 +765,5 @@
 <!-- JS -->
 <script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
 <!-- JS file for FullCalendar -->
-<script th:src="@{js/fullcalendar.js}"></script>
 </body>
 </html>
