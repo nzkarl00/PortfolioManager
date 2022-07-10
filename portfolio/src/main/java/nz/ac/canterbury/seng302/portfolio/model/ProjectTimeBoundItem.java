@@ -105,7 +105,7 @@ public abstract class ProjectTimeBoundItem {
      * For some instances this may be equivalent to setting the end date.
      * @param startDate
      */
-    abstract void setStartDate(LocalDateTime startDate);
+    public abstract void setStartDate(LocalDateTime startDate);
 
     /**
      * Set the end date of the item.
@@ -118,7 +118,7 @@ public abstract class ProjectTimeBoundItem {
      * Get the item name
      * @return
      */
-    String getName() {
+    public String getName() {
         return name;
     }
 
@@ -126,7 +126,7 @@ public abstract class ProjectTimeBoundItem {
      * Get the item description
      * @return
      */
-    String getDescription() {
+    public String getDescription() {
         return description;
     }
 
@@ -134,17 +134,19 @@ public abstract class ProjectTimeBoundItem {
      * Get the start date
      * @return
      */
-    abstract LocalDateTime getStartDate();
+    public abstract LocalDateTime getStartDate();
 
     /**
      * Get the end date.
      * @return
      */
-    abstract LocalDateTime getEndDate();
+    public abstract LocalDateTime getEndDate();
 
     /**
      * Gets the type of date
      * @return
      */
     abstract String getType();
+
+    abstract String getHTMLStartDate();
 }

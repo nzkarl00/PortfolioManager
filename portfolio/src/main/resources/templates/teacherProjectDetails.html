@@ -292,6 +292,7 @@
         const eachDeadline = document.createElement("form")
         const deleteDeadline = document.createElement("button")
         const editDeadline = document.createElement("button")
+        const deadlineType = document.createElement("input")
         const projectId = document.createElement("input")
         const deadlineId = document.createElement("input")
         projectId.style = "display:none;"
@@ -305,6 +306,12 @@
         deadlineId.id = "dateId"
         deadlineId.value = deadline.id
         deadlineId.type = "number"
+
+        deadlineType.style = "display:none;"
+        deadlineType.name = "itemType"
+        deadlineType.id = "itemType"
+        deadlineType.value = "Deadline"
+        deadlineType.type = "text"
 
         editDeadline.type = "submit"
         editDeadline.className = "fa fa-edit each-deadline-edit"
@@ -341,6 +348,7 @@
         eachDeadline.appendChild(projectId)
         eachDeadline.appendChild(deadlineId)
         eachDeadline.appendChild(editDeadline)
+        eachDeadline.appendChild(deadlineType)
         eachDeadline.appendChild(deleteDeadline)
     }
 
@@ -349,6 +357,8 @@
         const mainDiv = document.getElementById("milestones" + sprintId)
         const eachMilestone = document.createElement("form")
         const deleteMilestone = document.createElement("button")
+        const editMilestone = document.createElement("button")
+        const milestoneType = document.createElement("input")
         const projectId = document.createElement("input")
         const milestoneId = document.createElement("input")
         projectId.style = "display:none;"
@@ -358,10 +368,21 @@
         projectId.type = "number"
 
         milestoneId.style = "display:none;"
-        milestoneId.name = "milestoneId"
-        milestoneId.id = "milestoneId"
+        milestoneId.name = "dateId"
+        milestoneId.id = "dateId"
         milestoneId.value = milestone.id
         milestoneId.type = "number"
+
+        milestoneType.style = "display:none;"
+        milestoneType.name = "itemType"
+        milestoneType.id = "itemType"
+        milestoneType.value = "Milestone"
+        milestoneType.type = "text"
+
+        editMilestone.type = "submit"
+        editMilestone.className = "fa fa-edit each-deadline-edit"
+        editMilestone.formMethod = "get"
+        editMilestone.formAction = "edit-date"
 
         deleteMilestone.type = "submit"
         deleteMilestone.id = "deleteButton"
@@ -391,6 +412,8 @@
         mainDiv.appendChild(eachMilestone)
         eachMilestone.appendChild(projectId)
         eachMilestone.appendChild(milestoneId)
+        eachMilestone.appendChild(milestoneType)
+        eachMilestone.appendChild(editMilestone)
         eachMilestone.appendChild(deleteMilestone)
     }
 

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import javassist.NotFoundException;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -27,17 +28,17 @@ public class EditDatesController {
     @Autowired
     private ProjectService projectService;
     @Autowired
-    private DeadlineService deadlineService;
-    @Autowired
-    private DeadlineRepository deadlineRepo;
+    private ProjectItemService projectItemService;
     @Autowired
     private AccountClientService accountClientService;
     @Autowired
+    private DateSocketService dateSocketService;
+    @Autowired
     private NavController navController;
-
 
     String errorShow = "display:none;";
     String errorCode = "";
+    String redirect = "";
 
     /**
      * Get request for the edit dates page
@@ -49,10 +50,11 @@ public class EditDatesController {
      * @throws Exception
      */
     @GetMapping("edit-date")
-    public String deadlineEdit(
+    public String dateEditPage(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "projectId") Integer projectId,
             @RequestParam(value = "dateId") Integer dateId,
+            @RequestParam(value = "itemType") String type,
             Model model
     ) throws Exception {
         Integer id = AuthStateInformer.getId(principal);
@@ -61,15 +63,17 @@ public class EditDatesController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
         navController.updateModelForNav(principal, model, userReply, id);
+        System.out.println(type);
         if (role.equals("teacher") || role.equals("admin")) {
-            Deadline deadline = deadlineService.getDeadlineById(dateId);
+            ProjectTimeBoundItem projectItem = projectItemService.getProjectItemByIdAndType(type, dateId);
             Project project = projectService.getProjectById(projectId);
-            model.addAttribute("dateName", deadline.getName());
-            model.addAttribute("dateStart", deadline.getStartDate());
-            model.addAttribute("dateEnd", deadline.getEndDate());
-            model.addAttribute("dateDesc", deadline.getDescription());
+            model.addAttribute("dateName", projectItem.getName());
+            model.addAttribute("dateStart", projectItem.getStartDate());
+            model.addAttribute("dateEnd", projectItem.getEndDate());
+            model.addAttribute("dateDesc", projectItem.getDescription());
             model.addAttribute("roleName", "teacher");
-            model.addAttribute("date", deadline);
+            model.addAttribute("type", type);
+            model.addAttribute("date", projectItem);
             model.addAttribute("project", project);
             model.addAttribute("errorShow",errorShow);
             model.addAttribute("errorCode",errorCode);
@@ -97,45 +101,86 @@ public class EditDatesController {
      * @throws Exception
      */
     @PostMapping("/edit-date")
-    public String sprintSave(
+    public String dateEditSave(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "projectId") Integer projectId,
             @RequestParam(value = "dateId") Integer dateId,
             @RequestParam(value = "eventName") String dateName,
-            @RequestParam(value = "eventType") Optional<String> dateType,
+            @RequestParam(value = "eventType") String dateType,
             @RequestParam(value = "eventStartDate") String dateStartDate,
             @RequestParam(value = "eventEndDate") String dateEndDate,
             @RequestParam(value = "eventDescription") String dateDescription,
             Model model
     ) throws Exception {
         String role = AuthStateInformer.getRole(principal);
+        redirect = "redirect:edit-date?id=" + projectId + "&ids=" + dateId;
         if (role.equals("teacher") || role.equals("admin")) {
-            Deadline date = deadlineService.getDeadlineById(dateId);
-            Project project = projectService.getProjectById(projectId);
-            LocalDateTime dateStart = DateParser.stringToLocalDateTime(dateStartDate, dateEndDate);
-            errorShow = "";
-            String redirect = "redirect:edit-date?id=" + projectId + "&ids=" + dateId;
-            // Validates new name
+           Project project = projectService.getProjectById(projectId);
             if (dateName.isBlank()) {
-                errorCode = "Deadline requires a name";
-                System.out.println("name");
+                errorCode = "Project date requires a name";
                 return redirect;
             }
-            date.setName(dateName);
-            date.setDescription(dateDescription);
-            // Validates new date
-            if (dateStart.isAfter(DateParser.convertToLocalDateTime(project.getEndDate())) || dateStart.isBefore(DateParser.convertToLocalDateTime(project.getStartDate()))) {
-                errorCode = "Deadline is outside of the project's timeline";
-                return redirect;
+            errorShow = "";
+            switch (dateType) {
+                case "Deadline":
+                    return editDeadline(project, dateId, dateName, dateDescription, dateStartDate, dateEndDate);
+                case "Milestone":
+                    return editMilestone(project, dateId, dateName, dateDescription, dateStartDate);
+                case "Event":
+                    System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\nEvents not implemented yet"); //TODO Events
+                    break;
             }
-            // Updates the deadline in the database
-            errorShow = "display:none;";
-            date.setStartDate(dateStart);
-            date.setDescription(dateDescription);
-            date.setName(dateName);
-            deadlineRepo.save(date);
         }
         return "redirect:details?id=" + projectId;
     }
 
+    /**
+     * Saves edits to a deadline in the repository and posts the changes over the web socket
+     * @param project project in which a deadline is being added
+     * @param id id of deadline
+     * @param name name of deadline
+     * @param startDate the date of the deadline
+     * @param endDate the time of the deadline
+     * @return project details page on successful update, return string to indicate success or failure
+     */
+    private String editDeadline(Project project, Integer id, String name, String description, String startDate, String endDate) throws Exception {
+        LocalDateTime dateStart = DateParser.stringToLocalDateTime(startDate, endDate);
+        Deadline deadline = projectItemService.getDeadlineById(id);
+        if (dateStart.isAfter(DateParser.convertToLocalDateTime(project.getEndDate())) || dateStart.isBefore(DateParser.convertToLocalDateTime(project.getStartDate()))) {
+            errorCode = "Deadline is outside of the project's timeline";
+            return redirect;
+        }
+        errorShow = "display:none;";
+        deadline.setName(name);
+        deadline.setDescription(description);
+        deadline.setStartDate(dateStart);
+        projectItemService.saveDeadlineEdit(deadline);
+        dateSocketService.sendDeadlineCalendarChange(project, deadline);
+        return "redirect:details?id=" + project.getId();
+    }
+
+    /**
+     * Saves edits to a milestone in the repository and posts the changes over the web socket
+     * @param project project in which a deadline is being added
+     * @param id milestone id
+     * @param name name of milestone
+     * @param startDate milestone date
+     * @param description milestone description
+     * @return project details page on successful update, return string to indicate success or failure
+     */
+    private String editMilestone(Project project, Integer id, String name, String description, String startDate) throws Exception {
+        LocalDateTime dateStart = DateParser.stringToLocalDateTime(startDate, "");
+        Milestone milestone = projectItemService.getMilestoneById(id);
+        if (dateStart.isAfter(DateParser.convertToLocalDateTime(project.getEndDate())) || dateStart.isBefore(DateParser.convertToLocalDateTime(project.getStartDate()))) {
+            errorCode = "Milestone is outside of the project's timeline";
+            return redirect;
+        }
+        errorShow = "display:none;";
+        milestone.setName(name);
+        milestone.setDescription(description);
+        milestone.setStartDate(dateStart);
+        projectItemService.saveMilestoneEdit(milestone);
+        dateSocketService.sendMilestoneCalendarChange(project, milestone);
+        return "redirect:details?id=" + project.getId();
+    }
 }

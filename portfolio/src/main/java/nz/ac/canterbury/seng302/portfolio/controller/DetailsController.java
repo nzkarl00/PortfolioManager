@@ -33,7 +33,7 @@ public class DetailsController {
     @Autowired
     private MilestoneRepository milestoneRepo;
     @Autowired
-    private SimpMessagingTemplate template;
+    private DateSocketService dateSocketService;
     @Autowired
     private SprintRepository repository;
     @Autowired
@@ -142,7 +142,7 @@ public class DetailsController {
 
             }
 
-            sendSprintCalendarChange(projectId);
+            dateSocketService.sendSprintCalendarChange(projectId);
         }
 
         return "redirect:details?id=" + projectId;
@@ -162,14 +162,14 @@ public class DetailsController {
     public String deadlineDelete(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "projectId") Integer projectId,
-            @RequestParam(value = "deadlineId") Integer deadlineId,
+            @RequestParam(value = "dateId") Integer deadlineId,
             Model model
     ) throws Exception {
         String role = AuthStateInformer.getRole(principal);
 
         if (role.equals("teacher") || role.equals("admin")) {
             deadlineRepo.deleteById(deadlineId);
-            sendDeadlineCalendarChange(projectService.getProjectById(projectId));
+            dateSocketService.sendDeadlineCalendarChange(projectService.getProjectById(projectId));
         }
 
         return "redirect:details?id=" + projectId;
@@ -188,47 +188,17 @@ public class DetailsController {
     public String deadlineMilestone(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "projectId") Integer projectId,
-            @RequestParam(value = "milestoneId") Integer milestoneId,
+            @RequestParam(value = "dateId") Integer milestoneId,
             Model model
     ) throws Exception {
         String role = AuthStateInformer.getRole(principal);
 
         if (role.equals("teacher") || role.equals("admin")) {
             milestoneRepo.deleteById(milestoneId);
-            sendMilestoneCalendarChange(projectService.getProjectById(projectId));
+            dateSocketService.sendMilestoneCalendarChange(projectService.getProjectById(projectId));
         }
 
         return "redirect:details?id=" + projectId;
-    }
-
-    /**
-     * Send an update sprint message through websockets to all the users on the same project details page
-     */
-    public void sendSprintCalendarChange(int id) {
-        this.template.convertAndSend("/topic/calendar/" + id, new EventUpdate(FetchUpdateType.SPRINT));
-    }
-
-    /**
-     * Send an update deadline message through websockets to all the users on the same project details page
-     */
-    public void sendDeadlineCalendarChange(Project project) {
-        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
-
-        for (Sprint sprint: sprints) {
-            this.template.convertAndSend("/topic/calendar/" + project.getId()
-                    , new EventUpdate(FetchUpdateType.DEADLINE, sprint.getId()));
-        }
-    }
-    /**
-     * Send an update milestone message through websockets to all the users on the same project details page
-     */
-    public void sendMilestoneCalendarChange(Project project) {
-        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
-
-        for (Sprint sprint: sprints) {
-            this.template.convertAndSend("/topic/calendar/" + project.getId()
-                    , new EventUpdate(FetchUpdateType.MILESTONE, sprint.getId()));
-        }
     }
 
     @PostMapping("/details")
@@ -286,7 +256,7 @@ public class DetailsController {
             successCalendarShow = "";
             successCalendarCode = "Sprint time edited to: " + sprint.getStartDateString() + " - " + sprint.getEndDateString() + "";
             repository.save(sprint);
-            sendSprintCalendarChange(projectId);
+            dateSocketService.sendSprintCalendarChange(projectId);
         }
         return redirect;
     }

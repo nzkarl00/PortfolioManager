@@ -102,4 +102,10 @@ public class Milestone extends ProjectTimeBoundItem {
      * @return
      */
     public String getDescription() {return this.description; }
+
+    /**
+     * Gets the date in format YYYY-MM-dd
+     * @return
+     */
+    public String getHTMLStartDate() { return htmlDateFormat.format(startDate); }
 }
