@@ -69,6 +69,9 @@ public class DetailsControllerTest {
     @MockBean
     MilestoneRepository milestoneRepository;
 
+    @MockBean
+    EventRepository eventRepository;
+
     @Before
     public void setup() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(DetailsController.class)
