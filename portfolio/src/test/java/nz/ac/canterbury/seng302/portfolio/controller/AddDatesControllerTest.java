@@ -100,6 +100,9 @@ public class AddDatesControllerTest {
     @MockBean
     NavController navController;
 
+    @MockBean
+    DateSocketService dateSocketService;
+
     @Before
     public void setup() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(DetailsController.class)

@@ -34,7 +34,7 @@
         <form class="row" id="eventForm" th:action="@{edit-date}" method="post">
 
             <div class="col-2"></div>
-            <input type="hidden" id="dateType" th:value="${date.getType()}" />
+            <input type="hidden" th:name="eventType" id="dateType" th:value="${type}" />
             <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
                 <label class="project_subhead" id="eventNameLabel" for="eventName">Date Name</label> <br/>
                 <input class="project_edit_data horizontal_field" id="eventName" type="text" maxlength="100" th:value="*{date.getName()}" oninput="updateTitle()" th:name="eventName">

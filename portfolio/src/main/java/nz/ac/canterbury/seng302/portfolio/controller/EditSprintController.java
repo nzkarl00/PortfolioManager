@@ -45,7 +45,8 @@ public class EditSprintController {
     private AccountClientService accountClientService;
     @Autowired
     private NavController navController;
-
+    @Autowired
+    private DateSocketService dateSocketService;
 
     String errorShow = "display:none;";
     String errorCode = "";
@@ -160,6 +161,7 @@ public class EditSprintController {
             sprint.setStartDate(checkStartDate);
             sprint.setEndDate(checkEndDate);
             repository.save(sprint);
+            dateSocketService.sendSprintCalendarChange(projectId);
         }
         return "redirect:details?id=" + projectId;
     }

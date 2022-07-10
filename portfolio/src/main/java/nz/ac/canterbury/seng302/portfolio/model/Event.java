@@ -76,6 +76,12 @@ public class Event extends ProjectTimeBoundItem {
     }
 
     /**
+     * Gets the date in format YYYY-MM-dd
+     * @return
+     */
+    public String getHTMLStartDate() { return htmlDateFormat.format(startDate); }
+
+    /**
      * get the name of the event
      * @return the name
      */
