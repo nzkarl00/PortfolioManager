@@ -296,6 +296,14 @@
         const editDeadline = document.createElement("button")
         const projectId = document.createElement("input")
         const deadlineId = document.createElement("input")
+        const dateId = document.createElement("input")
+
+        dateId.style = "display:none;"
+        dateId.name = "dateId"
+        dateId.id = "dateId"
+        dateId.value = deadline.id
+        dateId.type = "number"
+
         projectId.style = "display:none;"
         projectId.name = "projectId"
         projectId.id = "projectId"
@@ -306,7 +314,6 @@
         deadlineId.name = "deadlineId"
         deadlineId.id = "deadlineId"
         deadlineId.value = deadline.id
-        console.log(deadline.id)
         deadlineId.type = "number"
 
         editDeadline.type = "submit"
@@ -343,6 +350,7 @@
         mainDiv.appendChild(eachDeadline)
         eachDeadline.appendChild(projectId)
         eachDeadline.appendChild(deadlineId)
+        eachDeadline.appendChild(dateId)
         eachDeadline.appendChild(editDeadline)
         eachDeadline.appendChild(deleteDeadline)
     }
@@ -354,6 +362,14 @@
         const deleteMilestone = document.createElement("button")
         const projectId = document.createElement("input")
         const milestoneId = document.createElement("input")
+        const dateId = document.createElement("input")
+
+        dateId.style = "display:none;"
+        dateId.name = "dateId"
+        dateId.id = "dateId"
+        dateId.value = milestone.id
+        dateId.type = "number"
+
         projectId.style = "display:none;"
         projectId.name = "projectId"
         projectId.id = "projectId"
@@ -394,6 +410,7 @@
         mainDiv.appendChild(eachMilestone)
         eachMilestone.appendChild(projectId)
         eachMilestone.appendChild(milestoneId)
+        eachMilestone.appendChild(dateId)
         eachMilestone.appendChild(deleteMilestone)
     }
 
