@@ -303,9 +303,10 @@
         projectId.type = "number"
 
         deadlineId.style = "display:none;"
-        deadlineId.name = "dateId"
-        deadlineId.id = "dateId"
+        deadlineId.name = "deadlineId"
+        deadlineId.id = "deadlineId"
         deadlineId.value = deadline.id
+        console.log(deadline.id)
         deadlineId.type = "number"
 
         editDeadline.type = "submit"
@@ -561,7 +562,7 @@
                 var childNode = dayRenderInfo.el.firstChild;
 
                 const events = document.createElement("div")
-                events.id = dayRenderInfo.el.id + "eventList"
+                events.id = (dayRenderInfo.date).toString().substring(0, 16) + "eventList"
                 axios.get("/events-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
                         events.innerHTML = '&#128197 E - ' + (response.data.length).toString();
@@ -591,7 +592,7 @@
                     })
 
                 const deadlines = document.createElement("div")
-                deadlines.id = dayRenderInfo.el.id + "deadlineList"
+                deadlines.id = (dayRenderInfo.date).toString().substring(0, 16) + "deadlineList"
                 axios.get("/deadlines-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
                         deadlines.innerHTML = '&#128197 D - ' + (response.data.length).toString();
@@ -621,7 +622,7 @@
                     })
 
                 const milestones = document.createElement("div")
-                milestones.id = dayRenderInfo.el.id + "milestoneList"
+                milestones.id = (dayRenderInfo.date).toString().substring(0, 16) + "milestoneList"
                 axios.get("/milestones-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
                         milestones.innerHTML = '&#128197 M - ' + (response.data.length).toString();
