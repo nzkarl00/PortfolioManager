@@ -159,6 +159,32 @@ public class DetailsController {
     }
 
     /**
+     * The mapping to delete an event
+     *
+     * @param principal auth token
+     * @param projectId id param for project to delete event from
+     * @param eventId eventId id under project to delete
+     * @param model the model to add attributes to
+     * @return A location of where to go next
+     * @throws Exception
+     */
+    @PostMapping("delete-event")
+    public String eventDelete(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value = "projectId") Integer projectId,
+            @RequestParam(value = "dateId") Integer eventId,
+            Model model
+    ) throws Exception {
+        String role = AuthStateInformer.getRole(principal);
+
+        if (role.equals("teacher") || role.equals("admin")) {
+            eventRepo.deleteById(eventId);
+            dateSocketService.sendEventCalendarChange(projectService.getProjectById(projectId));
+        }
+
+        return "redirect:details?id=" + projectId;
+    }
+    /**
      * The mapping to delete a deadline
      *
      * @param principal auth token
@@ -361,6 +387,29 @@ public class DetailsController {
         end = cal.getTime();
 
         List<Milestone> sendingMilestones = milestoneRepo.findAllByParentProjectAndStartDateBetween(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
+        return ResponseEntity.ok(sendingMilestones);
+    }
+
+    /**
+     * Sends all the events in JSON for a given project
+     * @param principal authstate to validate the user
+     * @param projectId the id of the project to
+     * @return the list of events in JSON
+     */
+    @GetMapping("/events")
+    public ResponseEntity<List<Event>> getProjectEvents(@AuthenticationPrincipal AuthState principal,
+                                                                @RequestParam(value="id") Integer projectId,
+                                                                @RequestParam(value="sprintId") Integer sprintId) throws Exception {
+        List<Milestone> milestones = milestoneRepo.findAllByParentProject(projectService.getProjectById(projectId));
+        Optional<Sprint> sprint = repository.findById(sprintId);
+        List<Milestone> sendingMilestones = new ArrayList<>();
+        for (Milestone milestone : milestones) {
+            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
+            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
+            if ((milestone.getStartDate().isAfter(startDate)) && (milestone.getStartDate().isBefore(endDate))) {
+                sendingMilestones.add(milestone);
+            }
+        }
         return ResponseEntity.ok(sendingMilestones);
     }
 
