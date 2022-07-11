@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -60,7 +62,9 @@ public class DetailsController {
     String successCalendarCode = "";
     String errorCalendarShow = "display:none;";
     String errorCalendarCode = "";
-    
+
+    Logger logger = LoggerFactory.getLogger(DetailsController.class);
+
     /**
      * Returns the html page based on the user's role
      *
@@ -71,7 +75,7 @@ public class DetailsController {
      */
     @GetMapping("/details")
     public String details(@AuthenticationPrincipal AuthState principal, @RequestParam(value = "id") Integer projectId, Model model) throws Exception {
-
+        logger.info(String.format("Fetching details for project=<%s>", projectId));
         /* Add project details to the model */
         // Gets the project with id 0 to plonk on the page
         Project project = projectService.getProjectById(projectId);
