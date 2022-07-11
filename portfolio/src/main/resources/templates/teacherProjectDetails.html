@@ -154,6 +154,8 @@
 <script src="/webjars/sockjs-client/sockjs.min.js"></script>
 <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script th:src="@{js/fullcalendar.js}"></script>
 <script type="text/javascript" th:inline="javascript">
 
 
@@ -295,6 +297,14 @@
         const deadlineType = document.createElement("input")
         const projectId = document.createElement("input")
         const deadlineId = document.createElement("input")
+        const dateId = document.createElement("input")
+
+        dateId.style = "display:none;"
+        dateId.name = "dateId"
+        dateId.id = "dateId"
+        dateId.value = deadline.id
+        dateId.type = "number"
+
         projectId.style = "display:none;"
         projectId.name = "projectId"
         projectId.id = "projectId"
@@ -302,8 +312,8 @@
         projectId.type = "number"
 
         deadlineId.style = "display:none;"
-        deadlineId.name = "dateId"
-        deadlineId.id = "dateId"
+        deadlineId.name = "deadlineId"
+        deadlineId.id = "deadlineId"
         deadlineId.value = deadline.id
         deadlineId.type = "number"
 
@@ -333,7 +343,7 @@
         if (deadline.description !== 'undefined') {
             deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + '</p> <p class="tooltip_body">' + deadline.description + "</p>"
         } else {
-            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + '</p>'
+            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + "</p>"
         }
 
         $(eachDeadline).tooltip({
@@ -341,12 +351,13 @@
                     placement: "right",
                     trigger: "hover",
                     container: "body",
-                    html: true,
+                    html: true
                 });
 
         mainDiv.appendChild(eachDeadline)
         eachDeadline.appendChild(projectId)
         eachDeadline.appendChild(deadlineId)
+        eachDeadline.appendChild(dateId)
         eachDeadline.appendChild(editDeadline)
         eachDeadline.appendChild(deadlineType)
         eachDeadline.appendChild(deleteDeadline)
@@ -361,6 +372,14 @@
         const milestoneType = document.createElement("input")
         const projectId = document.createElement("input")
         const milestoneId = document.createElement("input")
+        const dateId = document.createElement("input")
+
+        dateId.style = "display:none;"
+        dateId.name = "dateId"
+        dateId.id = "dateId"
+        dateId.value = milestone.id
+        dateId.type = "number"
+
         projectId.style = "display:none;"
         projectId.name = "projectId"
         projectId.id = "projectId"
@@ -368,8 +387,8 @@
         projectId.type = "number"
 
         milestoneId.style = "display:none;"
-        milestoneId.name = "dateId"
-        milestoneId.id = "dateId"
+        milestoneId.name = "milestoneId"
+        milestoneId.id = "milestoneId"
         milestoneId.value = milestone.id
         milestoneId.type = "number"
 
@@ -414,6 +433,7 @@
         eachMilestone.appendChild(milestoneId)
         eachMilestone.appendChild(milestoneType)
         eachMilestone.appendChild(editMilestone)
+        eachMilestone.appendChild(dateId)
         eachMilestone.appendChild(deleteMilestone)
     }
 
@@ -457,7 +477,20 @@
                             for (const deadline of response.data) {
                                 buildDeadline(deadline, JSON.parse(update.body).sprintId)
                             }
+
+                            axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
+                            .then((response) => {
+                                renderCalendar(response.data)
+                            })
+
                         })
+                }
+
+                if (JSON.parse(update.body).updateType == "EVENT") {
+                            axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
+                            .then((response) => {
+                                renderCalendar(response.data)
+                            })
                 }
 
                 if (JSON.parse(update.body).updateType == "MILESTONE") {
@@ -468,6 +501,11 @@
                             for (const milestone of response.data) {
                                 buildMilestone(milestone, JSON.parse(update.body).sprintId)
                             }
+
+                            axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
+                            .then((response) => {
+                                renderCalendar(response.data)
+                            })
                         })
                 }
             });
@@ -499,6 +537,8 @@
         endDate.setDate(endDate.getDate() + 1);
         let selectedEvent;
 
+
+
         let sprintEvents = [];
 
         // Colors for the sprints
@@ -522,9 +562,12 @@
                 color: colors[sprintList[sprintIndex].id % colors.length],
                 borderColor: 'white'
             });
+
+
         }
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
+
             eventClick: function (info) {
                 if (selectedEvent) {
                     selectedEvent.setProp("durationEditable", false);
@@ -551,7 +594,110 @@
                     html: true
                 });
             },
+            eventDidMount: function(info) {
+            },
             initialView: 'dayGridMonth',
+            dayCellDidMount : function ( dayRenderInfo ) {
+
+                var childNode = dayRenderInfo.el.firstChild;
+
+                const events = document.createElement("div")
+                events.id = (dayRenderInfo.date).toString().substring(0, 16) + "eventList"
+                axios.get("/events-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
+                    .then((response) => {
+                        events.innerHTML = '&#128197 E - ' + (response.data.length).toString();
+                        var eventDayTooltip = ""
+
+                        if (response.data.length === 0){
+                            eventDayTooltip = '<p class="tooltip_body">' + "No Events For This Day" + "</p>" + '<p class="tooltip_end"></p>'
+                            events.className = "hiddenCalendar calendarDeadline"
+                        } else {
+                            eventDayTooltip += '<p class="tooltip_title"> Events </p>'
+                            for (let i = 0; i < response.data.length; i++) {
+                                eventDayTooltip += '<p class="tooltip_body">' + (i+1).toString() + " - " + response.data[i].name + "</p>"
+                            }
+                            eventDayTooltip += '<p class="tooltip_end"></p>'
+
+                            events.className = "calendarDeadline"
+                        }
+
+                        $(events).tooltip({
+                            title: eventDayTooltip,
+                            placement: "right",
+                            trigger: "hover",
+                            container: "body",
+                            html: true
+                        });
+
+                    })
+
+                const deadlines = document.createElement("div")
+                deadlines.id = (dayRenderInfo.date).toString().substring(0, 16) + "deadlineList"
+                axios.get("/deadlines-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
+                    .then((response) => {
+                        deadlines.innerHTML = '&#128197 D - ' + (response.data.length).toString();
+                        var deadlineDayTooltip = ""
+
+                        if (response.data.length === 0){
+                            deadlineDayTooltip = '<p class="tooltip_body">' + "No Deadlines For This Day" + "</p>" + '<p class="tooltip_end"></p>'
+                            deadlines.className = "hiddenCalendar calendarDeadline"
+                        } else {
+                            deadlineDayTooltip += '<p class="tooltip_title"> Deadlines </p>'
+                            for (let i = 0; i < response.data.length; i++) {
+                                deadlineDayTooltip += '<p class="tooltip_body">' + (i+1).toString() + " - " + response.data[i].name + "</p>"
+                            }
+                            deadlineDayTooltip += '<p class="tooltip_end"></p>'
+
+                            deadlines.className = "calendarDeadline"
+                        }
+
+                        $(deadlines).tooltip({
+                            title: deadlineDayTooltip,
+                            placement: "right",
+                            trigger: "hover",
+                            container: "body",
+                            html: true
+                        });
+
+                    })
+
+                const milestones = document.createElement("div")
+                milestones.id = (dayRenderInfo.date).toString().substring(0, 16) + "milestoneList"
+                axios.get("/milestones-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
+                    .then((response) => {
+                        milestones.innerHTML = '&#128197 M - ' + (response.data.length).toString();
+                        var milestonesDayTooltip = ""
+
+                        if (response.data.length === 0){
+                            milestonesDayTooltip = '<p class="tooltip_body">' + "No Milestones For This Day" + "</p>" + '<p class="tooltip_end"></p>'
+                            milestones.className = "hiddenCalendar calendarDeadline"
+                        } else {
+                            milestonesDayTooltip += '<p class="tooltip_title"> Milestones </p>'
+                            for (let i = 0; i < response.data.length; i++) {
+                                milestonesDayTooltip += '<p class="tooltip_body">' + (i+1).toString() + " - " + response.data[i].name + "</p>"
+                            }
+                            milestonesDayTooltip += '<p class="tooltip_end"></p>'
+
+                            milestones.className = "calendarMilestone"
+                        }
+
+                        $(milestones).tooltip({
+                            title: milestonesDayTooltip,
+                            placement: "right",
+                            trigger: "hover",
+                            container: "body",
+                            html: true
+                        });
+
+                    })
+
+
+                childNode.appendChild(events)
+
+                childNode.appendChild(deadlines)
+
+                childNode.appendChild(milestones)
+            },
 
             // Greys out area's not in use by the project
             validRange: {
@@ -591,6 +737,8 @@
             }
         });
         calendar.render();
+        calendar.next();
+        calendar.prev();
         return calendar
     }
 
@@ -658,6 +806,5 @@
 <!-- JS -->
 <script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
 <!-- JS file for FullCalendar -->
-<script th:src="@{js/fullcalendar.js}"></script>
 </body>
 </html>
