@@ -34,8 +34,7 @@ import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = EditDatesController.class)
@@ -69,6 +68,12 @@ public class EditDatesControllerTest {
     @MockBean
     NavController navController;
 
+    @MockBean
+    DateSocketService dateSocketService;
+
+    @MockBean
+    ProjectItemService projectItemService;
+
     @Before
     public void setup() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(DetailsController.class)
@@ -89,11 +94,11 @@ public class EditDatesControllerTest {
     }
 
     /**
-     * Testing if a course admin can load the edit dates page, result should be the edit dates page loads
+     * Testing if a course admin can load the edit dates page with a deadline, result should be the edit dates page loads
      * @throws Exception
      */
     @Test
-    public void getEditDatesWithAdminCredentials() throws Exception {
+    public void getEditDatesForDeadlineWithAdminCredentials() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication())
@@ -104,15 +109,15 @@ public class EditDatesControllerTest {
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateAdmin)).thenReturn("admin");
         // Declaring mockito when conditions
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(deadlineService.getDeadlineById(0)).thenReturn(testDeadline);
+        when(projectItemService.getProjectItemByIdAndType("Deadline", 0)).thenReturn(testDeadline);
         // Executing the mocked get request, checking that the page is displayed
-        mockMvc.perform(get("/edit-date").param("projectId", String.valueOf(0)).param("dateId", String.valueOf(0)))
+        mockMvc.perform(get("/edit-date").param("projectId", String.valueOf(0)).param("dateId", String.valueOf(0)).param("itemType", "Deadline"))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                .andExpect(view().name("editDates"));
+                .andExpect(view().name("editDates")).andExpect(model().attribute("type", "Deadline"));
     }
 
     /**
-     * Testing if a teacher can load the date editing page, result should be a redirect to the editing page.
+     * Testing if a teacher can load the date editing page with a deadline, result should be a redirect to the editing page.
      * @throws Exception
      */
     @Test
@@ -125,11 +130,11 @@ public class EditDatesControllerTest {
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(deadlineService.getDeadlineById(0)).thenReturn(testDeadline);
+        when(projectItemService.getProjectItemByIdAndType("Deadline", 0)).thenReturn(testDeadline);
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
         // Executing the mocked get request, checking that the page is displayed
-        mockMvc.perform(get("/edit-date").param("projectId", String.valueOf(0)).param("dateId", String.valueOf(0)))
+        mockMvc.perform(get("/edit-date").param("projectId", String.valueOf(0)).param("dateId", String.valueOf(0)).param("itemType", "Deadline"))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
                 .andExpect(view().name("editDates"));
     }
@@ -149,9 +154,9 @@ public class EditDatesControllerTest {
         // Declaring mockito when conditions
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn("student");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(deadlineService.getDeadlineById(0)).thenReturn(testDeadline);
+        when(projectItemService.getProjectItemByIdAndType("Deadline", 0)).thenReturn(testDeadline);
         // Executing the mocked get request, checking that the page is displayed
-        mockMvc.perform(get("/edit-date").param("projectId", String.valueOf(0)).param("dateId", String.valueOf(0)))
+        mockMvc.perform(get("/edit-date").param("projectId", String.valueOf(0)).param("dateId", String.valueOf(0)).param("itemType", "Deadline"))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
                 .andExpect(view().name("error")); // Returns the error page as a student should not be able to access date editing
     }
@@ -170,12 +175,12 @@ public class EditDatesControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(deadlineService.getDeadlineById(0)).thenReturn(testDeadline);
+        when(projectItemService.getDeadlineById(0)).thenReturn(testDeadline);
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/edit-date").params(validParamsDeadline))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
-        verify(deadlineRepo).save(refEq(validDeadline)); // Verifies deadline was saved with correct details
+        verify(projectItemService).saveDeadlineEdit(refEq(validDeadline)); // Verifies deadline was saved with correct details
     }
 
     /**
@@ -192,12 +197,12 @@ public class EditDatesControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateAdmin)).thenReturn("admin");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(deadlineService.getDeadlineById(0)).thenReturn(testDeadline);
+        when(projectItemService.getDeadlineById(0)).thenReturn(testDeadline);
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/edit-date").params(validParamsDeadline))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
-        verify(deadlineRepo).save(refEq(validDeadline)); // Verifies deadline was saved with correct details
+        verify(projectItemService).saveDeadlineEdit(refEq(validDeadline)); // Verifies deadline was saved with correct details
     }
 
     /**
@@ -214,12 +219,12 @@ public class EditDatesControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(deadlineService.getDeadlineById(0)).thenReturn(testDeadline);
+        when(projectItemService.getDeadlineById(0)).thenReturn(testDeadline);
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/edit-date").params(deadlineBeforeProjectParams))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:edit-date?id=0&ids=0")); // Redirected to edit dates page
-        verify(deadlineRepo, never()).save(any(Deadline.class)); // Verifies deadline was not saved
+        verify(projectItemService, never()).saveDeadlineEdit(any(Deadline.class)); // Verifies deadline was not saved
     }
 
     /**
@@ -236,12 +241,12 @@ public class EditDatesControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(deadlineService.getDeadlineById(0)).thenReturn(testDeadline);
+        when(projectItemService.getDeadlineById(0)).thenReturn(testDeadline);
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/edit-date").params(deadlineAfterProjectParams))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:edit-date?id=0&ids=0")); // Redirected to edit dates page
-        verify(deadlineRepo, never()).save(any(Deadline.class)); // Verifies dealdine was not saved
+        verify(projectItemService, never()).saveDeadlineEdit(any(Deadline.class)); // Verifies dealdine was not saved
     }
 
     /**
@@ -258,10 +263,10 @@ public class EditDatesControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn("student");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(deadlineService.getDeadlineById(0)).thenReturn(testDeadline);
+        when(projectItemService.getDeadlineById(0)).thenReturn(testDeadline);
         mockMvc.perform(post("/edit-date").params(validParamsDeadline))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:details?id=" + 0)); // Redirected to details page
-        verify(deadlineRepo, never()).save(any(Deadline.class)); // Verifies deadline was not saved
+        verify(projectItemService, never()).saveDeadlineEdit(any(Deadline.class)); // Verifies deadline was not saved
     }
 }

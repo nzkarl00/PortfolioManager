@@ -22,7 +22,7 @@ import java.util.Optional;
 public class AddDatesController {
 
     @Autowired
-    private SimpMessagingTemplate template;
+    private DateSocketService dateSocketService;
     @Autowired
     private SprintRepository repository;
     @Autowired
@@ -156,7 +156,7 @@ public class AddDatesController {
         
         Sprint sprint = new Sprint(projectId, eventName, eventName, eventDescription, newStart, newEnd);
         repository.save(sprint);
-        sendSprintCalendarChange(projectId);
+        dateSocketService.sendSprintCalendarChange(projectId);
         return "redirect:details?id=";
     }
 
@@ -188,7 +188,7 @@ public class AddDatesController {
 
         Deadline deadline = new Deadline(project, eventName, eventDescription, endDate);
         deadlineRepository.save(deadline);
-        sendDeadlineCalendarChange(project, deadline);
+        dateSocketService.sendDeadlineCalendarChange(project, deadline);
         return "redirect:details?id=";
     }
 
@@ -219,7 +219,7 @@ public class AddDatesController {
 
         Milestone milestone = new Milestone(project, eventName, eventDescription, endDate);
         milestoneRepository.save(milestone);
-        sendMilestoneCalendarChange(project, milestone);
+        dateSocketService.sendMilestoneCalendarChange(project, milestone);
         return "redirect:details?id=";
     }
 
@@ -252,69 +252,10 @@ public class AddDatesController {
 
         Event event = new Event(project, eventName, eventDescription, startDate, endDate);
         eventRepository.save(event);
-        sendEventCalendarChange(project, event);
+        dateSocketService.sendEventCalendarChange(project, event);
         return "redirect:details?id=";
     }
 
-    /**
-     * Send an update sprint message through websockets to all the users on the same project details page
-     */
-    public void sendSprintCalendarChange(int id) {
-        this.template.convertAndSend("/topic/calendar/" + id, new EventUpdate(FetchUpdateType.SPRINT));
-    }
 
-    /**
-     * Send an update event message through websockets to all the users on the same project details page
-     */
-    public void sendEventCalendarChange(Project project, Event event) {
-        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
-        // loop through sprints
-        for (Sprint sprint: sprints) {
-            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.getStartDate());
-            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.getEndDate());
-            // if deadline is within sprint
-            if (event.getEndDate().isAfter(startDate) && event.getStartDate().isBefore(endDate)) {
-                /// send a deadline update
-                this.template.convertAndSend("/topic/calendar/" + project.getId()
-                    , new EventUpdate(FetchUpdateType.EVENT, sprint.getId()));
-            }
-        }
-    }
-
-    /**
-     * Send an update deadline message through websockets to all the users on the same project details page
-     */
-    public void sendDeadlineCalendarChange(Project project, Deadline deadline) {
-        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
-        // loop through sprints
-        for (Sprint sprint: sprints) {
-            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.getStartDate());
-            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.getEndDate());
-            // if deadline is within sprint
-            if (deadline.getEndDate().isAfter(startDate) && deadline.getStartDate().isBefore(endDate)) {
-                /// send a deadline update
-                this.template.convertAndSend("/topic/calendar/" + project.getId()
-                        , new EventUpdate(FetchUpdateType.DEADLINE, sprint.getId()));
-            }
-        }
-    }
-
-    /**
-     * Send an update milestone message through websockets to all the users on the same project details page
-     */
-    public void sendMilestoneCalendarChange(Project project, Milestone milestone) {
-        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
-        // loop through sprints
-        for (Sprint sprint: sprints) {
-            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.getStartDate());
-            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.getEndDate());
-            // if deadline is within sprint
-            if (milestone.getEndDate().isAfter(startDate) && milestone.getStartDate().isBefore(endDate)) {
-                /// send a deadline update
-                this.template.convertAndSend("/topic/calendar/" + project.getId()
-                        , new EventUpdate(FetchUpdateType.MILESTONE, sprint.getId()));
-            }
-        }
-    }
 
 }

@@ -58,6 +58,9 @@ public class DetailsControllerTest {
     SprintService sprintService;
 
     @MockBean
+    DateSocketService dateSocketService;
+
+    @MockBean
     NavController navController;
 
     @MockBean
@@ -211,7 +214,7 @@ public class DetailsControllerTest {
 
         when(projectService.getProjectById(0)).thenReturn(testProject);
         when(deadlineRepository.findById(0)).thenReturn(deadline);
-        mockMvc.perform(post("/delete-deadline").param("projectId", String.valueOf(0)).param("deadlineId", String.valueOf(0)))
+        mockMvc.perform(post("/delete-deadline").param("projectId", String.valueOf(0)).param("dateId", String.valueOf(0)))
                 .andExpect(status().is3xxRedirection()) // given this should move to details once deleted redirection is expected
                 .andExpect(view().name("redirect:details?id=0")); // page is moved
         verify(deadlineRepository).deleteById(deadline.getId()); // Just checks that the deadline repo was called to delete the deadline given the id
@@ -234,7 +237,7 @@ public class DetailsControllerTest {
 
         when(projectService.getProjectById(0)).thenReturn(testProject);
         when(deadlineRepository.findById(0)).thenReturn(deadline);
-        mockMvc.perform(post("/delete-deadline").param("projectId", String.valueOf(0)).param("deadlineId", String.valueOf(0)))
+        mockMvc.perform(post("/delete-deadline").param("projectId", String.valueOf(0)).param("dateId", String.valueOf(0)))
                 .andExpect(status().is3xxRedirection()) // given this should move to details once deleted redirection is expected
                 .andExpect(view().name("redirect:details?id=0")); // page is moved
         verify(deadlineRepository).deleteById(deadline.getId()); // Just checks that the deadline repo was called to delete the deadline given the id
@@ -258,7 +261,7 @@ public class DetailsControllerTest {
         utilities.when(() -> AuthStateInformer.getId(validAuthStateStudent)).thenReturn(1);
         when(projectService.getProjectById(1)).thenReturn(testProject);
 
-        mockMvc.perform(post("/delete-deadline").param("projectId", String.valueOf(1)).param("deadlineId", String.valueOf(1)))
+        mockMvc.perform(post("/delete-deadline").param("projectId", String.valueOf(1)).param("dateId", String.valueOf(1)))
                 .andExpect(status().is3xxRedirection()) // given this should redirect to the details once attempted redirection is expected
                 .andExpect(view().name("redirect:details?id=1"));
         verify(deadlineRepository, never()).deleteById(deadline.getId()); // Just checks that the deadline repo was never called
@@ -282,7 +285,7 @@ public class DetailsControllerTest {
 
         when(projectService.getProjectById(0)).thenReturn(testProject);
         when(milestoneRepository.findById(0)).thenReturn(milestone);
-        mockMvc.perform(post("/delete-milestone").param("projectId", String.valueOf(0)).param("milestoneId", String.valueOf(0)))
+        mockMvc.perform(post("/delete-milestone").param("projectId", String.valueOf(0)).param("dateId", String.valueOf(0)))
                 .andExpect(status().is3xxRedirection()) // given this should move to details once deleted redirection is expected
                 .andExpect(view().name("redirect:details?id=0")); // page is moved
         verify(milestoneRepository).deleteById(milestone.getId()); // Just checks that the deadline repo was called to delete the deadline given the id
@@ -305,7 +308,7 @@ public class DetailsControllerTest {
 
         when(projectService.getProjectById(0)).thenReturn(testProject);
         when(milestoneRepository.findById(0)).thenReturn(milestone);
-        mockMvc.perform(post("/delete-milestone").param("projectId", String.valueOf(0)).param("milestoneId", String.valueOf(0)))
+        mockMvc.perform(post("/delete-milestone").param("projectId", String.valueOf(0)).param("dateId", String.valueOf(0)))
                 .andExpect(status().is3xxRedirection()) // given this should move to details once deleted redirection is expected
                 .andExpect(view().name("redirect:details?id=0")); // page is moved
         verify(milestoneRepository).deleteById(milestone.getId()); // Just checks that the deadline repo was called to delete the deadline given the id
@@ -329,7 +332,7 @@ public class DetailsControllerTest {
         utilities.when(() -> AuthStateInformer.getId(validAuthStateStudent)).thenReturn(1);
         when(projectService.getProjectById(1)).thenReturn(testProject);
 
-        mockMvc.perform(post("/delete-milestone").param("projectId", String.valueOf(1)).param("milestoneId", String.valueOf(1)))
+        mockMvc.perform(post("/delete-milestone").param("projectId", String.valueOf(1)).param("dateId", String.valueOf(1)))
                 .andExpect(status().is3xxRedirection()) // given this should redirect to the details once attempted redirection is expected
                 .andExpect(view().name("redirect:details?id=1"));
         verify(milestoneRepository, never()).deleteById(milestone.getId()); // Just checks that the deadline repo was never called
