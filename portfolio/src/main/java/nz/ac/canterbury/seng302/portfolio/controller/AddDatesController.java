@@ -235,9 +235,10 @@ public class AddDatesController {
     private String addEvent(Project project, String eventName, String eventDescription, String eventStartDate, String eventEndDate){
         Date projStart = DateParser.stringToDate(project.getStartDateString());
         Date projEnd = DateParser.stringToDate(project.getEndDateString());
-        LocalDateTime startDate = DateParser.stringToLocalDateTime(eventStartDate, "");
-        LocalDateTime endDate = DateParser.stringToLocalDateTime(eventEndDate, "");
-        Date checkForValidationDate = DateParser.stringToDate(eventStartDate);
+        LocalDateTime startDate = DateParser.stringToLocalDateTime(eventStartDate.split("T")[0], eventStartDate.split("T")[1]);
+        LocalDateTime endDate = DateParser.stringToLocalDateTime(eventEndDate.split("T")[0], eventEndDate.split("T")[1]);
+
+        Date checkForValidationDate = DateParser.stringToDate(eventEndDate.split("T")[0]);
 
         if (eventName.isBlank()) {
             List<Event> events = eventRepository.findAllByParentProject(project);

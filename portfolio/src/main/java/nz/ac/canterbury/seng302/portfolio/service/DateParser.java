@@ -80,15 +80,15 @@ public class DateParser {
     public static Date stringToDate(String dateString) {
         Date date = null;
         try {
-            date = new SimpleDateFormat("dd/MMM/yyyy").parse(dateString);
+            return new SimpleDateFormat("dd/MMM/yyyy").parse(dateString);
         } catch (Exception e1) {
             try {
-                date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+                return new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
             } catch (Exception e2) {
-                System.err.println("Error parsing date: " + e2.getMessage() + " " + e1.getMessage());
+                System.err.println("Error parsing date: " + e1.getMessage() + e2.getMessage());
             }
         }
-        return date;
+        return null;
     }
 
     /**

@@ -6,18 +6,15 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -52,9 +49,6 @@ public class DetailsController {
     private AccountClientService accountClientService;
     @Autowired
     private NavController navController;
-    @Autowired
-    private DeadlineService deadlineService;
-
 
     String errorShow = "display:none;";
     String errorCode = "";
@@ -420,5 +414,29 @@ public class DetailsController {
             }
         }
         return ResponseEntity.ok(sendingMilestones);
+    }
+
+
+    /**
+     * Sends all the events in JSON for a given project
+     * @param principal authstate to validate the user
+     * @param projectId the id of the project to
+     * @return the list of events in JSON
+     */
+    @GetMapping("/events")
+    public ResponseEntity<List<Event>> getProjectEvents(@AuthenticationPrincipal AuthState principal,
+                                                                @RequestParam(value="id") Integer projectId,
+                                                                @RequestParam(value="sprintId") Integer sprintId) throws Exception {
+        List<Event> events = eventRepo.findAllByParentProject(projectService.getProjectById(projectId));
+        Optional<Sprint> sprint = repository.findById(sprintId);
+        List<Event> sendingEvents = new ArrayList<>();
+        for (Event event : events) {
+            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
+            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
+            if ((event.getStartDate().isAfter(startDate)) && (event.getStartDate().isBefore(endDate))) {
+                sendingEvents.add(event);
+            }
+        }
+        return ResponseEntity.ok(sendingEvents);
     }
 }

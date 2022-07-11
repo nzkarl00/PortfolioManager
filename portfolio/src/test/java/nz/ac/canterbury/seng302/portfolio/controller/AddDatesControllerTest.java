@@ -68,7 +68,7 @@ public class AddDatesControllerTest {
 
     private final Deadline validDeadline = new Deadline(testProjectForEvents, "Deadline 1", "This is a deadline for project 1", may4);
     private final Milestone validMilestone = new Milestone(testProjectForEvents, "Milestone 1", "This is a milestone for project 1", milestoneMay4);
-    private final Event validEvent = new Event(testProjectForEvents, "Event 1", "This is a Event for project 1", milestoneMay4, milestoneMay4);
+    private final Event validEvent = new Event(testProjectForEvents, "Event 1", "This is a Event for project 1", may4, may4);
 
     @Autowired
     private MockMvc mockMvc;
@@ -138,8 +138,8 @@ public class AddDatesControllerTest {
         validParamsEvent.add("projectId", String.valueOf(0));
         validParamsEvent.add("eventName", "Event 1");
         validParamsEvent.add("eventType", "Event");
-        validParamsEvent.add("eventStartDate", "2022-05-04");
-        validParamsEvent.add("eventEndDate", "2022-05-04");
+        validParamsEvent.add("eventStartDate", "2022-05-04T16:20");
+        validParamsEvent.add("eventEndDate", "2022-05-04T16:20");
         validParamsEvent.add("eventDescription", "This is a Event for project 1");
 
         startsBeforeProjectParams.add("projectId", String.valueOf(0));
@@ -182,14 +182,14 @@ public class AddDatesControllerTest {
         eventStartsBeforeProjectParams.add("projectId", String.valueOf(0));
         eventStartsBeforeProjectParams.add("eventName", "Event 1");
         eventStartsBeforeProjectParams.add("eventType", "Event");
-        eventStartsBeforeProjectParams.add("eventStartDate", "2022-04-01");
-        eventStartsBeforeProjectParams.add("eventEndDate", "2022-04-01");
+        eventStartsBeforeProjectParams.add("eventStartDate", "2022-04-01T16:20");
+        eventStartsBeforeProjectParams.add("eventEndDate", "2022-04-01T16:20");
         eventStartsBeforeProjectParams.add("eventDescription", "This is a Event for project 1");
         eventEndsAfterProjectParams.add("projectId", String.valueOf(0));
         eventEndsAfterProjectParams.add("eventName", "Event 1");
         eventEndsAfterProjectParams.add("eventType", "Event");
-        eventEndsAfterProjectParams.add("eventStartDate", "2022-07-01");
-        eventEndsAfterProjectParams.add("eventEndDate", "2022-07-01");
+        eventEndsAfterProjectParams.add("eventStartDate", "2022-07-01T16:20");
+        eventEndsAfterProjectParams.add("eventEndDate", "2022-07-01T16:20");
         eventEndsAfterProjectParams.add("eventDescription", "This is a Event for project 1");
 
     }
