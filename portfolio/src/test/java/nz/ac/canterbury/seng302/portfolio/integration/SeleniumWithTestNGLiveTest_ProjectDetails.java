@@ -1,23 +1,15 @@
 package nz.ac.canterbury.seng302.portfolio.integration;
-
-import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Note this is a template to pull from

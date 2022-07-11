@@ -284,6 +284,12 @@
         milestones.innerText = "Milestones:"
         col3.appendChild(milestones)
 
+        const events = document.createElement("div")
+        events.className = "sprint-description display_data"
+        events.id = "events" + sprint.id
+        events.innerText = "Events:"
+        col3.appendChild(events)
+
         const col4 = document.createElement("div")
         col4.className = "col-2"
         sprintDiv.appendChild(col4)
@@ -363,6 +369,64 @@
         eachDeadline.appendChild(deleteDeadline)
     }
 
+    function buildEvent(event, sprintId) {
+        const mainDiv = document.getElementById("events" + sprintId)
+        const eachEvent = document.createElement("form")
+        const deleteEvent = document.createElement("button")
+        const editEvent = document.createElement("button")
+        const projectId = document.createElement("input")
+        const eventId = document.createElement("input")
+        projectId.style = "display:none;"
+        projectId.name = "projectId"
+        projectId.id = "projectId"
+        projectId.value = [[${project.getId()}]]
+        projectId.type = "number"
+
+        eventId.style = "display:none;"
+        eventId.name = "dateId"
+        eventId.id = "eventId"
+        eventId.value = event.id
+        eventId.type = "number"
+
+        editEvent.type = "submit"
+        editEvent.className = "fa fa-edit each-deadline-edit"
+        editEvent.formMethod = "get"
+        editEvent.formAction = "edit-event" //TODO
+
+        deleteEvent.type = "submit"
+        deleteEvent.id = "deleteButton"
+        deleteEvent.className = "fa fa-trash each-deadline"
+
+        eachEvent.method = "post"
+        eachEvent.action = "delete-deadline"
+        eachEvent.innerText = event.name
+        eachEvent.className = "posAbsolute"
+
+        const eventStartDate = String(event.startDate).substring(0,10);
+        const eventEndDate = String(event.endDate).substring(0,10);
+        const eventStartTime = "at " + String(event.startDate).substring(11,16);
+        const eventEndTime = "at " + String(event.endDate).substring(11,16);
+        var eventTooltip;
+        if (event.description !== undefined) {
+            eventTooltip = '<p class="tooltip_title">' + event.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Start Date: ' + eventStartDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventStartTime + '</p> <p class="tooltip_body">' + "End Date: " + eventEndDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventEndTime + '</p> <p class="tooltip_body">' + event.description + "</p>"
+        } else {
+            eventTooltip = '<p class="tooltip_title">' + event.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Start Date: ' + eventStartDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventStartTime + '</p> <p class="tooltip_body">' + "End Date: " + eventEndDate + '</p> <p class="tooltip_body">' + 'Ends at: ' + eventEndTime + '</p>'
+        }
+
+        $(eachEvent).tooltip({
+            title: eventTooltip,
+            placement: "right",
+            trigger: "hover",
+            container: "body",
+            html: true,
+        });
+
+        mainDiv.appendChild(eachEvent)
+        eachEvent.appendChild(projectId)
+        eachEvent.appendChild(eventId)
+        eachEvent.appendChild(editEvent)
+        eachEvent.appendChild(deleteEvent)
+    }
 
     function buildMilestone(milestone, sprintId) {
         const mainDiv = document.getElementById("milestones" + sprintId)
@@ -465,6 +529,12 @@
                                     buildMilestone(milestone, sprint.id)
                                 }
                             })
+                            axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+                                .then((response) => {
+                                    for (const event of response.data) {
+                                        buildEvent(event, sprint.id)
+                                    }
+                                })
                         }
                         renderCalendar(response.data)
                     })
@@ -506,6 +576,17 @@
                             .then((response) => {
                                 renderCalendar(response.data)
                             })
+                        })
+                }
+
+                if (JSON.parse(update.body).updateType == "EVENT") {
+                    axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":JSON.parse(update.body).sprintId}})
+                        .then((response) => {
+
+                            deleteAllEvents(JSON.parse(update.body).sprintId)
+                            for (const event of response.data) {
+                                buildEvent(event, JSON.parse(update.body).sprintId)
+                            }
                         })
                 }
             });
@@ -775,6 +856,17 @@
         }
     }
 
+    function deleteAllEvents(id) {
+        var e = document.getElementById("events" + id);
+
+        //e.firstElementChild can be used.
+        var child = e.lastElementChild;
+        while (child) {
+            e.removeChild(child);
+            child = e.lastElementChild;
+        }
+    }
+
     // initial loading, base the sprints off of thymeleaf
     // then set the calendar and the details tabs with the correct data
     let initialSprintList = [[${sprints}]];
@@ -793,6 +885,13 @@
                 for (const milestone of response.data) {
                     this.sprint = sprint
                     buildMilestone(milestone, sprint.id)
+                }
+            })
+        axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+            .then((response) => {
+                for (const event of response.data) {
+                    this.sprint = sprint
+                    buildEvent(event, sprint.id)
                 }
             })
     }
