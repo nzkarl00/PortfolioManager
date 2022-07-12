@@ -376,6 +376,8 @@
         const editEvent = document.createElement("button")
         const projectId = document.createElement("input")
         const eventId = document.createElement("input")
+        const eventType = document.createElement("input")
+
         projectId.style = "display:none;"
         projectId.name = "projectId"
         projectId.id = "projectId"
@@ -388,10 +390,16 @@
         eventId.value = event.id
         eventId.type = "number"
 
+        eventType.style = "display:none;"
+        eventType.name = "itemType"
+        eventType.id = "itemType"
+        eventType.value = "Event"
+        eventType.type = "text"
+
         editEvent.type = "submit"
         editEvent.className = "fa fa-edit each-deadline-edit"
         editEvent.formMethod = "get"
-        editEvent.formAction = "edit-event" //TODO
+        editEvent.formAction = "edit-date"
 
         deleteEvent.type = "submit"
         deleteEvent.id = "deleteButton"
@@ -426,6 +434,7 @@
         eachEvent.appendChild(eventId)
         eachEvent.appendChild(editEvent)
         eachEvent.appendChild(deleteEvent)
+        eachEvent.appendChild(eventType)
     }
 
     function buildMilestone(milestone, sprintId) {
