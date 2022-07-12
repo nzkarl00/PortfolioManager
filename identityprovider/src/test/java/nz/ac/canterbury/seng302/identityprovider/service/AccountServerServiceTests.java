@@ -771,5 +771,43 @@ public class AccountServerServiceTests {
         assertEquals("Uploading", response.getMessage());
         assertEquals(FileUploadStatus.PENDING, response.getStatus());
     }
+
+    @Test
+    void updateUsersSorted_blueSkyAsc() {
+
+        AccountProfile testAccountProfile2 = new AccountProfile("test username2",
+            "test hash2", new Date(), "test bio2", "test email2",
+            "test/photopath/2", "firstname2", "lastname2", "pronouns2");
+        Role otherRole = new Role(testAccountProfile, "2teacher");
+
+        when(roleRepo.findAllByRegisteredUser(testAccountProfile2)).thenReturn(new ArrayList<>(List.of(otherRole)));
+        when(roleRepo.findAllByRegisteredUser(testAccountProfile)).thenReturn(new ArrayList<>(List.of(testRole)));
+
+        testAccountProfile.addRoleTestingOnly(testRole);
+        testAccountProfile2.addRoleTestingOnly(otherRole);
+        List<AccountProfile> sorted = new ArrayList<>();
+        ass.updateUsersSorted(new ArrayList<>(List.of(testAccountProfile, testAccountProfile2)), sorted, true);
+        assertEquals(sorted.get(0), testAccountProfile2);
+        assertEquals(sorted.get(1), testAccountProfile);
+    }
+
+    @Test
+    void updateUsersSorted_blueSkyDesc() {
+
+        AccountProfile testAccountProfile2 = new AccountProfile("test username2",
+            "test hash2", new Date(), "test bio2", "test email2",
+            "test/photopath/2", "firstname2", "lastname2", "pronouns2");
+        Role otherRole = new Role(testAccountProfile, "2teacher");
+
+        when(roleRepo.findAllByRegisteredUser(testAccountProfile2)).thenReturn(new ArrayList<>(List.of(otherRole)));
+        when(roleRepo.findAllByRegisteredUser(testAccountProfile)).thenReturn(new ArrayList<>(List.of(testRole)));
+
+        testAccountProfile.addRoleTestingOnly(testRole);
+        testAccountProfile2.addRoleTestingOnly(otherRole);
+        List<AccountProfile> sorted = new ArrayList<>();
+        ass.updateUsersSorted(new ArrayList<>(List.of(testAccountProfile, testAccountProfile2)), sorted, false);
+        assertEquals(sorted.get(1), testAccountProfile2);
+        assertEquals(sorted.get(0), testAccountProfile);
+    }
 }
 
