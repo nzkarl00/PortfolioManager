@@ -98,7 +98,7 @@ public class AccountProfile {
         AccountString += "Date registered: " + registerDate + "\n";
         AccountString += "Personal biography: " + bio + "\n";
         AccountString += "Email: " + email + "\n";
-        AccountString += "Path to photo: " + photoPath;
+        AccountString += "Path to photo: " + (photoPath != null ? photoPath : "DEFAULT");
         return AccountString;
     }
 
@@ -150,7 +150,7 @@ public class AccountProfile {
     public List<GroupMembership> getGroups() {return groups;}
 
     public Role getHighestRole() {
-        if (roles.size() == 0) {
+        if (roles == null || roles.isEmpty()) {
             return null;
         }
         Role highestRole = roles.get(0);
@@ -172,10 +172,6 @@ public class AccountProfile {
     public String getNickname() {
         return nickname;
     }
-
-    public void setID(int newId) {
-        this.id = newId;
-    } // TODO should this be editable, is it not just a primary key?
 
     public void setUsername(String newUsername) {
         this.username = newUsername;
@@ -201,6 +197,10 @@ public class AccountProfile {
         this.middleName = middleName;
     }
 
+    public void setRegisterDate(Date registerDate) {
+        this.registerDate = registerDate;
+    }
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
@@ -220,9 +220,6 @@ public class AccountProfile {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
-    }
-    public void deleteRole(Role role) {
-        roles.remove(role);
     }
 
 }
