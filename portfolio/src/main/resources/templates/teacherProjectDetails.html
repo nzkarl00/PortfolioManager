@@ -161,6 +161,8 @@
     // not before as that will cause sizing errors
     let flag = false;
 
+
+
     $('#calendar-tab').on('click', function (e) {
         if(!$('#toCalendar').hasClass('disabled') && flag) {
             calendarTryAgain()
@@ -362,13 +364,13 @@
 
     var stompClient = null;
 
-    function connect() {
+    function connect(subTopic) {
         var socket = new SockJS('/gs-guide-websocket');
         stompClient = Stomp.over(socket);
         // connect to the portfolio server
         stompClient.connect({}, function (frame) {
             // subscribe to the global topic
-            stompClient.subscribe('/topic/calendar/'+[[${project.getId()}]], function (update) {
+            stompClient.subscribe('/topic/' + subTopic + '/' +[[${project.getId()}]], function (update) {
                 // if it is a sprint update, update the calendar and details sprints
                 if (JSON.parse(update.body).updateType == "SPRINT") {
                     axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
@@ -576,7 +578,10 @@
 
     document.addEventListener('DOMContentLoaded', function() { renderCalendar(initialSprintList) });
 
-    connect();
+    if ([[${roleName}]] == 'teacher') {
+        connect('edit')
+    }
+    connect('calendar');
 
 </script>
 
