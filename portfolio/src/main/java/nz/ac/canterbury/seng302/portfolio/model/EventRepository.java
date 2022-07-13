@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -13,4 +14,5 @@ public interface EventRepository extends CrudRepository<Event, Integer> {
     Event findById(int id);
     Event findByParentProject(int id);
     List<Event> findAllByParentProject(Project project);
+    List<Event> findAllByParentProjectAndStartDateBetween(Project project, LocalDateTime startDate, LocalDateTime endDate);
 }

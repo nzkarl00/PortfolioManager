@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * An abstract class designed to provide a base for the three specific types of time bound items related to a project.
@@ -13,7 +14,8 @@ import java.time.LocalDateTime;
 @Entity
 public abstract class ProjectTimeBoundItem {
     public static final int MAX_NAME_LENGTH = 60;
-    public static final int MAX_DESCRIPTION_LENGTH = 60;
+    public static final int MAX_DESCRIPTION_LENGTH = 240;
+    public static final DateTimeFormatter htmlDateFormat = DateTimeFormatter.ofPattern("YYYY-MM-dd");
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -86,7 +88,7 @@ public abstract class ProjectTimeBoundItem {
      * Set the name of the item
      * @param name
      */
-    void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -94,7 +96,7 @@ public abstract class ProjectTimeBoundItem {
      * Set the description of the item.
      * @param description
      */
-    void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -103,7 +105,7 @@ public abstract class ProjectTimeBoundItem {
      * For some instances this may be equivalent to setting the end date.
      * @param startDate
      */
-    abstract void setStartDate(LocalDateTime startDate);
+    public abstract void setStartDate(LocalDateTime startDate);
 
     /**
      * Set the end date of the item.
@@ -116,7 +118,7 @@ public abstract class ProjectTimeBoundItem {
      * Get the item name
      * @return
      */
-    String getName() {
+    public String getName() {
         return name;
     }
 
@@ -124,7 +126,7 @@ public abstract class ProjectTimeBoundItem {
      * Get the item description
      * @return
      */
-    String getDescription() {
+    public String getDescription() {
         return description;
     }
 
@@ -132,17 +134,19 @@ public abstract class ProjectTimeBoundItem {
      * Get the start date
      * @return
      */
-    abstract LocalDateTime getStartDate();
+    public abstract LocalDateTime getStartDate();
 
     /**
      * Get the end date.
      * @return
      */
-    abstract LocalDateTime getEndDate();
+    public abstract LocalDateTime getEndDate();
 
     /**
      * Gets the type of date
      * @return
      */
     abstract String getType();
+
+    abstract String getHTMLStartDate();
 }

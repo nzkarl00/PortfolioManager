@@ -1,22 +1,15 @@
 package nz.ac.canterbury.seng302.portfolio.integration;
-
-import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import org.junit.jupiter.api.Assertions;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Scanner;
 
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Note this is a template to pull from
@@ -65,11 +58,29 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
     }
 
 
+    /**
+     * Gets the password for the pre-generated admin account from the application files
+     * @throws FileNotFoundException
+     */
     public void getPassword_ForAdmin_FromTextFile() throws FileNotFoundException {
         String originpath = System.getProperty("user.dir");
         File passwordFile = new File(originpath.substring(0, originpath.length()-9) + "identityprovider/defaultAdminPassword.txt");
         Scanner passwordReader = new Scanner(passwordFile);
         passwordText = passwordReader.nextLine();
+    }
+
+    /**
+     * Takes an element and validates that it returns a tooltip with valid text
+     * @param element the element that a tooltip must be found for
+     * @param expectedText the text that the tooltip is expected to contain
+     */
+    public void checkTooltip_isValid(WebElement element, String expectedText) throws InterruptedException {
+        Actions actions = new Actions(seleniumExample.config.getDriver());
+        actions.moveToElement(element).perform();
+        WebElement tooltip = seleniumExample.config.getDriver().findElement(By.className("tooltip-inner"));
+        List<WebElement> tooltipList = tooltip.findElements(By.xpath(".//*"));
+        String tooltipText = tooltipList.get(0).getText() + tooltipList.get(1).getText() + tooltipList.get(2).getText();
+        Assertions.assertEquals(expectedText, tooltipText);
     }
 
 
@@ -145,7 +156,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement dateSave = seleniumExample.config.getDriver().findElement(By.id("dateSave"));
         sprintName.sendKeys("SprintOne");
         sprintStart.click();
-        sprintStart.sendKeys("2033-02-01");
+        sprintStart.sendKeys("2033-01-02");
         sprintEnd.click();
         sprintEnd.sendKeys("2033-03-01");
         sprintDesc.sendKeys("TestOne");
@@ -159,7 +170,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement sprintCheckDate = firstSprint.findElement(By.id("sprintDate"));
         WebElement sprintCheckDesc = firstSprint.findElement(By.id("sprintDesc"));
         WebElement sprintCheckName = firstSprint.findElement(By.id("sprintName"));
-        Assertions.assertEquals("01/Feb/2033-01/Mar/2033", sprintCheckDate.getText());
+        Assertions.assertEquals("02/Jan/2033-01/Mar/2033", sprintCheckDate.getText());
         Assertions.assertEquals("Description: TestOne", sprintCheckDesc.getText());
         Assertions.assertEquals("SprintOne", sprintCheckName.getText());
     }
@@ -167,7 +178,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
     /**
      * Creates a deadline in the initial sprint
      */
-    public void inProject_addDeadline(){
+    public void inProject_addDeadline() throws InterruptedException {
         seleniumExample.config.getDriver().get(projectInfoUrl);
         WebElement detailAccess = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         WebElement addDateAccess = seleniumExample.config.getDriver().findElement(By.id("addDateButton"));
@@ -187,13 +198,19 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement dateSave = seleniumExample.config.getDriver().findElement(By.id("dateSave"));
         deadlineName.sendKeys("TestOne");
         deadlineStart.click();
-        deadlineStart.sendKeys("2033-02-05");
+        deadlineStart.sendKeys("2033-01-04");
         deadlineEnd.click();
         deadlineEnd.sendKeys("08:00");
         deadlineDesc.sendKeys("TestOne");
         dateSave.click();
 
         seleniumExample.config.getDriver().get(projectInfoUrl);
+
+
+        WebElement deadlineCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 deadlineList"));
+        String deadlineCalendarString = deadlineCalendar.getText();
+        Assertions.assertEquals("\uD83D\uDCC5 D - 1", deadlineCalendarString);
+
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
@@ -203,13 +220,15 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlines"+sprint1Id));
         WebElement firstDeadline = deadlineList.findElement(By.cssSelector("form:first-child"));
 
+        checkTooltip_isValid(firstDeadline, "TestOneDue: 2033-01-04At: 08:00:00");
+
         Assertions.assertEquals("TestOne", firstDeadline.getText());
     }
 
     /**
      * Creates a milestone in the initial sprint
      */
-    public void inProject_addMilestone(){
+    public void inProject_addMilestone() throws InterruptedException {
         seleniumExample.config.getDriver().get(projectInfoUrl);
         WebElement detailAccess = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         WebElement addDateAccess = seleniumExample.config.getDriver().findElement(By.id("addDateButton"));
@@ -228,11 +247,16 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement dateSave = seleniumExample.config.getDriver().findElement(By.id("dateSave"));
         milestoneName.sendKeys("MileOne");
         milestoneStart.click();
-        milestoneStart.sendKeys("2033-02-05");
+        milestoneStart.sendKeys("2033-01-04");
         milestoneDesc.sendKeys("MileOne");
         dateSave.click();
 
         seleniumExample.config.getDriver().get(projectInfoUrl);
+
+        WebElement milestoneCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 milestoneList"));
+        String milestoneCalendarString = milestoneCalendar.getText();
+        Assertions.assertEquals("\uD83D\uDCC5 M - 1", milestoneCalendarString);
+
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
@@ -240,13 +264,16 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("milestones"+sprint1Id));
         WebElement firstDeadline = deadlineList.findElement(By.cssSelector("form:first-child"));
 
+        WebElement milestoneTooltip = firstDeadline;
+
+
         Assertions.assertEquals("MileOne", firstDeadline.getText());
     }
 
     /**
      * Creates a second deadline in the initial sprint
      */
-    public void inProject_addSecondDeadline() {
+    public void inProject_addSecondDeadline() throws InterruptedException {
         seleniumExample.config.getDriver().get(projectInfoUrl);
         WebElement detailAccess = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         WebElement addDateAccess = seleniumExample.config.getDriver().findElement(By.id("addDateButton"));
@@ -267,13 +294,18 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement dateSave = seleniumExample.config.getDriver().findElement(By.id("dateSave"));
         deadlineName.sendKeys("TestTwo");
         deadlineStart.click();
-        deadlineStart.sendKeys("2033-02-15");
+        deadlineStart.sendKeys("2033-01-04");
         deadlineEnd.click();
         deadlineEnd.sendKeys("15:00");
         deadlineDesc.sendKeys("TestTwo");
         dateSave.click();
 
         seleniumExample.config.getDriver().get(projectInfoUrl);
+
+        WebElement deadlineCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 deadlineList"));
+        String deadlineCalendarString = deadlineCalendar.getText();
+        Assertions.assertEquals("\uD83D\uDCC5 D - 2", deadlineCalendarString);
+
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
@@ -292,7 +324,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
     /**
      * Creates a second milestone in the initial sprint
      */
-    public void inProject_addSecondMilestone() {
+    public void inProject_addSecondMilestone() throws InterruptedException {
         seleniumExample.config.getDriver().get(projectInfoUrl);
         WebElement detailAccess = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         WebElement addDateAccess = seleniumExample.config.getDriver().findElement(By.id("addDateButton"));
@@ -312,11 +344,16 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement dateSave = seleniumExample.config.getDriver().findElement(By.id("dateSave"));
         milestoneName.sendKeys("MileTwo");
         milestoneStart.click();
-        milestoneStart.sendKeys("2033-02-15");
+        milestoneStart.sendKeys("2033-01-04");
         milestoneDesc.sendKeys("TestTwo");
         dateSave.click();
 
         seleniumExample.config.getDriver().get(projectInfoUrl);
+
+        WebElement milestoneCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 milestoneList"));
+        String milestoneCalendarString = milestoneCalendar.getText();
+        Assertions.assertEquals("\uD83D\uDCC5 M - 2", milestoneCalendarString);
+
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
@@ -335,7 +372,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
     /**
      * Delete a deadline in the first sprint
      */
-    public void inProject_deleteDeadline() {
+    public void inProject_deleteDeadline() throws InterruptedException {
         seleniumExample.config.getDriver().get(projectInfoUrl);
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
@@ -348,10 +385,15 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement deleteDeadline = firstDeadline.findElement(By.id("deleteButton"));
         deleteDeadline.click();
 
+        WebElement deadlineCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 deadlineList"));
+        String deadlineCalendarString = deadlineCalendar.getText();
+        Assertions.assertEquals("\uD83D\uDCC5 D - 1", deadlineCalendarString);
+
         detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
         WebElement deadlineList2 = seleniumExample.config.getDriver().findElement(By.id("deadlines"+sprint1Id));
         WebElement secondDeadline = deadlineList2.findElement(By.cssSelector("form:nth-child(1)"));
+
         Assertions.assertEquals("TestTwo", secondDeadline.getText());
 
     }
@@ -359,7 +401,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
     /**
      * Delete a milestone in the first sprint
      */
-    public void inProject_deleteMilestone() {
+    public void inProject_deleteMilestone() throws InterruptedException {
         seleniumExample.config.getDriver().get(projectInfoUrl);
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
@@ -372,10 +414,15 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement deleteMilestone = firstMilestone.findElement(By.id("deleteButton"));
         deleteMilestone.click();
 
+        WebElement milestoneCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 milestoneList"));
+        String milestoneCalendarString = milestoneCalendar.getText();
+        Assertions.assertEquals("\uD83D\uDCC5 M - 1", milestoneCalendarString);
+
         detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
         WebElement milestoneList2 = seleniumExample.config.getDriver().findElement(By.id("milestones"+sprint1Id));
         WebElement secondMilestone = milestoneList2.findElement(By.cssSelector("form:nth-child(1)"));
+
         Assertions.assertEquals("MileTwo", secondMilestone.getText());
 
     }
@@ -508,6 +555,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
 
         WebElement milestoneList = seleniumExample.config.getDriver().findElement(By.id("milestones"+sprint2Id));
         WebElement firstMilestone = milestoneList.findElement(By.cssSelector("form:first-child"));
+
 
         Assertions.assertEquals("MileThree", firstMilestone.getText());
 

@@ -96,4 +96,9 @@ public class Deadline extends ProjectTimeBoundItem {
      */
     public String getDescription() {return this.description; }
 
+    /**
+     * Gets the date in format YYYY-MM-dd
+     * @return
+     */
+    public String getHTMLStartDate() { return htmlDateFormat.format(startDate); }
 }

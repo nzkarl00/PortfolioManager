@@ -25,9 +25,9 @@ class DateParsingTests {
 
     @Test
     void displayDateCurrentMonth() {
-        String expectedString = " 28 June 2022";
+        String expectedString = " 28 July 2022";
         Calendar c = Calendar.getInstance();
-        c.set(2022, 5, 28, 0, 0);
+        c.set(2022, 6, 28, 0, 0);
         Long seconds = c.getTime().getTime();
         UserResponse.Builder response = UserResponse.newBuilder().setCreated(
             Timestamp.newBuilder().setSeconds(seconds/1000));

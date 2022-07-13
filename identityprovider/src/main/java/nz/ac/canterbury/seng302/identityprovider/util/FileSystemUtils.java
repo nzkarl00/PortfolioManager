@@ -22,13 +22,6 @@ public class FileSystemUtils {
 
     }
 
-    public FileSystemUtils getInstance() {
-        if (instance != null) {
-            instance = new FileSystemUtils();
-        }
-        return instance;
-    }
-
     /**
      * Resolve the directory in which user profile images should be stored.
      * @return A path to the directory in which user content should be stored
