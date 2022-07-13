@@ -100,5 +100,15 @@
 
 <!-- JS -->
 <script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    function sendEditStatus() {
+        axios.post("/edit", null, {params:{"projectId":[[${project.getId()}]], "type":"project"}})
+        setTimeout(sendEditStatus, 2000)
+    }
+
+    sendEditStatus();
+</script>
+
 </body>
 </html>

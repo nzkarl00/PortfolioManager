@@ -91,6 +91,7 @@
                 <button class="signup_box"th:style="${errorCalendarShow}">
                     <p class="signup_error" th:text="${errorCalendarCode}"/>
                 </button>
+                <p id="editStatus"></p>
             </div>
 
             <div id="project-details-tab" class="tab-pane fade">
@@ -140,7 +141,6 @@
                     <div class="row-1">
                         <br><br><br>
                     </div>
-
                 </div>
 
             </div>
@@ -512,8 +512,12 @@
         eachMilestone.appendChild(deleteMilestone)
     }
 
-    var stompClient = null;
+    function resetEditStatus() {
+        document.getElementById("editStatus").innerHTML = ""
+    }
 
+    var stompClient = null;
+    let timeoutID;
     function connect(subTopic) {
         var socket = new SockJS('/gs-guide-websocket');
         stompClient = Stomp.over(socket);
@@ -599,6 +603,11 @@
                                 buildEvent(event, JSON.parse(update.body).sprintId)
                             }
                         })
+                }
+                if (JSON.parse(update.body).updateType == "EDIT") {
+                    clearTimeout(timeoutID)
+                    timeoutID = setTimeout(resetEditStatus, 3000)
+                    document.getElementById("editStatus").innerHTML = (JSON.parse(update.body).message)
                 }
             });
         });
