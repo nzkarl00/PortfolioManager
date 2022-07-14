@@ -400,17 +400,17 @@ public class DetailsController {
     public ResponseEntity<List<Event>> getProjectEvents(@AuthenticationPrincipal AuthState principal,
                                                                 @RequestParam(value="id") Integer projectId,
                                                                 @RequestParam(value="sprintId") Integer sprintId) throws Exception {
-        List<Milestone> milestones = milestoneRepo.findAllByParentProject(projectService.getProjectById(projectId));
+        List<Event> events = eventRepo.findAllByParentProject(projectService.getProjectById(projectId));
         Optional<Sprint> sprint = repository.findById(sprintId);
-        List<Milestone> sendingMilestones = new ArrayList<>();
-        for (Milestone milestone : milestones) {
-            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
-            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
-            if ((milestone.getStartDate().isAfter(startDate)) && (milestone.getStartDate().isBefore(endDate))) {
-                sendingMilestones.add(milestone);
+        List<Event> sendingEvents = new ArrayList<>();
+        for (Event event : events) {
+            LocalDateTime sprintStartDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
+            LocalDateTime sprintEndDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
+            if ((event.getStartDate().isAfter(sprintStartDate)) && (event.getEndDate().isBefore(sprintEndDate))) {
+                sendingEvents.add(event);
             }
         }
-        return ResponseEntity.ok(sendingMilestones);
+        return ResponseEntity.ok(sendingEvents);
     }
 
     /**
