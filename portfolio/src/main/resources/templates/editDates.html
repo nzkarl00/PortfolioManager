@@ -78,9 +78,9 @@
         </form>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script type="text/javascript" th:inline="javascript">
-
+            let editType = "editing " + [[${type}]] + ": " + [[${date.getName()}]]
             function sendEditStatus() {
-                axios.post("/edit", null, {params:{"projectId":[[${project.getId()}]], "type":[[${type}]]}})
+                axios.post("/edit", null, {params:{"projectId":[[${project.getId()}]], "type":editType}})
                 setTimeout(sendEditStatus, 2000)
             }
 

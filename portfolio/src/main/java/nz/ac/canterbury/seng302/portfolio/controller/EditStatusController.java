@@ -40,7 +40,7 @@ public class EditStatusController {
             @RequestParam(value = "projectId") Integer projectId,
             @RequestParam(value = "type") String type
     ) throws Exception {
-        dateSocketService.sendEditStatus(projectService.getProjectById(projectId), AuthStateInformer.getUsername(principal) + " is editing a " + type);
+        dateSocketService.sendEditStatus(projectService.getProjectById(projectId), AuthStateInformer.getUsername(principal) + " is " + type);
     }
 
 }

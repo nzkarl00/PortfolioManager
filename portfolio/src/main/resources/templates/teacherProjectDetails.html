@@ -512,12 +512,15 @@
         eachMilestone.appendChild(deleteMilestone)
     }
 
-    function resetEditStatus() {
-        document.getElementById("editStatus").innerHTML = ""
+    function resetEditStatus(message) {
+        currentEdits = currentEdits.filter(item => item !== message)
+        displayEdits()
     }
 
-    var stompClient = null;
+    let stompClient = null;
     let timeoutID;
+    let currentEdits = [];
+    let timeoutDict = {};
     function connect(subTopic) {
         var socket = new SockJS('/gs-guide-websocket');
         stompClient = Stomp.over(socket);
@@ -605,12 +608,27 @@
                         })
                 }
                 if (JSON.parse(update.body).updateType == "EDIT") {
-                    clearTimeout(timeoutID)
-                    timeoutID = setTimeout(resetEditStatus, 3000)
-                    document.getElementById("editStatus").innerHTML = (JSON.parse(update.body).message)
+                    let editMessage = JSON.parse(update.body).message
+                    clearTimeout(timeoutDict[editMessage])
+                    timeoutDict[editMessage] = setTimeout(resetEditStatus, 3000, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
+                    if (currentEdits.includes(editMessage) === false) {
+                        currentEdits.push(editMessage)
+                    }
+                    displayEdits()
                 }
             });
         });
+    }
+
+    /**
+     * Displays all currently editing users and items line by line
+     */
+    function displayEdits() {
+        let editsToDisplay = ""
+        for (const edit of currentEdits) {
+            editsToDisplay += "<p>" +  edit + "</p>"
+        }
+        document.getElementById("editStatus").innerHTML = editsToDisplay
     }
 
    function calendarTryAgain() {
