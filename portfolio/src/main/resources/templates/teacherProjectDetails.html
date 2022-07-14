@@ -272,6 +272,12 @@
         description.innerText = "Description: " + sprint.description
         col3.appendChild(description)
 
+        const events = document.createElement("div")
+        events.className = "sprint-description display_data"
+        events.id = "events" + sprint.id
+        events.innerText = "Events:"
+        col3.appendChild(events)
+
         const deadlines = document.createElement("div")
         deadlines.className = "sprint-description display_data"
         deadlines.id = "deadlines" + sprint.id
@@ -287,6 +293,80 @@
         const col4 = document.createElement("div")
         col4.className = "col-2"
         sprintDiv.appendChild(col4)
+    }
+
+    function buildEvent(event, sprintId) {
+        const mainDiv = document.getElementById("event" + sprintId)
+        const eachEvent = document.createElement("form")
+        const deleteEvent = document.createElement("button")
+        const editEvent = document.createElement("button")
+        const eventType = document.createElement("input")
+        const projectId = document.createElement("input")
+        const eventId = document.createElement("input")
+        const dateId = document.createElement("input")
+
+        dateId.style = "display:none;"
+        dateId.name = "dateId"
+        dateId.id = "dateId"
+        dateId.value = deadline.id
+        dateId.type = "number"
+
+        projectId.style = "display:none;"
+        projectId.name = "projectId"
+        projectId.id = "projectId"
+        projectId.value = [[${project.getId()}]]
+        projectId.type = "number"
+
+        deadlineId.style = "display:none;"
+        deadlineId.name = "deadlineId"
+        deadlineId.id = "deadlineId"
+        deadlineId.value = deadline.id
+        deadlineId.type = "number"
+
+        deadlineType.style = "display:none;"
+        deadlineType.name = "itemType"
+        deadlineType.id = "itemType"
+        deadlineType.value = "Deadline"
+        deadlineType.type = "text"
+
+        editDeadline.type = "submit"
+        editDeadline.className = "fa fa-edit each-deadline-edit"
+        editDeadline.formMethod = "get"
+        editDeadline.formAction = "edit-date"
+
+        deleteDeadline.type = "submit"
+        deleteDeadline.id = "deleteButton"
+        deleteDeadline.className = "fa fa-trash each-deadline"
+
+        eachDeadline.method = "post"
+        eachDeadline.action = "delete-deadline"
+        eachDeadline.innerText = deadline.name
+        eachDeadline.className = "posAbsolute"
+
+        const deadlineDate = String(deadline.startDate).substring(0,10);
+        const deadlineTime = String(deadline.startDate).substring(11);
+        var deadlineTooltip;
+        if (deadline.description !== 'undefined') {
+            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + '</p> <p class="tooltip_body">' + deadline.description + "</p>"
+        } else {
+            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + "</p>"
+        }
+
+        $(eachDeadline).tooltip({
+                    title: deadlineTooltip,
+                    placement: "right",
+                    trigger: "hover",
+                    container: "body",
+                    html: true
+                });
+
+        mainDiv.appendChild(eachDeadline)
+        eachDeadline.appendChild(projectId)
+        eachDeadline.appendChild(deadlineId)
+        eachDeadline.appendChild(dateId)
+        eachDeadline.appendChild(editDeadline)
+        eachDeadline.appendChild(deadlineType)
+        eachDeadline.appendChild(deleteDeadline)
     }
 
     function buildDeadline(deadline, sprintId) {
@@ -781,6 +861,13 @@
 
     for (const sprint of initialSprintList) {
         buildSprint(sprint)
+        axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+            .then((response) => {
+                for (const events of response.data) {
+                    this.sprint = sprint
+                    buildEvent(event, sprint.id)
+                }
+            })
         axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
                 for (const deadline of response.data) {
