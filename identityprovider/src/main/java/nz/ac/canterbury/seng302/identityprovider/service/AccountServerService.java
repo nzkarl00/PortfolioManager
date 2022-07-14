@@ -108,6 +108,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
                         "admin", hashedPassword, new Date(), "", "admin@defaultAdmin",
                         null, "admin", "admin", "He/Him"));
         roleRepo.save(new Role(newAdmin, "3admin"));
+        Groups groupToAddTo = groupRepo.findByGroupId(1);
+        GroupMembership groupMemberToAdd = new GroupMembership(newAdmin, groupToAddTo);
+        groupMembershipRepo.save(groupMemberToAdd);
+
 
         try {
             // open the names to build users from
@@ -127,6 +131,9 @@ public class AccountServerService extends UserAccountServiceImplBase{
                                     firstName + lastName, hashedPassword, new Date(), "", firstName + "." + lastName + "@default",
                                     null, firstName, lastName, "He/Him"));
                     roleRepo.save(new Role(newAccount, "1student"));
+                    Groups userGroup = groupRepo.findByGroupId(2);
+                    GroupMembership userToAdd = new GroupMembership(newAccount, userGroup);
+                    groupMembershipRepo.save(userToAdd);
                 }
             }
             firstNamesReader.close();
@@ -459,7 +466,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
         roleRepo.save(roleForRepo);
 
         // if the role to add is a teacher, add them to the teacher group and remove from the members without a group.
-        if (role.equals(groupsServerService.TEACHER_ROLE)) {
+        if (role.equals(groupsServerService.TEACHER_ROLE) || role.equals(groupsServerService.ADMIN_ROLE)) {
             Groups teacherGroup = groupRepo.findAllByGroupShortName(groupsServerService.TEACHER_GROUP_NAME_SHORT).get(0);
             groupMembershipRepo.save(new GroupMembership(user, teacherGroup));
 
