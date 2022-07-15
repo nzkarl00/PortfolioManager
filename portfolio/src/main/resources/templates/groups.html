@@ -136,7 +136,7 @@ document.body.addEventListener("keydown", function (ev) {
 
     // If key pressed is V and if ctrl is true.
     if (key == 86 && ctrl) {
-        axios.patch("/ctrlv", {"params":{"groupId": latest, "ids":clipboard}})
+        axios.post("/ctrlv", clipboard, {"params":{"groupId": latest}})
     } else if (key == 67 && ctrl) {
         clipboard = []
         for (const user of selected) {

@@ -16,7 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -40,6 +43,7 @@ public class GroupController {
     private AccountClientService accountClientService;
 
     private int MAX_NUMBER_OF_GROUPS = 10;
+    private List<Integer> clipboard = new ArrayList<>();
 
     /**
      * gets a page of groups with all the users in the groups shown in a table
@@ -82,7 +86,7 @@ public class GroupController {
 
         model.addAttribute("groups", groups);
         model.addAttribute("currentPage", currentPage);
-        model.addAttribute("clipboard", new ArrayList<>());
+        model.addAttribute("clipboard", clipboard);
 
         String role = AuthStateInformer.getRole(principal);
 
@@ -96,15 +100,15 @@ public class GroupController {
         return "groups";
     }
 
-    @PatchMapping("/ctrlv")
+    @PostMapping("/ctrlv")
     public String getGroups(
         @AuthenticationPrincipal AuthState principal,
-        @RequestParam("ids") List<Integer> ids,
+        @RequestBody() List<Integer> ids,
         @RequestParam("groupId") Integer groupId,
         Model model
     ) {
         groupClientService.addUserToGroup(groupId, (ArrayList<Integer>) ids);
-        model.addAttribute("clipboard", ids);
-        return "groups";
+        clipboard = ids;
+        return "redirect:groups";
     }
 }
