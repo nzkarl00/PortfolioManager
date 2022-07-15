@@ -250,7 +250,7 @@ public class AddDatesControllerTest {
         // Executing the mocked get request, checking that the page is displayed
         mockMvc.perform(get("/add-dates").param("projectId", String.valueOf(0)))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                .andExpect(view().name("userProjectDetails")); // Returns user project details page instead of add dates"
+                .andExpect(view().name("projectDetails")); // Returns user project details page instead of add dates"
     }
 
     @Test
