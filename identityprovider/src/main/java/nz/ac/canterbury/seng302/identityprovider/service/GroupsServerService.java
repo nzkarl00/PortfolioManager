@@ -104,7 +104,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
     public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
 
         Groups groupToAddTo = groupRepo.findByGroupId(request.getGroupId());
-        boolean isTeacherGroup = checkIsSpecialGroup(groupToAddTo);
+        int isSpecialGroup = checkIsSpecialGroup(groupToAddTo);
 
         for (int userId : request.getUserIdsList()) {
             AccountProfile user = repo.findById(userId);
@@ -114,8 +114,16 @@ public class GroupsServerService extends GroupsServiceImplBase {
             groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers.get(0), user);
 
             // if the user is being added to the teacher group, then update this change for the user role too.
-            if (isTeacherGroup) {
+            if (isSpecialGroup == 1) {
                 roleRepo.save(new Role(user, TEACHER_ROLE));
+            }
+
+            // if the user is being added to the MWAG group, then update this change by removing this member from all groups.
+            if (isSpecialGroup == 2) {
+                List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroupUser(user);
+                for (GroupMembership groupMembership : groupMemberships) {
+                    groupMembershipRepo.deleteById(groupMembership.getGroupMembershipId());
+                }
             }
 
             // if the user being added is not already in the group, aka it is not a duplicate group member
@@ -160,7 +168,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
     public void removeGroupMembers(RemoveGroupMembersRequest request, StreamObserver<RemoveGroupMembersResponse> responseObserver) {
 
         Groups groupToRemoveFrom = groupRepo.findByGroupId(request.getGroupId());
-        boolean isTeacherGroup = checkIsTeacherGroup(groupToRemoveFrom);
+        int isSpecialGroup = checkIsSpecialGroup(groupToRemoveFrom);
 
         List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroups(groupToRemoveFrom);
 
@@ -179,7 +187,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
                 }
 
                 // if the groupToRemoveFrom is the teacher group, remove their teacher role
-                if (isTeacherGroup) {
+                if (isSpecialGroup == 1) {
                     List<Role> rolesOfUser = roleRepo.findAllByRegisteredUser(user);
                     for (Role role: rolesOfUser) {
                         if (role.getRole().equals(TEACHER_ROLE)) {
