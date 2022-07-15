@@ -155,7 +155,7 @@ document.body.addEventListener("keydown", function (ev) {
             cutboard[user[0]].push(user[1])
         }
         console.log(cutboard)
-        axios.delete("/ctrlx", {"body" : cutboard}, null);
+        axios.post("/ctrlx", cutboard, null);
     }
 
 }, false);

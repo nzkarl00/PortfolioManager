@@ -21,4 +21,8 @@ public interface GroupMembershipRepository extends CrudRepository<GroupMembershi
     @Modifying
     @Query("delete from GroupMembership m where m.registeredGroups = ?1 and m.registeredGroupUser = ?2")
     void deleteByRegisteredGroupsAndRegisteredGroupUser(Groups group, AccountProfile profile);
+
+    @Modifying
+    @Query("delete from GroupMembership m where m.groupMembershipId = ?1")
+    void deleteByGroupMembershipId(Long membershipIdToRemove);
 }

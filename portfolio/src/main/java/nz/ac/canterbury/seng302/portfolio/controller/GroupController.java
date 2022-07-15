@@ -99,14 +99,13 @@ public class GroupController {
         @RequestBody() List<Integer> ids,
         @RequestParam("groupId") Integer groupId,
         Model model
-    ) throws InterruptedException {
+    ) {
         groupClientService.addUserToGroup(groupId, (ArrayList<Integer>) ids);
         clipboard = ids;
-        Thread.sleep(500);
         return "redirect:groups";
     }
 
-    @DeleteMapping("/ctrlx")
+    @PostMapping("/ctrlx")
     public String cut(
             @AuthenticationPrincipal AuthState principal,
             @RequestBody() HashMap<Integer, List<Integer>> ids,

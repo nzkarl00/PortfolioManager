@@ -161,16 +161,17 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
         Groups groupToRemoveFrom = groupRepo.findByGroupId(request.getGroupId());
         boolean isTeacherGroup = checkIsTeacherGroup(groupToRemoveFrom);
+        System.out.println(request);
 
         List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroups(groupToRemoveFrom);
-
         for (GroupMembership groupMember : groupMemberships) {
             AccountProfile user = groupMember.getRegisteredGroupUser();
 
             // If this user from the groupToRemoveFrom is the actual user requested for removal.
             if ((request.getUserIdsList()).contains(user.getId())) {
+                System.out.println("deleting");
                 Long membershipIdToRemove = groupMember.getGroupMembershipId();
-                groupMembershipRepo.deleteById(membershipIdToRemove);
+                groupMembershipRepo.deleteByGroupMembershipId(membershipIdToRemove);
 
                 //if the user has no groups left, add the to the MWAG
                 if (user.getGroups().isEmpty()) {
