@@ -122,7 +122,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
             if (isSpecialGroup == 2) {
                 List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroupUser(user);
                 for (GroupMembership groupMembership : groupMemberships) {
-                    groupMembershipRepo.deleteById(groupMembership.getGroupMembershipId());
+                    groupMembershipRepo.deleteByGroupMembershipId(groupMembership.getGroupMembershipId());
                 }
             }
 
@@ -133,7 +133,6 @@ public class GroupsServerService extends GroupsServiceImplBase {
                 groupMembershipRepo.save(new GroupMembership(user, groupToAddTo));
             }
         }
-
 
         Boolean isSuccessful = true;
         String responseMessage = "Users: " + request.getUserIdsList() + " added.";
