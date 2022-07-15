@@ -14,19 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.criteria.CriteriaBuilder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class GroupController {
@@ -44,6 +35,7 @@ public class GroupController {
 
     private int MAX_NUMBER_OF_GROUPS = 10;
     private List<Integer> clipboard = new ArrayList<>();
+    private HashMap<Integer, List<Integer>> clipboard2 = new HashMap<>();
 
     /**
      * gets a page of groups with all the users in the groups shown in a table
@@ -87,6 +79,7 @@ public class GroupController {
         model.addAttribute("groups", groups);
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("clipboard", clipboard);
+        model.addAttribute("clipboard2", clipboard2);
 
         String role = AuthStateInformer.getRole(principal);
 
@@ -101,14 +94,31 @@ public class GroupController {
     }
 
     @PostMapping("/ctrlv")
-    public String getGroups(
+    public String paste(
         @AuthenticationPrincipal AuthState principal,
         @RequestBody() List<Integer> ids,
         @RequestParam("groupId") Integer groupId,
         Model model
-    ) {
+    ) throws InterruptedException {
         groupClientService.addUserToGroup(groupId, (ArrayList<Integer>) ids);
         clipboard = ids;
+        Thread.sleep(500);
+        return "redirect:groups";
+    }
+
+    @DeleteMapping("/ctrlx")
+    public String cut(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestBody() HashMap<Integer, List<Integer>> ids,
+            Model model
+    ) {
+        for (Map.Entry<Integer, List<Integer>> entry : ids.entrySet()) {
+            if (entry.getKey() >= 0) {
+                groupClientService.removeUserFromGroup(entry.getKey(), (ArrayList<Integer>) entry.getValue());
+            }
+        }
+        clipboard = ids.get(-1);
+        clipboard2 = ids;
         return "redirect:groups";
     }
 }

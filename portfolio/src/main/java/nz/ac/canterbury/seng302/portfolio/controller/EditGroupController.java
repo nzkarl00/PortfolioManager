@@ -94,8 +94,6 @@ public class EditGroupController {
         if (!(role.equals("teacher") || role.equals("admin"))) {
             return "redirect:groups";
         }
-        System.out.println(longName);
-        System.out.println(shortName);
         ModifyGroupDetailsResponse response = groupsService.modifyGroup(id, longName, shortName);
 
         successCode = response.getMessage();

@@ -105,6 +105,7 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script th:inline="javascript">
 let clipboard = [[${clipboard}]];
+let cutboard = [[${clipboard2}]];
 let selected = [];
 let latest;
 
@@ -140,8 +141,21 @@ document.body.addEventListener("keydown", function (ev) {
     } else if (key == 67 && ctrl) {
         clipboard = []
         for (const user of selected) {
-            clipboard.push(parseInt(user))
+            clipboard.push(parseInt(user[1]))
         }
+    } else if (key == 88 && ctrl) {
+        console.log("ctrlx")
+        cutboard = {};
+        cutboard[-1] = [];
+        for (const user of selected) {
+            cutboard[-1].push(user[1])
+            if (!(user[0] in cutboard)) {
+                cutboard[user[0]] = [];
+            }
+            cutboard[user[0]].push(user[1])
+        }
+        console.log(cutboard)
+        axios.delete("/ctrlx", {"body" : cutboard}, null);
     }
 
 }, false);
@@ -150,21 +164,21 @@ document.body.addEventListener("keydown", function (ev) {
 
     /*[# th:each="group : ${groups}"]*/
         $(document).ready(function () {
-            var table = $('#groupUserTable' + /*[[${group.shortName}]]*/).DataTable( {
-                                select: true
-                            } );
+            var table = $("#groupUserTable" + /*[[${group.shortName}]]*/).DataTable();
 
-            $('#groupUserTable' + /*[[${group.shortName}]]*/ + ' tbody').on('click', 'tr', function () {
-                let id = table.row(this).data()[0].substring(25)
-                latest = [[${group.id}]]
+            $("#groupUserTable" + /*[[${group.shortName}]]*/ + ' tbody').on('click', 'tr', function () {
+                let id = table.row(this).data()[0].substring(25);
+                let groupId = [[${group.id}]];
+                latest = groupId;
                 id = id.substring(0, id.length - 7)
                 if ($(this).hasClass('selected')) {
                     $(this).removeClass('selected');
-                    removeFromSelected(id)
+                    removeFromSelected([groupId, id])
+                    console.log(selected)
                 }
                 else {
                     $(this).addClass('selected');
-                    selected.push(id);
+                    selected.push([groupId, id]);
                 }
             });
         });
