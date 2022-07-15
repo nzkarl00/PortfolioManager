@@ -118,8 +118,12 @@ public class GroupsServerService extends GroupsServiceImplBase {
                 roleRepo.save(new Role(user, TEACHER_ROLE));
             }
 
-            GroupMembership groupMemberToAdd = new GroupMembership(user, groupToAddTo);
-            groupMembershipRepo.save(groupMemberToAdd);
+            // if the user being added is not already in the group, aka it is not a duplicate group member
+            // then all good to go and officially add the user to the group.
+            List<GroupMembership> duplicateGroupMembership = groupMembershipRepo.findAllByRegisteredGroupsAndRegisteredGroupUser(groupToAddTo, user);
+            if (duplicateGroupMembership.size() == 0) {
+                groupMembershipRepo.save(new GroupMembership(user, groupToAddTo));
+            }
         }
 
 
