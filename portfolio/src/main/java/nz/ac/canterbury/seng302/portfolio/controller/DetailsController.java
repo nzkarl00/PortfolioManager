@@ -330,7 +330,7 @@ public class DetailsController {
     }
 
     /**
-     * Sends all the deadlines in JSON for a given project on a given day
+     * Sends all the milestones in JSON for a given project on a given day
      * @param principal authstate to validate the user
      * @param stringDate date value of the calendar day in string form
      * @param projectId the project ID being checked
