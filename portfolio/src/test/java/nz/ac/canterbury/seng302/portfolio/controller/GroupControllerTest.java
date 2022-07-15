@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.GroupClientService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import org.junit.Before;
@@ -45,6 +46,9 @@ class GroupControllerTest {
 
     @MockBean
     NavController navController;
+
+    @MockBean
+    GroupClientService groupClientService;
 
     @Before
     public void setup() {
