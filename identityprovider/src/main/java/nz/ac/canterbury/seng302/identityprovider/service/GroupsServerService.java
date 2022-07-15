@@ -77,19 +77,19 @@ public class GroupsServerService extends GroupsServiceImplBase {
     }
 
     /**
-     * A function to check if the given group is a teacher group and return the answer as a boolean.
-     * Checks by comparing the IDs.
-     * Identifying the teacher group so any updates to this group can be reflected in the teacher role too.
+     * A function to check if the given group is a special group and return the answer as an int.
+     * Special groups are: teachers group, members without a group.
+     * Checks by comparing the group IDs.
      * @param groupToCheck
+     * @return an int where 0, 1, 2, means no special group, teacher group, and MWAG group are identified, respectively.
      */
-    public boolean checkIsTeacherGroup(Groups groupToCheck) {
-        boolean isTeacherGroup = false;
+    public int checkIsSpecialGroup(Groups groupToCheck) {
         Integer teacherGroupId = groupRepo.findAllByGroupShortName(TEACHER_GROUP_NAME_SHORT).get(0).getId();
-        if (groupToCheck.getId() == teacherGroupId) {
-            isTeacherGroup = true;
-        }
+        Integer MWAGGroupId = groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT).get(0).getId();
 
-        return isTeacherGroup;
+        if (groupToCheck.getId() == teacherGroupId) { return 1; }
+        if (groupToCheck.getId() == MWAGGroupId) { return 2; }
+        return 0;
     }
 
     /**
@@ -104,7 +104,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
     public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
 
         Groups groupToAddTo = groupRepo.findByGroupId(request.getGroupId());
-        boolean isTeacherGroup = checkIsTeacherGroup(groupToAddTo);
+        boolean isTeacherGroup = checkIsSpecialGroup(groupToAddTo);
 
         for (int userId : request.getUserIdsList()) {
             AccountProfile user = repo.findById(userId);
