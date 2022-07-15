@@ -288,7 +288,7 @@ public class DetailsController {
     public ResponseEntity<List<Deadline>> getProjectDeadlines(@AuthenticationPrincipal AuthState principal,
                                                           @RequestParam(value="id") Integer projectId,
                                                               @RequestParam(value="sprintId") Integer sprintId) throws Exception {
-        List<Deadline> deadlines = deadlineRepo.findAllByParentProject(projectService.getProjectById(projectId));
+        List<Deadline> deadlines = deadlineRepo.findAllByParentProjectOrderByStartDateAsc(projectService.getProjectById(projectId));
         Optional<Sprint> sprint = repository.findById(sprintId);
         List<Deadline> sendingDeadlines = new ArrayList<>();
         for (Deadline deadline : deadlines) {
@@ -326,12 +326,12 @@ public class DetailsController {
         cal.add(Calendar.DATE, 1);
         end = cal.getTime();
 
-        List<Deadline> sendingDeadlines = deadlineRepo.findAllByParentProjectAndStartDateBetween(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
+        List<Deadline> sendingDeadlines = deadlineRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
         return ResponseEntity.ok(sendingDeadlines);
     }
 
     /**
-     * Sends all the deadlines in JSON for a given project on a given day
+     * Sends all the milestones in JSON for a given project on a given day
      * @param principal authstate to validate the user
      * @param stringDate date value of the calendar day in string form
      * @param projectId the project ID being checked
@@ -355,7 +355,7 @@ public class DetailsController {
         cal.add(Calendar.DATE, 1);
         end = cal.getTime();
 
-        List<Milestone> sendingMilestones = milestoneRepo.findAllByParentProjectAndStartDateBetween(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
+        List<Milestone> sendingMilestones = milestoneRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
         return ResponseEntity.ok(sendingMilestones);
     }
 
@@ -384,7 +384,7 @@ public class DetailsController {
         cal.add(Calendar.DATE, 1);
         end = cal.getTime();
 
-        List<Event> sendingEvents = eventRepo.findAllByParentProjectAndStartDateBetween(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
+        List<Event> sendingEvents = eventRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
         return ResponseEntity.ok(sendingEvents);
     }
 
@@ -404,7 +404,7 @@ public class DetailsController {
     public ResponseEntity<List<Milestone>> getProjectMilestones(@AuthenticationPrincipal AuthState principal,
                                                           @RequestParam(value="id") Integer projectId,
                                                               @RequestParam(value="sprintId") Integer sprintId) throws Exception {
-        List<Milestone> milestones = milestoneRepo.findAllByParentProject(projectService.getProjectById(projectId));
+        List<Milestone> milestones = milestoneRepo.findAllByParentProjectOrderByStartDateAsc(projectService.getProjectById(projectId));
         Optional<Sprint> sprint = repository.findById(sprintId);
         List<Milestone> sendingMilestones = new ArrayList<>();
         for (Milestone milestone : milestones) {
@@ -428,7 +428,7 @@ public class DetailsController {
     public ResponseEntity<List<Event>> getProjectEvents(@AuthenticationPrincipal AuthState principal,
                                                                 @RequestParam(value="id") Integer projectId,
                                                                 @RequestParam(value="sprintId") Integer sprintId) throws Exception {
-        List<Event> events = eventRepo.findAllByParentProject(projectService.getProjectById(projectId));
+        List<Event> events = eventRepo.findAllByParentProjectOrderByStartDateAsc(projectService.getProjectById(projectId));
         Optional<Sprint> sprint = repository.findById(sprintId);
         List<Event> sendingEvents = new ArrayList<>();
         for (Event event : events) {

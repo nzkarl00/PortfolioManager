@@ -13,7 +13,13 @@ import java.util.List;
 public interface MilestoneRepository extends CrudRepository<Milestone, Integer> {
     Milestone findById(int id);
     Milestone findByParentProject(int id);
-    List<Milestone> findAllByParentProject(Project project);
-    List<Milestone> findAllByParentProjectAndStartDateBetween(Project project, LocalDateTime startDate, LocalDateTime endDate);
+    /*
+    Orders all items by start date, beginning with earlier dates.
+     */
+    List<Milestone> findAllByParentProjectOrderByStartDateAsc(Project project);
+    /*
+    Orders all items within the day range by start date, beginning with earlier dates.
+     */
+    List<Milestone> findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(Project project, LocalDateTime startDate, LocalDateTime endDate);
 
 }

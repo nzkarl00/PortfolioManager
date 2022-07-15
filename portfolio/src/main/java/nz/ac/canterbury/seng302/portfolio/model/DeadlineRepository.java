@@ -17,7 +17,13 @@ import java.util.List;
 public interface DeadlineRepository extends CrudRepository<Deadline, Integer> {
     Deadline findById(int id);
     Deadline findByParentProject(int id);
-    List<Deadline> findAllByParentProject(Project project);
+    /*
+    Orders all items by start date, beginning with earlier dates.
+    */
+    List<Deadline> findAllByParentProjectOrderByStartDateAsc(Project project);
+    /*
+    Orders all items within the day range by start date, beginning with earlier dates.
+     */
 
-    List<Deadline> findAllByParentProjectAndStartDateBetween(Project project, LocalDateTime startDate, LocalDateTime endDate);
+    List<Deadline> findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(Project project, LocalDateTime startDate, LocalDateTime endDate);
 }
