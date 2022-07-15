@@ -3,18 +3,24 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.GroupClientService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +29,9 @@ import java.util.Optional;
 public class GroupController {
     @Autowired
     private GroupsClientService groupsService;
+
+    @Autowired
+    private GroupClientService groupClientService;
 
     @Autowired
     private NavController navController;
@@ -73,6 +82,7 @@ public class GroupController {
 
         model.addAttribute("groups", groups);
         model.addAttribute("currentPage", currentPage);
+        model.addAttribute("clipboard", new ArrayList<>());
 
         String role = AuthStateInformer.getRole(principal);
 
@@ -83,6 +93,18 @@ public class GroupController {
             model.addAttribute("display", "display:none;");
         }
 
+        return "groups";
+    }
+
+    @PatchMapping("/ctrlv")
+    public String getGroups(
+        @AuthenticationPrincipal AuthState principal,
+        @RequestParam("ids") List<Integer> ids,
+        @RequestParam("groupId") Integer groupId,
+        Model model
+    ) {
+        groupClientService.addUserToGroup(groupId, (ArrayList<Integer>) ids);
+        model.addAttribute("clipboard", ids);
         return "groups";
     }
 }
