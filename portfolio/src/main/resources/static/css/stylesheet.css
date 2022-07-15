@@ -890,6 +890,10 @@
     margin-left: 5px;
     margin-top: 5px;
 }
+
+.returnButtonCenter {
+    justify-content: center;
+}
 .calendarMilestone {
     background: #D9F9FF !important;
     font-family: NexaBold !important;

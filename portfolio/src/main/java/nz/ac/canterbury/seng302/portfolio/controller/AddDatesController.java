@@ -79,7 +79,7 @@ public class AddDatesController {
         } else {
             List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
             model.addAttribute("sprints", sprintList);
-            return "userProjectDetails";
+            return "projectDetails";
         }
     }
 

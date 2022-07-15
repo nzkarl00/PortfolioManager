@@ -104,14 +104,15 @@ public class DetailsController {
         String role = AuthStateInformer.getRole(principal);
 
         /* Return the name of the Thymeleaf template */
-        // detects the role of the current user and returns appropriate page
+        // if you are a teacher or an admin you can add a new group
         if (role.equals("teacher") || role.equals("admin")) {
-            model.addAttribute("roleName", "teacher");
-            return "teacherProjectDetails";
+            model.addAttribute("display", "");
+            model.addAttribute("role", role);
         } else {
-            model.addAttribute("roleName", "student");
-            return "userProjectDetails";
+            model.addAttribute("display", "display:none;");
+            model.addAttribute("role", role);
         }
+        return "projectDetails";
     }
 
     /**
