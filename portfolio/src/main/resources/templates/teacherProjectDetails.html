@@ -168,15 +168,18 @@
         if(!$('#toCalendar').hasClass('disabled') && flag) {
             calendarTryAgain()
             flag = false;
+            displayEdits()
         }
     });
 
     $('#details-tab-head').on('click', function (e) {
         flag = true;
+        displayEdits()
     });
 
     $('#toCalendar').on('click', function (e) {
         flag = false;
+        displayEdits()
     });
 
     const colors = ['#a3c7d7', '#067d46', '#19DAFF','#f5deb3', '#d470a2', '#9acd32',
@@ -520,68 +523,83 @@
     let timeoutID;
     let currentEdits = [];
     let timeoutDict = {};
-    function connect(subTopic) {
-        var socket = new SockJS('/gs-guide-websocket');
-        stompClient = Stomp.over(socket);
+    async function connect(subTopic) {
+        let socket = new SockJS('/gs-guide-websocket');
+        stompClient = await Stomp.over(socket);
         // connect to the portfolio server
         stompClient.connect({}, function (frame) {
             // subscribe to the global topic
-            stompClient.subscribe('/topic/' + subTopic + '/' +[[${project.getId()}]], function (update) {
+            stompClient.subscribe('/topic/' + subTopic + '/' + [[${project.getId()}]], function (update) {
                 // if it is a sprint update, update the calendar and details sprints
                 if (JSON.parse(update.body).updateType == "SPRINT") {
-                    axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
-                    .then((response) => {
-                        deleteAllSprints()
-                        for (const sprint of response.data) {
-                            buildSprint(sprint)
-                            axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
-                            .then((response) => {
-                                for (const deadline of response.data) {
-                                    buildDeadline(deadline, sprint.id)
-                                }
-                            })
-                            axios.get("/milestones", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
-                            .then((response) => {
-                                for (const milestone of response.data) {
-                                    buildMilestone(milestone, sprint.id)
-                                }
-                            })
-                            axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
-                                .then((response) => {
-                                    for (const event of response.data) {
-                                        buildEvent(event, sprint.id)
+                    axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
+                        .then((response) => {
+                            deleteAllSprints()
+                            for (const sprint of response.data) {
+                                buildSprint(sprint)
+                                axios.get("/deadlines", {params: {"id": [[${project.getId()}]], "sprintId": sprint.id}})
+                                    .then((response) => {
+                                        for (const deadline of response.data) {
+                                            buildDeadline(deadline, sprint.id)
+                                        }
+                                    })
+                                axios.get("/milestones", {
+                                    params: {
+                                        "id": [[${project.getId()}]],
+                                        "sprintId": sprint.id
                                     }
                                 })
-                        }
-                        renderCalendar(response.data)
-                    })
+                                    .then((response) => {
+                                        for (const milestone of response.data) {
+                                            buildMilestone(milestone, sprint.id)
+                                        }
+                                    })
+                                axios.get("/events", {params: {"id": [[${project.getId()}]], "sprintId": sprint.id}})
+                                    .then((response) => {
+                                        for (const event of response.data) {
+                                            buildEvent(event, sprint.id)
+                                        }
+                                    })
+                            }
+                            renderCalendar(response.data)
+                        })
                 }
 
                 if (JSON.parse(update.body).updateType == "DEADLINE") {
-                    axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":JSON.parse(update.body).sprintId}})
+                    axios.get("/deadlines", {
+                        params: {
+                            "id": [[${project.getId()}]],
+                            "sprintId": JSON.parse(update.body).sprintId
+                        }
+                    })
                         .then((response) => {
                             deleteAllDeadlines(JSON.parse(update.body).sprintId)
                             for (const deadline of response.data) {
                                 buildDeadline(deadline, JSON.parse(update.body).sprintId)
                             }
 
-                            axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                renderCalendar(response.data)
-                            })
+                            axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
+                                .then((response) => {
+                                    renderCalendar(response.data)
+                                })
 
                         })
                 }
 
                 if (JSON.parse(update.body).updateType == "EVENT") {
-                            axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                renderCalendar(response.data)
-                            })
+                    axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
+                        .then((response) => {
+                            renderCalendar(response.data)
+                        })
                 }
 
                 if (JSON.parse(update.body).updateType == "MILESTONE") {
-                    axios.get("/milestones", {params:{"id":[[${project.getId()}]], "sprintId":JSON.parse(update.body).sprintId}})
+                    axios.get("/milestones", {
+                        params: {
+                            "id": [[${project.getId()}]],
+                            "sprintId": JSON.parse(update.body).sprintId
+                        }
+                    })
                         .then((response) => {
 
                             deleteAllMilestones(JSON.parse(update.body).sprintId)
@@ -589,15 +607,20 @@
                                 buildMilestone(milestone, JSON.parse(update.body).sprintId)
                             }
 
-                            axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                renderCalendar(response.data)
-                            })
+                            axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
+                                .then((response) => {
+                                    renderCalendar(response.data)
+                                })
                         })
                 }
 
                 if (JSON.parse(update.body).updateType == "EVENT") {
-                    axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":JSON.parse(update.body).sprintId}})
+                    axios.get("/events", {
+                        params: {
+                            "id": [[${project.getId()}]],
+                            "sprintId": JSON.parse(update.body).sprintId
+                        }
+                    })
                         .then((response) => {
 
                             deleteAllEvents(JSON.parse(update.body).sprintId)
@@ -935,11 +958,10 @@
 
     document.addEventListener('DOMContentLoaded', function() { renderCalendar(initialSprintList) });
 
+    connect('calendar');
     if ([[${roleName}]] == 'teacher') {
         connect('edit')
     }
-    connect('calendar');
-
 </script>
 
 <!-- JS -->
