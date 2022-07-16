@@ -102,16 +102,15 @@ public class GroupController {
     ) throws InterruptedException {
         groupClientService.addUserToGroup(groupId, (ArrayList<Integer>) ids);
         clipboard = ids;
-        Thread.sleep(500);
         return "redirect:groups";
     }
 
-    @DeleteMapping("/ctrlx")
+    @PostMapping("/ctrlx")
     public String cut(
             @AuthenticationPrincipal AuthState principal,
             @RequestBody() HashMap<Integer, List<Integer>> ids,
             Model model
-    ) {
+    ) throws InterruptedException {
         for (Map.Entry<Integer, List<Integer>> entry : ids.entrySet()) {
             if (entry.getKey() >= 0) {
                 groupClientService.removeUserFromGroup(entry.getKey(), (ArrayList<Integer>) entry.getValue());

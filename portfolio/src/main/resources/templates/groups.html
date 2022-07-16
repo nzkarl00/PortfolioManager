@@ -137,6 +137,7 @@ document.body.addEventListener("keydown", function (ev) {
     // If key pressed is V and if ctrl is true.
     if (key == 86 && ctrl) {
         axios.post("/ctrlv", clipboard, {"params":{"groupId": latest}})
+        setTimeout(() => window.location.reload(), 500);
     } else if (key == 67 && ctrl) {
         clipboard = []
         for (const user of selected) {
@@ -154,6 +155,7 @@ document.body.addEventListener("keydown", function (ev) {
             cutboard[user[0]].push(user[1])
         }
         axios.post("/ctrlx", cutboard, null);
+        setTimeout(() => window.location.reload(), 500);
     }
 
 }, false);
