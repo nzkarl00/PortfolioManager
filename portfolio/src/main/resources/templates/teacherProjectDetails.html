@@ -74,9 +74,9 @@
             <li id="toCalendar" class="active"><a data-toggle="tab" href="#calendar-tab" id="calendar-tab-head">Planner</a></li>
             <li id="toDetails"><a data-toggle="tab" href="#project-details-tab" id="details-tab-head">Project Details</a></li>
         </ul>
-
         <!-- Tab containers-->
         <div class="tab-content">
+            <p class="alert-info editAlert display_data" id="editStatus"></p>
             <div id="calendar-tab" class="tab-pane fade in active">
                 <br><br>
 
@@ -91,7 +91,6 @@
                 <button class="signup_box"th:style="${errorCalendarShow}">
                     <p class="signup_error" th:text="${errorCalendarCode}"/>
                 </button>
-                <p id="editStatus"></p>
             </div>
 
             <div id="project-details-tab" class="tab-pane fade">
@@ -610,7 +609,7 @@
                 if (JSON.parse(update.body).updateType == "EDIT") {
                     let editMessage = JSON.parse(update.body).message
                     clearTimeout(timeoutDict[editMessage])
-                    timeoutDict[editMessage] = setTimeout(resetEditStatus, 3000, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
+                    timeoutDict[editMessage] = setTimeout(resetEditStatus, 2500, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
                     if (currentEdits.includes(editMessage) === false) {
                         currentEdits.push(editMessage)
                     }

@@ -88,7 +88,7 @@
         <script type="text/javascript" th:inline="javascript">
             function sendEditStatus() {
                 axios.post("/edit", null, {params:{"projectId":[[${project.getId()}]], "type":"adding a new project item"}})
-                setTimeout(sendEditStatus, 2000)
+                setTimeout(sendEditStatus, 1250)
             }
 
             sendEditStatus()
