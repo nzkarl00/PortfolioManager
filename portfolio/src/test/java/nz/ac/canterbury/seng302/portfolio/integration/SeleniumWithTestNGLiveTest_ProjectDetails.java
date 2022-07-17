@@ -177,6 +177,56 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
     }
 
     /**
+     * Creates an event in the initial sprint
+     */
+    public void inProject_addEvent() throws InterruptedException {
+        seleniumExample.config.getDriver().get(projectInfoUrl);
+        WebElement detailAccess = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
+        WebElement addDateAccess = seleniumExample.config.getDriver().findElement(By.id("addDateButton"));
+        detailAccess.click();
+        addDateAccess.click();
+        urlDates =  seleniumExample.config.getDriver().getCurrentUrl();
+
+        seleniumExample.config.getDriver().get(urlDates);
+        WebElement eventType = seleniumExample.config.getDriver().findElement(By.id("eventType"));
+        eventType.click();
+        WebElement event = seleniumExample.config.getDriver().findElement(By.id("eventEvent"));
+        event.click();
+        WebElement eventName = seleniumExample.config.getDriver().findElement(By.id("eventName"));
+        WebElement eventStart = seleniumExample.config.getDriver().findElement(By.id("eventStartDate"));
+        WebElement eventEnd = seleniumExample.config.getDriver().findElement(By.id("eventEndDate"));
+        WebElement eventDesc = seleniumExample.config.getDriver().findElement(By.id("eventDescription"));
+        WebElement dateSave = seleniumExample.config.getDriver().findElement(By.id("dateSave"));
+        eventName.sendKeys("TestOne");
+        eventStart.click();
+        eventStart.sendKeys("2033-01-04T08:00");
+        eventEnd.click();
+        eventEnd.sendKeys("2033-01-06T08:00");
+        eventDesc.sendKeys("TestOne");
+        dateSave.click();
+
+        seleniumExample.config.getDriver().get(projectInfoUrl);
+
+
+        WebElement eventCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 eventList"));
+        String eventCalendarString = eventCalendar.getText();
+        Assertions.assertEquals("\uD83D\uDCC5 D - 1", eventCalendarString);
+
+        WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
+        detailAccessCheck.click();
+        WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
+        WebElement firstSprint = allSprints.findElement(By.cssSelector("div:first-child"));
+        sprint1Id = (firstSprint.getAttribute("id")).substring(6);
+
+        WebElement eventList = seleniumExample.config.getDriver().findElement(By.id("event"+sprint1Id));
+        WebElement firstEvent = eventList.findElement(By.cssSelector("form:first-child"));
+
+        checkTooltip_isValid(firstEvent, "TestOneDue: 2033-01-04At: 08:00:00");
+
+        Assertions.assertEquals("TestOne", firstEvent.getText());
+    }
+
+    /**
      * Creates a deadline in the initial sprint
      */
     public void inProject_addDeadline() throws InterruptedException {

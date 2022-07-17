@@ -36,6 +36,7 @@ public class DetailsControllerTest {
 
 
     private final Project testProject = new Project("testName", "testDescription", new Date(), new Date());
+    private final Event event = new Event(testProject, "Event 1", "This is a event for project 1", DateParser.stringToLocalDateTime("2022-05-04", "16:20"), DateParser.stringToLocalDateTime("2022-06-04", "16:20"));
     private final Deadline deadline = new Deadline(testProject, "Deadline 1", "This is a deadline for project 1", DateParser.stringToLocalDateTime("2022-05-04", "16:20"));
     private final Milestone milestone = new Milestone(testProject, "Milestone 1", "This is a milestone for project 1", DateParser.stringToLocalDateTime("2022-05-05", "08:20"));
 
@@ -195,6 +196,76 @@ public class DetailsControllerTest {
         mockMvc.perform(post("/delete-sprint").param("deleteprojectId", String.valueOf(1)).param("sprintId", String.valueOf(1)))
                 .andExpect(status().is3xxRedirection()) // given this should redirect to the details once attempted redirection is expected
                 .andExpect(view().name("redirect:details?id=1"));
+    }
+
+    /**
+     * Mocks the post from details and tries to delete an event as a teacher
+     * @throws Exception
+     */
+    @Test
+    public void postDetailsDeleteEventAsTeacher() throws Exception {
+
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+
+        when(projectService.getProjectById(0)).thenReturn(testProject);
+        when(eventRepository.findById(0)).thenReturn(event);
+        mockMvc.perform(post("/delete-event").param("projectId", String.valueOf(0)).param("dateId", String.valueOf(0)))
+                .andExpect(status().is3xxRedirection()) // given this should move to details once deleted redirection is expected
+                .andExpect(view().name("redirect:details?id=0")); // page is moved
+        verify(eventRepository).deleteById(event.getId()); // Just checks that the event repo was called to delete the event given the id
+    }
+
+    /**
+     * Mocks the post from details and tries to delete an event as an admin
+     * @throws Exception
+     */
+    @Test
+    public void postDetailsDeleteEventAsAdmin() throws Exception {
+
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateAdmin, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateAdmin)).thenReturn("admin");
+
+        when(projectService.getProjectById(0)).thenReturn(testProject);
+        when(eventRepository.findById(0)).thenReturn(event);
+        mockMvc.perform(post("/delete-event").param("projectId", String.valueOf(0)).param("dateId", String.valueOf(0)))
+                .andExpect(status().is3xxRedirection()) // given this should move to details once deleted redirection is expected
+                .andExpect(view().name("redirect:details?id=0")); // page is moved
+        verify(eventRepository).deleteById(event.getId()); // Just checks that the event repo was called to delete the event given the id
+    }
+
+    /**
+     * Mocks the post from details and tries to delete an event as a student - should not delete the event
+     * @throws Exception
+     */
+    @Test
+    public void postDetailsDeleteEventAsStudent() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateStudent)).thenReturn("student");
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateStudent)).thenReturn(1);
+        when(projectService.getProjectById(1)).thenReturn(testProject);
+
+        mockMvc.perform(post("/delete-event").param("projectId", String.valueOf(1)).param("dateId", String.valueOf(1)))
+                .andExpect(status().is3xxRedirection()) // given this should redirect to the details once attempted redirection is expected
+                .andExpect(view().name("redirect:details?id=1"));
+        verify(eventRepository, never()).deleteById(event.getId()); // Just checks that the event repo was never called
     }
 
     /**
