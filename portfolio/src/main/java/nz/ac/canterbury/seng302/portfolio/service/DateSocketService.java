@@ -103,6 +103,6 @@ public class DateSocketService {
      * Sends the editing status of a project as a string
      */
     public void sendEditStatus(Project project, String message) {
-        this.template.convertAndSend("/topic/edit/" + project.getId(), new EditStatusUpdate(FetchUpdateType.EDIT, message));
+        this.template.convertAndSend("/topic/calendar/" + project.getId(), new EditStatusUpdate(FetchUpdateType.EDIT, message));
     }
 }
