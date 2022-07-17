@@ -115,7 +115,7 @@ public class DetailsControllerTest {
 
         mockMvc.perform(get("/details").param("id", String.valueOf(1)))
             .andExpect(status().isOk()) // Whether to return the status "200 OK"
-            .andExpect(view().name("userProjectDetails"));
+            .andExpect(view().name("projectDetails"));
     }
 
     @Test
@@ -153,9 +153,9 @@ public class DetailsControllerTest {
 
         mockMvc.perform(get("/details").param("id", String.valueOf(1)))
             .andExpect(status().isOk()) // Whether to return the status "200 OK"
-            .andExpect(view().name("userProjectDetails")) // Whether to return the template "account"
+            .andExpect(view().name("projectDetails")) // Whether to return the template "account"
             .andExpect(model().attribute("errorShow", "display:none;"))
-            .andExpect(model().attribute("roleName", "student"))
+            .andExpect(model().attribute("role", "student"))
             .andExpect(model().attribute("sprints", sprintService.getSprintByParentId(1)));
     }
 

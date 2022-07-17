@@ -83,7 +83,6 @@
              */
             function updateForm() {
                 let type = document.getElementById("dateType").value;
-                console.log(type);
                 updateTitle();
                 document.getElementById("eventNameLabel").innerHTML =type + " Name";
                 document.getElementById("eventDescriptionLabel").innerHTML =type + " Description";
@@ -92,16 +91,23 @@
                     document.getElementById("eventEndDateLabel").innerHTML = "";
                     document.getElementById("eventStartDateLabel").innerHTML =type + " Date";
                 } else if (type === "Deadline") { // Changes end date to represent the time instead
-                    console.log(type);
                     document.getElementById("eventStartDateLabel").innerHTML =type + " Date";
                     document.getElementById("eventEndDateLabel").innerHTML =type + " Time";
                     document.getElementById("eventEndDate").setAttribute("type", "time");
                     document.getElementById("eventEndDate").setAttribute("class", "project_edit_data bootstrap-timepicker")
+                } else if (type === "Event") { // All fields visible as normal
+                    document.getElementById("eventStartDateLabel").innerHTML =type + " Start Date";
+                    document.getElementById("eventEndDateLabel").innerHTML =type + " End Date";
+                    document.getElementById("eventStartDate").setAttribute("type", "datetime-local");
+                    document.getElementById("eventEndDate").setAttribute("type", "datetime-local");
+                    document.getElementById("eventStartDate").setAttribute("value",  [[${dateStart}]]);
+                    document.getElementById("eventEndDate").setAttribute("value", [[${dateEnd}]]);
                 } else { // All fields visible as normal
                     document.getElementById("eventStartDateLabel").innerHTML =type + " Start Date";
                     document.getElementById("eventEndDateLabel").innerHTML =type + " End Date";
                     document.getElementById("eventEndDate").setAttribute("type", "date");
                 }
+
             }
             /**
              * Updates the number of characters remaining for the title based on the current event type and title length

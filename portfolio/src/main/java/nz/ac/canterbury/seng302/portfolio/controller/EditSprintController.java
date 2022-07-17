@@ -85,7 +85,7 @@ public class EditSprintController {
         if (role.equals("teacher") || role.equals("admin")) {
             return "editSprint";
         } else {
-            return "userProjectDetails";
+            return "projectDetails";
         }
     }
 

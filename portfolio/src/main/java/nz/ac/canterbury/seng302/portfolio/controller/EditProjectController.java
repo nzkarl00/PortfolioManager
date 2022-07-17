@@ -81,7 +81,7 @@ import java.util.List;
         if (role.equals("teacher") || role.equals("admin")) {
             return "editProject";
         } else {
-            return "userProjectDetails";
+            return "projectDetails";
         }
     }
 

@@ -48,13 +48,13 @@
                 <!-- Edit project button-->
                 <div class="row">
                     <div class="col-2"></div>
-                    <form class="col-lg-4 col-md-4 col-sm-12 col-12 align-items-end " th:action="@{/landing}" method="get">
+                    <form th:action="@{/landing}" method="get" th:class="${role == 'admin' || role == 'teacher'} ? 'col-lg-4 col-md-4 col-sm-12 col-12 align-items-end' : 'col-sm-12 col-12 align-items-end returnButtonCenter'">
                         <button class="edit" style="padding-top:0rem;" type="submit">
                             <i class="fa fa-arrow-left"></i>&nbsp;
                             Return
                         </button>
                     </form>
-                    <form class="col-lg-4 col-md-4 col-sm-12" th:action="@{/edit-project}" method="get">
+                    <form class="col-lg-4 col-md-4 col-sm-12" th:action="@{/edit-project}" method="get" th:style="${display}">
                         <input style="display:none;" th:name="id" id="id" th:value="${project.getId}" type="number">
                         <button class="edit" style="padding-top:0rem;" type="submit">
                             <i class="fa fa-edit"></i>&nbsp;
@@ -101,7 +101,7 @@
                     <!-- Add dates button -->
                     <div class="row">
                     <div class="col-2"></div>
-                            <div class="col-lg-8 col-md-10 col-sm-12" >
+                            <div class="col-lg-8 col-md-10 col-sm-12" th:style="${display}">
                                 <form th:action="@{add-dates}" method="get">
                                     <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
                                     <button class="add" id="addDateButton" type="submit">
@@ -158,6 +158,10 @@
 <script th:src="@{js/fullcalendar.js}"></script>
 <script type="text/javascript" th:inline="javascript">
 
+    canEdit = false;
+    if([[${role}]] === "teacher" || [[${role}]] === "admin") {
+        canEdit = true;
+    }
 
     // this is all to make sure that the calendar re-renders once the tab is loaded
     // not before as that will cause sizing errors
@@ -290,9 +294,20 @@
         milestones.innerText = "Milestones:"
         col3.appendChild(milestones)
 
+        const events = document.createElement("div")
+        events.className = "sprint-description display_data"
+        events.id = "events" + sprint.id
+        events.innerText = "Events:"
+        col3.appendChild(events)
+
         const col4 = document.createElement("div")
         col4.className = "col-2"
         sprintDiv.appendChild(col4)
+
+        if(!canEdit) {
+            editButton.style.display = "none"
+            deleteButton.style.display = "none"
+        }
     }
 
     function buildEvent(event, sprintId) {
@@ -434,6 +449,11 @@
                     html: true
                 });
 
+        if(!canEdit) {
+            editDeadline.style.display = "none"
+            deleteDeadline.style.display = "none"
+        }
+
         mainDiv.appendChild(eachDeadline)
         eachDeadline.appendChild(projectId)
         eachDeadline.appendChild(deadlineId)
@@ -443,6 +463,78 @@
         eachDeadline.appendChild(deleteDeadline)
     }
 
+    function buildEvent(event, sprintId) {
+        const mainDiv = document.getElementById("events" + sprintId)
+        const eachEvent = document.createElement("form")
+        const deleteEvent = document.createElement("button")
+        const editEvent = document.createElement("button")
+        const projectId = document.createElement("input")
+        const eventId = document.createElement("input")
+        const eventType = document.createElement("input")
+
+        projectId.style = "display:none;"
+        projectId.name = "projectId"
+        projectId.id = "projectId"
+        projectId.value = [[${project.getId()}]]
+        projectId.type = "number"
+
+        eventId.style = "display:none;"
+        eventId.name = "dateId"
+        eventId.id = "eventId"
+        eventId.value = event.id
+        eventId.type = "number"
+
+        eventType.style = "display:none;"
+        eventType.name = "itemType"
+        eventType.id = "itemType"
+        eventType.value = "Event"
+        eventType.type = "text"
+
+        editEvent.type = "submit"
+        editEvent.className = "fa fa-edit each-deadline-edit"
+        editEvent.formMethod = "get"
+        editEvent.formAction = "edit-date"
+
+        deleteEvent.type = "submit"
+        deleteEvent.id = "deleteButton"
+        deleteEvent.className = "fa fa-trash each-deadline"
+
+        eachEvent.method = "post"
+        eachEvent.action = "delete-deadline"
+        eachEvent.innerText = event.name
+        eachEvent.className = "posAbsolute"
+
+        const eventStartDate = String(event.startDate).substring(0,10);
+        const eventEndDate = String(event.endDate).substring(0,10);
+        const eventStartTime = "at " + String(event.startDate).substring(11,16);
+        const eventEndTime = "at " + String(event.endDate).substring(11,16);
+        var eventTooltip;
+        if (event.description !== undefined) {
+            eventTooltip = '<p class="tooltip_title">' + event.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Start Date: ' + eventStartDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventStartTime + '</p> <p class="tooltip_body">' + "End Date: " + eventEndDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventEndTime + '</p> <p class="tooltip_body">' + event.description + "</p>"
+        } else {
+            eventTooltip = '<p class="tooltip_title">' + event.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Start Date: ' + eventStartDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventStartTime + '</p> <p class="tooltip_body">' + "End Date: " + eventEndDate + '</p> <p class="tooltip_body">' + 'Ends at: ' + eventEndTime + '</p>'
+        }
+
+        $(eachEvent).tooltip({
+            title: eventTooltip,
+            placement: "right",
+            trigger: "hover",
+            container: "body",
+            html: true,
+        });
+
+        if(!canEdit) {
+            editEvent.style.display = "none"
+            deleteEvent.style.display = "none"
+        }
+
+        mainDiv.appendChild(eachEvent)
+        eachEvent.appendChild(projectId)
+        eachEvent.appendChild(eventId)
+        eachEvent.appendChild(editEvent)
+        eachEvent.appendChild(deleteEvent)
+        eachEvent.appendChild(eventType)
+    }
 
     function buildMilestone(milestone, sprintId) {
         const mainDiv = document.getElementById("milestones" + sprintId)
@@ -508,6 +600,11 @@
                     html: true
                 });
 
+        if(!canEdit) {
+            editMilestone.style.display = "none"
+            deleteMilestone.style.display = "none"
+        }
+
         mainDiv.appendChild(eachMilestone)
         eachMilestone.appendChild(projectId)
         eachMilestone.appendChild(milestoneId)
@@ -545,6 +642,12 @@
                                     buildMilestone(milestone, sprint.id)
                                 }
                             })
+                            axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+                                .then((response) => {
+                                    for (const event of response.data) {
+                                        buildEvent(event, sprint.id)
+                                    }
+                                })
                         }
                         renderCalendar(response.data)
                     })
@@ -588,6 +691,17 @@
                             })
                         })
                 }
+
+                if (JSON.parse(update.body).updateType == "EVENT") {
+                    axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":JSON.parse(update.body).sprintId}})
+                        .then((response) => {
+
+                            deleteAllEvents(JSON.parse(update.body).sprintId)
+                            for (const event of response.data) {
+                                buildEvent(event, JSON.parse(update.body).sprintId)
+                            }
+                        })
+                }
             });
         });
     }
@@ -617,8 +731,6 @@
         endDate.setDate(endDate.getDate() + 1);
         let selectedEvent;
 
-
-
         let sprintEvents = [];
 
         // Colors for the sprints
@@ -635,7 +747,7 @@
                 title: sprintList[sprintIndex].label,
                 description: sprintList[sprintIndex].description,
                 start: sprintList[sprintIndex].startDate,
-                allDay: true,  //Can't resize from calendar view without this parameter
+                allDay: canEdit,  //Can't resize from calendar view without this parameter
                 end: sprintEndDate,
                 durationEditable: false,
                 // Mod so the sprint index doesn't go out of range for colors list
@@ -855,6 +967,17 @@
         }
     }
 
+    function deleteAllEvents(id) {
+        var e = document.getElementById("events" + id);
+
+        //e.firstElementChild can be used.
+        var child = e.lastElementChild;
+        while (child) {
+            e.removeChild(child);
+            child = e.lastElementChild;
+        }
+    }
+
     // initial loading, base the sprints off of thymeleaf
     // then set the calendar and the details tabs with the correct data
     let initialSprintList = [[${sprints}]];
@@ -880,6 +1003,13 @@
                 for (const milestone of response.data) {
                     this.sprint = sprint
                     buildMilestone(milestone, sprint.id)
+                }
+            })
+        axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+            .then((response) => {
+                for (const event of response.data) {
+                    this.sprint = sprint
+                    buildEvent(event, sprint.id)
                 }
             })
     }

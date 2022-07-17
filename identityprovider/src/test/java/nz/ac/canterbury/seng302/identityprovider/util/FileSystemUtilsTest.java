@@ -19,7 +19,8 @@ class FileSystemUtilsTest {
 
     @BeforeEach
     public void setUp() {
-        ReflectionTestUtils.setField(utils, "userContentDirectory", "./user-content");
+        ReflectionTestUtils.setField(utils, "userContentDirectory",
+            "./user-content");
     }
 
     /**
@@ -39,7 +40,8 @@ class FileSystemUtilsTest {
     @Test
     void userProfileAbsolutePathTest() {
         Path actual = utils.userProfilePhotoAbsolutePath(1, "jpg");
-        Path expectedParent = utils.userContentDirectory().resolve(Paths.get("user-images"));
+        Path expectedParent =
+            utils.userContentDirectory().resolve(Paths.get("user-images"));
         assertTrue(actual.startsWith(expectedParent));
     }
 
@@ -50,7 +52,16 @@ class FileSystemUtilsTest {
     void userProfileRelativePathTest() {
         Path actual = utils.userProfilePhotoAbsolutePath(1, "jpg");
         String projectDir = System.getProperty("user.dir");
-        Path notExpectedParent = Paths.get(projectDir).resolve(Paths.get("user-images"));
+        Path notExpectedParent =
+            Paths.get(projectDir).resolve(Paths.get("user-images"));
         assertFalse(actual.startsWith(notExpectedParent));
+    }
+
+    @Test
+    void resolveRelativeProfilePhotoPath_blueSky() {
+        Path expected = Paths.get(System.getProperty("user.dir") + "/./user-content/timmy");
+        Path passIn = Paths.get("timmy");
+        Path actual = utils.resolveRelativeProfilePhotoPath(passIn);
+        assertEquals(expected, actual);
     }
 }

@@ -47,20 +47,27 @@ public class EditGroupController {
             @RequestParam Integer id,
             Model model) {
 
+        Integer userid = AuthStateInformer.getId(principal);
+        UserResponse userReply;
+        userReply = accountClientService.getUserById(userid);
+        GroupDetailsResponse groupresponse = groupsService.getGroup(id);
         String role = AuthStateInformer.getRole(principal);
-        if (!(role.equals("teacher") || role.equals("admin"))) {
+
+        if ((groupresponse.getGroupId() == 2) || (groupresponse.getGroupId() == 1)) {
+            return "redirect:groups";
+        } else if (role.equals("teacher") || role.equals("admin") || groupresponse.getMembersList().contains(userReply)) {
+            // Nothing
+        } else {
             return "redirect:groups";
         }
 
         model.addAttribute("errorShow", errorShow);
         model.addAttribute("successShow", successShow);
         model.addAttribute("successCode", successCode);
+        model.addAttribute("groupId", id);
 
         Integer userId = AuthStateInformer.getId(principal);
 
-        // Attributes For header
-        UserResponse userReply;
-        userReply = accountClientService.getUserById(userId);
 
         navController.updateModelForNav(principal, model, userReply, userId);
 
@@ -72,6 +79,16 @@ public class EditGroupController {
         model.addAttribute("shortName", response.getShortName());
 
         return "editGroup";
+    }
+
+    @GetMapping("/back")
+    public String returnBack(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam Integer id,
+            Model model) {
+
+        return "redirect:group?id=" + id;
+
     }
 
     /**
@@ -90,12 +107,21 @@ public class EditGroupController {
         @RequestParam String longName,
         @RequestParam String shortName,
         Model model ) {
+
+        Integer userid = AuthStateInformer.getId(principal);
+        UserResponse userReply;
+        userReply = accountClientService.getUserById(userid);
+        GroupDetailsResponse groupresponse = groupsService.getGroup(id);
         String role = AuthStateInformer.getRole(principal);
-        if (!(role.equals("teacher") || role.equals("admin"))) {
+
+        if ((groupresponse.getGroupId() == 2) || (groupresponse.getGroupId() == 1)) {
+                return "redirect:groups";
+        } else if (role.equals("teacher") || role.equals("admin") || groupresponse.getMembersList().contains(userReply)) {
+            // Nothing
+        } else {
             return "redirect:groups";
         }
-        System.out.println(longName);
-        System.out.println(shortName);
+
         ModifyGroupDetailsResponse response = groupsService.modifyGroup(id, longName, shortName);
 
         successCode = response.getMessage();

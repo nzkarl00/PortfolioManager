@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import javassist.NotFoundException;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -11,13 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller used to handle editing of projects items, including events, deadlines and milestones.
@@ -39,6 +34,7 @@ public class EditDatesController {
     String errorShow = "display:none;";
     String errorCode = "";
     String redirect = "";
+    Integer dateId;
 
     /**
      * Get request for the edit dates page
@@ -63,8 +59,8 @@ public class EditDatesController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
         navController.updateModelForNav(principal, model, userReply, id);
-        System.out.println(type);
         if (role.equals("teacher") || role.equals("admin")) {
+            this.dateId = dateId;
             ProjectTimeBoundItem projectItem = projectItemService.getProjectItemByIdAndType(type, dateId);
             Project project = projectService.getProjectById(projectId);
             model.addAttribute("dateName", projectItem.getName());
@@ -127,8 +123,7 @@ public class EditDatesController {
                 case "Milestone":
                     return editMilestone(project, dateId, dateName, dateDescription, dateStartDate);
                 case "Event":
-                    System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\nEvents not implemented yet"); //TODO Events
-                    break;
+                    return editEvent(project, dateId, dateName, dateDescription, dateStartDate, dateEndDate);
             }
         }
         return "redirect:details?id=" + projectId;
@@ -156,6 +151,40 @@ public class EditDatesController {
         deadline.setStartDate(dateStart);
         projectItemService.saveDeadlineEdit(deadline);
         dateSocketService.sendDeadlineCalendarChange(project, deadline);
+        return "redirect:details?id=" + project.getId();
+    }
+
+    /**
+     * Saves edits to an event in the repository and posts the changes over the web socket
+     * @param project project in which a event is being added
+     * @param id id of event
+     * @param name name of event
+     * @param startDate the date of the event
+     * @param endDate the time of the event
+     * @return project details page on successful update, return string to indicate success or failure
+     */
+    private String editEvent(Project project, Integer id, String name, String description, String startDate, String endDate) throws Exception {
+        LocalDateTime dateStart = DateParser.stringToLocalDateTime(startDate.split("T")[0], startDate.split("T")[1]);
+        LocalDateTime dateEnd = DateParser.stringToLocalDateTime(endDate.split("T")[0], startDate.split("T")[1]);
+        Event event = projectItemService.getEventById(id);
+        if (dateStart.isAfter(DateParser.convertToLocalDateTime(project.getEndDate()))
+                || dateStart.isBefore(DateParser.convertToLocalDateTime(project.getStartDate()))
+                || dateEnd.isBefore(DateParser.convertToLocalDateTime(project.getStartDate()))) {
+            errorCode = "Event is outside of the project's timeline";
+            return "redirect:edit-date?projectId=" + project.getId() + "&dateId=" + dateId + "&itemType=Event";
+        }
+
+        if (dateEnd.isBefore(dateStart)) {
+            errorCode = "End date for event must occur after start date";
+            return "redirect:edit-date?projectId=" + project.getId() + "&dateId=" + dateId + "&itemType=Event";
+        }
+        errorShow = "display:none;";
+        event.setName(name);
+        event.setDescription(description);
+        event.setStartDate(dateStart);
+        event.setEndDate(dateEnd);
+        projectItemService.saveEventEdit(event);
+        dateSocketService.sendEventCalendarChange(project, event);
         return "redirect:details?id=" + project.getId();
     }
 

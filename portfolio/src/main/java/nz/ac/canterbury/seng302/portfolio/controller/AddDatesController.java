@@ -79,7 +79,7 @@ public class AddDatesController {
         } else {
             List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
             model.addAttribute("sprints", sprintList);
-            return "userProjectDetails";
+            return "projectDetails";
         }
     }
 
@@ -176,7 +176,7 @@ public class AddDatesController {
         Date checkForValidationDate = DateParser.stringToDate(eventStartDate);
         
         if (eventName.isBlank()) {
-            List<Deadline> deadlines = deadlineRepository.findAllByParentProject(project);
+            List<Deadline> deadlines = deadlineRepository.findAllByParentProjectOrderByStartDateAsc(project);
             eventName = "Deadline " + (deadlines.size() + 1);
         }
 
@@ -207,7 +207,7 @@ public class AddDatesController {
         Date checkForValidationDate = DateParser.stringToDate(eventStartDate);
 
         if (eventName.isBlank()) {
-            List<Milestone> milestones = milestoneRepository.findAllByParentProject(project);
+            List<Milestone> milestones = milestoneRepository.findAllByParentProjectOrderByStartDateAsc(project);
             eventName = "Milestone " + (milestones.size() + 1);
         }
 
@@ -235,12 +235,13 @@ public class AddDatesController {
     private String addEvent(Project project, String eventName, String eventDescription, String eventStartDate, String eventEndDate){
         Date projStart = DateParser.stringToDate(project.getStartDateString());
         Date projEnd = DateParser.stringToDate(project.getEndDateString());
-        LocalDateTime startDate = DateParser.stringToLocalDateTime(eventStartDate, "");
-        LocalDateTime endDate = DateParser.stringToLocalDateTime(eventEndDate, "");
-        Date checkForValidationDate = DateParser.stringToDate(eventStartDate);
+        LocalDateTime startDate = DateParser.stringToLocalDateTime(eventStartDate.split("T")[0], eventStartDate.split("T")[1]);
+        LocalDateTime endDate = DateParser.stringToLocalDateTime(eventEndDate.split("T")[0], eventEndDate.split("T")[1]);
+
+        Date checkForValidationDate = DateParser.stringToDate(eventEndDate.split("T")[0]);
 
         if (eventName.isBlank()) {
-            List<Event> events = eventRepository.findAllByParentProject(project);
+            List<Event> events = eventRepository.findAllByParentProjectOrderByStartDateAsc(project);
             eventName = "Event " + (events.size() + 1);
         }
 

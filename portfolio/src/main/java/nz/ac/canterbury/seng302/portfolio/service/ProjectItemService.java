@@ -53,6 +53,21 @@ public class ProjectItemService {
     }
 
     /**
+     * Get event by its id.
+     */
+    public Event getEventById(Integer id) throws Exception {
+
+        Optional<Event> event = eventRepository.findById(id);
+        if(event!=null) {
+            return event.get();
+        }
+        else
+        {
+            throw new Exception("Event not found");
+        }
+    }
+
+    /**
      * Get milestone by its id.
      */
     public Milestone getMilestoneById(Integer id) throws Exception {
@@ -63,7 +78,7 @@ public class ProjectItemService {
         }
         else
         {
-            throw new Exception("milestone not found");
+            throw new Exception("Milestone not found");
         }
     }
 
@@ -73,6 +88,14 @@ public class ProjectItemService {
     public void saveDeadlineEdit(Deadline deadline) {
         deadlineRepository.save(deadline);
     }
+
+    /**
+     * Saves event edits to the repository
+     */
+    public void saveEventEdit(Event event) {
+        eventRepository.save(event);
+    }
+
 
     /**
      * Saves milestone edits to the repository

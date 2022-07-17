@@ -656,6 +656,34 @@
     color: #FFFFFF !important;
 }
 
+.table_button_left {
+
+    align: center !important;
+    content-align: center !important;
+    font-family: nexaBold !important;
+    font-size: 150% !important;
+    color: #19DAFF !important;
+    border: none;
+    background: none;
+    border-radius: 15px 0px 0px 0px !important;
+    text-decoration: none !important;
+    color: #FFFFFF !important;
+}
+
+.table_button_right {
+
+    align: center !important;
+    content-align: center !important;
+    font-family: nexaBold !important;
+    font-size: 150% !important;
+    color: #19DAFF !important;
+    border-radius: 0px 15px 0px 0px !important;
+    border: none;
+    background: none;
+    text-decoration: none !important;
+    color: #FFFFFF !important;
+}
+
 .button_none {
 
     border: none !important;
@@ -872,6 +900,10 @@
     padding: 5px !important;
     margin-left: 5px;
     margin-top: 5px;
+}
+
+.returnButtonCenter {
+    justify-content: center;
 }
 .calendarMilestone {
     background: #D9F9FF !important;
