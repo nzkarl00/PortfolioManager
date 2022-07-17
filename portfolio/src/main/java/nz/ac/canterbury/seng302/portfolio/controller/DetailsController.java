@@ -386,29 +386,6 @@ public class DetailsController {
     }
 
     /**
-     * Sends all the events in JSON for a given project
-     * @param principal authstate to validate the user
-     * @param projectId the id of the project to
-     * @return the list of events in JSON
-     */
-    @GetMapping("/events")
-    public ResponseEntity<List<Event>> getProjectEvents(@AuthenticationPrincipal AuthState principal,
-                                                                @RequestParam(value="id") Integer projectId,
-                                                                @RequestParam(value="sprintId") Integer sprintId) throws Exception {
-        List<Event> events = eventRepo.findAllByParentProject(projectService.getProjectById(projectId));
-        Optional<Sprint> sprint = repository.findById(sprintId);
-        List<Event> sendingEvents = new ArrayList<>();
-        for (Event event : events) {
-            LocalDateTime sprintStartDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
-            LocalDateTime sprintEndDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
-            if ((event.getStartDate().isAfter(sprintStartDate)) && (event.getEndDate().isBefore(sprintEndDate))) {
-                sendingEvents.add(event);
-            }
-        }
-        return ResponseEntity.ok(sendingEvents);
-    }
-
-    /**
      * Sends all the events in JSON for a given project on a given day
      * @param principal authstate to validate the user
      * @param stringDate date value of the calendar day in string form
