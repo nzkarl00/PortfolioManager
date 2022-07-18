@@ -463,6 +463,26 @@
     font-family: nexaLight !important;
 
 }
+.delete-group {
+    background-color: #dc3545 !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    margin-top: 1rem !important;
+    padding: 0.5rem !important;
+    font-family: nexaLight !important;
+}
+
+.delete-group:hover {
+
+    background: #FF4122 !important;
+    color: #ffffff !important;
+
+}
+
 .add:hover {
 
     background: #08F722 !important;
@@ -624,11 +644,23 @@
 
 }
 
+.button_placement{
+    display: inline-block;
+}
+
+.show_right {
+    float: none;
+    margin-bottom: auto;
+    margin-left: 5px;
+}
+
 .project_a {
 
     text-decoration: none !important;
 
 }
+
+
 .project_a: hover {
 
     font-color: #056BFA !important;
@@ -871,6 +903,15 @@
     background: #FF202E  !important;
     margin-left: 10px;
     margin-top: 10px;
+    border-radius: 10px;
+    color: white;
+}
+
+.group_delete_button {
+    border: none;
+    margin-left: 10px;
+    padding: 4px 10px;
+    background: #FF202E !important;
     border-radius: 10px;
     color: white;
 }

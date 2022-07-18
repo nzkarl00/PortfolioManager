@@ -186,13 +186,49 @@ class GroupsServerServiceTest {
     }
 
     /**
+     * Test to delete valid group with group members assigned
+     */
+    @Test
+    void deleteGroup_validGroup_withMember() {
+
+        Groups groups = new Groups(1);
+        List<Groups> groupsCheck = new ArrayList<>();
+        AccountProfile accountProfile = new AccountProfile();
+        List<GroupMembership> groupList = new ArrayList<>();
+        GroupMembership groupMembership = new GroupMembership(groups, accountProfile);
+        groupMembership.setGroupMembershipId(0L);
+        groupList.add(groupMembership);
+        groups.setMembers(groupList);
+        groupsCheck.add(groups);
+        when(groupRepo.findByGroupId(1)).thenReturn(groups);
+        when(groupMembershipRepo.findAllByRegisteredGroups(groups)).thenReturn(groupList);
+        when(groupRepo.findAllByGroupId(1)).thenReturn(groupsCheck);
+
+        DeleteGroupRequest validDeleteRequest = DeleteGroupRequest.newBuilder()
+                .setGroupId(1).build();
+
+        gss.deleteGroup(validDeleteRequest, testDeleteObserver);
+        groupRepo.deleteById(1);
+
+        verify(testDeleteObserver, times(1)).onCompleted();
+        ArgumentCaptor<DeleteGroupResponse> captor = ArgumentCaptor.forClass(DeleteGroupResponse.class);
+        verify(testDeleteObserver, times(1)).onNext(captor.capture());
+        DeleteGroupResponse response = captor.getValue();
+        assertTrue(response.getIsSuccess());
+        assertEquals("group has been deleted", response.getMessage());
+
+    }
+
+    /**
      * Test to delete invalid group to get error - done by providing an incorrect groupId
      */
     @Test
     void deleteGroup_invalidGroup_TestForFailure() {
 
         List<Groups> groupsCheck = new ArrayList<>();
+        Groups emptyGroup = new Groups();
         when(groupRepo.findAllByGroupId(1)).thenReturn(groupsCheck);
+        when(groupRepo.findByGroupId(emptyGroup.getId())).thenReturn(emptyGroup);
         DeleteGroupRequest invalidDeleteRequest = DeleteGroupRequest.newBuilder()
                 .setGroupId(2).build();
 

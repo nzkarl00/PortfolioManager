@@ -46,4 +46,6 @@ public class GroupMembership {
     public AccountProfile getRegisteredGroupUser() {return registeredGroupUser;}
 
     public Long getGroupMembershipId() {return groupMembershipId;}
+
+    public void setGroupMembershipId(Long id) {this.groupMembershipId = id;}
 }
