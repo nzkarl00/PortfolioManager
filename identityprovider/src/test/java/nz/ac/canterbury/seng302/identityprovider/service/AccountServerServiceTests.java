@@ -474,6 +474,7 @@ public class AccountServerServiceTests {
         List<Role> rolesOfUser = new ArrayList<Role>();
         rolesOfUser.add(studentRole);
         rolesOfUser.add(teacherRole);
+        user.addRoleTestingOnly(studentRole);
 
         Mockito.when(repo.findById(1)).thenReturn(user);
 
