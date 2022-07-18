@@ -154,6 +154,32 @@ public class DetailsController {
     }
 
     /**
+     * The mapping to delete an event
+     *
+     * @param principal auth token
+     * @param projectId id param for project to delete event from
+     * @param eventId eventId id under project to delete
+     * @param model the model to add attributes to
+     * @return A location of where to go next
+     * @throws Exception
+     */
+    @PostMapping("delete-event")
+    public String eventDelete(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value = "projectId") Integer projectId,
+            @RequestParam(value = "dateId") Integer eventId,
+            Model model
+    ) throws Exception {
+        String role = AuthStateInformer.getRole(principal);
+
+        if (role.equals("teacher") || role.equals("admin")) {
+            eventRepo.deleteById(eventId);
+            dateSocketService.sendEventCalendarChange(projectService.getProjectById(projectId));
+        }
+
+        return "redirect:details?id=" + projectId;
+    }
+    /**
      * The mapping to delete a deadline
      *
      * @param principal auth token
