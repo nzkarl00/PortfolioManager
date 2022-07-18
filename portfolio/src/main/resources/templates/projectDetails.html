@@ -651,7 +651,8 @@
                             }
                         })
                 }
-                if (JSON.parse(update.body).updateType == "EDIT") {
+                console.log([[${role}]])
+                if (JSON.parse(update.body).updateType == "EDIT" && ([[${role}]] == "admin" || [[${role}]] == "teacher" )) {
                     let editMessage = JSON.parse(update.body).message
                     clearTimeout(timeoutDict[editMessage])
                     timeoutDict[editMessage] = setTimeout(resetEditStatus, 2500, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
