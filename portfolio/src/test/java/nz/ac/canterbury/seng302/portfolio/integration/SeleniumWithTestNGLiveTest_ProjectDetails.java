@@ -413,7 +413,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
 
 
         ((JavascriptExecutor) seleniumExample.config.getDriver())
-                .executeScript("window.scrollTo(0, document.body.scrollHeight /2)");
+                .executeScript("window.scrollTo(0, document.body.scrollHeight)");
         Thread.sleep(100);
 
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
@@ -465,6 +465,12 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         seleniumExample.config.getDriver().get(projectInfoUrl);
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
+
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight)");
+        Thread.sleep(1000);
+
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
         WebElement firstSprint = allSprints.findElement(By.cssSelector("div:first-child"));
         sprint1Id = (firstSprint.getAttribute("id")).substring(6);
@@ -482,8 +488,8 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         detailAccessCheck.click();
 
         ((JavascriptExecutor) seleniumExample.config.getDriver())
-                .executeScript("window.scrollTo(0, document.body.scrollHeight /2)");
-        Thread.sleep(100);
+                .executeScript("window.scrollTo(0, document.body.scrollHeight)");
+        Thread.sleep(1000);
 
         WebElement milestoneList2 = seleniumExample.config.getDriver().findElement(By.id("milestonesList"+sprint1Id));
         WebElement secondMilestone = milestoneList2.findElement(By.cssSelector("form:nth-child(1)"));
