@@ -210,7 +210,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
 
         WebElement deadlineCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 deadlineList"));
         String deadlineCalendarString = deadlineCalendar.getText();
-        Assertions.assertEquals("\uD83D\uDCC5 D - 1", deadlineCalendarString);
+        Assertions.assertEquals("D - 1", deadlineCalendarString);
 
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
@@ -218,7 +218,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement firstSprint = allSprints.findElement(By.cssSelector("div:first-child"));
         sprint1Id = (firstSprint.getAttribute("id")).substring(6);
 
-        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlines"+sprint1Id));
+        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlinesList"+sprint1Id));
         WebElement firstDeadline = deadlineList.findElement(By.cssSelector("form:first-child"));
 
         checkTooltip_isValid(firstDeadline, "TestOneDue: 2033-01-04At: 08:00:00");
@@ -256,13 +256,13 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
 
         WebElement milestoneCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 milestoneList"));
         String milestoneCalendarString = milestoneCalendar.getText();
-        Assertions.assertEquals("\uD83D\uDCC5 M - 1", milestoneCalendarString);
+        Assertions.assertEquals("M - 1", milestoneCalendarString);
 
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
 
-        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("milestones"+sprint1Id));
+        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("milestonesList"+sprint1Id));
         WebElement firstDeadline = deadlineList.findElement(By.cssSelector("form:first-child"));
 
         WebElement milestoneTooltip = firstDeadline;
@@ -305,7 +305,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
 
         WebElement deadlineCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 deadlineList"));
         String deadlineCalendarString = deadlineCalendar.getText();
-        Assertions.assertEquals("\uD83D\uDCC5 D - 2", deadlineCalendarString);
+        Assertions.assertEquals("D - 2", deadlineCalendarString);
 
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
@@ -313,7 +313,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement firstSprint = allSprints.findElement(By.cssSelector("div:first-child"));
         sprint1Id = (firstSprint.getAttribute("id")).substring(6);
 
-        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlines"+sprint1Id));
+        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlinesList"+sprint1Id));
         WebElement firstDeadline = deadlineList.findElement(By.cssSelector("form:nth-child(1)"));
         WebElement secondDeadline = deadlineList.findElement(By.cssSelector("form:nth-child(2)"));
 
@@ -356,7 +356,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
 
         WebElement deadlineCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 deadlineList"));
         String deadlineCalendarString = deadlineCalendar.getText();
-        Assertions.assertEquals("\uD83D\uDCC5 D - 2", deadlineCalendarString);
+        Assertions.assertEquals("D - 2", deadlineCalendarString);
 
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
@@ -364,7 +364,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement firstSprint = allSprints.findElement(By.cssSelector("div:first-child"));
         sprint1Id = (firstSprint.getAttribute("id")).substring(6);
 
-        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlines"+sprint1Id));
+        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlinesList"+sprint1Id));
         WebElement firstDeadline = deadlineList.findElement(By.cssSelector("form:nth-child(1)"));
         WebElement secondDeadline = deadlineList.findElement(By.cssSelector("form:nth-child(2)"));
 
@@ -402,17 +402,25 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
 
         seleniumExample.config.getDriver().get(projectInfoUrl);
 
+
+
         WebElement milestoneCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 milestoneList"));
         String milestoneCalendarString = milestoneCalendar.getText();
-        Assertions.assertEquals("\uD83D\uDCC5 M - 2", milestoneCalendarString);
+        Assertions.assertEquals("M - 2", milestoneCalendarString);
 
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
+
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight /2)");
+        Thread.sleep(100);
+
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
         WebElement firstSprint = allSprints.findElement(By.cssSelector("div:first-child"));
         sprint1Id = (firstSprint.getAttribute("id")).substring(6);
 
-        WebElement milestoneList = seleniumExample.config.getDriver().findElement(By.id("milestones"+sprint1Id));
+        WebElement milestoneList = seleniumExample.config.getDriver().findElement(By.id("milestonesList"+sprint1Id));
         WebElement firstMilestone = milestoneList.findElement(By.cssSelector("form:nth-child(1)"));
         WebElement secondMilestone = milestoneList.findElement(By.cssSelector("form:nth-child(2)"));
 
@@ -432,18 +440,18 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement firstSprint = allSprints.findElement(By.cssSelector("div:first-child"));
         sprint1Id = (firstSprint.getAttribute("id")).substring(6);
 
-        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlines"+sprint1Id));
+        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlinesList"+sprint1Id));
         WebElement firstDeadline = deadlineList.findElement(By.cssSelector("form:nth-child(2)"));
         WebElement deleteDeadline = firstDeadline.findElement(By.id("deleteButton"));
         deleteDeadline.click();
 
         WebElement deadlineCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 deadlineList"));
         String deadlineCalendarString = deadlineCalendar.getText();
-        Assertions.assertEquals("\uD83D\uDCC5 D - 1", deadlineCalendarString);
+        Assertions.assertEquals("D - 1", deadlineCalendarString);
 
         detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
-        WebElement deadlineList2 = seleniumExample.config.getDriver().findElement(By.id("deadlines"+sprint1Id));
+        WebElement deadlineList2 = seleniumExample.config.getDriver().findElement(By.id("deadlinesList"+sprint1Id));
         WebElement initialDeadline = deadlineList2.findElement(By.cssSelector("form:nth-child(2)"));
 
         Assertions.assertEquals("TestTwo", initialDeadline.getText());
@@ -461,18 +469,23 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement firstSprint = allSprints.findElement(By.cssSelector("div:first-child"));
         sprint1Id = (firstSprint.getAttribute("id")).substring(6);
 
-        WebElement milestoneList = seleniumExample.config.getDriver().findElement(By.id("milestones"+sprint1Id));
+        WebElement milestoneList = seleniumExample.config.getDriver().findElement(By.id("milestonesList"+sprint1Id));
         WebElement firstMilestone = milestoneList.findElement(By.cssSelector("form:first-child"));
         WebElement deleteMilestone = firstMilestone.findElement(By.id("deleteButton"));
         deleteMilestone.click();
 
         WebElement milestoneCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 milestoneList"));
         String milestoneCalendarString = milestoneCalendar.getText();
-        Assertions.assertEquals("\uD83D\uDCC5 M - 1", milestoneCalendarString);
+        Assertions.assertEquals("M - 1", milestoneCalendarString);
 
         detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
-        WebElement milestoneList2 = seleniumExample.config.getDriver().findElement(By.id("milestones"+sprint1Id));
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight /2)");
+        Thread.sleep(100);
+
+        WebElement milestoneList2 = seleniumExample.config.getDriver().findElement(By.id("milestonesList"+sprint1Id));
         WebElement secondMilestone = milestoneList2.findElement(By.cssSelector("form:nth-child(1)"));
 
         Assertions.assertEquals("MileTwo", secondMilestone.getText());
@@ -565,7 +578,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
                 .executeScript("window.scrollTo(0, document.body.scrollHeight)");
         Thread.sleep(1000);
 
-        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlines"+sprint2Id));
+        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlinesList"+sprint2Id));
         WebElement firstDeadline = deadlineList.findElement(By.cssSelector("form:first-child"));
 
         Assertions.assertEquals("TestThree", firstDeadline.getText());
@@ -606,7 +619,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
                 .executeScript("window.scrollTo(0, document.body.scrollHeight)");
         Thread.sleep(1000);
 
-        WebElement milestoneList = seleniumExample.config.getDriver().findElement(By.id("milestones"+sprint2Id));
+        WebElement milestoneList = seleniumExample.config.getDriver().findElement(By.id("milestonesList"+sprint2Id));
         WebElement firstMilestone = milestoneList.findElement(By.cssSelector("form:first-child"));
 
 
@@ -627,7 +640,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         Thread.sleep(1000);
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
 
-        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlines"+sprint2Id));
+        WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlinesList"+sprint2Id));
         WebElement firstDeadline = deadlineList.findElement(By.cssSelector("form:first-child"));
         WebElement deleteDeadline = firstDeadline.findElement(By.id("deleteButton"));
         deleteDeadline.click();
@@ -639,7 +652,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
                 .executeScript("window.scrollTo(0, document.body.scrollHeight)");
         Thread.sleep(1000);
 
-        WebElement deadlinesDeleted = seleniumExample.config.getDriver().findElement( By.id("deadlines"+sprint2Id));
+        WebElement deadlinesDeleted = seleniumExample.config.getDriver().findElement( By.id("deadlinesList"+sprint2Id));
 
         boolean deadlineList2 = deadlinesDeleted.findElements(By.cssSelector("form")).size() != 0;
         Assertions.assertFalse(deadlineList2);
@@ -659,7 +672,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         Thread.sleep(1000);
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
 
-        WebElement milestoneList = seleniumExample.config.getDriver().findElement(By.id("milestones"+sprint2Id));
+        WebElement milestoneList = seleniumExample.config.getDriver().findElement(By.id("milestonesList"+sprint2Id));
         WebElement firstMilestone = milestoneList.findElement(By.cssSelector("form:first-child"));
         WebElement deleteMilestone = firstMilestone.findElement(By.id("deleteButton"));
         deleteMilestone.click();
@@ -671,7 +684,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
                 .executeScript("window.scrollTo(0, document.body.scrollHeight)");
         Thread.sleep(1000);
 
-        WebElement milestonesDeleted = seleniumExample.config.getDriver().findElement( By.id("milestones"+sprint2Id));
+        WebElement milestonesDeleted = seleniumExample.config.getDriver().findElement( By.id("milestonesList"+sprint2Id));
 
         boolean milestoneList2 = milestonesDeleted.findElements(By.cssSelector("form")).size() != 0;
         Assertions.assertFalse(milestoneList2);
