@@ -4,5 +4,6 @@ public enum FetchUpdateType {
     SPRINT,
     DEADLINE,
     EVENT,
-    MILESTONE
+    MILESTONE,
+    EDIT
 }

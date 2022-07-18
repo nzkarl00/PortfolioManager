@@ -906,3 +906,9 @@
     margin-top: 5px;
     margin-bottom: 5px;
 }
+
+.editAlert {
+    position: relative;
+    text-align:center;
+    margin: 5px;
+}
