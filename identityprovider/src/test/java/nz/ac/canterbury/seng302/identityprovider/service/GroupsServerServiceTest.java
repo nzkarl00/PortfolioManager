@@ -26,11 +26,19 @@ class GroupsServerServiceTest {
     @Autowired
     private static GroupsServerService gss = new GroupsServerService();
 
+    /**
+     * The repos we are testing in this class
+     */
     @Autowired
     static GroupRepository groupRepo = Mockito.mock(GroupRepository.class);
-
     @Autowired
     static GroupMembershipRepository groupMembershipRepo = Mockito.mock(GroupMembershipRepository.class);
+    @Autowired
+    static AccountProfileRepository accountProfileRepo = Mockito.mock(AccountProfileRepository.class);
+    @Autowired
+    static RolesRepository rolesRepo = Mockito.mock(RolesRepository.class);
+
+
 
     /**
      * Setup to replace the autowired instances of these with the mocks
@@ -39,6 +47,8 @@ class GroupsServerServiceTest {
     void setup() {
         gss.groupRepo = groupRepo;
         gss.groupMembershipRepo = groupMembershipRepo;
+        gss.repo = accountProfileRepo;
+        gss.roleRepo = rolesRepo;
     }
 
     /**
@@ -442,32 +452,92 @@ class GroupsServerServiceTest {
      * Test the function addGroupMembers()
      * given a user you want to add is in the Members Without a Group (MWAG)
      * addGroupMembers() will not only add the user in a new group, but also
-     * satisfy the special group case so the user will no longer be in MWAG
+     * satisfy the special group case so the user will no longer be in MWAG.
      */
     @Test
     void givenUserInMWAG_addGroupMembers_willRemoveUserFromMWAG() {
 
-        Groups mwagGroup = new Groups();
-        mwagGroup.setGroupShortName("MWAG");
-        mwagGroup.setGroupLongName("Members Without a Group");
-
         AccountProfile testUser = new AccountProfile();
 
-        when(groupRepo.findByGroupId(1)).thenReturn(mwagGroup);
-        when(mwagGroup.getMembers()).thenReturn((List<GroupMembership>) testUser);
+        Groups teacherGroup = new Groups();
+        teacherGroup.setGroupShortName("TG");
+        teacherGroup.setGroupLongName("Teacher Group");
 
+        Groups mwagGroup = new Groups();
+        mwagGroup.setGroupId(2);
+        mwagGroup.setGroupShortName("MWAG");
+        mwagGroup.setGroupLongName("Members Without a Group");
+        GroupMembership mwagMembership = new GroupMembership(mwagGroup, testUser);
+        mwagGroup.setMembers(new ArrayList<>(List.of(mwagMembership)));
+        List<Groups> noMembers = new ArrayList<>(List.of(mwagGroup));
+
+        when(groupRepo.findByGroupId(2)).thenReturn(mwagGroup);
+
+        when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(noMembers);
         int isSpecialGroup = gss.checkIsSpecialGroup(mwagGroup);
 
-        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(1).setUserIds(1, 1).build();
+        when(accountProfileRepo.findById(1)).thenReturn(testUser);
+
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(new ArrayList<>(List.of(mwagGroup)));
+
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(2).addUserIds(1).build();
         gss.addGroupMembers(request, testAddGroupMembersObserver);
 
         verify(testAddGroupMembersObserver, times(1)).onCompleted();
         ArgumentCaptor<AddGroupMembersResponse> captor = ArgumentCaptor.forClass(AddGroupMembersResponse.class);
         verify(testAddGroupMembersObserver, times(1)).onNext(captor.capture());
+        verify(groupMembershipRepo).deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers.get(0), testUser);
         AddGroupMembersResponse response = captor.getValue();
         assertEquals(response.getIsSuccess(), true);
         assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
         assertEquals(isSpecialGroup, 2);
+    }
+
+    /**
+     * Test the function addGroupMembers()
+     * given a user you want to add is being added to the teacher group
+     * addGroupMembers() will not only add the user to the teacher group, but also
+     * satisfy the special group case so the user will no longer be in MWAG
+     * and the user will have a teacher role associated with it.
+     */
+    @Test
+    void givenUser_addGroupMembersToTeacherGroup_willAddTeacherRole() {
+
+        AccountProfile testUser = new AccountProfile();
+
+        Groups teacherGroup = new Groups();
+        teacherGroup.setGroupShortName("TG");
+        teacherGroup.setGroupLongName("Teacher Group");
+        teacherGroup.setGroupId(1);
+        GroupMembership teacherMembership = new GroupMembership(teacherGroup, testUser);
+        teacherGroup.setMembers(new ArrayList<>(List.of(teacherMembership)));
+
+        Groups mwagGroup = new Groups();
+        mwagGroup.setGroupShortName("MWAG");
+        mwagGroup.setGroupLongName("Members Without a Group");
+
+        when(groupRepo.findByGroupId(1)).thenReturn(teacherGroup);
+
+        when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(new ArrayList<>(List.of(mwagGroup)));
+        int isSpecialGroup = gss.checkIsSpecialGroup(teacherGroup);
+
+        when(accountProfileRepo.findById(1)).thenReturn(testUser);
+
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(new ArrayList<>(List.of(mwagGroup)));
+
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(1).addUserIds(1).build();
+        gss.addGroupMembers(request, testAddGroupMembersObserver);
+
+        verify(testAddGroupMembersObserver, times(1)).onCompleted();
+        ArgumentCaptor<AddGroupMembersResponse> captor = ArgumentCaptor.forClass(AddGroupMembersResponse.class);
+        verify(testAddGroupMembersObserver, times(1)).onNext(captor.capture());
+        verify(rolesRepo).save(refEq(new Role(testUser, "2teacher")));
+        AddGroupMembersResponse response = captor.getValue();
+        assertEquals(response.getIsSuccess(), true);
+        assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
+        assertEquals(isSpecialGroup, 1);
     }
 
 }

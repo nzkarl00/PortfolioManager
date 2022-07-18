@@ -121,7 +121,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
             }
 
             // if the user is being added to the MWAG group, then update this change by removing this member from all groups.
-            if (isSpecialGroup == 2) {
+            else if (isSpecialGroup == 2) {
                 List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroupUser(user);
                 for (GroupMembership groupMembership : groupMemberships) {
                     groupMembershipRepo.deleteByGroupMembershipId(groupMembership.getGroupMembershipId());
