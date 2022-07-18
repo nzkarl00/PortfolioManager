@@ -144,7 +144,8 @@ document.body.addEventListener("keydown", function (ev) {
             clipboard.push(parseInt(user[1]))
         }
     } else if (key == 88 && ctrl) {
-        console.log("ctrlx")
+        // When ctrl-xing users from multiple groups, multiple grpc calls are required
+        // So the cutboard is a dict containing the groupIds and the userid's to delete
         cutboard = {};
         cutboard[-1] = [];
         for (const user of selected) {
@@ -169,6 +170,8 @@ document.body.addEventListener("keydown", function (ev) {
 
             $("#groupUserTable" + /*[[${group.shortName}]]*/ + ' tbody').on('click', 'tr', function (e) {
                 if (!lastChecked) {
+                    // if no item has been selected before this click in this table, add the groupId and userId
+                    // and register the click
                     let id = table.row(this).data()[0].substring(25);
                     let groupId = [[${group.id}]];
                     latest = groupId;
@@ -182,6 +185,8 @@ document.body.addEventListener("keydown", function (ev) {
                         selected.push([groupId, id]);
                     }
                 } else if (e.shiftKey) {
+                    // if the shift key is held, while the click happens, add the users in-between
+                    // the last clicked and the recently clicked
                     let start = lastChecked;
                     let end = this.rowIndex;
                     if (start > end) {
@@ -200,6 +205,7 @@ document.body.addEventListener("keydown", function (ev) {
                         }
                     }
                 } else {
+                    // if it's a regeular click, add the user to the selected list
                     let id = table.row(this).data()[0].substring(25);
                     let groupId = [[${group.id}]];
                     latest = groupId;
