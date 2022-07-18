@@ -55,4 +55,6 @@ public class Groups {
 
     public List<GroupMembership> getMembers() {return members;}
 
+    public void setMembers(List<GroupMembership> members) {this.members = members;}
+
 }

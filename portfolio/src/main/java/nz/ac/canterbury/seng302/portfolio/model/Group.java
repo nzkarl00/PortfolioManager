@@ -28,14 +28,38 @@ public class Group {
         }
     }
 
+    /**
+     * Gets long name of the group
+     * @return  long name of the group
+     */
+    public String getLongName() {return longName; }
+
+    /**
+     * Gets short name of the group
+     * @return  short name of the group
+     */
+    public String getShortName() {return shortName; }
+
+    /**
+     * Gets number of member in the group
+     * @return number of member in the group
+     */
     public int getNumMembers() {
         return members.size();
     }
 
+    /**
+     * Gets id of the group
+     * @return id of the group
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Gets the list of members in the group
+     * @return the list of members in the group
+     */
     public List<User> getMembers() {
         return members;
     }
