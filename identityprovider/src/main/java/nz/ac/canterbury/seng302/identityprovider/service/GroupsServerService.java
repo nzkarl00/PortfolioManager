@@ -96,6 +96,8 @@ public class GroupsServerService extends GroupsServiceImplBase {
      * Takes a request and adds a list of users to a given group through the Group Membership table.
      * Adding a user to a group involves to remove it from the Members Without A Group.
      * Adding a user to a teacher group involves updating the role for that user to a teacher too.
+     * Adding a user t0 MWAG group would involve removing that user from all other groups.
+     * Adding a user to a group it is a part of already should be ignored to avoid duplicates.
      * @param request the request, containing the ids of the group and list of user ids
      * @param responseObserver sends a response back to the client
      */

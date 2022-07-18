@@ -67,6 +67,11 @@ class GroupsServerServiceTest {
     private StreamObserver<ModifyGroupDetailsResponse> testModifyObserver = mock(StreamObserver.class);
 
     /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<AddGroupMembersResponse> testAddGroupMembersObserver = mock(StreamObserver.class);
+
+    /**
      * Tests to make a valid group
      */
     @Test
@@ -431,6 +436,38 @@ class GroupsServerServiceTest {
         assertEquals(response.getIsSuccess(), true);
         assertEquals(response.getMessage(), "Edit successful");
 
+    }
+
+    /**
+     * Test the function addGroupMembers()
+     * given a user you want to add is in the Members Without a Group (MWAG)
+     * addGroupMembers() will not only add the user in a new group, but also
+     * satisfy the special group case so the user will no longer be in MWAG
+     */
+    @Test
+    void givenUserInMWAG_addGroupMembers_willRemoveUserFromMWAG() {
+
+        Groups mwagGroup = new Groups();
+        mwagGroup.setGroupShortName("MWAG");
+        mwagGroup.setGroupLongName("Members Without a Group");
+
+        AccountProfile testUser = new AccountProfile();
+
+        when(groupRepo.findByGroupId(1)).thenReturn(mwagGroup);
+        when(mwagGroup.getMembers()).thenReturn((List<GroupMembership>) testUser);
+
+        int isSpecialGroup = gss.checkIsSpecialGroup(mwagGroup);
+
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(1).setUserIds(1, 1).build();
+        gss.addGroupMembers(request, testAddGroupMembersObserver);
+
+        verify(testAddGroupMembersObserver, times(1)).onCompleted();
+        ArgumentCaptor<AddGroupMembersResponse> captor = ArgumentCaptor.forClass(AddGroupMembersResponse.class);
+        verify(testAddGroupMembersObserver, times(1)).onNext(captor.capture());
+        AddGroupMembersResponse response = captor.getValue();
+        assertEquals(response.getIsSuccess(), true);
+        assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
+        assertEquals(isSpecialGroup, 2);
     }
 
 }
