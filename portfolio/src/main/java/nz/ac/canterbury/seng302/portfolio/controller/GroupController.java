@@ -32,8 +32,12 @@ public class GroupController {
     private AccountClientService accountClientService;
 
     private int MAX_NUMBER_OF_GROUPS = 10;
+
+    // clipboard for holding selected info from ctrl c
     private List<Integer> clipboard = new ArrayList<>();
-    private HashMap<Integer, List<Integer>> clipboard2 = new HashMap<>();
+
+    // cutboard for holding selected info from ctrl x
+    private HashMap<Integer, List<Integer>> cutboard = new HashMap<>();
 
     /**
      * gets a page of groups with all the users in the groups shown in a table
@@ -77,7 +81,7 @@ public class GroupController {
         model.addAttribute("groups", groups);
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("clipboard", clipboard);
-        model.addAttribute("clipboard2", clipboard2);
+        model.addAttribute("cutboard", cutboard);
 
         String role = AuthStateInformer.getRole(principal);
 
@@ -114,7 +118,7 @@ public class GroupController {
             }
         }
         clipboard = ids.get(-1);
-        clipboard2 = ids;
+        cutboard = ids;
     }
 
     /**
