@@ -328,6 +328,99 @@ public class DetailsController {
     }
 
     /**
+     * Sends all the deadlines in JSON for a given project in a given timeframe
+     * @param principal authstate to validate the user
+     * @param stringStartDate date value of the calendar day in string form
+     * @param stringEndDate date value of the calendar day in string form
+     * @param projectId the project ID being checked
+     * @return the list of deadlines in JSON
+     */
+    @GetMapping("/deadlines-between")
+    public ResponseEntity<List<Deadline>> getInBetweenDeadlines(@AuthenticationPrincipal AuthState principal,
+                                                          @RequestParam(value="dateStart") String stringStartDate,
+                                                          @RequestParam(value="dateEnd") String stringEndDate,
+                                                          @RequestParam(value="project") Integer projectId) throws Exception {
+        String formattedDate = stringStartDate.substring(0, 10) + " 00:00:00";
+        String formattedEndDate = stringEndDate.substring(0, 10) + " 23:59:59";
+        SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = formatter.parse(formattedDate);
+        Date end = formatter.parse(formattedEndDate);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, 1);
+        date = cal.getTime();
+        cal.setTime(end);
+        cal.add(Calendar.DATE, -1);
+        end = cal.getTime();
+
+        List<Deadline> sendingDeadlines = deadlineRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
+        return ResponseEntity.ok(sendingDeadlines);
+    }
+
+    /**
+     * Sends all the milestones in JSON for a given project on a given day
+     * @param principal authstate to validate the user
+     * @param stringStartDate date value of the calendar day in string form
+     * @param stringEndDate date value of the calendar day in string form
+     * @param projectId the project ID being checked
+     * @return the list of deadlines in JSON
+     */
+    @GetMapping("/milestones-between")
+    public ResponseEntity<List<Milestone>> getInBetweenMilestones(@AuthenticationPrincipal AuthState principal,
+                                                          @RequestParam(value="dateStart") String stringStartDate,
+                                                          @RequestParam(value="dateEnd") String stringEndDate,
+                                                          @RequestParam(value="project") Integer projectId) throws Exception {
+        String formattedDate = stringStartDate.substring(0, 10) + " 00:00:00";
+        String formattedEndDate = stringEndDate.substring(0, 10) + " 23:59:59";
+        SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = formatter.parse(formattedDate);
+        Date end = formatter.parse(formattedEndDate);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, 1);
+        date = cal.getTime();
+        cal.setTime(end);
+        cal.add(Calendar.DATE, -1);
+        end = cal.getTime();
+
+        List<Milestone> sendingMilestones = milestoneRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
+        return ResponseEntity.ok(sendingMilestones);
+    }
+
+    /**
+     * Sends all the events in JSON for a given project on a given day
+     * @param principal authstate to validate the user
+     * @param stringStartDate date value of the calendar day in string form
+     * @param stringEndDate date value of the calendar day in string form
+     * @param projectId the project ID being checked
+     * @return the list of deadlines in JSON
+     */
+    @GetMapping("/events-between")
+    public ResponseEntity<List<Event>> getInBetweenEvents(@AuthenticationPrincipal AuthState principal,
+                                                          @RequestParam(value="dateStart") String stringStartDate,
+                                                          @RequestParam(value="dateEnd") String stringEndDate,
+                                                          @RequestParam(value="project") Integer projectId) throws Exception {
+        String formattedDate = stringStartDate.substring(0, 10) + " 00:00:00";
+        String formattedEndDate = stringEndDate.substring(0, 10) + " 23:59:59";
+        SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = formatter.parse(formattedDate);
+        Date end = formatter.parse(formattedEndDate);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, 1);
+        date = cal.getTime();
+        cal.setTime(end);
+        cal.add(Calendar.DATE, -1);
+        end = cal.getTime();
+
+        List<Event> sendingEvents = eventRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
+        return ResponseEntity.ok(sendingEvents);
+    }
+
+    /**
      * Sends all the deadlines in JSON for a given project on a given day
      * @param principal authstate to validate the user
      * @param stringDate date value of the calendar day in string form
@@ -436,7 +529,7 @@ public class DetailsController {
         for (Milestone milestone : milestones) {
             LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
             LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
-            if ((milestone.getStartDate().isAfter(startDate)) && (milestone.getStartDate().isBefore(endDate))) {
+            if ((!milestone.getStartDate().isBefore(startDate)) && (milestone.getStartDate().isBefore(endDate))) {
                 sendingMilestones.add(milestone);
             }
         }
