@@ -259,8 +259,21 @@ public class GroupsServerService extends GroupsServiceImplBase {
      * @param responseObserver where to send the response back to
      */
     @Override
+    @Transactional
     public void deleteGroup(DeleteGroupRequest request, StreamObserver<DeleteGroupResponse> responseObserver) {
-        groupRepo.deleteById((long) request.getGroupId());
+        Groups groupToBeDeleted = groupRepo.findByGroupId(Integer.valueOf(request.getGroupId()));
+        if(groupToBeDeleted != null && !groupToBeDeleted.getMembers().isEmpty()){
+
+            // get all members in this group
+            List<GroupMembership> allMembers = groupMembershipRepo.findAllByRegisteredGroups(groupToBeDeleted);
+
+            // loop through all members and delete them one by one from the GroupMembership Repo
+            for (int i=0; i < allMembers.size(); i++) {
+                groupMembershipRepo.deleteByGroupMembershipId(allMembers.get(i).getGroupMembershipId());
+            }
+        }
+        groupRepo.deleteById(Integer.valueOf(request.getGroupId()));
+
         DeleteGroupResponse.Builder reply = DeleteGroupResponse.newBuilder();
 
         if (!(groupRepo.findAllByGroupId(request.getGroupId()).isEmpty())){

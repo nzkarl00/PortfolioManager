@@ -48,13 +48,13 @@
                 <!-- Edit project button-->
                 <div class="row">
                     <div class="col-2"></div>
-                    <form class="col-lg-4 col-md-4 col-sm-12 col-12 align-items-end " th:action="@{/landing}" method="get">
+                    <form th:action="@{/landing}" method="get" th:class="${role == 'admin' || role == 'teacher'} ? 'col-lg-4 col-md-4 col-sm-12 col-12 align-items-end' : 'col-sm-12 col-12 align-items-end returnButtonCenter'">
                         <button class="edit" style="padding-top:0rem;" type="submit">
                             <i class="fa fa-arrow-left"></i>&nbsp;
                             Return
                         </button>
                     </form>
-                    <form class="col-lg-4 col-md-4 col-sm-12" th:action="@{/edit-project}" method="get">
+                    <form class="col-lg-4 col-md-4 col-sm-12" th:action="@{/edit-project}" method="get" th:style="${display}">
                         <input style="display:none;" th:name="id" id="id" th:value="${project.getId}" type="number">
                         <button class="edit" style="padding-top:0rem;" type="submit">
                             <i class="fa fa-edit"></i>&nbsp;
@@ -74,9 +74,9 @@
             <li id="toCalendar" class="active"><a data-toggle="tab" href="#calendar-tab" id="calendar-tab-head">Planner</a></li>
             <li id="toDetails"><a data-toggle="tab" href="#project-details-tab" id="details-tab-head">Project Details</a></li>
         </ul>
-
         <!-- Tab containers-->
         <div class="tab-content">
+            <p class="alert-info editAlert display_data" id="editStatus"></p>
             <div id="calendar-tab" class="tab-pane fade in active">
                 <br><br>
 
@@ -101,7 +101,7 @@
                     <!-- Add dates button -->
                     <div class="row">
                     <div class="col-2"></div>
-                            <div class="col-lg-8 col-md-10 col-sm-12" >
+                            <div class="col-lg-8 col-md-10 col-sm-12" th:style="${display}">
                                 <form th:action="@{add-dates}" method="get">
                                     <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
                                     <button class="add" id="addDateButton" type="submit">
@@ -140,7 +140,6 @@
                     <div class="row-1">
                         <br><br><br>
                     </div>
-
                 </div>
 
             </div>
@@ -158,24 +157,33 @@
 <script th:src="@{js/fullcalendar.js}"></script>
 <script type="text/javascript" th:inline="javascript">
 
+    canEdit = false;
+    if([[${role}]] === "teacher" || [[${role}]] === "admin") {
+        canEdit = true;
+    }
 
     // this is all to make sure that the calendar re-renders once the tab is loaded
     // not before as that will cause sizing errors
     let flag = false;
 
+
+
     $('#calendar-tab').on('click', function (e) {
         if(!$('#toCalendar').hasClass('disabled') && flag) {
             calendarTryAgain()
             flag = false;
+            displayEdits()
         }
     });
 
     $('#details-tab-head').on('click', function (e) {
         flag = true;
+        displayEdits()
     });
 
     $('#toCalendar').on('click', function (e) {
         flag = false;
+        displayEdits()
     });
 
     const colors = ['#a3c7d7', '#067d46', '#19DAFF','#f5deb3', '#d470a2', '#9acd32',
@@ -272,31 +280,49 @@
         description.innerText = "Description: " + sprint.description
         col3.appendChild(description)
 
+        const events = document.createElement("div")
+        events.className = "project_subhead sprint-description display_data"
+        events.id = "events" + sprint.id
+        events.innerHTML = '<i class="fa fa-star"></i>' + " "  + "Events:"
+        col3.appendChild(events)
+
+        const eventsList = document.createElement("div")
+        eventsList.id = "eventsList" + sprint.id
+        col3.appendChild(eventsList)
+
         const deadlines = document.createElement("div")
-        deadlines.className = "sprint-description display_data"
+        deadlines.className = "project_subhead sprint-description display_data"
         deadlines.id = "deadlines" + sprint.id
-        deadlines.innerText = "Deadlines:"
+        deadlines.innerHTML = '<i class="fa fa-calendar-o"></i>' + " " + "Deadlines:"
         col3.appendChild(deadlines)
 
+        const deadlinesList = document.createElement("div")
+        deadlinesList.id = "deadlinesList" + sprint.id
+        col3.appendChild(deadlinesList)
+
         const milestones = document.createElement("div")
-        milestones.className = "sprint-description display_data"
+        milestones.className = "project_subhead sprint-description display_data"
         milestones.id = "milestones" + sprint.id
-        milestones.innerText = "Milestones:"
+        milestones.innerHTML = '<i class="fa fa-flag"></i>' + " "  + "Milestones:"
         col3.appendChild(milestones)
 
-        const events = document.createElement("div")
-        events.className = "sprint-description display_data"
-        events.id = "events" + sprint.id
-        events.innerText = "Events:"
-        col3.appendChild(events)
+        const milestonesList = document.createElement("div")
+        milestonesList.id = "milestonesList" + sprint.id
+        col3.appendChild(milestonesList)
+
 
         const col4 = document.createElement("div")
         col4.className = "col-2"
         sprintDiv.appendChild(col4)
+
+        if(!canEdit) {
+            editButton.style.display = "none"
+            deleteButton.style.display = "none"
+        }
     }
 
     function buildDeadline(deadline, sprintId) {
-        const mainDiv = document.getElementById("deadlines" + sprintId)
+        const mainDiv = document.getElementById("deadlinesList" + sprintId)
         const eachDeadline = document.createElement("form")
         const deleteDeadline = document.createElement("button")
         const editDeadline = document.createElement("button")
@@ -304,6 +330,7 @@
         const projectId = document.createElement("input")
         const deadlineId = document.createElement("input")
         const dateId = document.createElement("input")
+
 
         dateId.style = "display:none;"
         dateId.name = "dateId"
@@ -340,8 +367,8 @@
 
         eachDeadline.method = "post"
         eachDeadline.action = "delete-deadline"
-        eachDeadline.innerText = deadline.name
-        eachDeadline.className = "posAbsolute"
+        eachDeadline.innerHTML = '<i class="fa fa-calendar-o"></i>' + " " + deadline.name
+        eachDeadline.className = "posAbsolute increase_size"
 
         const deadlineDate = String(deadline.startDate).substring(0,10);
         const deadlineTime = String(deadline.startDate).substring(11);
@@ -360,6 +387,11 @@
                     html: true
                 });
 
+        if(!canEdit) {
+            editDeadline.style.display = "none"
+            deleteDeadline.style.display = "none"
+        }
+
         mainDiv.appendChild(eachDeadline)
         eachDeadline.appendChild(projectId)
         eachDeadline.appendChild(deadlineId)
@@ -370,13 +402,14 @@
     }
 
     function buildEvent(event, sprintId) {
-        const mainDiv = document.getElementById("events" + sprintId)
+        const mainDiv = document.getElementById("eventsList" + sprintId)
         const eachEvent = document.createElement("form")
         const deleteEvent = document.createElement("button")
         const editEvent = document.createElement("button")
         const projectId = document.createElement("input")
         const eventId = document.createElement("input")
         const eventType = document.createElement("input")
+
 
         projectId.style = "display:none;"
         projectId.name = "projectId"
@@ -406,9 +439,9 @@
         deleteEvent.className = "fa fa-trash each-deadline"
 
         eachEvent.method = "post"
-        eachEvent.action = "delete-deadline"
-        eachEvent.innerText = event.name
-        eachEvent.className = "posAbsolute"
+        eachEvent.action = "delete-event"
+        eachEvent.innerHTML = '<i class="fa fa-star"></i>' + " "  + event.name
+        eachEvent.className = "posAbsolute increase_size"
 
         const eventStartDate = String(event.startDate).substring(0,10);
         const eventEndDate = String(event.endDate).substring(0,10);
@@ -429,6 +462,11 @@
             html: true,
         });
 
+        if(!canEdit) {
+            editEvent.style.display = "none"
+            deleteEvent.style.display = "none"
+        }
+
         mainDiv.appendChild(eachEvent)
         eachEvent.appendChild(projectId)
         eachEvent.appendChild(eventId)
@@ -438,7 +476,7 @@
     }
 
     function buildMilestone(milestone, sprintId) {
-        const mainDiv = document.getElementById("milestones" + sprintId)
+        const mainDiv = document.getElementById("milestonesList" + sprintId)
         const eachMilestone = document.createElement("form")
         const deleteMilestone = document.createElement("button")
         const editMilestone = document.createElement("button")
@@ -446,6 +484,7 @@
         const projectId = document.createElement("input")
         const milestoneId = document.createElement("input")
         const dateId = document.createElement("input")
+
 
         dateId.style = "display:none;"
         dateId.name = "dateId"
@@ -482,8 +521,8 @@
 
         eachMilestone.method = "post"
         eachMilestone.action = "delete-milestone"
-        eachMilestone.innerText = milestone.name
-        eachMilestone.className = "posAbsolute"
+        eachMilestone.innerHTML = '<i class="fa fa-flag"></i>' + " " + milestone.name
+        eachMilestone.className = "posAbsolute increase_size"
 
         const milestoneDate = String(milestone.startDate).substring(0,10);
         var milestoneToolTip;
@@ -501,6 +540,11 @@
                     html: true
                 });
 
+        if(!canEdit) {
+            editMilestone.style.display = "none"
+            deleteMilestone.style.display = "none"
+        }
+
         mainDiv.appendChild(eachMilestone)
         eachMilestone.appendChild(projectId)
         eachMilestone.appendChild(milestoneId)
@@ -510,86 +554,111 @@
         eachMilestone.appendChild(deleteMilestone)
     }
 
-    var stompClient = null;
+    function resetEditStatus(message) {
+        currentEdits = currentEdits.filter(item => item !== message)
+        displayEdits()
+    }
 
-    function connect() {
-        var socket = new SockJS('/gs-guide-websocket');
-        stompClient = Stomp.over(socket);
+    let stompClient = null;
+    let timeoutID;
+    let currentEdits = [];
+    let timeoutDict = {};
+    async function connect(subTopic) {
+        let socket = new SockJS('/gs-guide-websocket');
+        stompClient = await Stomp.over(socket);
         // connect to the portfolio server
         stompClient.connect({}, function (frame) {
             // subscribe to the global topic
-            stompClient.subscribe('/topic/calendar/'+[[${project.getId()}]], function (update) {
+            stompClient.subscribe('/topic/' + subTopic + '/' + [[${project.getId()}]], function (update) {
                 // if it is a sprint update, update the calendar and details sprints
+                console.log(JSON.parse(update.body).updateType)
                 if (JSON.parse(update.body).updateType == "SPRINT") {
-                    axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
-                    .then((response) => {
-                        deleteAllSprints()
-                        for (const sprint of response.data) {
-                            buildSprint(sprint)
-                            axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
-                            .then((response) => {
-                                for (const deadline of response.data) {
-                                    buildDeadline(deadline, sprint.id)
-                                }
-                            })
-                            axios.get("/milestones", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
-                            .then((response) => {
-                                for (const milestone of response.data) {
-                                    buildMilestone(milestone, sprint.id)
-                                }
-                            })
-                            axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
-                                .then((response) => {
-                                    for (const event of response.data) {
-                                        buildEvent(event, sprint.id)
+                    axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
+                        .then((response) => {
+                            deleteAllSprints()
+                            for (const sprint of response.data) {
+                                buildSprint(sprint)
+                                axios.get("/deadlines", {params: {"id": [[${project.getId()}]], "sprintId": sprint.id}})
+                                    .then((response) => {
+                                        for (const deadline of response.data) {
+                                            buildDeadline(deadline, sprint.id)
+                                        }
+                                    })
+                                axios.get("/milestones", {
+                                    params: {
+                                        "id": [[${project.getId()}]],
+                                        "sprintId": sprint.id
                                     }
                                 })
-                        }
-                        renderCalendar(response.data)
-                    })
+                                    .then((response) => {
+                                        for (const milestone of response.data) {
+                                            buildMilestone(milestone, sprint.id)
+                                        }
+                                    })
+                                axios.get("/events", {params: {"id": [[${project.getId()}]], "sprintId": sprint.id}})
+                                    .then((response) => {
+                                        for (const event of response.data) {
+                                            buildEvent(event, sprint.id)
+                                        }
+                                    })
+                            }
+                            renderCalendar(response.data)
+                        })
                 }
 
                 if (JSON.parse(update.body).updateType == "DEADLINE") {
-                    axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":JSON.parse(update.body).sprintId}})
+                    axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
+                        .then((response) => {
+                            renderCalendar(response.data)
+                        })
+                    axios.get("/deadlines", {
+                        params: {
+                            "id": [[${project.getId()}]],
+                            "sprintId": JSON.parse(update.body).sprintId
+                        }
+                    })
                         .then((response) => {
                             deleteAllDeadlines(JSON.parse(update.body).sprintId)
                             for (const deadline of response.data) {
                                 buildDeadline(deadline, JSON.parse(update.body).sprintId)
                             }
-
-                            axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                renderCalendar(response.data)
-                            })
-
                         })
                 }
 
                 if (JSON.parse(update.body).updateType == "EVENT") {
-                            axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                renderCalendar(response.data)
-                            })
+                    axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
+                        .then((response) => {
+                            renderCalendar(response.data)
+                        })
                 }
 
                 if (JSON.parse(update.body).updateType == "MILESTONE") {
-                    axios.get("/milestones", {params:{"id":[[${project.getId()}]], "sprintId":JSON.parse(update.body).sprintId}})
+                    axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
+                        .then((response) => {
+                            renderCalendar(response.data)
+                        })
+                    axios.get("/milestones", {
+                        params: {
+                            "id": [[${project.getId()}]],
+                            "sprintId": JSON.parse(update.body).sprintId
+                        }
+                    })
                         .then((response) => {
 
                             deleteAllMilestones(JSON.parse(update.body).sprintId)
                             for (const milestone of response.data) {
                                 buildMilestone(milestone, JSON.parse(update.body).sprintId)
                             }
-
-                            axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                renderCalendar(response.data)
-                            })
                         })
                 }
 
                 if (JSON.parse(update.body).updateType == "EVENT") {
-                    axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":JSON.parse(update.body).sprintId}})
+                    axios.get("/events", {
+                        params: {
+                            "id": [[${project.getId()}]],
+                            "sprintId": JSON.parse(update.body).sprintId
+                        }
+                    })
                         .then((response) => {
 
                             deleteAllEvents(JSON.parse(update.body).sprintId)
@@ -598,8 +667,28 @@
                             }
                         })
                 }
+                if (JSON.parse(update.body).updateType == "EDIT") {
+                    let editMessage = JSON.parse(update.body).message
+                    clearTimeout(timeoutDict[editMessage])
+                    timeoutDict[editMessage] = setTimeout(resetEditStatus, 2500, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
+                    if (currentEdits.includes(editMessage) === false) {
+                        currentEdits.push(editMessage)
+                    }
+                    displayEdits()
+                }
             });
         });
+    }
+
+    /**
+     * Displays all currently editing users and items line by line
+     */
+    function displayEdits() {
+        let editsToDisplay = ""
+        for (const edit of currentEdits) {
+            editsToDisplay += "<p>" +  edit + "</p>"
+        }
+        document.getElementById("editStatus").innerHTML = editsToDisplay
     }
 
    function calendarTryAgain() {
@@ -627,8 +716,6 @@
         endDate.setDate(endDate.getDate() + 1);
         let selectedEvent;
 
-
-
         let sprintEvents = [];
 
         // Colors for the sprints
@@ -645,7 +732,7 @@
                 title: sprintList[sprintIndex].label,
                 description: sprintList[sprintIndex].description,
                 start: sprintList[sprintIndex].startDate,
-                allDay: true,  //Can't resize from calendar view without this parameter
+                allDay: canEdit,  //Can't resize from calendar view without this parameter
                 end: sprintEndDate,
                 durationEditable: false,
                 // Mod so the sprint index doesn't go out of range for colors list
@@ -695,7 +782,7 @@
                 events.id = (dayRenderInfo.date).toString().substring(0, 16) + "eventList"
                 axios.get("/events-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
-                        events.innerHTML = '&#128197 E - ' + (response.data.length).toString();
+                        events.innerHTML = '<i class="fa fa-star"></i>' + ' E - ' + (response.data.length).toString();
                         var eventDayTooltip = ""
 
                         if (response.data.length === 0){
@@ -725,7 +812,7 @@
                 deadlines.id = (dayRenderInfo.date).toString().substring(0, 16) + "deadlineList"
                 axios.get("/deadlines-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
-                        deadlines.innerHTML = '&#128197 D - ' + (response.data.length).toString();
+                        deadlines.innerHTML = '<i class="fa fa-calendar-o"></i>' + ' D - ' + (response.data.length).toString();
                         var deadlineDayTooltip = ""
 
                         if (response.data.length === 0){
@@ -755,7 +842,7 @@
                 milestones.id = (dayRenderInfo.date).toString().substring(0, 16) + "milestoneList"
                 axios.get("/milestones-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
-                        milestones.innerHTML = '&#128197 M - ' + (response.data.length).toString();
+                        milestones.innerHTML = '<i class="fa fa-flag"></i>' + ' M - ' + (response.data.length).toString();
                         var milestonesDayTooltip = ""
 
                         if (response.data.length === 0){
@@ -882,6 +969,13 @@
 
     for (const sprint of initialSprintList) {
         buildSprint(sprint)
+        axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+            .then((response) => {
+                for (const events of response.data) {
+                    this.sprint = sprint
+                    buildEvent(event, sprint.id)
+                }
+            })
         axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
                 for (const deadline of response.data) {
@@ -907,8 +1001,7 @@
 
     document.addEventListener('DOMContentLoaded', function() { renderCalendar(initialSprintList) });
 
-    connect();
-
+    connect('calendar');
 </script>
 
 <!-- JS -->

@@ -77,6 +77,17 @@ public class DateSocketService {
     }
 
     /**
+     * Send an update event message through websockets to all the users on the same project details page
+     */
+    public void sendEventCalendarChange(Project project) {
+        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
+
+        for (Sprint sprint: sprints) {
+            this.template.convertAndSend("/topic/calendar/" + project.getId()
+                    , new EventUpdate(FetchUpdateType.EVENT, sprint.getId()));
+        }
+    }
+    /**
      * Send an update deadline message through websockets to all the users on the same project details page
      */
     public void sendDeadlineCalendarChange(Project project) {
@@ -97,5 +108,12 @@ public class DateSocketService {
             this.template.convertAndSend("/topic/calendar/" + project.getId()
                     , new EventUpdate(FetchUpdateType.MILESTONE, sprint.getId()));
         }
+    }
+
+    /**
+     * Sends the editing status of a project as a string
+     */
+    public void sendEditStatus(Project project, String message) {
+        this.template.convertAndSend("/topic/calendar/" + project.getId(), new EditStatusUpdate(FetchUpdateType.EDIT, message));
     }
 }

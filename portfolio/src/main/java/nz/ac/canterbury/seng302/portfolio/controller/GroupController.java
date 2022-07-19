@@ -3,18 +3,16 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.GroupClientService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import java.util.*;
@@ -25,7 +23,7 @@ public class GroupController {
     private GroupsClientService groupsService;
 
     @Autowired
-    private GroupClientService groupClientService;
+    private GroupsClientService groupsClientService;
 
     @Autowired
     private NavController navController;
@@ -94,30 +92,56 @@ public class GroupController {
     }
 
     @PostMapping("/ctrlv")
-    public String paste(
+    public void paste(
         @AuthenticationPrincipal AuthState principal,
         @RequestBody() List<Integer> ids,
         @RequestParam("groupId") Integer groupId,
         Model model
     ) throws InterruptedException {
-        groupClientService.addUserToGroup(groupId, (ArrayList<Integer>) ids);
+        groupsClientService.addUserToGroup(groupId, (ArrayList<Integer>) ids);
         clipboard = ids;
-        return "redirect:groups";
     }
 
     @PostMapping("/ctrlx")
-    public String cut(
+    public void cut(
             @AuthenticationPrincipal AuthState principal,
             @RequestBody() HashMap<Integer, List<Integer>> ids,
             Model model
     ) throws InterruptedException {
         for (Map.Entry<Integer, List<Integer>> entry : ids.entrySet()) {
             if (entry.getKey() >= 0) {
-                groupClientService.removeUserFromGroup(entry.getKey(), (ArrayList<Integer>) entry.getValue());
+                groupsClientService.removeUserFromGroup(entry.getKey(), (ArrayList<Integer>) entry.getValue());
             }
         }
         clipboard = ids.get(-1);
         clipboard2 = ids;
+    }
+
+    /**
+     * delete group and redirect the user to the groups page
+     * @param principal the authstate
+     * @param groupId groupId of the group that is to be deleted
+     * @return String to direct correct html page
+     * @throws Exception
+     */
+    @PostMapping("/delete-group")
+    public String newSprint(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam("groupId") Integer groupId
+    ) throws Exception {
+
+        String role = AuthStateInformer.getRole(principal);
+        // if you are a teacher or an admin you delete group
+        if (role.equals("teacher") || role.equals("admin")) {
+            GroupDetailsResponse groupToBeDeleted = groupsService.getGroup(groupId);
+
+            // checks if the group about to be deleted isn't TG or MWAG. Any other group can be deleted
+            if (groupToBeDeleted.getGroupId() != 1|| groupToBeDeleted.getGroupId() != 2) {
+                groupsService.delete(groupId);
+            }
+
+
+        }
         return "redirect:groups";
     }
 }

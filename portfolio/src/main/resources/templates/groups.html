@@ -42,9 +42,40 @@
 
         <!-- Groups Section -->
             <div class="col-lg-8 col-md-10 col-sm-12 portion_body" >
-                <a class="project_a" th:href="@{editGroup(id=${group.getId})}" >
-                    <h3 class="project_subhead" th:text="${'(' + (group.shortName) + ') ' + group.longName}"/>
-                </a>
+                <div >
+                    <a class="project_a button_placement" th:href="@{group(id=${group.getId})}" >
+                        <h3 class="project_subhead" th:text="${'(' + (group.shortName) + ') ' + group.longName}"/>
+                        <button th:style="${ group.getId() == 1 || group.getId() == 2 ?  'display: none; ' + display  : display}" type="button" th:value="${group.shortName}" th:id="${group.shortName}" data-toggle="modal" th:data-target="${'#deleteModal'+group.getId()}" class="fa fa-trash group_delete_button"/>
+                    </a>
+
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" th:id="${'deleteModal'+group.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete (' + (group.shortName) + ') ' + group.longName} + '?'"/>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body"
+                                 th:text="${'Deleting this group will remove all members from that group (users will not be deleted). This operation cannot be undone. Are you sure you want to delete (' + (group.shortName) + ') ' + group.longName} + '?'"}
+                            />
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <form th:action="@{/delete-group}" method="post">
+                                    <button type="submit" class="btn btn-primary bg-danger" th:name="action" >Delete</button>
+                                    <input style="display: none" id="groupId" type="number" th:value="${group.getId()}" name="groupId">
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
                 <br>
                 <div>
                     <!-- Users -->
@@ -220,11 +251,13 @@ document.body.addEventListener("keydown", function (ev) {
                     }
                 }
                 lastChecked = this.rowIndex
-            });
-        });
-    /*[/]*/
+            })
+        })
 
-/*]]>*/
+
+    /*[/]*/
+    /*]]>*/
+
 </script>
 
 </html>

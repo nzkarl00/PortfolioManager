@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head.html :: head('Landing Page')">
+<body>
+
+
+
+<!-- Navigation Bar -->
+<div th:replace="fragments/validUser.html :: navbar"></div>
+
+
+
+<!-- Body -->
+<div class="main">
+  <div class="container">
+
+    <div class="row-1">
+      <br><br><br>
+    </div>
+
+    <!-- Portfolio heading -->
+
+    <div class="row">
+
+      <div class="col-2"></div>
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <p class="body_title_large" th:text="${group.longName + ' (' + (group.shortName) + ') '}">Group</p>
+
+        <form th:style="${editPermission}" th:action="@{edit-group}" method="get">
+          <input style="display:none;" th:name="id" id="id" th:value="${group.GroupId}" type="number">
+          <button class="add" id="addDateButton" type="submit">
+            Edit Names
+          </button>
+        </form>
+
+        <button th:style="${ group.getGroupId() == 1 || group.getGroupId() == 2  ?  'display: none; ' + editPermission  : editPermission}" type="button" class="delete-group" data-toggle="modal" data-target="#deleteModal">
+          Delete Group
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete (' + (group.shortName) + ') ' + group.longName} + '?'"/>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body"
+                   th:text="${'Deleting this group will remove all members from that group (users will not be deleted). This operation cannot be undone. Are you sure you want to delete (' + (group.shortName) + ') ' + group.longName} + '?'"}
+              />
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form th:action="@{/delete-group}" method="post">
+                  <button type="submit" class="btn btn-primary bg-danger" th:name="action" >Delete</button>
+                  <input style="display: none" id="groupId" type="number" th:value="${group.getGroupId()}" name="groupId">
+                </form>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <br>
+    <br>
+
+    <!-- Portfolio body -->
+
+    <div class="row">
+
+      <div class="col-2"></div>
+      <div class="col-lg-8 col-md-10 col-sm-12">
+          <table class="table table-striped" th:id="${'groupUserTable' + group.shortName}">
+            <thead>
+            <tr class="justify-content-center">
+              <th class="table_button_left table_head justify-content-center text-center"scope="col" >
+                First Name
+              </th>
+              <th class="table_button table_head justify-content-center text-center" scope="col">
+                Last Name
+              </th>
+              <th class="table_button table_head justify-content-center text-center" scope="col">
+                Username
+              </th>
+              <th class="table_button_right table_head justify-content-center text-center" scope="col">
+                Alias
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${group.getMembersList.empty}">
+              <td colspan="5"> Could not get users to list </td>
+            </tr>
+            <tr th:each="user : ${group.getMembersList}">
+              <td><span class="table_text" th:text="${user.firstName}"> First </span></td>
+              <td><span class="table_text" th:text="${user.lastName}"> Last </span></td>
+              <td><span class="table_text" th:text="${user.username}"> Username </span></td>
+              <td><span class="table_text" th:text="${user.nickname}"> Alias </span></td>
+            </tr>
+            </tbody>
+          </table>
+    </div>
+
+
+    </div>
+</div>
+</div>
+
+<!-- JS -->
+<script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
+
+</body>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script th:inline="javascript">
+        $(document).ready(function () {
+            var table = $('#groupUserTable' + /*[[${group.shortName}]]*/).DataTable();
+            $('#groupUserTable' + /*[[${group.shortName}]]*/ + ' tbody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                    console.log("working")
+                }
+                else {
+                    $(this).addClass('selected');
+                    console.log("still working")
+                }
+            });
+        });
+</script>
+</html>

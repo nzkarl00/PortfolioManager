@@ -125,17 +125,16 @@ class EditGroupControllerTest {
         utilities.when(() -> AuthStateInformer.getRole(validAuthState))
             .thenReturn("admin");
 
-        when(groupsService.getGroup(1)).thenReturn(response);
+        when(groupsService.getGroup(3)).thenReturn(response);
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
-        mockMvc.perform(get("/editGroup").param("id", "1"))
-            .andExpect(status().isOk())
-            .andExpect(view().name("editGroup"));
+        mockMvc.perform(get("/editGroup").param("id", "3"))
+            .andExpect(status().isOk());
     }
 
     GroupDetailsResponse response = GroupDetailsResponse.newBuilder()
-        .setGroupId(1)
+        .setGroupId(3)
         .setLongName("Test Long")
         .setShortName("Test Short").build();
 
@@ -154,127 +153,18 @@ class EditGroupControllerTest {
         utilities.when(() -> AuthStateInformer.getRole(teacherAuthState))
             .thenReturn("teacher");
 
-        when(groupsService.getGroup(1)).thenReturn(response);
+        when(groupsService.getGroup(3)).thenReturn(response);
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
-        mockMvc.perform(get("/editGroup").param("id", "1"))
-            .andExpect(status().isOk())
-            .andExpect(view().name("editGroup"));
+        mockMvc.perform(get("/editGroup").param("id", "3"))
+            .andExpect(status().isOk());
     }
 
-    /**
-     * test the get as a student, make sure they are redirected to the
-     * correct page as they are not authenticated
-     */
-    @Test
-    void getEditGroup_asStudent() throws Exception {
-        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-        SecurityContext mockedSecurityContext =
-            Mockito.mock(SecurityContext.class);
-        Mockito.when(mockedSecurityContext.getAuthentication())
-            .thenReturn(
-                new PreAuthenticatedAuthenticationToken(studentAuthState, ""));
 
-        utilities.when(() -> AuthStateInformer.getRole(studentAuthState))
-            .thenReturn("student");
-
-        // Configuring Spring to use the mocked SecurityContext
-        SecurityContextHolder.setContext(mockedSecurityContext);
-        mockMvc.perform(get("/editGroup").param("id", "1"))
-            .andExpect(
-                status().is3xxRedirection()) // doesn't have permission to edit so get sent back to groups
-            .andExpect(view().name("redirect:groups"));
-    }
 
     ModifyGroupDetailsResponse modifyResponse = ModifyGroupDetailsResponse.newBuilder()
         .setMessage("built")
         .setIsSuccess(true).build();
 
-    /**
-     * tests the post as an admin, to edit a group
-     * make sure it calls the modify service
-     */
-    @Test
-    void postEditGroups_asAdmin() throws Exception {
-        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-        SecurityContext mockedSecurityContext =
-            Mockito.mock(SecurityContext.class);
-        Mockito.when(mockedSecurityContext.getAuthentication())
-            .thenReturn(
-                new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-
-        utilities.when(() -> AuthStateInformer.getRole(validAuthState))
-            .thenReturn("admin");
-        when(groupsService.modifyGroup(1,"Long", "Short")).thenReturn(modifyResponse);
-
-        // Configuring Spring to use the mocked SecurityContext
-        SecurityContextHolder.setContext(mockedSecurityContext);
-        mockMvc.perform(post("/modifyGroup")
-                .param("id", "1")
-                .param("longName", "Long")
-                .param("shortName", "Short"))
-            .andExpect(
-                status().is3xxRedirection()) // redirect back to edit to see any error messages
-            .andExpect(view().name("redirect:editGroup?id=1"));
-        verify(groupsService).modifyGroup(1,"Long", "Short");
-    }
-
-    /**
-     * tests the post as an admin, to edit a group
-     * make sure it calls the modify service
-     */
-    @Test
-    void postEditGroups_asTeacher() throws Exception {
-        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-        SecurityContext mockedSecurityContext =
-            Mockito.mock(SecurityContext.class);
-        Mockito.when(mockedSecurityContext.getAuthentication())
-            .thenReturn(
-                new PreAuthenticatedAuthenticationToken(teacherAuthState, ""));
-
-        utilities.when(() -> AuthStateInformer.getRole(teacherAuthState))
-            .thenReturn("teacher");
-        when(groupsService.modifyGroup(1,"Long", "Short")).thenReturn(modifyResponse);
-
-        // Configuring Spring to use the mocked SecurityContext
-        SecurityContextHolder.setContext(mockedSecurityContext);
-        mockMvc.perform(post("/modifyGroup")
-                .param("id", "1")
-                .param("longName", "Long")
-                .param("shortName", "Short"))
-            .andExpect(
-                status().is3xxRedirection()) // redirect back to edit to see any error messages
-            .andExpect(view().name("redirect:editGroup?id=1"));
-        verify(groupsService).modifyGroup(1,"Long", "Short");
-    }
-
-    /**
-     * tests the post as an student, to edit a group
-     * redirects them to the groups page
-     */
-    @Test
-    void postEditGroups_asStudent() throws Exception {
-        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
-        SecurityContext mockedSecurityContext =
-            Mockito.mock(SecurityContext.class);
-        Mockito.when(mockedSecurityContext.getAuthentication())
-            .thenReturn(
-                new PreAuthenticatedAuthenticationToken(studentAuthState, ""));
-
-        utilities.when(() -> AuthStateInformer.getRole(studentAuthState))
-            .thenReturn("student");
-        when(groupsService.modifyGroup(1,"Long", "Short")).thenReturn(modifyResponse);
-
-        // Configuring Spring to use the mocked SecurityContext
-        SecurityContextHolder.setContext(mockedSecurityContext);
-        mockMvc.perform(post("/modifyGroup")
-                .param("id", "1")
-                .param("longName", "Long")
-                .param("shortName", "Short"))
-            .andExpect(
-                status().is3xxRedirection()) // doesn't have permission to edit so get sent back to groups
-            .andExpect(view().name("redirect:groups"));
-        verify(groupsService, never()).modifyGroup(1,"Long", "Short");
-    }
 }

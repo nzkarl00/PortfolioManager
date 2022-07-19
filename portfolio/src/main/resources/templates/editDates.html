@@ -76,8 +76,16 @@
             <div class="col-2"></div>
 
         </form>
-
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script type="text/javascript" th:inline="javascript">
+            let editType = "editing " + [[${type}]] + ": " + [[${date.getName()}]]
+            function sendEditStatus() {
+                axios.post("/edit", null, {params:{"projectId":[[${project.getId()}]], "type":editType}})
+                setTimeout(sendEditStatus, 1250)
+            }
+
+            sendEditStatus();
+
             /**
              * Updates the names of labels and inputs to match what is required for the type selected by the event type picker.
              */

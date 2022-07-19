@@ -13,6 +13,12 @@ import java.util.List;
 public interface EventRepository extends CrudRepository<Event, Integer> {
     Event findById(int id);
     Event findByParentProject(int id);
-    List<Event> findAllByParentProject(Project project);
-    List<Event> findAllByParentProjectAndStartDateBetween(Project project, LocalDateTime startDate, LocalDateTime endDate);
+    /*
+    Orders all items by start date, beginning with earlier dates.
+     */
+    List<Event> findAllByParentProjectOrderByStartDateAsc(Project project);
+    /*
+    Orders all items within the day range by start date, beginning with earlier dates.
+     */
+    List<Event> findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(Project project, LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -79,7 +79,7 @@ public class AddDatesController {
         } else {
             List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
             model.addAttribute("sprints", sprintList);
-            return "userProjectDetails";
+            return "projectDetails";
         }
     }
 
@@ -176,7 +176,7 @@ public class AddDatesController {
         Date checkForValidationDate = DateParser.stringToDate(eventStartDate);
         
         if (eventName.isBlank()) {
-            List<Deadline> deadlines = deadlineRepository.findAllByParentProject(project);
+            List<Deadline> deadlines = deadlineRepository.findAllByParentProjectOrderByStartDateAsc(project);
             eventName = "Deadline " + (deadlines.size() + 1);
         }
 
@@ -207,7 +207,7 @@ public class AddDatesController {
         Date checkForValidationDate = DateParser.stringToDate(eventStartDate);
 
         if (eventName.isBlank()) {
-            List<Milestone> milestones = milestoneRepository.findAllByParentProject(project);
+            List<Milestone> milestones = milestoneRepository.findAllByParentProjectOrderByStartDateAsc(project);
             eventName = "Milestone " + (milestones.size() + 1);
         }
 
@@ -241,7 +241,7 @@ public class AddDatesController {
         Date checkForValidationDate = DateParser.stringToDate(eventEndDate.split("T")[0]);
 
         if (eventName.isBlank()) {
-            List<Event> events = eventRepository.findAllByParentProject(project);
+            List<Event> events = eventRepository.findAllByParentProjectOrderByStartDateAsc(project);
             eventName = "Event " + (events.size() + 1);
         }
 
