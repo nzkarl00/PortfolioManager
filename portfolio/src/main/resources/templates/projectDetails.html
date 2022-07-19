@@ -281,22 +281,35 @@
         col3.appendChild(description)
 
         const events = document.createElement("div")
-        events.className = "sprint-description display_data"
+        events.className = "project_subhead sprint-description display_data"
         events.id = "events" + sprint.id
-        events.innerText = "Events:"
+        events.innerHTML = '<i class="fa fa-star"></i>' + " "  + "Events:"
         col3.appendChild(events)
 
+        const eventsList = document.createElement("div")
+        eventsList.id = "eventsList" + sprint.id
+        col3.appendChild(eventsList)
+
         const deadlines = document.createElement("div")
-        deadlines.className = "sprint-description display_data"
+        deadlines.className = "project_subhead sprint-description display_data"
         deadlines.id = "deadlines" + sprint.id
-        deadlines.innerText = "Deadlines:"
+        deadlines.innerHTML = '<i class="fa fa-calendar-o"></i>' + " " + "Deadlines:"
         col3.appendChild(deadlines)
 
+        const deadlinesList = document.createElement("div")
+        deadlinesList.id = "deadlinesList" + sprint.id
+        col3.appendChild(deadlinesList)
+
         const milestones = document.createElement("div")
-        milestones.className = "sprint-description display_data"
+        milestones.className = "project_subhead sprint-description display_data"
         milestones.id = "milestones" + sprint.id
-        milestones.innerText = "Milestones:"
+        milestones.innerHTML = '<i class="fa fa-flag"></i>' + " "  + "Milestones:"
         col3.appendChild(milestones)
+
+        const milestonesList = document.createElement("div")
+        milestonesList.id = "milestonesList" + sprint.id
+        col3.appendChild(milestonesList)
+
 
         const col4 = document.createElement("div")
         col4.className = "col-2"
@@ -308,82 +321,8 @@
         }
     }
 
-    function buildDeadline(event, sprintId) {
-        const mainDiv = document.getElementById("event" + sprintId)
-        const eachEvent = document.createElement("form")
-        const deleteEvent = document.createElement("button")
-        const editEvent = document.createElement("button")
-        const eventType = document.createElement("input")
-        const projectId = document.createElement("input")
-        const eventId = document.createElement("input")
-        const dateId = document.createElement("input")
-
-        dateId.style = "display:none;"
-        dateId.name = "dateId"
-        dateId.id = "dateId"
-        dateId.value = deadline.id
-        dateId.type = "number"
-
-        projectId.style = "display:none;"
-        projectId.name = "projectId"
-        projectId.id = "projectId"
-        projectId.value = [[${project.getId()}]]
-        projectId.type = "number"
-
-        deadlineId.style = "display:none;"
-        deadlineId.name = "deadlineId"
-        deadlineId.id = "deadlineId"
-        deadlineId.value = deadline.id
-        deadlineId.type = "number"
-
-        deadlineType.style = "display:none;"
-        deadlineType.name = "itemType"
-        deadlineType.id = "itemType"
-        deadlineType.value = "Deadline"
-        deadlineType.type = "text"
-
-        editDeadline.type = "submit"
-        editDeadline.className = "fa fa-edit each-deadline-edit"
-        editDeadline.formMethod = "get"
-        editDeadline.formAction = "edit-date"
-
-        deleteDeadline.type = "submit"
-        deleteDeadline.id = "deleteButton"
-        deleteDeadline.className = "fa fa-trash each-deadline"
-
-        eachDeadline.method = "post"
-        eachDeadline.action = "delete-deadline"
-        eachDeadline.innerText = deadline.name
-        eachDeadline.className = "posAbsolute"
-
-        const deadlineDate = String(deadline.startDate).substring(0,10);
-        const deadlineTime = String(deadline.startDate).substring(11);
-        var deadlineTooltip;
-        if (deadline.description !== 'undefined') {
-            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + '</p> <p class="tooltip_body">' + deadline.description + "</p>"
-        } else {
-            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + "</p>"
-        }
-
-        $(eachDeadline).tooltip({
-                    title: deadlineTooltip,
-                    placement: "right",
-                    trigger: "hover",
-                    container: "body",
-                    html: true
-                });
-
-        mainDiv.appendChild(eachDeadline)
-        eachDeadline.appendChild(projectId)
-        eachDeadline.appendChild(deadlineId)
-        eachDeadline.appendChild(dateId)
-        eachDeadline.appendChild(editDeadline)
-        eachDeadline.appendChild(deadlineType)
-        eachDeadline.appendChild(deleteDeadline)
-    }
-
     function buildDeadline(deadline, sprintId) {
-        const mainDiv = document.getElementById("deadlines" + sprintId)
+        const mainDiv = document.getElementById("deadlinesList" + sprintId)
         const eachDeadline = document.createElement("form")
         const deleteDeadline = document.createElement("button")
         const editDeadline = document.createElement("button")
@@ -392,6 +331,7 @@
         const deadlineId = document.createElement("input")
         const dateId = document.createElement("input")
 
+
         dateId.style = "display:none;"
         dateId.name = "dateId"
         dateId.id = "dateId"
@@ -427,8 +367,8 @@
 
         eachDeadline.method = "post"
         eachDeadline.action = "delete-deadline"
-        eachDeadline.innerText = deadline.name
-        eachDeadline.className = "posAbsolute"
+        eachDeadline.innerHTML = '<i class="fa fa-calendar-o"></i>' + " " + deadline.name
+        eachDeadline.className = "posAbsolute increase_size"
 
         const deadlineDate = String(deadline.startDate).substring(0,10);
         const deadlineTime = String(deadline.startDate).substring(11);
@@ -462,13 +402,14 @@
     }
 
     function buildEvent(event, sprintId) {
-        const mainDiv = document.getElementById("events" + sprintId)
+        const mainDiv = document.getElementById("eventsList" + sprintId)
         const eachEvent = document.createElement("form")
         const deleteEvent = document.createElement("button")
         const editEvent = document.createElement("button")
         const projectId = document.createElement("input")
         const eventId = document.createElement("input")
         const eventType = document.createElement("input")
+
 
         projectId.style = "display:none;"
         projectId.name = "projectId"
@@ -499,8 +440,8 @@
 
         eachEvent.method = "post"
         eachEvent.action = "delete-event"
-        eachEvent.innerText = event.name
-        eachEvent.className = "posAbsolute"
+        eachEvent.innerHTML = '<i class="fa fa-star"></i>' + " "  + event.name
+        eachEvent.className = "posAbsolute increase_size"
 
         const eventStartDate = String(event.startDate).substring(0,10);
         const eventEndDate = String(event.endDate).substring(0,10);
@@ -535,7 +476,7 @@
     }
 
     function buildMilestone(milestone, sprintId) {
-        const mainDiv = document.getElementById("milestones" + sprintId)
+        const mainDiv = document.getElementById("milestonesList" + sprintId)
         const eachMilestone = document.createElement("form")
         const deleteMilestone = document.createElement("button")
         const editMilestone = document.createElement("button")
@@ -543,6 +484,7 @@
         const projectId = document.createElement("input")
         const milestoneId = document.createElement("input")
         const dateId = document.createElement("input")
+
 
         dateId.style = "display:none;"
         dateId.name = "dateId"
@@ -579,8 +521,8 @@
 
         eachMilestone.method = "post"
         eachMilestone.action = "delete-milestone"
-        eachMilestone.innerText = milestone.name
-        eachMilestone.className = "posAbsolute"
+        eachMilestone.innerHTML = '<i class="fa fa-flag"></i>' + " " + milestone.name
+        eachMilestone.className = "posAbsolute increase_size"
 
         const milestoneDate = String(milestone.startDate).substring(0,10);
         var milestoneToolTip;
@@ -725,8 +667,7 @@
                             }
                         })
                 }
-                console.log([[${role}]])
-                if (JSON.parse(update.body).updateType == "EDIT" && ([[${role}]] == "admin" || [[${role}]] == "teacher" )) {
+                if (JSON.parse(update.body).updateType == "EDIT") {
                     let editMessage = JSON.parse(update.body).message
                     clearTimeout(timeoutDict[editMessage])
                     timeoutDict[editMessage] = setTimeout(resetEditStatus, 2500, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
@@ -841,7 +782,7 @@
                 events.id = (dayRenderInfo.date).toString().substring(0, 16) + "eventList"
                 axios.get("/events-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
-                        events.innerHTML = '&#128197 E - ' + (response.data.length).toString();
+                        events.innerHTML = '<i class="fa fa-star"></i>' + ' E - ' + (response.data.length).toString();
                         var eventDayTooltip = ""
 
                         if (response.data.length === 0){
@@ -871,7 +812,7 @@
                 deadlines.id = (dayRenderInfo.date).toString().substring(0, 16) + "deadlineList"
                 axios.get("/deadlines-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
-                        deadlines.innerHTML = '&#128197 D - ' + (response.data.length).toString();
+                        deadlines.innerHTML = '<i class="fa fa-calendar-o"></i>' + ' D - ' + (response.data.length).toString();
                         var deadlineDayTooltip = ""
 
                         if (response.data.length === 0){
@@ -901,7 +842,7 @@
                 milestones.id = (dayRenderInfo.date).toString().substring(0, 16) + "milestoneList"
                 axios.get("/milestones-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
-                        milestones.innerHTML = '&#128197 M - ' + (response.data.length).toString();
+                        milestones.innerHTML = '<i class="fa fa-flag"></i>' + ' M - ' + (response.data.length).toString();
                         var milestonesDayTooltip = ""
 
                         if (response.data.length === 0){
