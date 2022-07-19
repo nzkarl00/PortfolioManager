@@ -486,6 +486,56 @@ class GroupsServerServiceTest {
 
     /**
      * Test the function addGroupMembers()
+     * given a user you want to add is non-special group A
+     * addGroupMembers() will add the user into non-special group B
+     */
+    @Test
+    void givenUserInGroupA_addGroupMembers_userWillBeInGroupB() {
+
+        AccountProfile testUser = new AccountProfile();
+
+        Groups groupA = new Groups();
+        groupA.setGroupShortName("A");
+        groupA.setGroupLongName("Group Alligators");
+
+        GroupMembership groupAMembership = new GroupMembership(groupA, testUser);
+        groupA.setMembers(new ArrayList<>(List.of(groupAMembership)));
+        List<Groups> groupAMembers = new ArrayList<>(List.of(groupA));
+
+        Groups groupB = new Groups();
+        groupB.setGroupShortName("B");
+        groupB.setGroupLongName("Group Baboons");
+        groupB.setGroupId(4);
+
+        Groups teacherGroup = new Groups();
+        teacherGroup.setGroupShortName("TG");
+        teacherGroup.setGroupLongName("Teacher Group");
+
+        Groups mwagGroup = new Groups();
+        mwagGroup.setGroupShortName("MWAG");
+        mwagGroup.setGroupLongName("Members Without a Group");;
+
+        when(groupRepo.findByGroupId(4)).thenReturn(groupB);
+        when(accountProfileRepo.findById(1)).thenReturn(testUser);
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(new ArrayList<>(List.of(mwagGroup)));
+
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(4).addUserIds(1).build();
+        gss.addGroupMembers(request, testAddGroupMembersObserver);
+
+        verify(testAddGroupMembersObserver, times(1)).onCompleted();
+        ArgumentCaptor<AddGroupMembersResponse> captor = ArgumentCaptor.forClass(AddGroupMembersResponse.class);
+        verify(testAddGroupMembersObserver, times(1)).onNext(captor.capture());
+        AddGroupMembersResponse response = captor.getValue();
+
+        // Main part checking that a new memebership for group B is added.
+        verify(groupMembershipRepo).save(refEq(new GroupMembership(groupB, testUser)));
+
+        assertEquals(response.getIsSuccess(), true);
+        assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
+    }
+
+    /**
+     * Test the function addGroupMembers()
      * given a user you want to add is in the Members Without a Group (MWAG)
      * addGroupMembers() will not only add the user in a new group, but also
      * satisfy the special group case so the user will no longer be in MWAG.
@@ -511,7 +561,6 @@ class GroupsServerServiceTest {
 
         when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
         when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(noMembers);
-        int isSpecialGroup = gss.checkIsSpecialGroup(mwagGroup);
 
         when(accountProfileRepo.findById(1)).thenReturn(testUser);
 
@@ -528,7 +577,6 @@ class GroupsServerServiceTest {
         AddGroupMembersResponse response = captor.getValue();
         assertEquals(response.getIsSuccess(), true);
         assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
-        assertEquals(isSpecialGroup, 2);
     }
 
     /**
@@ -558,7 +606,6 @@ class GroupsServerServiceTest {
 
         when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
         when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(new ArrayList<>(List.of(mwagGroup)));
-        int isSpecialGroup = gss.checkIsSpecialGroup(teacherGroup);
 
         when(accountProfileRepo.findById(1)).thenReturn(testUser);
 
@@ -575,7 +622,6 @@ class GroupsServerServiceTest {
         AddGroupMembersResponse response = captor.getValue();
         assertEquals(response.getIsSuccess(), true);
         assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
-        assertEquals(isSpecialGroup, 1);
     }
 
     /**
@@ -605,7 +651,6 @@ class GroupsServerServiceTest {
 
         when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
         when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(noMembers);
-        int isSpecialGroup = gss.checkIsSpecialGroup(mwagGroup);
 
         when(accountProfileRepo.findById(1)).thenReturn(testUser);
 
@@ -625,7 +670,6 @@ class GroupsServerServiceTest {
         AddGroupMembersResponse response = captor.getValue();
         assertEquals(response.getIsSuccess(), true);
         assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
-        assertEquals(isSpecialGroup, 2);
     }
 
     /**
@@ -653,7 +697,6 @@ class GroupsServerServiceTest {
 
         when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
         when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(noMembers);
-        int isSpecialGroup = gss.checkIsSpecialGroup(mwagGroup);
 
         when(accountProfileRepo.findById(1)).thenReturn(testUser);
 
@@ -673,7 +716,6 @@ class GroupsServerServiceTest {
         AddGroupMembersResponse response = captor.getValue();
         assertEquals(response.getIsSuccess(), true);
         assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
-        assertEquals(isSpecialGroup, 2);
     }
 
 }

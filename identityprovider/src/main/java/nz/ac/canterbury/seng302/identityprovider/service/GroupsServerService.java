@@ -77,22 +77,6 @@ public class GroupsServerService extends GroupsServiceImplBase {
     }
 
     /**
-     * A function to check if the given group is a special group and return the answer as an int.
-     * Special groups are: teachers group, members without a group.
-     * Checks by comparing the group IDs.
-     * @param groupToCheck
-     * @return an int where 0, 1, 2, means no special group, teacher group, and MWAG group are identified, respectively.
-     */
-    public int checkIsSpecialGroup(Groups groupToCheck) {
-        Integer teacherGroupId = groupRepo.findAllByGroupShortName(TEACHER_GROUP_NAME_SHORT).get(0).getId();
-        Integer MWAGGroupId = groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT).get(0).getId();
-
-        if (groupToCheck.getId() == teacherGroupId) { return 1; }
-        if (groupToCheck.getId() == MWAGGroupId) { return 2; }
-        return 0;
-    }
-
-    /**
      * Takes a request and adds a list of users to a given group through the Group Membership table.
      * Adding a user to a group involves to remove it from the Members Without A Group.
      * Adding a user to a teacher group involves updating the role for that user to a teacher too.
@@ -106,7 +90,6 @@ public class GroupsServerService extends GroupsServiceImplBase {
     public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
 
         Groups groupToAddTo = groupRepo.findByGroupId(request.getGroupId());
-        int isSpecialGroup = checkIsSpecialGroup(groupToAddTo);
 
         for (int userId : request.getUserIdsList()) {
             AccountProfile user = repo.findById(userId);
@@ -116,12 +99,12 @@ public class GroupsServerService extends GroupsServiceImplBase {
             groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers.get(0), user);
 
             // if the user is being added to the teacher group, then update this change for the user role too.
-            if (isSpecialGroup == 1) {
+            if (groupToAddTo.getGroupShortName().equals(TEACHER_GROUP_NAME_SHORT)) {
                 roleRepo.save(new Role(user, TEACHER_ROLE));
             }
 
             // if the user is being added to the MWAG group, then update this change by removing this member from all groups.
-            else if (isSpecialGroup == 2) {
+            else if (groupToAddTo.getGroupShortName().equals(MWAG_GROUP_NAME_SHORT)) {
                 List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroupUser(user);
                 for (GroupMembership groupMembership : groupMemberships) {
                     groupMembershipRepo.deleteByGroupMembershipId(groupMembership.getGroupMembershipId());
@@ -169,7 +152,6 @@ public class GroupsServerService extends GroupsServiceImplBase {
     public void removeGroupMembers(RemoveGroupMembersRequest request, StreamObserver<RemoveGroupMembersResponse> responseObserver) {
 
         Groups groupToRemoveFrom = groupRepo.findByGroupId(request.getGroupId());
-        int isSpecialGroup = checkIsSpecialGroup(groupToRemoveFrom);
 
         List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroups(groupToRemoveFrom);
 
@@ -188,7 +170,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
                 }
 
                 // if the groupToRemoveFrom is the teacher group, remove their teacher role
-                if (isSpecialGroup == 1) {
+                if (groupToRemoveFrom.getGroupShortName().equals(TEACHER_GROUP_NAME_SHORT)) {
                     List<Role> rolesOfUser = roleRepo.findAllByRegisteredUser(user);
                     for (Role role: rolesOfUser) {
                         if (role.getRole().equals(TEACHER_ROLE)) {
