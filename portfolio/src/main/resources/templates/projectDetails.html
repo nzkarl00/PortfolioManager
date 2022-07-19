@@ -439,7 +439,7 @@
         deleteEvent.className = "fa fa-trash each-deadline"
 
         eachEvent.method = "post"
-        eachEvent.action = "delete-deadline"
+        eachEvent.action = "delete-event"
         eachEvent.innerHTML = '<i class="fa fa-star"></i>' + " "  + event.name
         eachEvent.className = "posAbsolute increase_size"
 
@@ -969,6 +969,13 @@
 
     for (const sprint of initialSprintList) {
         buildSprint(sprint)
+        axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+            .then((response) => {
+                for (const events of response.data) {
+                    this.sprint = sprint
+                    buildEvent(event, sprint.id)
+                }
+            })
         axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
                 for (const deadline of response.data) {

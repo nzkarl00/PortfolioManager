@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.identityprovider.model;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,4 +21,9 @@ public interface GroupMembershipRepository extends CrudRepository<GroupMembershi
     @Modifying
     @Query("delete from GroupMembership m where m.registeredGroups = ?1 and m.registeredGroupUser = ?2")
     void deleteByRegisteredGroupsAndRegisteredGroupUser(Groups group, AccountProfile profile);
+
+
+    @Modifying
+    @Query("delete from GroupMembership m where m.id=:id")
+    void deleteByGroupMembershipId(@Param("id") long id);
 }
