@@ -384,7 +384,7 @@ public class DetailsController {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        cal.add(Calendar.DATE, 1);
+        cal.add(Calendar.DATE, 0);
         date = cal.getTime();
         cal.setTime(end);
         cal.add(Calendar.DATE, -1);
@@ -415,7 +415,7 @@ public class DetailsController {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        cal.add(Calendar.DATE, 1);
+        cal.add(Calendar.DATE, 0);
         date = cal.getTime();
         cal.setTime(end);
         cal.add(Calendar.DATE, -1);
@@ -444,7 +444,7 @@ public class DetailsController {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        cal.add(Calendar.DATE, 1);
+        cal.add(Calendar.DATE, 0);
         date = cal.getTime();
         cal.setTime(end);
         cal.add(Calendar.DATE, 1);
@@ -558,7 +558,7 @@ public class DetailsController {
         for (Event event : events) {
             LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
             LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
-            if ((event.getStartDate().isAfter(startDate)) && (event.getStartDate().isBefore(endDate))) {
+            if (((event.getStartDate().isAfter(startDate)) && (event.getStartDate().isBefore(endDate))) || (event.getEndDate().isAfter(startDate)) && (event.getEndDate().isBefore(endDate))) {
                 sendingEvents.add(event);
             }
         }
