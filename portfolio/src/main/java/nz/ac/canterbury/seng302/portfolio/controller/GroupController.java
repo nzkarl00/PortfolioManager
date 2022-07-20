@@ -96,7 +96,7 @@ public class GroupController {
     }
 
     @PostMapping("/ctrlv")
-    public void paste(
+    public String paste(
         @AuthenticationPrincipal AuthState principal,
         @RequestBody() List<Integer> ids,
         @RequestParam("groupId") Integer groupId,
@@ -104,10 +104,11 @@ public class GroupController {
     ) throws InterruptedException {
         groupsClientService.addUserToGroup(groupId, (ArrayList<Integer>) ids);
         clipboard = ids;
+        return "redirect:groups";
     }
 
     @PostMapping("/ctrlx")
-    public void cut(
+    public String cut(
             @AuthenticationPrincipal AuthState principal,
             @RequestBody() HashMap<Integer, List<Integer>> ids,
             Model model
@@ -119,6 +120,7 @@ public class GroupController {
         }
         clipboard = ids.get(-1);
         cutboard = ids;
+        return "redirect:groups";
     }
 
     /**
