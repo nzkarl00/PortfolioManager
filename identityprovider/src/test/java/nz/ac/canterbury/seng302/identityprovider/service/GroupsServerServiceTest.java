@@ -37,7 +37,8 @@ class GroupsServerServiceTest {
     static AccountProfileRepository accountProfileRepo = Mockito.mock(AccountProfileRepository.class);
     @Autowired
     static RolesRepository rolesRepo = Mockito.mock(RolesRepository.class);
-
+    @Autowired
+    static Role role = Mockito.mock(Role.class);
 
 
     /**
@@ -590,7 +591,6 @@ class GroupsServerServiceTest {
     void givenUser_addGroupMembersToTeacherGroup_willAddTeacherRole() {
 
         AccountProfile testUser = new AccountProfile();
-
         Groups teacherGroup = new Groups();
         teacherGroup.setGroupShortName("TG");
         teacherGroup.setGroupLongName("Teacher Group");
@@ -610,6 +610,8 @@ class GroupsServerServiceTest {
         when(accountProfileRepo.findById(1)).thenReturn(testUser);
 
         when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(new ArrayList<>(List.of(mwagGroup)));
+
+        testUser.addRoleTestingOnly(new Role(testUser, "1student"));
 
         AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(1).addUserIds(1).build();
         gss.addGroupMembers(request, testAddGroupMembersObserver);

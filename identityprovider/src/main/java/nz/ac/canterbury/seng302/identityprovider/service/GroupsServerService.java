@@ -100,9 +100,6 @@ public class GroupsServerService extends GroupsServiceImplBase {
             groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers.get(0), user);
 
             // if the user is being added to the teacher group, then update this change for the user role too.
-            for (int i=0; i <user.getRoles().size(); i++) {
-                System.out.println("User Roles: " + user.getRoles().get(i).getRole());
-            }
             if (groupToAddTo.getGroupShortName().equals(TEACHER_GROUP_NAME_SHORT) && !user.getRoles().stream().map(role -> role.getRole()).collect(Collectors.toList()).contains(TEACHER_ROLE)) {
                 roleRepo.save(new Role(user, TEACHER_ROLE));
             }
