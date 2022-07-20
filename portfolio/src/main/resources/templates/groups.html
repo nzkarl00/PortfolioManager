@@ -145,6 +145,11 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
 <script th:inline="javascript">
+
+/*<![CDATA[*/
+let client = axios.create({baseURL: [[${baseUrl}]]});
+/*]]>*/
+
 let clipboard = [[${clipboard}]];
 let cutboard = [[${cutboard}]];
 let selected = [];
@@ -177,7 +182,7 @@ document.body.addEventListener("keydown", function (ev) {
 
     // If key pressed is V and if ctrl is true.
     if (key == 86 && ctrl) {
-        axios.post("/ctrlv", clipboard, {"params":{"groupId": latest}})
+        client.post("/ctrlv", clipboard, {"params":{"groupId": latest}})
         setTimeout(() => window.location.reload(), 500);
     } else if (key == 67 && ctrl) {
         clipboard = []
@@ -196,7 +201,7 @@ document.body.addEventListener("keydown", function (ev) {
             }
             cutboard[user[0]].push(user[1])
         }
-        axios.post("/ctrlx", cutboard, null);
+        client.post("/ctrlx", cutboard, null);
         setTimeout(() => window.location.reload(), 500);
     }
 

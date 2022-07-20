@@ -50,6 +50,9 @@ public class GroupController {
     @Value("${portfolio.gitlab-instance-url}")
     private String gitlabInstanceURL;
 
+    @Value("${portfolio.base-url}")
+    private String baseUrl;
+
     private int MAX_NUMBER_OF_GROUPS = 10;
 
     // clipboard for holding selected info from ctrl c
@@ -134,6 +137,7 @@ public class GroupController {
         }
 
         model.addAttribute("groups", groups);
+        model.addAttribute("baseUrl", baseUrl);
         model.addAttribute("gitlabLinkNotices", gitlabLinkNotices);
         model.addAttribute("gitlabLinkColors", gitlabLinkColors);
         model.addAttribute("currentPage", currentPage);

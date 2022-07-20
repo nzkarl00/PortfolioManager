@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -50,6 +51,9 @@ public class DetailsController {
     @Autowired
     private NavController navController;
 
+    @Value("${portfolio.base-url}")
+    private String baseUrl;
+
     String errorShow = "display:none;";
     String errorCode = "";
     String successCalendarShow = "display:none;";
@@ -91,6 +95,7 @@ public class DetailsController {
         model.addAttribute("successCalendarCode", successCalendarCode);
         model.addAttribute("errorCalendarShow", errorCalendarShow);
         model.addAttribute("errorCalendarCode", errorCalendarCode);
+        model.addAttribute("baseUrl", baseUrl);
 
         // Reset for the next display of the page
         errorShow = "display:none;";

@@ -54,7 +54,7 @@
                             Return
                         </button>
                     </form>
-                    <form class="col-lg-4 col-md-4 col-sm-12" th:action="@{/edit-project}" method="get" th:style="${display}">
+                    <form class="col-lg-4 col-md-4 col-sm-12" th:action="@{edit-project}" method="get" th:style="${display}">
                         <input style="display:none;" th:name="id" id="id" th:value="${project.getId}" type="number">
                         <button class="edit" style="padding-top:0rem;" type="submit">
                             <i class="fa fa-edit"></i>&nbsp;
@@ -150,16 +150,15 @@
 
 <!-- Javascript for the calendar -->
 <script th:src="@{webjars/jquery/jquery.min.js}"></script>
-<script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
-<script src="/webjars/stomp-websocket/stomp.min.js"></script>
+<script th:src="@{webjars/sockjs-client/sockjs.min.js}"></script>
+<script th:src="@{webjars/stomp-websocket/stomp.min.js}"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <script th:src="@{js/fullcalendar.js}"></script>
 <script type="text/javascript" th:inline="javascript">
-    /*<![CDATA[*/
 
-    console.log(/*[[@{/}]]*/);
-    // axios = new Axios({baseUrl: /*[[@{/}]]*/);
+    console.log([[${baseUrl}]])
+    let client = axios.create({baseURL: [[${baseUrl}]]});
     canEdit = false;
     if([[${role}]] === "teacher" || [[${role}]] === "admin") {
         canEdit = true;
@@ -267,13 +266,13 @@
         sprintDiv.appendChild(col4)
 
         if(!canEdit) {
-            editButton.style.display = "none"
-            deleteButton.style.display = "none"
+        //     editButton.style.display = "none"
+        //     deleteButton.style.display = "none"
         }
 
         var emptyLists = 0;
 
-        axios.get('/deadlines-between', {params: {"dateStart": startDate, "dateEnd": endDate, "project": [[${project.getId()}]]}})
+        client.get('/deadlines-between', {params: {"dateStart": startDate, "dateEnd": endDate, "project": [[${project.getId()}]]}})
             .then((response) => {
                 if (response.data.length == 0) {
                     emptyLists += 1;
@@ -290,7 +289,7 @@
                 }
             })
 
-        axios.get("/milestones-between", {params: {"dateStart": startDate, "dateEnd": endDate, "project": [[${project.getId()}]]}})
+        client.get("/milestones-between", {params: {"dateStart": startDate, "dateEnd": endDate, "project": [[${project.getId()}]]}})
             .then((response) => {
                 if (response.data.length == 0) {
                     emptyLists += 1;
@@ -306,7 +305,7 @@
                 }
             })
 
-        axios.get("/events-between", {params: {"dateStart": startDate, "dateEnd": endDate, "project": [[${project.getId()}]]}})
+        client.get("/events-between", {params: {"dateStart": startDate, "dateEnd": endDate, "project": [[${project.getId()}]]}})
             .then((response) => {
                 if (response.data.length == 0) {
                     emptyLists += 1;
@@ -694,7 +693,7 @@
     let currentEdits = [];
     let timeoutDict = {};
     async function connect(subTopic) {
-        let socket = new SockJS('/gs-guide-websocket');
+        let socket = new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
         stompClient = await Stomp.over(socket);
         // connect to the portfolio server
         stompClient.connect({}, function (frame) {
@@ -703,7 +702,7 @@
                 // if it is a sprint update, update the calendar and details sprints
                 console.log(JSON.parse(update.body).updateType)
                 if (JSON.parse(update.body).updateType == "SPRINT") {
-                    axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
+                    client.get("/sprints", {params: {"id": [[${project.getId()}]]}})
                         .then((response) => {
                             deleteAllSprints()
                             // Sets the starting date for in-between sections and starting id
@@ -715,13 +714,13 @@
                                 buildSprint(sprint)
                                 initialDate = sprint.endDate;
                                 initialFalseId += 1;
-                                axios.get("/deadlines", {params: {"id": [[${project.getId()}]], "sprintId": sprint.id}})
+                                client.get("/deadlines", {params: {"id": [[${project.getId()}]], "sprintId": sprint.id}})
                                     .then((response) => {
                                         for (const deadline of response.data) {
                                             buildDeadline(deadline, sprint.id)
                                         }
                                     })
-                                axios.get("/milestones", {
+                                client.get("/milestones", {
                                     params: {
                                         "id": [[${project.getId()}]],
                                         "sprintId": sprint.id
@@ -732,7 +731,7 @@
                                             buildMilestone(milestone, sprint.id)
                                         }
                                     })
-                                axios.get("/events", {params: {"id": [[${project.getId()}]], "sprintId": sprint.id}})
+                                client.get("/events", {params: {"id": [[${project.getId()}]], "sprintId": sprint.id}})
                                     .then((response) => {
                                         for (const event of response.data) {
                                             buildEvent(event, sprint.id)
@@ -745,11 +744,11 @@
                 }
 
                 if (JSON.parse(update.body).updateType == "DEADLINE") {
-                    axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
+                    client.get("/sprints", {params: {"id": [[${project.getId()}]]}})
                         .then((response) => {
                             renderCalendar(response.data)
                         })
-                    axios.get("/deadlines", {
+                    client.get("/deadlines", {
                         params: {
                             "id": [[${project.getId()}]],
                             "sprintId": JSON.parse(update.body).sprintId
@@ -764,18 +763,18 @@
                 }
 
                 if (JSON.parse(update.body).updateType == "EVENT") {
-                    axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
+                    client.get("/sprints", {params: {"id": [[${project.getId()}]]}})
                         .then((response) => {
                             renderCalendar(response.data)
                         })
                 }
 
                 if (JSON.parse(update.body).updateType == "MILESTONE") {
-                    axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
+                    client.get("/sprints", {params: {"id": [[${project.getId()}]]}})
                         .then((response) => {
                             renderCalendar(response.data)
                         })
-                    axios.get("/milestones", {
+                    client.get("/milestones", {
                         params: {
                             "id": [[${project.getId()}]],
                             "sprintId": JSON.parse(update.body).sprintId
@@ -791,7 +790,7 @@
                 }
 
                 if (JSON.parse(update.body).updateType == "EVENT") {
-                    axios.get("/events", {
+                    client.get("/events", {
                         params: {
                             "id": [[${project.getId()}]],
                             "sprintId": JSON.parse(update.body).sprintId
@@ -830,7 +829,7 @@
     }
 
     function calendarTryAgain() {
-        axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
+        client.get("/sprints", {params:{"id":[[${project.getId()}]]}})
             .then((response) => {
                 renderCalendar(response.data)
             })
@@ -918,7 +917,7 @@
 
                 const events = document.createElement("div")
                 events.id = (dayRenderInfo.date).toString().substring(0, 16) + "eventList"
-                axios.get("/events-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
+                client.get("/events-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
                         events.innerHTML = '<i class="fa fa-star"></i>' + ' E - ' + (response.data.length).toString();
                         var eventDayTooltip = ""
@@ -948,7 +947,7 @@
 
                 const deadlines = document.createElement("div")
                 deadlines.id = (dayRenderInfo.date).toString().substring(0, 16) + "deadlineList"
-                axios.get("/deadlines-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
+                client.get("/deadlines-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
                         deadlines.innerHTML = '<i class="fa fa-calendar-o"></i>' + ' D - ' + (response.data.length).toString();
                         var deadlineDayTooltip = ""
@@ -978,7 +977,7 @@
 
                 const milestones = document.createElement("div")
                 milestones.id = (dayRenderInfo.date).toString().substring(0, 16) + "milestoneList"
-                axios.get("/milestones-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
+                client.get("/milestones-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
                         milestones.innerHTML = '<i class="fa fa-flag"></i>' + ' M - ' + (response.data.length).toString();
                         var milestonesDayTooltip = ""
@@ -1117,21 +1116,21 @@
         buildSprint(sprint)
         initialDate = sprint.endDate;
         initialFalseId += 1;
-        axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+        client.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
                 for (const events of response.data) {
                     this.sprint = sprint
                     buildEvent(event, sprint.id)
                 }
             })
-        axios.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+        client.get("/deadlines", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
                 for (const deadline of response.data) {
                     this.sprint = sprint
                     buildDeadline(deadline, sprint.id)
                 }
             })
-        axios.get("/milestones", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+        client.get("/milestones", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
                 console.log(response.data)
                 for (const milestone of response.data) {
@@ -1139,7 +1138,7 @@
                     buildMilestone(milestone, sprint.id)
                 }
             })
-        axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
+        client.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
                 for (const event of response.data) {
                     this.sprint = sprint
