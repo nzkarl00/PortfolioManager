@@ -830,22 +830,146 @@
 .tooltip_title {
     font-family: NexaBold !important;
     font-size: 200% !important;
-    color: #19DAFF !important;
+    color: #19DAFF;
     text-align: center !important;
 }
 
 .tooltip_body {
     font-family: Nexa !important;
     font-size: 125% !important;
-    color: #19DAFF !important;
+    color: #19DAFF;
     text-align: left !important;
     word-break: break-all !important;
+}
+
+.colour-1 {
+    color: #19DAFF !important;
+}
+.colour0 {
+    color: #a3c7d7 !important;
+}
+.colour1 {
+    color: #067d46 !important;
+}
+.colour2 {
+    color: #19DAFF !important;
+}
+.colour3 {
+    color: #f5deb3 !important;
+}
+.colour4 {
+    color: #d470a2 !important;
+}
+.colour5 {
+    color: #9acd32 !important;
+}
+.colour6 {
+    color: #a2add0 !important;
+}
+.colour7 {
+    color: #c9a0dc !important;
+}
+.colour8 {
+    color: #9f1d35 !important;
+}
+.colour9 {
+    color: #e34234 !important;
+}
+.colour10 {
+    color: #5b92e5 !important;
+}
+.colour11 {
+    color: #66023c !important;
+}
+.colour12 {
+    color: #483c32 !important;
+}
+.colour13 {
+    color: #0abab5 !important;
+}
+.colour14 {
+    color: #eee600 !important;
+}
+.colour15 {
+    color: #f28500 !important;
+}
+.colour16 {
+    color: #ffcc33 !important;
+}
+.colour17 {
+    color: #a7fc00 !important;
+}
+.colour18 {
+    color: #cdc9c9 !important;
+}
+.colour19 {
+    color: #eee9e9 !important;
+}
+.colour20 {
+    color: #836fff !important;
+}
+.colour21 {
+    color: #473c8b !important;
+}
+.colour22 {
+    color: #708090 !important;
+}
+.colour23 {
+    color: #c0c0c0 !important;
+}
+.colour24 {
+    color: #ffd800 !important;
+}
+.colour25 {
+    color: #ff2400 !important;
+}
+.colour26 {
+    color: #e30b5d !important;
+}
+.colour27 {
+    color: #003153 !important;
+}
+.colour28 {
+    color: #ff5a36 !important;
+}
+.colour29 {
+    color: #e5e4e2 !important;
+}
+.colour30 {
+    color: #cc3333 !important;
+}
+.colour31 {
+    color: #1c39bb !important;
+}
+.colour32 {
+    color: #1ca9c9 !important;
+}
+.colour33 {
+    color: #002147 !important;
+}
+.colour34 {
+    color: #d3af37 !important;
+}
+.colour35 {
+    color: #30bfbf !important;
+}
+.colour36 {
+    color: #fdbe02 !important;
+}
+.colour37 {
+    color: #eaa221 !important;
+}
+.colour38 {
+    color: #32cd32 !important;
+}
+.colour39 {
+    color: #c5cbe1 !important;
 }
 
 .tooltip_end {
     font-family: Nexa !important;
     font-size: 125% !important;
-    color: #19DAFF !important;
+    color: #19DAFF;
     text-align: left !important;
     margin-top: -10px !important;
     margin-bottom: -10px !important;
