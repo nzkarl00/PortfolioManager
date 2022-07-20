@@ -476,14 +476,6 @@
     font-family: nexaLight !important;
 }
 
-.activeToCtrlV{
-    border:10px yellow;
-    margin: 10px;
-    float: left;
-    width: 100px;
-    height: 50px;
-}
-
 .delete-group:hover {
 
     background: #FF4122 !important;

@@ -100,16 +100,16 @@
 
                     <!-- Add dates button -->
                     <div class="row">
-                    <div class="col-2"></div>
-                            <div class="col-lg-8 col-md-10 col-sm-12" th:style="${display}">
-                                <form th:action="@{add-dates}" method="get">
-                                    <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
-                                    <button class="add" id="addDateButton" type="submit">
-                                        <i class="fa fa-plus"></i>&nbsp;
-                                        Add Dates
-                                    </button>
-                                </form>
-                            </div>
+                        <div class="col-2"></div>
+                        <div class="col-lg-8 col-md-10 col-sm-12" th:style="${display}">
+                            <form th:action="@{add-dates}" method="get">
+                                <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
+                                <button class="add" id="addDateButton" type="submit">
+                                    <i class="fa fa-plus"></i>&nbsp;
+                                    Add Dates
+                                </button>
+                            </form>
+                        </div>
                         <div class="col-2"></div>
                     </div>
                     <br>
@@ -193,6 +193,133 @@
         '#ffd800', '#ff2400', '#e30b5d', '#003153', '#ff5a36', '#e5e4e2',
         '#cc3333', '#1c39bb', '#1ca9c9', '#002147', '#d3af37', '#30bfbf',
         '#fdbe02', '#eaa221', '#32cd32', '#c5cbe1'];
+
+    // build an in-between sprint in html from js
+    function buildInBetweenSprint(startDateDate, endDateDate, id) {
+
+        const startDate = startDateDate.toString();
+        const endDate = endDateDate.toString();
+        console.log(startDate)
+        console.log(endDate)
+        console.log(id)
+
+        const mainDiv = document.getElementById("sprints")
+        // make the main container for all the sprints
+        const sprintDiv = document.createElement("div")
+        sprintDiv.id = "sprint" + id
+        sprintDiv.className = "row row_sprints";
+        mainDiv.appendChild(sprintDiv)
+
+        const col2 = document.createElement("div")
+        col2.className = "col-2"
+        sprintDiv.appendChild(col2)
+
+        const col1 = document.createElement("div")
+        col1.className = "col-lg-1 col-md-2 col-sm-12 col-12 align-items-end "
+        sprintDiv.appendChild(col1)
+
+        const br1 = document.createElement("br")
+        const br2 = document.createElement("br")
+        col1.appendChild(br1)
+        col1.appendChild(br2)
+
+        const col3 = document.createElement("div")
+        col3.className = "col-lg-7 col-md-8 col-sm-12 portion_body"
+        col3.style.border = "5px solid #19DAFF"
+        sprintDiv.appendChild(col3)
+
+        const events = document.createElement("div")
+        events.className = "project_subhead sprint-description display_data"
+        events.id = "events" + id
+        events.innerHTML = '<i class="fa fa-star"></i>' + " "  + "Events:"
+        col3.appendChild(events)
+
+        const eventsList = document.createElement("div")
+        eventsList.id = "eventsList" + id
+        col3.appendChild(eventsList)
+
+        const deadlines = document.createElement("div")
+        deadlines.className = "project_subhead sprint-description display_data"
+        deadlines.id = "deadlines" + id
+        deadlines.innerHTML = '<i class="fa fa-calendar-o"></i>' + " " + "Deadlines:"
+        col3.appendChild(deadlines)
+
+        const deadlinesList = document.createElement("div")
+        deadlinesList.id = "deadlinesList" +id
+        col3.appendChild(deadlinesList)
+
+        const milestones = document.createElement("div")
+        milestones.className = "project_subhead sprint-description display_data"
+        milestones.id = "milestones" + id
+        milestones.innerHTML = '<i class="fa fa-flag"></i>' + " "  + "Milestones:"
+        col3.appendChild(milestones)
+
+        const milestonesList = document.createElement("div")
+        milestonesList.id = "milestonesList" + id
+        col3.appendChild(milestonesList)
+
+
+        const col4 = document.createElement("div")
+        col4.className = "col-2"
+        sprintDiv.appendChild(col4)
+
+        if(!canEdit) {
+            editButton.style.display = "none"
+            deleteButton.style.display = "none"
+        }
+
+        var emptyLists = 0;
+
+        axios.get("/deadlines-between", {params: {"dateStart": startDate, "dateEnd": endDate, "project": [[${project.getId()}]]}})
+            .then((response) => {
+                if (response.data.length == 0) {
+                    emptyLists += 1;
+                    deadlines.style.display = "none"
+                    deadlinesList.style.display = "none"
+                    if (emptyLists == 3) {
+                        sprintDiv.style.display = "none"
+                    }
+
+                } else {
+                    for (const deadline of response.data) {
+                        buildDeadline(deadline, id)
+                    }
+                }
+            })
+
+        axios.get("/milestones-between", {params: {"dateStart": startDate, "dateEnd": endDate, "project": [[${project.getId()}]]}})
+            .then((response) => {
+                if (response.data.length == 0) {
+                    emptyLists += 1;
+                    milestones.style.display = "none"
+                    milestonesList.style.display = "none"
+                    if (emptyLists == 3) {
+                        sprintDiv.style.display = "none"
+                    }
+                } else {
+                    for (const milestone of response.data) {
+                        buildMilestone(milestone, id)
+                    }
+                }
+            })
+
+        axios.get("/events-between", {params: {"dateStart": startDate, "dateEnd": endDate, "project": [[${project.getId()}]]}})
+            .then((response) => {
+                if (response.data.length == 0) {
+                    emptyLists += 1;
+                    events.style.display = "none"
+                    eventsList.style.display = "none"
+                    if (emptyLists == 3) {
+                        sprintDiv.style.display = "none"
+                    }
+                } else {
+                    for (const event of response.data) {
+                        buildEvent(event, id)
+                    }
+                }
+            })
+
+    }
 
     // build a sprint in html from js
     function buildSprint(sprint) {
@@ -380,12 +507,12 @@
         }
 
         $(eachDeadline).tooltip({
-                    title: deadlineTooltip,
-                    placement: "right",
-                    trigger: "hover",
-                    container: "body",
-                    html: true
-                });
+            title: deadlineTooltip,
+            placement: "right",
+            trigger: "hover",
+            container: "body",
+            html: true
+        });
 
         if(!canEdit) {
             editDeadline.style.display = "none"
@@ -533,12 +660,12 @@
         }
 
         $(eachMilestone).tooltip({
-                    title: milestoneToolTip,
-                    placement: "right",
-                    trigger: "hover",
-                    container: "body",
-                    html: true
-                });
+            title: milestoneToolTip,
+            placement: "right",
+            trigger: "hover",
+            container: "body",
+            html: true
+        });
 
         if(!canEdit) {
             editMilestone.style.display = "none"
@@ -576,8 +703,15 @@
                     axios.get("/sprints", {params: {"id": [[${project.getId()}]]}})
                         .then((response) => {
                             deleteAllSprints()
+                            // Sets the starting date for in-between sections and starting id
+                            var initialDate = [[${project.getStartDate()}]];
+                            var initialFalseId = 0.5;
                             for (const sprint of response.data) {
+
+                                buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId)
                                 buildSprint(sprint)
+                                initialDate = sprint.endDate;
+                                initialFalseId += 1;
                                 axios.get("/deadlines", {params: {"id": [[${project.getId()}]], "sprintId": sprint.id}})
                                     .then((response) => {
                                         for (const deadline of response.data) {
@@ -602,6 +736,7 @@
                                         }
                                     })
                             }
+                            buildInBetweenSprint(initialDate,[[${project.getEndDate()}]] , initialFalseId)
                             renderCalendar(response.data)
                         })
                 }
@@ -691,7 +826,7 @@
         document.getElementById("editStatus").innerHTML = editsToDisplay
     }
 
-   function calendarTryAgain() {
+    function calendarTryAgain() {
         axios.get("/sprints", {params:{"id":[[${project.getId()}]]}})
             .then((response) => {
                 renderCalendar(response.data)
@@ -967,8 +1102,18 @@
     // then set the calendar and the details tabs with the correct data
     let initialSprintList = [[${sprints}]];
 
+    // Sets the starting date for in-between sections and starting id
+    let initialDate = [[${project.getStartDate()}]];
+    let initialFalseId = 0.5;
+
     for (const sprint of initialSprintList) {
+
+        console.log(sprint)
+
+        buildInBetweenSprint(initialDate,sprint.startDate, initialFalseId)
         buildSprint(sprint)
+        initialDate = sprint.endDate;
+        initialFalseId += 1;
         axios.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
                 for (const events of response.data) {
@@ -985,6 +1130,7 @@
             })
         axios.get("/milestones", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
+                console.log(response.data)
                 for (const milestone of response.data) {
                     this.sprint = sprint
                     buildMilestone(milestone, sprint.id)
@@ -998,6 +1144,7 @@
                 }
             })
     }
+    buildInBetweenSprint(initialDate,[[${project.getEndDate()}]] , initialFalseId)
 
     document.addEventListener('DOMContentLoaded', function() { renderCalendar(initialSprintList) });
 

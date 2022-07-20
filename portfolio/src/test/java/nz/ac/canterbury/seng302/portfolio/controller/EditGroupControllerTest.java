@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
+import nz.ac.canterbury.seng302.portfolio.model.GroupRepoRepository;
+import nz.ac.canterbury.seng302.portfolio.model.GroupRepo;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
@@ -24,6 +26,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import java.util.Optional;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -92,6 +95,9 @@ class EditGroupControllerTest {
     @MockBean
     NavController navController;
 
+    @MockBean
+    GroupRepoRepository groupRepoRepository;
+
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(EditGroupController.class)
@@ -136,7 +142,8 @@ class EditGroupControllerTest {
     GroupDetailsResponse response = GroupDetailsResponse.newBuilder()
         .setGroupId(3)
         .setLongName("Test Long")
-        .setShortName("Test Short").build();
+        .setShortName("Test Short")
+        .build();
 
     /**
      * test the get as a teacher, make sure it is the correct page
@@ -154,6 +161,12 @@ class EditGroupControllerTest {
             .thenReturn("teacher");
 
         when(groupsService.getGroup(3)).thenReturn(response);
+        when(groupRepoRepository.findByParentGroupId(3)).thenReturn(Optional.of(new GroupRepo(
+                1,
+                "a",
+                "b",
+                "c"
+        )));
 
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);

@@ -15,6 +15,9 @@ public class Group {
     int id;
     List<User> members = new ArrayList<>();
 
+    public static int MWAG_GROUP_ID = 2;
+    public static int TEACHERS_GROUP_ID = 1;
+
     /**
      * build based on the grpc response
      * @param response the grpc response to build from
@@ -62,5 +65,14 @@ public class Group {
      */
     public List<User> getMembers() {
         return members;
+    }
+
+    /**
+     * Checks if the group is one of the default groups, such as
+     * Members without a Group and teachers group.
+     * @return true if is a default group
+     */
+    public boolean isDefaultGroup() {
+        return id == MWAG_GROUP_ID || id == TEACHERS_GROUP_ID;
     }
 }
