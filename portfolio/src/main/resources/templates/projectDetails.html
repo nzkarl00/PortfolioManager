@@ -149,14 +149,17 @@
 
 
 <!-- Javascript for the calendar -->
-<script src="/webjars/jquery/jquery.min.js"></script>
-<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+<script th:src="@{webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
 <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <script th:src="@{js/fullcalendar.js}"></script>
 <script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
 
+    console.log(/*[[@{/}]]*/);
+    // axios = new Axios({baseUrl: /*[[@{/}]]*/);
     canEdit = false;
     if([[${role}]] === "teacher" || [[${role}]] === "admin") {
         canEdit = true;
@@ -270,7 +273,7 @@
 
         var emptyLists = 0;
 
-        axios.get("/deadlines-between", {params: {"dateStart": startDate, "dateEnd": endDate, "project": [[${project.getId()}]]}})
+        axios.get('/deadlines-between', {params: {"dateStart": startDate, "dateEnd": endDate, "project": [[${project.getId()}]]}})
             .then((response) => {
                 if (response.data.length == 0) {
                     emptyLists += 1;
@@ -1149,6 +1152,7 @@
     document.addEventListener('DOMContentLoaded', function() { renderCalendar(initialSprintList) });
 
     connect('calendar');
+    /*]]>*/
 </script>
 
 <!-- JS -->
