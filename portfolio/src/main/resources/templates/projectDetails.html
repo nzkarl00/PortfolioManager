@@ -199,9 +199,6 @@
 
         const startDate = startDateDate.toString();
         const endDate = endDateDate.toString();
-        console.log(startDate)
-        console.log(endDate)
-        console.log(id)
 
         const mainDiv = document.getElementById("sprints")
         // make the main container for all the sprints
@@ -506,7 +503,6 @@
         } else {
             deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body colour'+sprintId % colors.length+'" >Due:' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + "</p>"
         }
-        console.log(deadlineTooltip)
 
         $(eachDeadline).tooltip({
             title: deadlineTooltip,
@@ -542,7 +538,6 @@
                 startId = parseInt(sprint.id) % colors.length
             }
         }
-        console.log(startId)
         return startId
     }
     function getSprintEndIds(event) {
@@ -555,7 +550,6 @@
                 endId = parseInt(sprint.id) % colors.length
             }
         }
-        console.log(endId)
         return endId
     }
 
@@ -609,7 +603,6 @@
 
         const sprintId1 = getSprintStartIds(event);
         const sprintId2 = getSprintEndIds(event);
-        console.log(sprintId1, sprintId2)
         if (event.description !== undefined) {
             eventTooltip = '<p class="tooltip_title">' + event.name.substring(0,25) + "</p>" + '<p class="tooltip_body colour'+(sprintId1)+'" >Start Date: ' + eventStartDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventStartTime + '</p> <p class="tooltip_body colour'+(sprintId2) +'" >' + "End Date: " + eventEndDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventEndTime + '</p> <p class="tooltip_body">' + event.description + "</p>"
         } else {
@@ -1145,7 +1138,6 @@
 
     for (const sprint of initialSprintList) {
 
-        console.log(sprint)
         sprintList.push(sprint)
 
         buildInBetweenSprint(initialDate,sprint.startDate, initialFalseId)
@@ -1168,7 +1160,6 @@
             })
         axios.get("/milestones", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
-                console.log(response.data)
                 for (const milestone of response.data) {
                     this.sprint = sprint
                     buildMilestone(milestone, sprint.id)
