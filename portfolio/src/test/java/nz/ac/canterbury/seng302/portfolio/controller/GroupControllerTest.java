@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
+import nz.ac.canterbury.seng302.portfolio.model.GroupRepoRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
@@ -48,6 +49,9 @@ class GroupControllerTest {
 
     @MockBean
     GroupsClientService groupsService;
+
+    @MockBean
+    GroupRepoRepository groupRepoRepository;
 
     @MockBean
     NavController navController;

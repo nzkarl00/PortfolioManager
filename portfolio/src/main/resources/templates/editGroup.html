@@ -36,12 +36,44 @@
                     <input onKeyUp="updateCount('shortName', 10, 'shortCount')" class="project_edit_data horizontal_field"  id="shortName" th:name="shortName" th:value="*{shortName}" maxlength="10" title="Short Name can be a max of 10 characters" required><br/>
                     <p id="shortCount"></p>
                 </div>
+
+                <div>
+                    <label class="project_subhead">Repo Alias:</label>
+                    <input onKeyUp="updateCount('repoAlias', 60, 'aliasCount')" class="project_edit_data horizontal_field"  id="repoAlias" th:name="repoAlias" th:value="*{repoAlias}" maxlength="60" title="Repo alias can be a max of 60 characters"><br/>
+                    <p id="aliasCount"></p>
+                </div>
+
+                <div>
+                    <label class="project_subhead">Repo Owner:</label>
+                    <input onKeyUp="updateCount('repoOwner', 60, 'ownerCount')" class="project_edit_data horizontal_field"  id="repoOwner" th:name="repoOwner" th:value="*{repoOwner}" maxlength="60" title="Repo owner can be a max of 60 characters"><br/>
+                    <p id="ownerCount"></p>
+                </div>
+
+                <div>
+                    <label class="project_subhead">Repo Name:</label>
+                    <input onKeyUp="updateCount('repoName', 60, 'nameCount')" class="project_edit_data horizontal_field"  id="repoName" th:name="repoName" th:value="*{repoName}" maxlength="60" title="Repo name can be a max of 60 characters"><br/>
+                    <p id="nameCount"></p>
+                </div>
+
+                <div>
+                    <label class="project_subhead">Gitlab API Key:</label>
+                    <input
+                            onKeyUp="updateCount('apiKey', 60, 'apiKeyCount')"
+                            class="project_edit_data horizontal_field"
+                            id="apiKey"
+                            th:name="apiKey"
+                            th:value="*{apiKey}"
+                            maxlength="60"
+                            title="Api Key can be a max of 60 characters"
+                    ><br/>
+                    <p id="apiKeyCount"></p>
+                </div>
             </div>
 
             <!-- Buttons -->
             <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end text-center" style="text-align:center;">
 
-                <button id="signup-button" class="save" type="submit">SUBMIT EDIT</button>
+                <button id="signup-button" class="save" type="submit">SAVE CHANGES</button>
 
 
                 <button class="cancel" type="button">
@@ -66,7 +98,7 @@
 
 
                 <button class="signup_box" th:style="${errorShow}">
-                    <p class="signup_error" th:text="${successCode}"/>
+                    <p class="signup_error" th:text="${errorCode}"/>
                 </button>
 
                 <button class="signup_box_green" th:style="${successShow}">
@@ -94,6 +126,10 @@
 <script>
     updateCount("longName", 50, "longCount")
     updateCount("shortName", 10, "shortCount")
+    updateCount("aliasCount", 60, "aliasCount")
+    updateCount("nameCount", 60, "nameCount")
+    updateCount("ownerCount", 60, "ownerCount")
+    updateCount("apiKeyCount", 60, "apiKeyCount")
 </script>
 </body>
 </html>

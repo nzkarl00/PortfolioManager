@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
+import nz.ac.canterbury.seng302.portfolio.service.GitlabClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -13,6 +14,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +31,8 @@ public class AddGroupController {
 
     @Autowired
     private AccountClientService accountClientService;
+
+    Logger logger = LoggerFactory.getLogger(AddGroupController.class);
 
     String errorShow = "display:none;";
     String successShow = "display:none;";
@@ -51,6 +57,7 @@ public class AddGroupController {
         model.addAttribute("errorShow", errorShow);
         model.addAttribute("successShow", successShow);
         model.addAttribute("successCode", successCode);
+
 
         Integer userId = AuthStateInformer.getId(principal);
 

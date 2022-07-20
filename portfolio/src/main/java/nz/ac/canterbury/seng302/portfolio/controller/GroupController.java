@@ -1,10 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Group;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
+import nz.ac.canterbury.seng302.portfolio.service.GitlabClient;
+import nz.ac.canterbury.seng302.portfolio.model.GroupRepoRepository;
+import nz.ac.canterbury.seng302.portfolio.model.GroupRepo;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,10 +15,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Value;
+import org.gitlab4j.api.models.Project;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.javatuples.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.HashMap;
 
 @Controller
 public class GroupController {
@@ -29,7 +38,15 @@ public class GroupController {
     @Autowired
     private AccountClientService accountClientService;
 
+    @Autowired
+    private GroupRepoRepository groupRepoRepository;
+
+    @Value("${portfolio.gitlab-instance-url}")
+    private String gitlabInstanceURL;
+
     private int MAX_NUMBER_OF_GROUPS = 10;
+
+    Logger logger = LoggerFactory.getLogger(GroupController.class);
 
     /**
      * gets a page of groups with all the users in the groups shown in a table
@@ -56,7 +73,12 @@ public class GroupController {
 
         navController.updateModelForNav(principal, model, userReply, id);
 
+        // A list of groups and their associated, optionally null, gitlab projects.
         List<Group> groups = new ArrayList<>();
+        // A notice to show for the repository link
+        HashMap<Integer, String> gitlabLinkNotices = new HashMap();
+        // A color to apply to the gitlab link notice in case of error
+        HashMap<Integer, String> gitlabLinkColors = new HashMap();
 
         // get the groups, if there are no groups and you aren't on the first page, go back to the previous page
         PaginatedGroupsResponse response = groupsService.getGroups(MAX_NUMBER_OF_GROUPS, currentPage, true);
@@ -66,11 +88,42 @@ public class GroupController {
 
         }
 
-        for (GroupDetailsResponse group: response.getGroupsList()) {
-            groups.add(new Group(group));
+        // Note: In future the fetching of group repos could be made parallelisable. But not needed for now.
+        for (GroupDetailsResponse groupResponse: response.getGroupsList()) {
+            Group group = new Group(groupResponse);
+            groups.add(group);
+            // If the group has a non default id
+            if (!group.isDefaultGroup()) {
+                // Get the group repo record
+                Optional<GroupRepo> groupRepo = groupRepoRepository.findByParentGroupId(group.getId());
+                // Shortcircuit in case their is no group repo.
+                if (!groupRepo.isPresent()) {
+                    continue;
+                }
+                GroupRepo repo = groupRepo.get();
+
+                // Fetch the group repo from the GitlabClient service
+                GitlabClient client = new GitlabClient(gitlabInstanceURL, repo.getApiKey());
+                try {
+                    Project project = client.getProject(repo.getOwner(), repo.getName());
+                    gitlabLinkNotices.put(group.getId(), String.format(
+                        "Linked to %s/%s (%s) - Commits: %d",
+                        repo.getOwner(),
+                        repo.getName(),
+                        repo.getAlias(),
+                        project.getStatistics().getCommitCount()
+                    ));
+                } catch (Exception e) {
+                    logger.warn("Provided Gitlab API credentials did not work", e);
+                    gitlabLinkNotices.put(group.getId(), "Gitlab connection broken, update API Key");
+                    gitlabLinkColors.put(group.getId(), "red");
+                }
+            }
         }
 
         model.addAttribute("groups", groups);
+        model.addAttribute("gitlabLinkNotices", gitlabLinkNotices);
+        model.addAttribute("gitlabLinkColors", gitlabLinkColors);
         model.addAttribute("currentPage", currentPage);
 
         String role = AuthStateInformer.getRole(principal);
