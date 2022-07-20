@@ -32,6 +32,10 @@ dependencies {
 
     implementation 'io.jsonwebtoken:jjwt-api:0.11.0'
 
+
+    implementation group: 'org.gitlab4j', name: 'gitlab4j-api', version: '5.0.1'
+    implementation group: 'org.javatuples', name: 'javatuples', version: '1.2'
+
     //websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.webjars:webjars-locator-core'

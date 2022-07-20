@@ -45,9 +45,19 @@
                 <div >
                     <a class="project_a button_placement" th:href="@{group(id=${group.getId})}" >
                         <h3 class="project_subhead" th:text="${'(' + (group.shortName) + ') ' + group.longName}"/>
-                        <button th:style="${ group.getId() == 1 || group.getId() == 2 ?  'display: none; ' + display  : display}" type="button" th:value="${group.shortName}" th:id="${group.shortName}" data-toggle="modal" th:data-target="${'#deleteModal'+group.getId()}" class="fa fa-trash group_delete_button"/>
-                    </a>
 
+                    </a>
+                    <h5
+                        th:if="${!group.isDefaultGroup()}"
+                        th:text="${gitlabLinkNotices.getOrDefault(group.getId, 'Repository not linked')}"
+                        th:style="${ 'color: ' + gitlabLinkColors.getOrDefault(group.getId, 'black')}"
+                    ></h5>
+                    <button
+                            th:style="${ group.getId() == 1 || group.getId() == 2 ?  'display: none; ' + display  : display}"
+                            type="button" th:value="${group.shortName}"
+                            th:id="${group.shortName}" data-toggle="modal"
+                            th:data-target="${'#deleteModal'+group.getId()}" class="fa fa-trash group_delete_button"
+                    />
                 </div>
 
                 <!-- Modal -->
@@ -74,7 +84,6 @@
                         </div>
                     </div>
                 </div>
-
 
                 <br>
                 <div>
