@@ -55,6 +55,20 @@ public class Groups {
 
     public List<GroupMembership> getMembers() {return members;}
 
-    public void setMembers(List<GroupMembership> members) {this.members = members;}
+    /**
+     * Just to test, to allow us to program in users manually
+     * @param members
+     */
+    public void setMembers( List<GroupMembership> members) {
+        this.members = members;
+    }
+
+    /**
+     * Just to test, to allow us to set group Id manually
+     * @param id
+     */
+    public void setGroupId(int id) {
+        this.groupId = id;
+    }
 
 }
