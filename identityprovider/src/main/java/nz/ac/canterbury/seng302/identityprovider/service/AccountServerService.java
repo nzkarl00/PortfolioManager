@@ -85,7 +85,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
                     admin.delete();
                 }
                 if (admin.createNewFile()) {
-                    //
                     System.out.println("default admin file created: " + admin.getName());
                     System.out.println(generatedString);
                     FileWriter myWriter = new FileWriter(System.getProperty("user.dir") + "/defaultAdminPassword.txt");
@@ -121,6 +120,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
             File lastNames = new File(System.getProperty("user.dir") + "/src/main/resources/buildUsers/lastNames.txt");
             Scanner lastNamesReader = new Scanner(firstNames);
 
+            Groups MWAG = groupRepo.findAllByGroupShortName("MWAG").get(0);
+
             // loop through the names and build the users
             while (firstNamesReader.hasNextLine()) {
                 String firstName = firstNamesReader.nextLine();
@@ -131,9 +132,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
                                     firstName + lastName, hashedPassword, new Date(), "", firstName + "." + lastName + "@default",
                                     null, firstName, lastName, "He/Him"));
                     roleRepo.save(new Role(newAccount, "1student"));
-                    Groups userGroup = groupRepo.findByGroupId(2);
-                    GroupMembership userToAdd = new GroupMembership(newAccount, userGroup);
-                    groupMembershipRepo.save(userToAdd);
+                    groupMembershipRepo.save(new GroupMembership(newAccount, MWAG));
                 }
             }
             firstNamesReader.close();

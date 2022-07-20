@@ -16,14 +16,14 @@ import java.util.List;
 public interface GroupMembershipRepository extends CrudRepository<GroupMembership, Long> {
     List<GroupMembership> findAllByRegisteredGroups(Groups group);
     List<GroupMembership> findAllByRegisteredGroupUser(AccountProfile profile);
+    List<GroupMembership> findAllByRegisteredGroupsAndRegisteredGroupUser(Groups groups, AccountProfile profile);
     GroupMembership findByRegisteredGroupsAndRegisteredGroupUser(Groups group, AccountProfile profile);
 
     @Modifying
     @Query("delete from GroupMembership m where m.registeredGroups = ?1 and m.registeredGroupUser = ?2")
     void deleteByRegisteredGroupsAndRegisteredGroupUser(Groups group, AccountProfile profile);
 
-
     @Modifying
-    @Query("delete from GroupMembership m where m.id=:id")
-    void deleteByGroupMembershipId(@Param("id") long id);
+    @Query("delete from GroupMembership m where m.groupMembershipId = ?1")
+    void deleteByGroupMembershipId(Long membershipIdToRemove);
 }

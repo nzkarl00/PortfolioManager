@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,11 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.HashMap;
+import javax.persistence.criteria.CriteriaBuilder;
+import java.util.*;
 
 @Controller
 public class GroupController {
     @Autowired
     private GroupsClientService groupsService;
+
+    @Autowired
+    private GroupsClientService groupsClientService;
 
     @Autowired
     private NavController navController;
@@ -45,6 +51,12 @@ public class GroupController {
     private String gitlabInstanceURL;
 
     private int MAX_NUMBER_OF_GROUPS = 10;
+
+    // clipboard for holding selected info from ctrl c
+    private List<Integer> clipboard = new ArrayList<>();
+
+    // cutboard for holding selected info from ctrl x
+    private HashMap<Integer, List<Integer>> cutboard = new HashMap<>();
 
     Logger logger = LoggerFactory.getLogger(GroupController.class);
 
@@ -125,6 +137,8 @@ public class GroupController {
         model.addAttribute("gitlabLinkNotices", gitlabLinkNotices);
         model.addAttribute("gitlabLinkColors", gitlabLinkColors);
         model.addAttribute("currentPage", currentPage);
+        model.addAttribute("clipboard", clipboard);
+        model.addAttribute("cutboard", cutboard);
 
         String role = AuthStateInformer.getRole(principal);
 
@@ -138,6 +152,33 @@ public class GroupController {
         return "groups";
     }
 
+    @PostMapping("/ctrlv")
+    public String paste(
+        @AuthenticationPrincipal AuthState principal,
+        @RequestBody() List<Integer> ids,
+        @RequestParam("groupId") Integer groupId,
+        Model model
+    ) throws InterruptedException {
+        groupsClientService.addUserToGroup(groupId, (ArrayList<Integer>) ids);
+        clipboard = ids;
+        return "redirect:groups";
+    }
+
+    @PostMapping("/ctrlx")
+    public String cut(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestBody() HashMap<Integer, List<Integer>> ids,
+            Model model
+    ) throws InterruptedException {
+        for (Map.Entry<Integer, List<Integer>> entry : ids.entrySet()) {
+            if (entry.getKey() >= 0) {
+                groupsClientService.removeUserFromGroup(entry.getKey(), (ArrayList<Integer>) entry.getValue());
+            }
+        }
+        clipboard = ids.get(-1);
+        cutboard = ids;
+        return "redirect:groups";
+    }
 
     /**
      * delete group and redirect the user to the groups page
@@ -164,7 +205,6 @@ public class GroupController {
 
 
         }
-
         return "redirect:groups";
     }
 }

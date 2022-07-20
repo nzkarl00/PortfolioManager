@@ -89,9 +89,13 @@
                 <div>
                     <!-- Users -->
                     <div class="user-table">
-                        <table class="table" th:id="${'groupUserTable' + group.shortName}">
+                        <table class="table activeToCtrlV" th:attr="onclick=|setLatest(${group.id})|"  th:id="${'groupUserTable' + group.shortName}">
                             <thead>
                             <tr class="justify-content-center">
+                                <th class="table_head justify-content-center text-center"scope="col" >
+                                    Id
+                                </th>
+
                                 <th class="table_head justify-content-center text-center"scope="col" >
                                     First Name
                                 </th>
@@ -111,6 +115,7 @@
                                 <td colspan="5"> Could not get users to list </td>
                             </tr>
                             <tr th:each="user : ${group.getMembers}">
+                                <td><span class="table_text" th:text="${user.id}"> Id </span></td>
                                 <td><span class="table_text" th:text="${user.firstName}"> First </span></td>
                                 <td><span class="table_text" th:text="${user.lastName}"> Last </span></td>
                                 <td><span class="table_text" th:text="${user.username}"> Username </span></td>
@@ -137,25 +142,158 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
 <script th:inline="javascript">
-    /*<![CDATA[*/
+let clipboard = [[${clipboard}]];
+let cutboard = [[${cutboard}]];
+let selected = [];
+let latest;
+
+function removeFromSelected(item) {
+    let i = 0;
+    for (const user of selected) {
+        if (user === item) {
+            selected.splice(i);
+        }
+        i++;
+    }
+}
+
+function setLatest(id) {
+    latest = id
+}
+
+// https://www.geeksforgeeks.org/how-to-detect-copy-paste-commands-ctrlv-ctrlc-using-javascript/
+document.body.addEventListener("keydown", function (ev) {
+
+    // function to check the detection
+    ev = ev || window.event;  // Event object 'ev'
+    var key = ev.which || ev.keyCode; // Detecting keyCode
+
+    // Detecting Ctrl
+    var ctrl = ev.ctrlKey ? ev.ctrlKey : ((key === 17)
+        ? true : false);
+
+    // If key pressed is V and if ctrl is true.
+    if (key == 86 && ctrl) {
+        axios.post("/ctrlv", clipboard, {"params":{"groupId": latest}})
+        setTimeout(() => window.location.reload(), 500);
+    } else if (key == 67 && ctrl) {
+        clipboard = []
+        for (const user of selected) {
+            clipboard.push(parseInt(user[1]))
+        }
+    } else if (key == 88 && ctrl) {
+        // When ctrl-xing users from multiple groups, multiple grpc calls are required
+        // So the cutboard is a dict containing the groupIds and the userid's to delete
+        cutboard = {};
+        cutboard[-1] = [];
+        for (const user of selected) {
+            cutboard[-1].push(user[1])
+            if (!(user[0] in cutboard)) {
+                cutboard[user[0]] = [];
+            }
+            cutboard[user[0]].push(user[1])
+        }
+        axios.post("/ctrlx", cutboard, null);
+        setTimeout(() => window.location.reload(), 500);
+    }
+
+}, false);
+
+let tables = []
+
+function clearSelected() {
+    selected = []
+    for (const table of tables) {
+        table.rows( '.selected' ).deselect();
+    }
+}
+
+/*<![CDATA[*/
 
     /*[# th:each="group : ${groups}"]*/
-    $(document).ready(function () {
-        var table = $('#groupUserTable' + /*[[${group.shortName}]]*/).DataTable();
-        $('#groupUserTable' + /*[[${group.shortName}]]*/ + ' tbody').on('click', 'tr', function () {
-            if ($(this).hasClass('selected')) {
-                $(this).removeClass('selected');
-                console.log("working")
-            }
-            else {
-                $(this).addClass('selected');
-                console.log("still working")
-            }
-        });
-    });
-    /*[/]*/
+        $(document).ready(function () {
+            var table = $("#groupUserTable" + /*[[${group.shortName}]]*/).DataTable({
+                select: true
+            } );
+            let lastChecked = null;
 
+            tables.push(table);
+
+            $("#groupUserTable" + /*[[${group.shortName}]]*/ + ' tbody').on('click', 'tr', function (e) {
+                if (!lastChecked) {
+                    // if no item has been selected before this click in this table, add the groupId and userId
+                    // and register the click
+                    let id = table.row(this).data()[0].substring(25);
+                    let groupId = [[${group.id}]];
+                    latest = groupId;
+                    id = id.substring(0, id.length - 7)
+                    if ($(this).hasClass('selected')) {
+                        $(this).removeClass('selected');
+                        removeFromSelected([groupId, id])
+                    }
+                    else {
+                        $(this).addClass('selected');
+                        selected.push([groupId, id]);
+                    }
+                } else if (e.shiftKey) {
+                    // if the shift key is held, while the click happens, add the users in-between
+                    // the last clicked and the recently clicked
+                    let start = lastChecked;
+                    let end = this.rowIndex;
+                    if (start > end) {
+                        end = start
+                        start = this.rowIndex
+                    }
+                    for (let i = start; i < end + 1; i++) {
+                        let newThis = $(this).parent().find('tr:nth-child(' + i +')')
+                        let id = table.row(newThis).data()[0].substring(25);
+                        let groupId = [[${group.id}]];
+                        latest = groupId;
+
+                        id = id.substring(0, id.length - 7)
+                        if (!($(newThis).hasClass('selected'))) {
+                            $(newThis).addClass('selected');
+                            selected.push([groupId, id]);
+                        }
+                    }
+                } else if (e.ctrlKey) {
+                    // if it's a regular click, add the user to the selected list
+                    let id = table.row(this).data()[0].substring(25);
+                    let groupId = [[${group.id}]];
+                    latest = groupId;
+                    id = id.substring(0, id.length - 7)
+                    if ($(this).hasClass('selected')) {
+                        $(this).removeClass('selected');
+                        removeFromSelected([groupId, id])
+                    }
+                    else {
+                        $(this).addClass('selected');
+                        selected.push([groupId, id]);
+                    }
+                } else {
+                    clearSelected();
+                    let id = table.row(this).data()[0].substring(25);
+                    let groupId = [[${group.id}]];
+                    latest = groupId;
+                    id = id.substring(0, id.length - 7)
+                    if ($(this).hasClass('selected')) {
+                        $(this).removeClass('selected');
+                        removeFromSelected([groupId, id])
+                    }
+                    else {
+                        $(this).addClass('selected');
+                        selected.push([groupId, id]);
+                    }
+                }
+                lastChecked = this.rowIndex
+            })
+        })
+
+
+    /*[/]*/
     /*]]>*/
 
 </script>

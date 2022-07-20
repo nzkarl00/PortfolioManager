@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The GRPC server side service class specifically for the groups processing
@@ -77,25 +78,11 @@ public class GroupsServerService extends GroupsServiceImplBase {
     }
 
     /**
-     * A function to check if the given group is a teacher group and return the answer as a boolean.
-     * Checks by comparing the IDs.
-     * Identifying the teacher group so any updates to this group can be reflected in the teacher role too.
-     * @param groupToCheck
-     */
-    public boolean checkIsTeacherGroup(Groups groupToCheck) {
-        boolean isTeacherGroup = false;
-        Integer teacherGroupId = groupRepo.findAllByGroupShortName(TEACHER_GROUP_NAME_SHORT).get(0).getId();
-        if (groupToCheck.getId() == teacherGroupId) {
-            isTeacherGroup = true;
-        }
-
-        return isTeacherGroup;
-    }
-
-    /**
      * Takes a request and adds a list of users to a given group through the Group Membership table.
      * Adding a user to a group involves to remove it from the Members Without A Group.
      * Adding a user to a teacher group involves updating the role for that user to a teacher too.
+     * Adding a user t0 MWAG group would involve removing that user from all other groups.
+     * Adding a user to a group it is a part of already should be ignored to avoid duplicates.
      * @param request the request, containing the ids of the group and list of user ids
      * @param responseObserver sends a response back to the client
      */
@@ -104,7 +91,6 @@ public class GroupsServerService extends GroupsServiceImplBase {
     public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
 
         Groups groupToAddTo = groupRepo.findByGroupId(request.getGroupId());
-        boolean isTeacherGroup = checkIsTeacherGroup(groupToAddTo);
 
         for (int userId : request.getUserIdsList()) {
             AccountProfile user = repo.findById(userId);
@@ -114,14 +100,25 @@ public class GroupsServerService extends GroupsServiceImplBase {
             groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers.get(0), user);
 
             // if the user is being added to the teacher group, then update this change for the user role too.
-            if (isTeacherGroup) {
+            if (groupToAddTo.getGroupShortName().equals(TEACHER_GROUP_NAME_SHORT) && !user.getRoles().stream().map(role -> role.getRole()).collect(Collectors.toList()).contains(TEACHER_ROLE)) {
                 roleRepo.save(new Role(user, TEACHER_ROLE));
             }
 
-            GroupMembership groupMemberToAdd = new GroupMembership(user, groupToAddTo);
-            groupMembershipRepo.save(groupMemberToAdd);
-        }
+            // if the user is being added to the MWAG group, then update this change by removing this member from all groups.
+            else if (groupToAddTo.getGroupShortName().equals(MWAG_GROUP_NAME_SHORT)) {
+                List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroupUser(user);
+                for (GroupMembership groupMembership : groupMemberships) {
+                    groupMembershipRepo.deleteByGroupMembershipId(groupMembership.getGroupMembershipId());
+                }
+            }
 
+            // if the user being added is not already in the group, aka it is not a duplicate group member
+            // then all good to go and officially add the user to the group.
+            List<GroupMembership> duplicateGroupMembership = groupMembershipRepo.findAllByRegisteredGroupsAndRegisteredGroupUser(groupToAddTo, user);
+            if (duplicateGroupMembership.size() == 0) {
+                groupMembershipRepo.save(new GroupMembership(user, groupToAddTo));
+            }
+        }
 
         Boolean isSuccessful = true;
         String responseMessage = "Users: " + request.getUserIdsList() + " added.";
@@ -156,7 +153,6 @@ public class GroupsServerService extends GroupsServiceImplBase {
     public void removeGroupMembers(RemoveGroupMembersRequest request, StreamObserver<RemoveGroupMembersResponse> responseObserver) {
 
         Groups groupToRemoveFrom = groupRepo.findByGroupId(request.getGroupId());
-        boolean isTeacherGroup = checkIsTeacherGroup(groupToRemoveFrom);
 
         List<GroupMembership> groupMemberships = groupMembershipRepo.findAllByRegisteredGroups(groupToRemoveFrom);
 
@@ -165,8 +161,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
             // If this user from the groupToRemoveFrom is the actual user requested for removal.
             if ((request.getUserIdsList()).contains(user.getId())) {
-                Long membershipIdToRemove = groupMember.getGroupMembershipId();
-                groupMembershipRepo.deleteById(membershipIdToRemove);
+                groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(groupToRemoveFrom, user);
 
                 //if the user has no groups left, add the to the MWAG
                 if (user.getGroups().isEmpty()) {
@@ -175,7 +170,7 @@ public class GroupsServerService extends GroupsServiceImplBase {
                 }
 
                 // if the groupToRemoveFrom is the teacher group, remove their teacher role
-                if (isTeacherGroup) {
+                if (groupToRemoveFrom.getGroupShortName().equals(TEACHER_GROUP_NAME_SHORT)) {
                     List<Role> rolesOfUser = roleRepo.findAllByRegisteredUser(user);
                     for (Role role: rolesOfUser) {
                         if (role.getRole().equals(TEACHER_ROLE)) {

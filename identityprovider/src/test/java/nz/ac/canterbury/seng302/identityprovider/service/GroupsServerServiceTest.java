@@ -26,11 +26,20 @@ class GroupsServerServiceTest {
     @Autowired
     private static GroupsServerService gss = new GroupsServerService();
 
+    /**
+     * The repos we are testing in this class
+     */
     @Autowired
     static GroupRepository groupRepo = Mockito.mock(GroupRepository.class);
-
     @Autowired
     static GroupMembershipRepository groupMembershipRepo = Mockito.mock(GroupMembershipRepository.class);
+    @Autowired
+    static AccountProfileRepository accountProfileRepo = Mockito.mock(AccountProfileRepository.class);
+    @Autowired
+    static RolesRepository rolesRepo = Mockito.mock(RolesRepository.class);
+    @Autowired
+    static Role role = Mockito.mock(Role.class);
+
 
     /**
      * Setup to replace the autowired instances of these with the mocks
@@ -39,6 +48,8 @@ class GroupsServerServiceTest {
     void setup() {
         gss.groupRepo = groupRepo;
         gss.groupMembershipRepo = groupMembershipRepo;
+        gss.repo = accountProfileRepo;
+        gss.roleRepo = rolesRepo;
     }
 
     /**
@@ -65,6 +76,11 @@ class GroupsServerServiceTest {
      * Mocked stream observer to parse response as a replacement for the portfolio
      */
     private StreamObserver<ModifyGroupDetailsResponse> testModifyObserver = mock(StreamObserver.class);
+
+    /**
+     * Mocked stream observer to parse response as a replacement for the portfolio
+     */
+    private StreamObserver<AddGroupMembersResponse> testAddGroupMembersObserver = mock(StreamObserver.class);
 
     /**
      * Tests to make a valid group
@@ -467,6 +483,241 @@ class GroupsServerServiceTest {
         assertEquals(response.getIsSuccess(), true);
         assertEquals(response.getMessage(), "Edit successful");
 
+    }
+
+    /**
+     * Test the function addGroupMembers()
+     * given a user you want to add is non-special group A
+     * addGroupMembers() will add the user into non-special group B
+     */
+    @Test
+    void givenUserInGroupA_addGroupMembers_userWillBeInGroupB() {
+
+        AccountProfile testUser = new AccountProfile();
+
+        Groups groupA = new Groups();
+        groupA.setGroupShortName("A");
+        groupA.setGroupLongName("Group Alligators");
+
+        GroupMembership groupAMembership = new GroupMembership(groupA, testUser);
+        groupA.setMembers(new ArrayList<>(List.of(groupAMembership)));
+        List<Groups> groupAMembers = new ArrayList<>(List.of(groupA));
+
+        Groups groupB = new Groups();
+        groupB.setGroupShortName("B");
+        groupB.setGroupLongName("Group Baboons");
+        groupB.setGroupId(4);
+
+        Groups teacherGroup = new Groups();
+        teacherGroup.setGroupShortName("TG");
+        teacherGroup.setGroupLongName("Teacher Group");
+
+        Groups mwagGroup = new Groups();
+        mwagGroup.setGroupShortName("MWAG");
+        mwagGroup.setGroupLongName("Members Without a Group");;
+
+        when(groupRepo.findByGroupId(4)).thenReturn(groupB);
+        when(accountProfileRepo.findById(1)).thenReturn(testUser);
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(new ArrayList<>(List.of(mwagGroup)));
+
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(4).addUserIds(1).build();
+        gss.addGroupMembers(request, testAddGroupMembersObserver);
+
+        verify(testAddGroupMembersObserver, times(1)).onCompleted();
+        ArgumentCaptor<AddGroupMembersResponse> captor = ArgumentCaptor.forClass(AddGroupMembersResponse.class);
+        verify(testAddGroupMembersObserver, times(1)).onNext(captor.capture());
+        AddGroupMembersResponse response = captor.getValue();
+
+        // Main part checking that a new memebership for group B is added.
+        verify(groupMembershipRepo).save(refEq(new GroupMembership(groupB, testUser)));
+
+        assertEquals(response.getIsSuccess(), true);
+        assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
+    }
+
+    /**
+     * Test the function addGroupMembers()
+     * given a user you want to add is in the Members Without a Group (MWAG)
+     * addGroupMembers() will not only add the user in a new group, but also
+     * satisfy the special group case so the user will no longer be in MWAG.
+     */
+    @Test
+    void givenUserInMWAG_addGroupMembers_willRemoveUserFromMWAG() {
+
+        AccountProfile testUser = new AccountProfile();
+
+        Groups teacherGroup = new Groups();
+        teacherGroup.setGroupShortName("TG");
+        teacherGroup.setGroupLongName("Teacher Group");
+
+        Groups mwagGroup = new Groups();
+        mwagGroup.setGroupId(2);
+        mwagGroup.setGroupShortName("MWAG");
+        mwagGroup.setGroupLongName("Members Without a Group");
+        GroupMembership mwagMembership = new GroupMembership(mwagGroup, testUser);
+        mwagGroup.setMembers(new ArrayList<>(List.of(mwagMembership)));
+        List<Groups> noMembers = new ArrayList<>(List.of(mwagGroup));
+
+        when(groupRepo.findByGroupId(2)).thenReturn(mwagGroup);
+
+        when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(noMembers);
+
+        when(accountProfileRepo.findById(1)).thenReturn(testUser);
+
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(new ArrayList<>(List.of(mwagGroup)));
+
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(2).addUserIds(1).build();
+        gss.addGroupMembers(request, testAddGroupMembersObserver);
+
+        verify(testAddGroupMembersObserver, times(1)).onCompleted();
+        ArgumentCaptor<AddGroupMembersResponse> captor = ArgumentCaptor.forClass(AddGroupMembersResponse.class);
+        verify(testAddGroupMembersObserver, times(1)).onNext(captor.capture());
+        // Main part checking that the user is being deleted from MWAG
+        verify(groupMembershipRepo).deleteByRegisteredGroupsAndRegisteredGroupUser(noMembers.get(0), testUser);
+        AddGroupMembersResponse response = captor.getValue();
+        assertEquals(response.getIsSuccess(), true);
+        assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
+    }
+
+    /**
+     * Test the function addGroupMembers()
+     * given a user you want to add is being added to the teacher group
+     * addGroupMembers() will not only add the user to the teacher group, but also
+     * satisfy the special group case so the user will no longer be in MWAG
+     * and the user will have a teacher role associated with it.
+     */
+    @Test
+    void givenUser_addGroupMembersToTeacherGroup_willAddTeacherRole() {
+
+        AccountProfile testUser = new AccountProfile();
+        Groups teacherGroup = new Groups();
+        teacherGroup.setGroupShortName("TG");
+        teacherGroup.setGroupLongName("Teacher Group");
+        teacherGroup.setGroupId(1);
+        GroupMembership teacherMembership = new GroupMembership(teacherGroup, testUser);
+        teacherGroup.setMembers(new ArrayList<>(List.of(teacherMembership)));
+
+        Groups mwagGroup = new Groups();
+        mwagGroup.setGroupShortName("MWAG");
+        mwagGroup.setGroupLongName("Members Without a Group");
+
+        when(groupRepo.findByGroupId(1)).thenReturn(teacherGroup);
+
+        when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(new ArrayList<>(List.of(mwagGroup)));
+
+        when(accountProfileRepo.findById(1)).thenReturn(testUser);
+
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(new ArrayList<>(List.of(mwagGroup)));
+
+        testUser.addRoleTestingOnly(new Role(testUser, "1student"));
+
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(1).addUserIds(1).build();
+        gss.addGroupMembers(request, testAddGroupMembersObserver);
+
+        verify(testAddGroupMembersObserver, times(1)).onCompleted();
+        ArgumentCaptor<AddGroupMembersResponse> captor = ArgumentCaptor.forClass(AddGroupMembersResponse.class);
+        verify(testAddGroupMembersObserver, times(1)).onNext(captor.capture());
+        // Main part checking that a teacher role is added.
+        verify(rolesRepo).save(refEq(new Role(testUser, "2teacher")));
+        AddGroupMembersResponse response = captor.getValue();
+        assertEquals(response.getIsSuccess(), true);
+        assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
+    }
+
+    /**
+     * Test the function addGroupMembers()
+     * given a user you want to add is being added to the Members Without a Group (MWAG)
+     * addGroupMembers() will not only add the user to the MWAG group, but also
+     * satisfy the special group case so the user will not be in any other group
+     */
+    @Test
+    void givenUser_addGroupMembersToMWAG_willDeleteAllOtherGroupMemberships() {
+
+        AccountProfile testUser = new AccountProfile();
+
+        Groups teacherGroup = new Groups();
+        teacherGroup.setGroupShortName("TG");
+        teacherGroup.setGroupLongName("Teacher Group");
+
+        Groups mwagGroup = new Groups();
+        mwagGroup.setGroupId(2);
+        mwagGroup.setGroupShortName("MWAG");
+        mwagGroup.setGroupLongName("Members Without a Group");
+        GroupMembership mwagMembership = new GroupMembership(mwagGroup, testUser);
+        mwagGroup.setMembers(new ArrayList<>(List.of(mwagMembership)));
+        List<Groups> noMembers = new ArrayList<>(List.of(mwagGroup));
+
+        when(groupRepo.findByGroupId(2)).thenReturn(mwagGroup);
+
+        when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(noMembers);
+
+        when(accountProfileRepo.findById(1)).thenReturn(testUser);
+
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(new ArrayList<>(List.of(mwagGroup)));
+
+        GroupMembership groupMemberships = new GroupMembership(teacherGroup, testUser);
+        when(groupMembershipRepo.findAllByRegisteredGroupUser(testUser)).thenReturn(new ArrayList<>(List.of(groupMemberships)));
+
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(2).addUserIds(1).build();
+        gss.addGroupMembers(request, testAddGroupMembersObserver);
+
+        verify(testAddGroupMembersObserver, times(1)).onCompleted();
+        ArgumentCaptor<AddGroupMembersResponse> captor = ArgumentCaptor.forClass(AddGroupMembersResponse.class);
+        verify(testAddGroupMembersObserver, times(1)).onNext(captor.capture());
+        // Main part checking that the user is removed from all other groups.
+        verify(groupMembershipRepo).deleteByGroupMembershipId(groupMemberships.getGroupMembershipId());
+        AddGroupMembersResponse response = captor.getValue();
+        assertEquals(response.getIsSuccess(), true);
+        assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
+    }
+
+    /**
+     * Test the function addGroupMembers() will not add a user to a group if they
+     * are already in the group, therefore preventing duplicate group members.
+     */
+    @Test
+    void givenUserInAGroup_addGroupMembersToThatGroupAgain_willFail_andNotLetGroupMemberBeADuplicate() {
+
+        AccountProfile testUser = new AccountProfile();
+
+        Groups teacherGroup = new Groups();
+        teacherGroup.setGroupShortName("TG");
+        teacherGroup.setGroupLongName("Teacher Group");
+
+        Groups mwagGroup = new Groups();
+        mwagGroup.setGroupId(2);
+        mwagGroup.setGroupShortName("MWAG");
+        mwagGroup.setGroupLongName("Members Without a Group");
+        GroupMembership mwagMembership = new GroupMembership(mwagGroup, testUser);
+        mwagGroup.setMembers(new ArrayList<>(List.of(mwagMembership)));
+        List<Groups> noMembers = new ArrayList<>(List.of(mwagGroup));
+
+        when(groupRepo.findByGroupId(2)).thenReturn(mwagGroup);
+
+        when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(noMembers);
+
+        when(accountProfileRepo.findById(1)).thenReturn(testUser);
+
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(new ArrayList<>(List.of(mwagGroup)));
+
+        GroupMembership duplicateGroupMembership = new GroupMembership(mwagGroup, testUser);
+        when(groupMembershipRepo.findAllByRegisteredGroupsAndRegisteredGroupUser(mwagGroup,testUser)).thenReturn(new ArrayList<>(List.of(duplicateGroupMembership)));
+
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(2).addUserIds(1).build();
+        gss.addGroupMembers(request, testAddGroupMembersObserver);
+
+        verify(testAddGroupMembersObserver, times(1)).onCompleted();
+        ArgumentCaptor<AddGroupMembersResponse> captor = ArgumentCaptor.forClass(AddGroupMembersResponse.class);
+        verify(testAddGroupMembersObserver, times(1)).onNext(captor.capture());
+        // Main part checking the duplicate group member does not get saved
+        verify(groupMembershipRepo, never()).save(duplicateGroupMembership);
+        AddGroupMembersResponse response = captor.getValue();
+        assertEquals(response.getIsSuccess(), true);
+        assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
     }
 
 }
