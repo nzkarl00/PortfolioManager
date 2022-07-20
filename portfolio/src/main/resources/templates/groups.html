@@ -80,7 +80,7 @@
                 <div>
                     <!-- Users -->
                     <div class="user-table">
-                        <table class="table" th:attr="onclick=|setLatest(${group.id})|"  th:id="${'groupUserTable' + group.shortName}">
+                        <table class="table activeToCtrlV" th:attr="onclick=|setLatest(${group.id})|"  th:id="${'groupUserTable' + group.shortName}">
                             <thead>
                             <tr class="justify-content-center">
                                 <th class="table_head justify-content-center text-center"scope="col" >
@@ -134,6 +134,7 @@
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
 <script th:inline="javascript">
 let clipboard = [[${clipboard}]];
 let cutboard = [[${cutboard}]];
@@ -192,12 +193,25 @@ document.body.addEventListener("keydown", function (ev) {
 
 }, false);
 
+let tables = []
+
+function clearSelected() {
+    selected = []
+    for (const table of tables) {
+        table.rows( '.selected' ).deselect();
+    }
+}
+
 /*<![CDATA[*/
 
     /*[# th:each="group : ${groups}"]*/
         $(document).ready(function () {
-            var table = $("#groupUserTable" + /*[[${group.shortName}]]*/).DataTable();
+            var table = $("#groupUserTable" + /*[[${group.shortName}]]*/).DataTable({
+                select: true
+            } );
             let lastChecked = null;
+
+            tables.push(table);
 
             $("#groupUserTable" + /*[[${group.shortName}]]*/ + ' tbody').on('click', 'tr', function (e) {
                 if (!lastChecked) {
@@ -229,14 +243,29 @@ document.body.addEventListener("keydown", function (ev) {
                         let id = table.row(newThis).data()[0].substring(25);
                         let groupId = [[${group.id}]];
                         latest = groupId;
+
                         id = id.substring(0, id.length - 7)
                         if (!($(newThis).hasClass('selected'))) {
                             $(newThis).addClass('selected');
                             selected.push([groupId, id]);
                         }
                     }
+                } else if (e.ctrlKey) {
+                    // if it's a regular click, add the user to the selected list
+                    let id = table.row(this).data()[0].substring(25);
+                    let groupId = [[${group.id}]];
+                    latest = groupId;
+                    id = id.substring(0, id.length - 7)
+                    if ($(this).hasClass('selected')) {
+                        $(this).removeClass('selected');
+                        removeFromSelected([groupId, id])
+                    }
+                    else {
+                        $(this).addClass('selected');
+                        selected.push([groupId, id]);
+                    }
                 } else {
-                    // if it's a regeular click, add the user to the selected list
+                    clearSelected();
                     let id = table.row(this).data()[0].substring(25);
                     let groupId = [[${group.id}]];
                     latest = groupId;
