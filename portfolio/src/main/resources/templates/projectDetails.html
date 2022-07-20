@@ -499,12 +499,14 @@
 
         const deadlineDate = String(deadline.startDate).substring(0,10);
         const deadlineTime = String(deadline.startDate).substring(11);
+
         var deadlineTooltip;
         if (deadline.description !== 'undefined') {
-            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + '</p> <p class="tooltip_body">' + deadline.description + "</p>"
+            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body colour'+sprintId % colors.length+'" >Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + '</p> <p class="tooltip_body">' + deadline.description + "</p>"
         } else {
-            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Due: ' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + "</p>"
+            deadlineTooltip = '<p class="tooltip_title">' + deadline.name.substring(0,25) + "</p>" + '<p class="tooltip_body colour'+sprintId % colors.length+'" >Due:' + deadlineDate + '</p> <p class="tooltip_body">' + "At: " + deadlineTime + "</p>"
         }
+        console.log(deadlineTooltip)
 
         $(eachDeadline).tooltip({
             title: deadlineTooltip,
@@ -526,6 +528,35 @@
         eachDeadline.appendChild(editDeadline)
         eachDeadline.appendChild(deadlineType)
         eachDeadline.appendChild(deleteDeadline)
+    }
+
+    let sprintList = [];
+
+    function getSprintStartIds(event) {
+        let eventStart = Date.parse(event.startDate)
+        let startId = -1;
+        for (const sprint of sprintList) {
+            let sprintStart = Date.parse(sprint.startDate)
+            let sprintEnd = Date.parse(sprint.endDate)
+            if (eventStart >= sprintStart && eventStart < sprintEnd+86400000){
+                startId = parseInt(sprint.id) % colors.length
+            }
+        }
+        console.log(startId)
+        return startId
+    }
+    function getSprintEndIds(event) {
+        let eventEnd = Date.parse(event.endDate)
+        let endId = -1;
+        for (const sprint of sprintList) {
+            let sprintStart = Date.parse(sprint.startDate)
+            let sprintEnd = Date.parse(sprint.endDate)
+            if (eventEnd >= sprintStart && eventEnd < sprintEnd+86400000){
+                endId = parseInt(sprint.id) % colors.length
+            }
+        }
+        console.log(endId)
+        return endId
     }
 
     function buildEvent(event, sprintId) {
@@ -575,10 +606,14 @@
         const eventStartTime = "at " + String(event.startDate).substring(11,16);
         const eventEndTime = "at " + String(event.endDate).substring(11,16);
         var eventTooltip;
+
+        const sprintId1 = getSprintStartIds(event);
+        const sprintId2 = getSprintEndIds(event);
+        console.log(sprintId1, sprintId2)
         if (event.description !== undefined) {
-            eventTooltip = '<p class="tooltip_title">' + event.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Start Date: ' + eventStartDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventStartTime + '</p> <p class="tooltip_body">' + "End Date: " + eventEndDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventEndTime + '</p> <p class="tooltip_body">' + event.description + "</p>"
+            eventTooltip = '<p class="tooltip_title">' + event.name.substring(0,25) + "</p>" + '<p class="tooltip_body colour'+(sprintId1)+'" >Start Date: ' + eventStartDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventStartTime + '</p> <p class="tooltip_body colour'+(sprintId2) +'" >' + "End Date: " + eventEndDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventEndTime + '</p> <p class="tooltip_body">' + event.description + "</p>"
         } else {
-            eventTooltip = '<p class="tooltip_title">' + event.name.substring(0,25) + "</p>" + '<p class="tooltip_body">Start Date: ' + eventStartDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventStartTime + '</p> <p class="tooltip_body">' + "End Date: " + eventEndDate + '</p> <p class="tooltip_body">' + 'Ends at: ' + eventEndTime + '</p>'
+            eventTooltip = '<p class="tooltip_title">' + event.name.substring(0,25) + "</p>" + '<p class="tooltip_body colour'+(sprintId1)+'" >Start Date: ' + eventStartDate + '</p> <p class="tooltip_body">' + 'Starts at: ' + eventStartTime + '</p> <p class="tooltip_body colour'+(sprintId2) +'" >' + "End Date: " + eventEndDate + '</p> <p class="tooltip_body">' + 'Ends at: ' + eventEndTime + '</p>'
         }
 
         $(eachEvent).tooltip({
@@ -654,9 +689,9 @@
         const milestoneDate = String(milestone.startDate).substring(0,10);
         var milestoneToolTip;
         if (milestone.description !== undefined) {
-            milestoneToolTip = '<p class="tooltip_title">' + milestone.name.substring(0,25) + "</p>" + '<p class="tooltip_body">By: ' + milestoneDate + '</p> <p class="tooltip_body">' + milestone.description + "</p>"
+            milestoneToolTip = '<p class="tooltip_title">' + milestone.name.substring(0,25) + "</p>" + '<p class="tooltip_body colour'+sprintId % colors.length+'" >By: ' + milestoneDate + '</p> <p class="tooltip_body">' + milestone.description + "</p>"
         } else {
-            milestoneToolTip = '<p class="tooltip_title">' + milestone.name.substring(0,25) + "</p>" + '<p class="tooltip_body">By: ' + milestoneDate + '</p>'
+            milestoneToolTip = '<p class="tooltip_title">' + milestone.name.substring(0,25) + "</p>" + '<p class="tooltip_body colour'+sprintId % colors.length+'" >By: ' + milestoneDate + '</p>'
         }
 
         $(eachMilestone).tooltip({
@@ -706,8 +741,9 @@
                             // Sets the starting date for in-between sections and starting id
                             var initialDate = [[${project.getStartDate()}]];
                             var initialFalseId = 0.5;
+                            sprintList = []
                             for (const sprint of response.data) {
-
+                                sprintList.push(sprint);
                                 buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId)
                                 buildSprint(sprint)
                                 initialDate = sprint.endDate;
@@ -1105,10 +1141,12 @@
     // Sets the starting date for in-between sections and starting id
     let initialDate = [[${project.getStartDate()}]];
     let initialFalseId = 0.5;
+    sprintList = []
 
     for (const sprint of initialSprintList) {
 
         console.log(sprint)
+        sprintList.push(sprint)
 
         buildInBetweenSprint(initialDate,sprint.startDate, initialFalseId)
         buildSprint(sprint)

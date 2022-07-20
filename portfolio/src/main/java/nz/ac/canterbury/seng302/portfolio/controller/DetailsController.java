@@ -553,7 +553,7 @@ public class DetailsController {
         for (Event event : events) {
             LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
             LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
-            if ((event.getStartDate().isAfter(startDate)) && (event.getStartDate().isBefore(endDate))) {
+            if (((event.getStartDate().isAfter(startDate)) && (event.getStartDate().isBefore(endDate))) || (event.getEndDate().isAfter(startDate)) && (event.getEndDate().isBefore(endDate))) {
                 sendingEvents.add(event);
             }
         }
