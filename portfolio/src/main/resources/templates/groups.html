@@ -166,7 +166,9 @@ function setLatest(id) {
 
 // https://www.geeksforgeeks.org/how-to-detect-copy-paste-commands-ctrlv-ctrlc-using-javascript/
 document.body.addEventListener("keydown", function (ev) {
-
+    if ([[${role}]] === "student") {
+        return;
+    }
     // function to check the detection
     ev = ev || window.event;  // Event object 'ev'
     var key = ev.which || ev.keyCode; // Detecting keyCode

@@ -145,8 +145,10 @@ public class GroupController {
         // if you are a teacher or an admin you can add a new group
         if (role.equals("teacher") || role.equals("admin")) {
             model.addAttribute("display", "");
+            model.addAttribute("role", "teacher");
         } else {
             model.addAttribute("display", "display:none;");
+            model.addAttribute("role", "student");
         }
 
         return "groups";
