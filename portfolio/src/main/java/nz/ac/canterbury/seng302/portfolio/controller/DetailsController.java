@@ -325,7 +325,7 @@ public class DetailsController {
         for (Deadline deadline : deadlines) {
             LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
             LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
-            if (deadline.getEndDate().isBefore(endDate) && deadline.getStartDate().isAfter(startDate)) {
+            if ((!deadline.getStartDate().isBefore(startDate)) && (deadline.getStartDate().isBefore(endDate))) {
                 sendingDeadlines.add(deadline);
             }
         }
