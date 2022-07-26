@@ -7,6 +7,7 @@ import java.util.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.time.LocalDateTime;
 
 /**
  * The entity representation for the Project and project table
@@ -119,6 +120,18 @@ public class Project {
 
     public String getEndDateStringHtml() {
         return DateParser.dateToStringHtml(this.projectEndDate);
+    }
+
+    public LocalDateTime getLocalStartDate() {
+        return projectStartDate.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
+
+    public LocalDateTime getLocalEndDate() {
+        return projectEndDate.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
     }
 
     public void setEndDate(Date newEndDate) {
