@@ -6,6 +6,7 @@ let
 in
   with nixpkgs;
 stdenv.mkDerivation {
+  allowBroken = true;
   name = "seng302-shell";
   shellHook = ''
     export JAVA_HOME="${pkgs.jdk17}/zulu-17.jdk/Contents/Home"
@@ -16,11 +17,11 @@ stdenv.mkDerivation {
     git-lfs
     hexyl
     hyperfine
-    jq
-    pixman
-    pwgen
+    # jq
+    # pixman
+    # pwgen
     tokei
-    yq 
+    # yq
 
     jdk17
     gradle
