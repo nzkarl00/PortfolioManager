@@ -342,15 +342,11 @@
         label.innerText = sprint.label
         col1.appendChild(label)
 
-        const editButton = document.createElement("button")
-        editButton.className = "edit"
+        const editButton = document.createElement("a")
+        editButton.className = "btn btn-primary edit button_a "
+        editButton.href = "/edit-sprint?id=" + sprint.parentProjectId + "&ids=" + sprint.id
+        editButton.innerText = "EDIT"
         col1.appendChild(editButton)
-
-        const innerEditButton = document.createElement("a")
-        innerEditButton.className = "button_a"
-        innerEditButton.innerText = "EDIT"
-        innerEditButton.href = "/edit-sprint?id=" + sprint.parentProjectId + "&ids=" + sprint.id
-        editButton.appendChild(innerEditButton)
 
         const deleteForm = document.createElement("form")
         deleteForm.method = "post"
