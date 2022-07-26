@@ -178,7 +178,18 @@ public class GroupController {
     ) throws InterruptedException {
         for (Map.Entry<Integer, List<Integer>> entry : ids.entrySet()) {
             if (entry.getKey() >= 0) {
-                groupsClientService.removeUserFromGroup(entry.getKey(), (ArrayList<Integer>) entry.getValue());
+                ArrayList<Integer> userArray = new ArrayList<Integer>();
+                if ((entry.getKey() == 1)) {
+                    for (Integer userId : entry.getValue()){
+                        if ((userId.equals(AuthStateInformer.getId(principal))) && !(AuthStateInformer.getRole(principal).equals("admin"))) {
+
+                        } else {
+                            userArray.add(userId);
+                        }
+
+                    }
+                }
+                groupsClientService.removeUserFromGroup(entry.getKey(), userArray);
             }
         }
         clipboard = ids.get(-1);
