@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
  * Each concrete implementation is free to implement the methods as most appropriate.
  */
 @Entity
-public abstract class Evidence {
+public class Evidence {
     public static final int MAX_TITLE_LENGTH = 100;
     public static final int MAX_DESCRIPTION_LENGTH = 2000;
     public static final DateTimeFormatter htmlDateFormat = DateTimeFormatter.ofPattern("YYYY-MM-dd");
@@ -93,10 +93,37 @@ public abstract class Evidence {
     }
 
     /**
+     * Validates that the new associated is valid to attach the evidence to.
+     * This means checking the evidence still lies within the date range.
+     * @param The new project to potentially associate with the piece of Evidence
+     */
+    void newAssociatedProjectIsValid(Project newProject) throws IllegalArgumentException {
+        if (date.isAfter(newProject.getLocalEndDate())) {
+            throw new IllegalArgumentException("New project ends before evidence date");
+        } else if (date.isBefore(newProject.getLocalStartDate())) {
+            throw new IllegalArgumentException("New project starts after evidence date");
+        }
+    }
+
+    /**
+     * Validates that the new associated is valid to attach the evidence to.
+     * This means checking the evidence still lies within the date range.
+     * @param The new project to potentially associate with the piece of Evidence
+     */
+    void newDateIsValid(LocalDate newDate) throws IllegalArgumentException {
+        if (newDate.isAfter(associatedProject.getLocalEndDate())) {
+            throw new IllegalArgumentException("New evidence date is after parent project end date");
+        } else if (newDate.isBefore(associatedProject.getLocalStartDate())) {
+            throw new IllegalArgumentException("New evidence date is before parent project start date");
+        }
+    }
+
+    /**
      * Sets the associated project to which the piece of evidence is associated
      * @param associatedProject
      */
-    public void setAssociatedProject(Project associatedProject) {
+    public void setAssociatedProject(Project associatedProject) throws IllegalArgumentException {
+        newAssociatedProjectIsValid(associatedProject);
         this.associatedProject = associatedProject;
     }
 
@@ -120,7 +147,8 @@ public abstract class Evidence {
      * Set the date of the piece of evidence.
      * @param date
      */
-    public void setDate(LocalDate date) {
+    public void setDate(LocalDate date) throws IllegalArgumentException {
+        newDateIsValid(date);
         this.date = date;
     };
 
@@ -144,7 +172,7 @@ public abstract class Evidence {
      * Get the associated project to which the piece of evidence is associated.
      * @return
      */
-    public Project getAssociatedProjectProject() {
+    public Project getAssociatedProject() {
         return associatedProject;
     }
 
