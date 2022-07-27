@@ -204,7 +204,7 @@ document.body.addEventListener("keydown", function (ev) {
             cutboard[user[0]].push(user[1])
         }
         client.post("/ctrlx", cutboard, null);
-        //setTimeout(() => window.location.reload(), 500);
+        setTimeout(() => window.location.reload(), 500);
     }
 
 }, false);
