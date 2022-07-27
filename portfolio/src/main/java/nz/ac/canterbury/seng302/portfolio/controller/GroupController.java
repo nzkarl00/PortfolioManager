@@ -186,7 +186,10 @@ public class GroupController {
                         } else {
                             userArray.add(userId);
                         }
-
+                    }
+                } else {
+                    for (Integer userId : entry.getValue()) {
+                        userArray.add(userId);
                     }
                 }
                 groupsClientService.removeUserFromGroup(entry.getKey(), userArray);

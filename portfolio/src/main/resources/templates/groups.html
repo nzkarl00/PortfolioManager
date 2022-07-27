@@ -158,8 +158,8 @@ let latest;
 function removeFromSelected(item) {
     let i = 0;
     for (const user of selected) {
-        if (user === item) {
-            selected.splice(i);
+        if (user[0] == item[0] && user[1] == item[1]) {
+            selected.splice(i, 1);
         }
         i++;
     }
@@ -204,7 +204,7 @@ document.body.addEventListener("keydown", function (ev) {
             cutboard[user[0]].push(user[1])
         }
         client.post("/ctrlx", cutboard, null);
-        setTimeout(() => window.location.reload(), 500);
+        //setTimeout(() => window.location.reload(), 500);
     }
 
 }, false);
@@ -262,9 +262,11 @@ function clearSelected() {
 
                         id = id.substring(0, id.length - 7)
                         if (!($(newThis).hasClass('selected'))) {
+                            console.log(i)
                             $(newThis).addClass('selected');
                             selected.push([groupId, id]);
                         }
+                        console.log(selected)
                     }
                 } else if (e.ctrlKey) {
                     // if it's a regular click, add the user to the selected list
@@ -275,6 +277,8 @@ function clearSelected() {
                     if ($(this).hasClass('selected')) {
                         $(this).removeClass('selected');
                         removeFromSelected([groupId, id])
+                        console.log(selected)
+                        console.log([groupId, id])
                     }
                     else {
                         $(this).addClass('selected');
