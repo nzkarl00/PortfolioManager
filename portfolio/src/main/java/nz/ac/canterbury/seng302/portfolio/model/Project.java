@@ -122,16 +122,14 @@ public class Project {
         return DateParser.dateToStringHtml(this.projectEndDate);
     }
 
-    public LocalDateTime getLocalStartDate() {
-        return projectStartDate.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
+    public LocalDate getLocalStartDate() {
+        return LocalDate.ofInstant(projectStartDate.toInstant(), ZoneId.systemDefault());
     }
 
-    public LocalDateTime getLocalEndDate() {
+    public LocalDate getLocalEndDate() {
         return projectEndDate.toInstant()
             .atZone(ZoneId.systemDefault())
-            .toLocalDateTime();
+            .toLocalDate();
     }
 
     public void setEndDate(Date newEndDate) {

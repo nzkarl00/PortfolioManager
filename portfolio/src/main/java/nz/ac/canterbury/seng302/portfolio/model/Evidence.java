@@ -1,7 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -43,7 +43,7 @@ public abstract class Evidence {
     @Column(name="description", length = MAX_DESCRIPTION_LENGTH, nullable = false)
     protected String description = "";
     @Column(name="date", nullable = false)
-    protected LocalDateTime date;
+    protected LocalDate date;
 
     protected Evidence() {}
 
@@ -62,7 +62,7 @@ public abstract class Evidence {
         Project associatedProject,
         String title,
         String description,
-        LocalDateTime date
+        LocalDate date
     ) {
         this.parentUserId = parentUserId;
         this.associatedProject = associatedProject;
@@ -77,7 +77,7 @@ public abstract class Evidence {
      * @param description The description of the ProjectItem
      * @throws IllegalArgumentException If one argument is invalid, throws an exception
      */
-    static void validateProperties(Project parentProject, String title, String description, LocalDateTime date) throws IllegalArgumentException {
+    static void validateProperties(Project parentProject, String title, String description, LocalDate date) throws IllegalArgumentException {
         if (title.length() > MAX_TITLE_LENGTH) {
             throw new IllegalArgumentException(String.format("Title length must not exceed %d characters", MAX_TITLE_LENGTH));
         } else if (description.length() > MAX_DESCRIPTION_LENGTH) {
@@ -86,13 +86,9 @@ public abstract class Evidence {
                     MAX_DESCRIPTION_LENGTH
             ));
         } else if (date.isAfter(parentProject.getLocalEndDate())) {
-            throw new IllegalArgumentException(String.format(
-                    "Evidence date is after parent project end date"
-            ));
+            throw new IllegalArgumentException("Evidence date is after parent project end date");
         } else if (date.isBefore(parentProject.getLocalStartDate())) {
-            throw new IllegalArgumentException(String.format(
-                    "Evidence date is before parent project start date"
-            ));
+            throw new IllegalArgumentException("Evidence date is before parent project start date");
         }
     }
 
@@ -124,7 +120,7 @@ public abstract class Evidence {
      * Set the date of the piece of evidence.
      * @param date
      */
-    public void setDate(LocalDateTime date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     };
 
@@ -173,7 +169,7 @@ public abstract class Evidence {
      * Get the date
      * @return
      */
-    public LocalDateTime getDate() {
+    public LocalDate getDate() {
         return date;
     };
 }
