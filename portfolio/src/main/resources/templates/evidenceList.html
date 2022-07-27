@@ -43,28 +43,36 @@
       <!-- Project Section -->
       <div class="col-lg-8 col-md-10 col-sm-12 portion_body" >
 
-        <div class="row-1">
+        <div class="row-1 evidence_top">
 
-        <a class="btn btn-primary" data-toggle="collapse" th:href="'#collapseExample'+${project.getId}" role="button" aria-expanded="false" aria-controls="collapseExample">
-          <h3 class="project_subhead" id="projectName" th:text="${project.getName}"/>
+        <a class="btn" data-toggle="collapse" th:href="'#collapseExample'+${project.getId}" role="button" aria-expanded="false" aria-controls="collapseExample">
+          <h3 class="bio" id="projectName" th:text="${project.getName}"/>
         </a>
 
       </div>
 
       <div class="row-1">
 
-        <div class="collapse " th:id="'collapseExample'+${project.getId}">
+        <div class="collapse evidence_data no-gutters" th:id="'collapseExample'+${project.getId}">
 
-          <div class="profile_data">
+<br>
+<br>
           <div class="profile_data">
             <p class="bio" th:text="${project.getDescription}"/>
           </div>
 
           <p class="project_date" th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}" />
+            <br>
           </div>
+
+        <div class="evidence_bot">
+          <br>
         </div>
         </div>
+
       </div>
+
+
 
       <div class="col-2">
 

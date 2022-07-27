@@ -289,6 +289,7 @@
   border-radius: 10px 20px 20px 20px !important;
 
 }
+}
 
 .project_edit_data {
 
@@ -1091,5 +1092,33 @@
 
 .increase_size {
     font-size: 125% !important;
+}
 
+.evidence_top {
+
+    background: #19DAFF !important;
+    border-radius: 20px 20px 0px 0px;
+
+
+}
+
+.evidence_bot {
+
+    background: #19DAFF !important;
+    border-radius: 0px 0px 20px 20px;
+
+
+}
+
+
+.evidence_data {
+
+
+    font-family: nexa !important;
+    color: #000000 !important;
+    font-size: 110% !important;
+    background-color: #F7FEFF !important;
+    overflow-wrap: break-word;
+    border-radius: 0px 0px 0px 0px !important;
+    margin-bottom:  0px !important;
 }
