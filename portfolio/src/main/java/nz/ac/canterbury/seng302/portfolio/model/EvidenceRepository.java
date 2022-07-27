@@ -12,6 +12,8 @@ import java.util.List;
 @Repository
 public interface EvidenceRepository extends CrudRepository<Evidence, Integer> {
     Event findById(int id);
-    Event findByParentUserId(int parentUserId);
-//    Event findByParentUserId(int id);
+    List<Evidence> findByParentUserId(int parentUserId);
+
+    // NOTE: In future, create a custom getter to fetch a list of evidence based on parent user id and
+    // the associated project id.
 }

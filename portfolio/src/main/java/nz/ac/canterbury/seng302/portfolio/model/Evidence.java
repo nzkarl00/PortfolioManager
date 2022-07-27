@@ -51,7 +51,7 @@ public class Evidence {
      * Construct a piece of evidence.
      * Precondition:
      * - Call validateProperties to verify properties are valid.
-     * @param parentUser The user to which the piece of evidence belongs
+     * @param parentUserId The user ID (from idp) to which the piece of evidence belongs
      * @param associatedProject The project to which the piece of evidence is contained
      * @param title The title for the piece of evidence
      * @param description The description of the ProjectItem
@@ -73,8 +73,10 @@ public class Evidence {
 
     /**
      * Validate properties to store in a project item. Must be called before constructing an invalid project item.
-     * @param name The name of the ProjectItem
-     * @param description The description of the ProjectItem
+     * @param The parent project that the piece of evidence is related to.
+     * @param title The title of the piece of evidence
+     * @param description The description of the piece of evidence
+     * @param date The local date when that the piece of evidence is referenced to
      * @throws IllegalArgumentException If one argument is invalid, throws an exception
      */
     static void validateProperties(Project parentProject, String title, String description, LocalDate date) throws IllegalArgumentException {
