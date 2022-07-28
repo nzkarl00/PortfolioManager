@@ -353,10 +353,10 @@ public class DetailsController {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        cal.add(Calendar.DATE, 1);
+        cal.add(Calendar.DATE, 0);
         date = cal.getTime();
         cal.setTime(end);
-        cal.add(Calendar.DATE, -1);
+        cal.add(Calendar.DATE, 0);
         end = cal.getTime();
 
         List<Deadline> sendingDeadlines = deadlineRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
