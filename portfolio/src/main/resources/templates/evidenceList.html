@@ -8,8 +8,6 @@
 <!-- Navigation Bar -->
 <div th:replace="fragments/validUser.html :: navbar"></div>
 
-
-
 <!-- Body -->
 <div class="main">
   <div class="container">
@@ -98,8 +96,52 @@
 
   </div>
 </div>
-
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#evidence_category').multiselect({
+      buttonWidth: '20em'
+  });
+</script>
+<div th:replace="fragments/evidenceForm.html :: evidenceForm"></div>
 <!-- JS -->
 <script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+
+    var multipleCancelButton = new Choices('#evidence_category', {
+      removeItemButton: true,
+      classNames: {
+        containerOuter: 'choices project_edit_data evidence_form_element_select_container',
+        containerInner: 'choices__inner evidence_form_element_select',
+        input: 'choices__input',
+        inputCloned: 'choices__input--cloned',
+        list: 'choices__list',
+        listItems: 'choices__list--multiple',
+        listSingle: 'choices__list--single',
+        listDropdown: 'choices__list--dropdown no_padding',
+        item: 'choices__item evidence_form_element_select_item no_padding',
+        itemSelectable: 'choices__item--selectable evidence_form_element_select_item',
+        itemDisabled: 'choices__item--disabled',
+        itemChoice: 'choices__item--choice',
+        placeholder: 'choices__placeholder',
+        group: 'choices__group',
+        groupHeading: 'choices__heading',
+        button: 'choices__button',
+        activeState: 'is-active',
+        focusState: 'is-focused',
+        openState: 'is-open',
+        disabledState: 'is-disabled',
+        highlightedState: 'is-highlighted',
+        selectedState: 'is-selected',
+        flippedState: 'is-flipped',
+        loadingState: 'is-loading',
+        noResults: 'has-no-results',
+        noChoices: 'has-no-choices'
+      }
+    });
+
+
+  });
+</script>
 </body>
 </html>

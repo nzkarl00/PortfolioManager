@@ -1152,8 +1152,54 @@
 }
 
 .evidence_text {
-
     font-family: nexaLight !important;
     font-size: 115% !important;
 
 }
+
+.evidence_form_element {
+    font-family: nexaBold !important;
+    width: 15% !important;
+    height: 2.5em !important;
+}
+
+.evidence_form_element_select_container {
+    font-family: nexaBold !important;
+    height: 2.5em !important;
+    padding: 0 !important;
+}
+
+.evidence_form_element_wide {
+    font-family: nexaBold !important;
+    width: 22% !important;
+    height: 2.5em !important;
+}
+
+.evidence_form_element_select {
+    font-family: nexaBold !important;
+    height: 1.5em !important;
+    min-height: 1.5em !important;
+    white-space: nowrap;
+    margin: 0 !important;
+    vertical-align: top !important;
+    padding-top: -30px !important;
+    margin-top: -2px !important;
+}
+
+.evidence_form_element_text {
+    font-family: nexaBold !important;
+    height: 2em !important;
+    min-height: 2em !important;
+    white-space: nowrap;
+    vertical-align: top !important;
+}
+
+.evidence_form_element_select_item {
+    height: 1.5em !important;
+    min-height: 1.5em !important;
+}
+
+.no_padding {
+    padding: 0 !important;
+  }
+

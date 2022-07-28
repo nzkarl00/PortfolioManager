@@ -24,12 +24,33 @@
 <div th:fragment="evidenceForm">
     <form>
         <grid>
-            <div style="display: flex">
-                <b>Title*:</b> <input type="text">
-                <b>Date*:</b> <input type="date">
+            <div class="align-content-center horizontal-group">
+                <div class="horizontal-group-element evidence_form_element">
+                    <b>Title*:</b><br> <input type="text" class="project_edit_data">
+                </div>
+                <div class="horizontal-group-element evidence_form_element">
+                    <b>Date*:</b> <br><input type="date" class="project_edit_data">
+                </div>
+                <div class="horizontal-group-element evidence_form_element_wide align-content-center">
+                    <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
+                    <b>Category*:</b><br>
+                    <select id="evidence_category" class="project_edit_data horizontal_field" multiple>
+                        <option value="Quantitative skills">&nbsp;&nbsp;Quantitative skills</option>
+                        <option value="Qualitative skills">&nbsp;&nbsp;Qualitative skills</option>
+                        <option value="Service">&nbsp;&nbsp;Service</option>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <div>
+                <b>Description*:</b><br> <input type="text" class="project_edit_data" style="width: 60% !important;">
             </div>
         </grid>
     </form>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.js"></script>
+
 </div>
 </body>
 </html>
