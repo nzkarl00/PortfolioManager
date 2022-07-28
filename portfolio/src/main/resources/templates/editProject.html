@@ -61,7 +61,9 @@
 
             <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
 
-                <a  class="btn btn-primary cancel button_a " th:href="@{details(id=${project.getId})}">CANCEL</a>
+                <button class="cancel" type="button">
+                    <a class="button_a" th:href="@{details(id=${project.getId})}">CANCEL</a>
+                </button>
                 <button class="save" id="projectSave" type="submit">SAVE</button>
             </div>
 

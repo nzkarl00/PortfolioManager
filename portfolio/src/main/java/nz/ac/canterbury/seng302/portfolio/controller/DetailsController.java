@@ -438,19 +438,28 @@ public class DetailsController {
                                                           @RequestParam(value="project") Integer projectId) throws Exception {
         String formattedDate = stringDate.substring(0, 10) + " 00:00:00";
         String formattedEndDate = stringDate.substring(0, 10) + " 23:59:59";
-        SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = formatter.parse(formattedDate);
-        Date end = formatter.parse(formattedEndDate);
+        Date ending = formatter.parse(formattedEndDate);
 
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, 0);
-        date = cal.getTime();
-        cal.setTime(end);
-        cal.add(Calendar.DATE, 1);
-        end = cal.getTime();
+        LocalDateTime start = date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime().minusDays(-1);
 
-        List<Deadline> sendingDeadlines = deadlineRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
+        LocalDateTime end = ending.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime().minusDays(-1);
+
+        // get all the deadlines corresponding to the project
+        List<Deadline> deadlines = deadlineRepo.findAllByParentProjectOrderByStartDateAsc(projectService.getProjectById(projectId));
+        List<Deadline> sendingDeadlines = new ArrayList<>();
+        for (Deadline deadline : deadlines) {
+            // loop through the deadlines and check is they are in the expected range, if so send them
+            if (deadline.getEndDate().isAfter(start) && deadline.getEndDate().isBefore(end)) {
+                sendingDeadlines.add(deadline);
+            }
+        }
+
         return ResponseEntity.ok(sendingDeadlines);
     }
 
