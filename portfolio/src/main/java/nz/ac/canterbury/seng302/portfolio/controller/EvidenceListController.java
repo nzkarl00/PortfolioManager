@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +31,8 @@ public class EvidenceListController {
 
   @Autowired
   private ProjectRepository repository;
+  @Autowired
+  private EvidenceRepository evidencerepository;
   @Autowired
   private ProjectService projectService;
   @Autowired
@@ -47,15 +52,8 @@ public class EvidenceListController {
   @GetMapping("/evidence")
   public String evidenceListController( @AuthenticationPrincipal AuthState principal, Model model) throws Exception {
 
-    List<Project> projectList = projectService.getAllProjects();
-    if (projectList.isEmpty()) {
-      String thisYear = new SimpleDateFormat("yyyy").format(new Date());
-      Project project = new Project("Project "+thisYear, "", LocalDate.now(),
-              LocalDate.now().plusMonths(8));
-      repository.save(project);
-    }
-    projectList = projectService.getAllProjects();
-    model.addAttribute("projects", projectList);
+    List<Evidence> evidenceList = evidencerepository.findAll();
+    model.addAttribute("evidenceList", evidenceList);
 
     Integer id = AuthStateInformer.getId(principal);
 

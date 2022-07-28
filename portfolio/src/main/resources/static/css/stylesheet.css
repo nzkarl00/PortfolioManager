@@ -289,7 +289,7 @@
   border-radius: 10px 20px 20px 20px !important;
 
 }
-}
+
 
 .project_edit_data {
 
@@ -1096,15 +1096,18 @@
 
 .evidence_top {
 
-    background: #19DAFF !important;
+    background: #D9F9FF !important;
     border-radius: 20px 20px 0px 0px;
+    padding: 10px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
 
 
 }
 
 .evidence_bot {
 
-    background: #19DAFF !important;
+    background: #D9F9FF !important;
     border-radius: 0px 0px 20px 20px;
 
 
@@ -1117,8 +1120,40 @@
     font-family: nexa !important;
     color: #000000 !important;
     font-size: 110% !important;
-    background-color: #F7FEFF !important;
+    background-color: #D9F9FF !important;
     overflow-wrap: break-word;
     border-radius: 0px 0px 0px 0px !important;
     margin-bottom:  0px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
+.fa-arrow-down {
+    color: #19DAFF !important;
+}
+
+.alignRight {
+
+    align: right !important;
+}
+
+
+.evidence_head {
+    font-family: nexaBold !important;
+    color: #19DAFF !important;
+    font-size: 175% !important;
+
+}
+.evidence_date {
+    font-family: nexaLight !important;
+    color: #19DAFF !important;
+    font-size: 175% !important;
+
+}
+
+.evidence_text {
+
+    font-family: nexaLight !important;
+    font-size: 115% !important;
+
 }
