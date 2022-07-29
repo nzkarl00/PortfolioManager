@@ -113,13 +113,13 @@ public class SeleniumWithTestNGLiveTest_GroupDetails {
         WebElement groupsButton = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[1]/nav/div/div/ul/li[4]/a"));
         groupsButton.click();
 
-        WebElement teacherGroupAdminFirstName = seleniumExample.config.getDriver().findElement(By.xpath("//*[@id=\"groupUserTableTG\"]/tbody/tr/td[1]/span"));
+        WebElement teacherGroupAdminFirstName = seleniumExample.config.getDriver().findElement(By.xpath("//*[@id=\"groupUserTableTG\"]/tbody/tr/td[2]/span"));
         Assertions.assertEquals("admin", teacherGroupAdminFirstName.getText());
-        WebElement teacherGroupAdminLastName = seleniumExample.config.getDriver().findElement(By.xpath("//*[@id=\"groupUserTableTG\"]/tbody/tr/td[2]/span"));
+        WebElement teacherGroupAdminLastName = seleniumExample.config.getDriver().findElement(By.xpath("//*[@id=\"groupUserTableTG\"]/tbody/tr/td[3]/span"));
         Assertions.assertEquals("admin", teacherGroupAdminLastName.getText());
-        WebElement teacherGroupAdminUsername = seleniumExample.config.getDriver().findElement(By.xpath("//*[@id=\"groupUserTableTG\"]/tbody/tr/td[3]/span"));
+        WebElement teacherGroupAdminUsername = seleniumExample.config.getDriver().findElement(By.xpath("//*[@id=\"groupUserTableTG\"]/tbody/tr/td[4]/span"));
         Assertions.assertEquals("admin", teacherGroupAdminUsername.getText());
-        WebElement teacherGroupAdminAlias = seleniumExample.config.getDriver().findElement(By.xpath("//*[@id=\"groupUserTableTG\"]/tbody/tr/td[4]/span"));
+        WebElement teacherGroupAdminAlias = seleniumExample.config.getDriver().findElement(By.xpath("//*[@id=\"groupUserTableTG\"]/tbody/tr/td[5]/span"));
         Assertions.assertEquals("", teacherGroupAdminAlias.getText());
     }
 
@@ -127,6 +127,7 @@ public class SeleniumWithTestNGLiveTest_GroupDetails {
      * Access the teacher's group to check if the specific details are present
      */
     public void whenOnGroupsPage_AccessTeacherGroup_ForDetails() {
+        seleniumExample.config.getDriver().get(seleniumExample.url + projectGroups);
         seleniumExample.config.getDriver().get(seleniumExample.url + projectGroups);
         WebElement teacherGroupTitle = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[2]/div[2]/p"));
         Assertions.assertEquals("Teachers Group (TG)", teacherGroupTitle.getText());
