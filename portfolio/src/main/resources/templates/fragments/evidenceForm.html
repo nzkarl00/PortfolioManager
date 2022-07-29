@@ -23,39 +23,44 @@
 <body>
 <div th:fragment="evidenceForm">
 
+
+        <div class="portion_body" >
         <form>
-            <div class="row-1 evidence_top" style="display:flex;">
-                <div>
-                    <div class="align-content-center horizontal-group">
+                <div class="row-1" style="display:flex;">
                         <div class="evidence_form_element col-4">
-                            <b>Title*:</b><br> <input type="text" class="project_edit_data">
+                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" class="project_edit_data">
                         </div>
                         <div class="evidence_form_element col-3">
-                            <b>Date*:</b> <br><input type="date" class="project_edit_data">
+                            <b class="evidence_head setWide">Date*:</b> <br><input type="date" class="project_edit_data">
                         </div>
-                        <div class="evidence_form_element_wide align-content-center col-5">
+                        <div class="evidence_form_element align-content-center col-5">
                             <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
-                            <b>Category*:</b><br>
-                            <select id="evidence_category" class="project_edit_data evidence_form_element_wide" multiple>
-                                <option value="Quantitative skills">&nbsp;&nbsp;Quantitative skills</option>
+                            <b class="evidence_head setWide">Category:</b><br>
+                            <select id="evidence_category" class="project_edit_data" multiple>
+                                <option class="optionSelect" value="Quantitative skills">&nbsp;&nbsp;Quantitative skills</option>
                                 <option value="Qualitative skills">&nbsp;&nbsp;Qualitative skills</option>
                                 <option value="Service">&nbsp;&nbsp;Service</option>
                             </select>
                         </div>
-                    </div>
+                </div>
                     <br>
+                    <br>
+                    <br>
+
+                <div class="row-1">
                     <div>
-                        <b>Description*:</b><br> <input type="text" class="project_edit_data">
+                        <b class="evidence_head setWide">Description*:</b><br> <textarea type="text" class=" description-input project_edit_data horizontal_field bio setWide"></textarea>
                     </div>
-                    <div>
-                        <b>Skills:</b><br> <input type="text" class="project_edit_data">
+                    <div class="col-12">
+                        <b class="evidence_head setWide">Skills:</b><br> <input type="text" class="evidence_form_element_wide project_edit_data">
                     </div>
-                    <div>
-                        <b>Links:</b><br> <input type="text" class="project_edit_data">
+                    <div class="col-12">
+                        <b class="evidence_head setWide">Links:</b><br> <input type="text" class="evidence_form_element_wide project_edit_data">
                     </div>
                 </div>
-            </div>
         </form>
+
+        </div>
 
 
 

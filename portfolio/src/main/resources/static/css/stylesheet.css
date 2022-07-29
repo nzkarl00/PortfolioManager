@@ -1175,6 +1175,11 @@
     height: 2.5em !important;
 }
 
+.setWide {
+
+    width: 100% !important;
+}
+
 .evidence_form_element_select {
     font-family: nexaBold !important;
     height: 1.5em !important;
@@ -1203,3 +1208,14 @@
     padding: 0 !important;
   }
 
+.optionSelect {
+    background-color: #19DAFF !important;
+    color: #FFFFFF !important;
+
+}
+
+select.form-control {
+    -webkit-appearance: none;
+    -webkit-border-radius: 0px;
+    -moz-appearance: none;
+}
