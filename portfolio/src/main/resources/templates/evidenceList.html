@@ -27,7 +27,14 @@
     </div>
 
     <!-- Portfolio body -->
+    <div class="row">
 
+      <div class="col-1"></div>
+      <div class="col-lg-10 col-md-12 col-sm-12" >
+      <div th:replace="fragments/evidenceForm.html :: evidenceForm"></div>
+      </div>
+    </div>
+    <br>
     <div class="row" th:each="evidence: ${evidenceList}">
 
       <div class="col-1">
@@ -96,13 +103,6 @@
 
   </div>
 </div>
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#evidence_category').multiselect({
-      buttonWidth: '20em'
-  });
-</script>
-<div th:replace="fragments/evidenceForm.html :: evidenceForm"></div>
 <!-- JS -->
 <script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
 <script type="text/javascript">

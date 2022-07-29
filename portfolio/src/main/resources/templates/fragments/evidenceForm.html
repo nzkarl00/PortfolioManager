@@ -22,31 +22,42 @@
 
 <body>
 <div th:fragment="evidenceForm">
-    <form>
-        <grid>
-            <div class="align-content-center horizontal-group">
-                <div class="horizontal-group-element evidence_form_element">
-                    <b>Title*:</b><br> <input type="text" class="project_edit_data">
-                </div>
-                <div class="horizontal-group-element evidence_form_element">
-                    <b>Date*:</b> <br><input type="date" class="project_edit_data">
-                </div>
-                <div class="horizontal-group-element evidence_form_element_wide align-content-center">
-                    <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
-                    <b>Category*:</b><br>
-                    <select id="evidence_category" class="project_edit_data horizontal_field" multiple>
-                        <option value="Quantitative skills">&nbsp;&nbsp;Quantitative skills</option>
-                        <option value="Qualitative skills">&nbsp;&nbsp;Qualitative skills</option>
-                        <option value="Service">&nbsp;&nbsp;Service</option>
-                    </select>
+
+        <form>
+            <div class="row-1 evidence_top" style="display:flex;">
+                <div>
+                    <div class="align-content-center horizontal-group">
+                        <div class="evidence_form_element col-4">
+                            <b>Title*:</b><br> <input type="text" class="project_edit_data">
+                        </div>
+                        <div class="evidence_form_element col-3">
+                            <b>Date*:</b> <br><input type="date" class="project_edit_data">
+                        </div>
+                        <div class="evidence_form_element_wide align-content-center col-5">
+                            <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
+                            <b>Category*:</b><br>
+                            <select id="evidence_category" class="project_edit_data evidence_form_element_wide" multiple>
+                                <option value="Quantitative skills">&nbsp;&nbsp;Quantitative skills</option>
+                                <option value="Qualitative skills">&nbsp;&nbsp;Qualitative skills</option>
+                                <option value="Service">&nbsp;&nbsp;Service</option>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <div>
+                        <b>Description*:</b><br> <input type="text" class="project_edit_data">
+                    </div>
+                    <div>
+                        <b>Skills:</b><br> <input type="text" class="project_edit_data">
+                    </div>
+                    <div>
+                        <b>Links:</b><br> <input type="text" class="project_edit_data">
+                    </div>
                 </div>
             </div>
-            <br>
-            <div>
-                <b>Description*:</b><br> <input type="text" class="project_edit_data" style="width: 60% !important;">
-            </div>
-        </grid>
-    </form>
+        </form>
+
+
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.css">
     <script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.js"></script>
