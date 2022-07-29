@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head.html :: head('Landing Page')">
+<head th:replace="fragments/headWithMultiselect.html :: head('Evidence')">
+
 <body>
 
 
@@ -105,22 +106,5 @@
 </div>
 <!-- JS -->
 <script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
-<script type="text/javascript">
-  $(document).ready(function(){
-
-    var multipleCancelButton = new Choices('#evidence_category', {
-      removeItemButton: true,
-      classNames: {
-        containerOuter: 'choices project_edit_data evidence_form_element_select_container',
-        containerInner: 'choices__inner evidence_form_element_select',
-        listDropdown: 'choices__list--dropdown no_padding',
-        item: 'choices__item evidence_form_element_select_item no_padding',
-        itemSelectable: 'choices__item--selectable evidence_form_element_select_item',
-      }
-    });
-
-
-  });
-</script>
 </body>
 </html>
