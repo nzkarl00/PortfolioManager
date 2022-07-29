@@ -1,8 +1,13 @@
-package nz.ac.canterbury.seng302.portfolio.model;
+package nz.ac.canterbury.seng302.portfolio.model.evidence;
+
+import nz.ac.canterbury.seng302.portfolio.model.Project;
+import org.checkerframework.checker.units.qual.Length;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * An abstract class designed to provide a base for the three specific types of time bound items related to a project.
@@ -38,12 +43,18 @@ public class Evidence {
     @JoinColumn(name="associated_project_id", nullable=false)
     protected Project associatedProject;
 
+    @OneToMany
+    @JoinColumn(name="evidence_tag_id")
+    protected List<EvidenceTag> evidenceTags;
+
     @Column(name="title", length = MAX_TITLE_LENGTH, nullable = false)
     protected String title = "";
     @Column(name="description", length = MAX_DESCRIPTION_LENGTH, nullable = false)
     protected String description = "";
     @Column(name="date", nullable = false)
     protected LocalDate date;
+
+
 
     protected Evidence() {}
 
@@ -55,7 +66,7 @@ public class Evidence {
      * @param associatedProject The project to which the piece of evidence is contained
      * @param title The title for the piece of evidence
      * @param description The description of the ProjectItem
-     * @param startDate A single date relevant to the project item
+     * @param date A single date relevant to the project item
      */
     public Evidence(
         int parentUserId,
@@ -73,7 +84,7 @@ public class Evidence {
 
     /**
      * Validate properties to store in a project item. Must be called before constructing an invalid project item.
-     * @param The parent project that the piece of evidence is related to.
+     * @param parentProject The parent project that the piece of evidence is related to.
      * @param title The title of the piece of evidence
      * @param description The description of the piece of evidence
      * @param date The local date when that the piece of evidence is referenced to
@@ -97,7 +108,7 @@ public class Evidence {
     /**
      * Validates that the new associated is valid to attach the evidence to.
      * This means checking the evidence still lies within the date range.
-     * @param The new project to potentially associate with the piece of Evidence
+     * @param newProject The new project to potentially associate with the piece of Evidence
      */
     void newAssociatedProjectIsValid(Project newProject) throws IllegalArgumentException {
         if (date.isAfter(newProject.getLocalEndDate())) {
@@ -110,7 +121,7 @@ public class Evidence {
     /**
      * Validates that the new associated is valid to attach the evidence to.
      * This means checking the evidence still lies within the date range.
-     * @param The new project to potentially associate with the piece of Evidence
+     * @param newDate The new project to potentially associate with the piece of Evidence
      */
     void newDateIsValid(LocalDate newDate) throws IllegalArgumentException {
         if (newDate.isAfter(associatedProject.getLocalEndDate())) {
@@ -131,7 +142,7 @@ public class Evidence {
 
     /**
      * Set the title of the piece of evidence
-     * @param name
+     * @param title name
      */
     public void setTitle(String title) {
         this.title = title;
@@ -202,4 +213,8 @@ public class Evidence {
     public LocalDate getDate() {
         return date;
     };
+
+    public List<EvidenceTag> getEvidenceTags() {
+        return evidenceTags;
+    }
 }

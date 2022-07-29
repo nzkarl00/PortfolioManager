@@ -1,7 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;

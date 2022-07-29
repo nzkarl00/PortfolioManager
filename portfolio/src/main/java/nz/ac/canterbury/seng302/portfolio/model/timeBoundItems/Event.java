@@ -1,6 +1,7 @@
-package nz.ac.canterbury.seng302.portfolio.model;
+package nz.ac.canterbury.seng302.portfolio.model.timeBoundItems;
 
-import javax.persistence.Column;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.time.LocalDateTime;

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Deadline;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 
 import javax.persistence.*;
@@ -7,7 +8,6 @@ import java.util.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
-import java.time.LocalDateTime;
 
 /**
  * The entity representation for the Project and project table
