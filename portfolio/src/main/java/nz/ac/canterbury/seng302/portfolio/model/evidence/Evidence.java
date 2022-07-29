@@ -90,7 +90,7 @@ public class Evidence {
      * @param date The local date when that the piece of evidence is referenced to
      * @throws IllegalArgumentException If one argument is invalid, throws an exception
      */
-    static void validateProperties(Project parentProject, String title, String description, LocalDate date) throws IllegalArgumentException {
+    public static void validateProperties(Project parentProject, String title, String description, LocalDate date) throws IllegalArgumentException {
         if (title.length() > MAX_TITLE_LENGTH) {
             throw new IllegalArgumentException(String.format("Title length must not exceed %d characters", MAX_TITLE_LENGTH));
         } else if (description.length() > MAX_DESCRIPTION_LENGTH) {
