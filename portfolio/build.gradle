@@ -78,7 +78,6 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
-    finalizedBy cucumber
 }
 
 def integrationTestTask = tasks.register('integrationTest', Test) {
