@@ -1,6 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.*;
+import nz.ac.canterbury.seng302.portfolio.model.websocket.EditStatusUpdate;
+import nz.ac.canterbury.seng302.portfolio.model.websocket.EventUpdate;
+import nz.ac.canterbury.seng302.portfolio.model.websocket.FetchUpdateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;

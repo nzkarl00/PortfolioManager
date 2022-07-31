@@ -1,27 +1,30 @@
-package nz.ac.canterbury.seng302.portfolio.model;
+package nz.ac.canterbury.seng302.portfolio.model.websocket;
 
-public class EditStatusUpdate {
+/**
+ * the message type to indicate what kind of updates for the client to request from the server
+ */
+public class EventUpdate {
     /**
      * the type of updates to do, sprint, event type etc...
      */
     private FetchUpdateType updateType;
 
-    private String message = "";
+    private int sprintId = -1;
 
-    public EditStatusUpdate() {
+    public EventUpdate() {
     }
 
     /**
      * construct with the updateType
      * @param updateType the type of update for the client to request
      */
-    public EditStatusUpdate(FetchUpdateType updateType) {
+    public EventUpdate(FetchUpdateType updateType) {
         this.updateType = updateType;
     }
 
-    public EditStatusUpdate(FetchUpdateType updateType, String message) {
+    public EventUpdate(FetchUpdateType updateType, int sprintId) {
         this.updateType = updateType;
-        this.message = message;
+        this.sprintId = sprintId;
     }
 
     public FetchUpdateType getUpdateType() {
@@ -32,7 +35,7 @@ public class EditStatusUpdate {
         this.updateType = updateType;
     }
 
-    public String getMessage() {
-        return message;
+    public int getSprintId() {
+        return sprintId;
     }
 }

@@ -1,62 +1,60 @@
-package nz.ac.canterbury.seng302.portfolio.model;
+package nz.ac.canterbury.seng302.portfolio.model.timeBoundItems;
 
-import javax.persistence.*;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 /**
- * Milestone.
+ * Deadline.
  * Represents a point in time (Date & Time) at which something is due.
- * The date concept of ProjectItem class, are treated as the same thing, only one date exists.
+ * The startDate and endDate concept of ProjectItem class, are treated as the same thing, only one date exists.
  */
 @Entity
-@Table(name="milestone")
-public class Milestone extends ProjectTimeBoundItem {
-    protected Milestone() {}
+@Table(name="deadline")
+public class Deadline extends ProjectTimeBoundItem {
+    protected Deadline() {}
 
     /**
-     * Construct a new Milestone.
+     * Construct a new deadline.
      * Parameters must be valid for the given project context before construction.
      * Preconditions:
      * - Validate parameters with the validateProperties method.
      * @param parentProject
      * @param name
      * @param description
-     * @param date
+     * @param startDate
      */
-    public Milestone(Project parentProject, String name, String description, LocalDateTime date) {
-        super(parentProject, name, description, date);
+    public Deadline(Project parentProject, String name, String description, LocalDateTime startDate) {
+        super(parentProject, name, description, startDate);
     }
 
-    /**
-     * Calls the parent class to check to validate properties
-     * @param name of the milestone
-     * @param description description
-     */
     public static void validateProperties(String name, String description) throws IllegalArgumentException {
         ProjectTimeBoundItem.validateProperties(name, description);
     }
 
     /**
-     * Set the start date of the Milestone.
-     * This actually updates the only internal date as there is no concept of a start and end date of a milestone.
-     * @param startDate The date time of the milestone
+     * Set the start date of the deadline.
+     * This actually updates the only internal date as there is no concept of a start and end date of a deadline.
+     * @param startDate The date time of the deadline
      */
     public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
     /**
-     * Set the end date of the Milestone.
-     * This actually updates the only internal date as there is no logical concept of two dates in a milestone.
-     * @param startDate the date time of the milestone.
+     * Set the end date of the deadline.
+     * This actually updates the only internal date as there is no logical concept of two dates in a deadline.
+     * @param startDate the date time of the deadline.
      */
     public void setEndDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
     /**
-     * Get the start of the milestone.
-     * Same date time as the end of the milestone.
+     * Get the start of the deadline.
+     * Same date time as the end of the deadline.
      * @return
      */
     public LocalDateTime getStartDate() {
@@ -64,8 +62,8 @@ public class Milestone extends ProjectTimeBoundItem {
     }
 
     /**
-     * Get the end of the milestone.
-     * Same date time as the end of the milestone.
+     * Get the end of the deadline.
+     * Same date time as the end of the deadline.
      * @return
      */
     public LocalDateTime getEndDate() {
@@ -77,11 +75,11 @@ public class Milestone extends ProjectTimeBoundItem {
      * Gets the type of date
      */
     public String getType() {
-        return "Milestone";
+        return "Deadline";
     }
 
     /**
-     * Get the name of the milestone.
+     * Get the name of the deadline
      * @return
      */
     public String getName() {
@@ -89,17 +87,14 @@ public class Milestone extends ProjectTimeBoundItem {
     }
 
     /**
-     * Get the id of the milestone.
+     * Get the id of the deadline
      * @return
      */
-    public Integer getId() {
-        return this.id;
-    }
-
+    public Integer getId() {return this.id; }
 
     /**
      * Get the description of the deadline
-     * @return
+     * @return desc
      */
     public String getDescription() {return this.description; }
 
