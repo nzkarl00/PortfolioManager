@@ -80,7 +80,11 @@
                             skillTag.id = "skillTag"
                             skillTag.className = "table_text user_role_table"
                             skillTag.innerText = newSkill
+                            skillsContainer.insertBefore(document.createElement("br"), skillTag)
                             skillsContainer.appendChild(skillTag);
+                            if (skillsContainer.getBoundingClientRect().right < skillTag.getBoundingClientRect().right) {
+
+                            }
                         }
 
                     </script>
