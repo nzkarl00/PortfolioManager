@@ -51,46 +51,125 @@
                     <div>
                         <b class="evidence_head setWide">Description*:</b><br> <textarea type="text" class=" description-input project_edit_data horizontal_field bio setWide"></textarea>
                     </div>
+                    <!-- When enter is pressed, default form action is to submit the first button. As our form contains buttons, this empty button exists to consume the default action. -->
+                    <button onclick="return false;" style="display: none"></button>
                     <b class="evidence_head setWide" id="skills_input">Skills:</b><br>
                     <div class="col-12" id="skills_div" style="display: flex; justify-content: center; align-items: center;">
                             <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
                         <input type="text" id="add_skill_input" class="evidence_form_element_wide project_edit_data">
-                            <button id="add_skill_button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill(); return false;"></button>
+                            <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill(); return false;"></button>
                         </input>
                     </div>
                     <br>
-                    <div id="skills_container" style="display: flex; width: 100%">
-
+                    <div id="skills_container" style="width: 100%">
+                        <div id="skill_sub_1" style="display: flex; width: 100%"></div>
                     </div>
                     <script>
-                        document.querySelector("#skills_input").addEventListener("keyup", event => {
+                        // Event listener to add skills when enter is pressed and the skill input is selected
+                        document.querySelector("#add_skill_input").addEventListener("keyup", event => {
                             if (event.key !== "Enter") return;
                             addSkill()
                         })
 
                         let skills = new Set()
+                        let skillRow = document.getElementById("skill_sub_1");
 
+                        // Adds the skill to the set and resets the input.
                         function addSkill() {
                             let newSkill = document.getElementById("add_skill_input").value
+                            if (skills.has(newSkill)) return;
                             skills.add(newSkill)
                             document.getElementById("add_skill_input").value = ""
-                            console.log(skills)
-                            let skillsContainer = document.getElementById("skills_container");
-                            let skillTag = document.createElement("button");
-                            skillTag.id = "skillTag"
-                            skillTag.className = "table_text user_role_table"
-                            skillTag.innerText = newSkill
-                            skillsContainer.insertBefore(document.createElement("br"), skillTag)
-                            skillsContainer.appendChild(skillTag);
-                            if (skillsContainer.getBoundingClientRect().right < skillTag.getBoundingClientRect().right) {
+                            appendSkill(newSkill)
+                        }
 
+                        // Inserts a new skill tag into the form
+                        function appendSkill(skillText) {
+                            let skillTag = document.createElement("button");
+                            skillTag.id = "skill_" + skillText
+                            skillTag.className = "table_text user_role_table"
+                            skillTag.innerText = skillText
+                            skillTag.onclick = removeSkill;
+                            skillRow.appendChild(skillTag);
+                            if (skillRow.getBoundingClientRect().right < skillTag.getBoundingClientRect().right) {
+                                skillRow.removeChild(skillTag)
+                                insertSkillRow()
+                                skillRow.appendChild(skillTag);
                             }
                         }
 
+                        // Creates a new row for skill tags to be placed on, for some reason inserting <br> couldn't do this
+                        function insertSkillRow() {
+                            let newSkillRow = document.createElement("div");
+                            newSkillRow.style.display = "flex"
+                            document.getElementById("skills_container").appendChild(newSkillRow)
+                            skillRow = newSkillRow
+                        }
+
+                        // Deletes a skill then rebuilds the skill list
+                        function removeSkill(event) {
+                            skills.delete(event.target.innerText)
+                            clearSkills()
+                            insertSkillRow()
+                            for (const skill of skills) {
+                                appendSkill(skill)
+                            }
+                            return false;
+                        }
+
+                        // Removes all skills from display
+                        function clearSkills() {
+                            let skillContainer = document.getElementById("skills_container")
+                            while (skillContainer.lastChild) {
+                                skillContainer.removeChild(skillContainer.lastChild)
+                            }
+                        }
                     </script>
                     <div class="col-12">
-                        <b class="evidence_head setWide">Links:</b><br> <input type="text" class="evidence_form_element_wide project_edit_data">
+                        <b class="evidence_head setWide" id="links_input">Links:</b><br>
+                        <div class="col-12" id="links_div" style="display: flex; justify-content: center; align-items: center;">
+                            <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
+                            <input type="text" id="add_link_input" class="evidence_form_element_wide project_edit_data">
+                            <button id="add_link_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addLink(); return false;"></button>
+                            </input>
+                        </div>
+                        <br>
+                        <div id="links_container" style="width: 100%; display: block">
+
+                        </div>
                     </div>
+                    <script>
+                        // Event listener to add links when enter is pressed and the link input is selected
+                        document.querySelector("#add_link_input").addEventListener("keyup", event => {
+                            if (event.key !== "Enter") return;
+                            addLink()
+                        })
+
+                        let links = new Set()
+                        let linksContainer = document.getElementById("links_container")
+
+                        // Adds the link to the set and resets the input.
+                        function addLink() {
+                            let newLink = document.getElementById("add_link_input").value
+                            if (links.has(newLink)) return;
+                            links.add(newLink)
+                            document.getElementById("add_link_input").value = ""
+                            appendLink(newLink)
+                        }
+
+                        // Inserts a new link into the form
+                        function appendLink(linkText) {
+                            let linkBox = document.createElement("div");
+                            linksContainer.appendChild(linkBox)
+                            let newLink = document.createElement("button");
+                            newLink.id = "link_" + linkText
+                            newLink.className = "sprint-description display_data text_button"
+                            newLink.innerText = links.size + ".  " + linkText
+                            // newLink.onclick = removeSkill;
+                            linkBox.appendChild(newLink)
+                        }
+
+                    </script>
                 </div>
         </form>
         </div>

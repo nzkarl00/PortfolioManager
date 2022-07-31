@@ -1219,3 +1219,11 @@ select.form-control {
     -webkit-border-radius: 0px;
     -moz-appearance: none;
 }
+
+.text_button {
+    background: none;
+    border: none;
+    margin: 0;
+    padding-left: 2em;
+    cursor: pointer;
+}
