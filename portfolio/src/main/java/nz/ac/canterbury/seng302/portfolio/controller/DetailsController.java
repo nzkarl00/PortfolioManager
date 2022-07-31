@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -317,7 +318,7 @@ public class DetailsController {
      */
     @GetMapping("/deadlines")
     public ResponseEntity<List<Deadline>> getProjectDeadlines(@AuthenticationPrincipal AuthState principal,
-                                                          @RequestParam(value="id") Integer projectId,
+                                                              @RequestParam(value="id") Integer projectId,
                                                               @RequestParam(value="sprintId") Integer sprintId) throws Exception {
         List<Deadline> deadlines = deadlineRepo.findAllByParentProjectOrderByStartDateAsc(projectService.getProjectById(projectId));
         Optional<Sprint> sprint = repository.findById(sprintId);
@@ -373,9 +374,9 @@ public class DetailsController {
      */
     @GetMapping("/milestones-between")
     public ResponseEntity<List<Milestone>> getInBetweenMilestones(@AuthenticationPrincipal AuthState principal,
-                                                          @RequestParam(value="dateStart") String stringStartDate,
-                                                          @RequestParam(value="dateEnd") String stringEndDate,
-                                                          @RequestParam(value="project") Integer projectId) throws Exception {
+                                                                  @RequestParam(value="dateStart") String stringStartDate,
+                                                                  @RequestParam(value="dateEnd") String stringEndDate,
+                                                                  @RequestParam(value="project") Integer projectId) throws Exception {
         String formattedDate = stringStartDate.substring(0, 10) + " 00:00:00";
         String formattedEndDate = stringEndDate.substring(0, 10) + " 23:59:59";
         SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
