@@ -45,7 +45,7 @@ public class Evidence {
     @Column(name="date", nullable = false)
     protected LocalDate date;
 
-    protected Evidence() {}
+    public Evidence() {}
 
     /**
      * Construct a piece of evidence.
