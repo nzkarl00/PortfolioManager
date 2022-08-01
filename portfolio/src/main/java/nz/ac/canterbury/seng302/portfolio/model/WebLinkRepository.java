@@ -1,6 +1,5 @@
-package nz.ac.canterbury.seng302.portfolio.model.evidence;
+package nz.ac.canterbury.seng302.portfolio.model;
 
-import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

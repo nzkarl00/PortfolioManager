@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.portfolio.model.userGroups;
+package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

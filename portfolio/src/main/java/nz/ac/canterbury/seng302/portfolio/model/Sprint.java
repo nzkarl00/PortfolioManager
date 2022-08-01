@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.portfolio.model.timeBoundItems;
+package nz.ac.canterbury.seng302.portfolio.model;
 
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 
@@ -101,7 +101,7 @@ public class Sprint {
      * @param date the date to convert
      * @return the given date, as a string in format 01/Jan/2000
      */
-    public static String dateToString(Date date) {
+    static String dateToString(Date date) {
         return new SimpleDateFormat("dd/MMM/yyyy").format(date);
     }
 
