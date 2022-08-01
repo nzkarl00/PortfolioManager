@@ -11,7 +11,7 @@ public class Validate {
      */
     public static void validateText(String text) {
         int charCount = 0;
-        //This pattern will match characters from any language
+        //This pattern will match characters from any language, note it also excludes whitespace
         //https://stackoverflow.com/a/64293069
         Pattern charPattern = Pattern.compile("[\\p{L}]");
         //Traverse the string and check each character individually
