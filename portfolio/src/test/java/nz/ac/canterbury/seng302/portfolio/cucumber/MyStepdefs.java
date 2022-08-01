@@ -98,10 +98,13 @@ public class MyStepdefs {
 
     @Then("There will be the data for the evidence I created")
     public void thereWillBeTheDataForTheEvidenceICreated() throws InterruptedException {
+        // get the title of the evidence and the button to open the dropdown
         WebElement title = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div[1]/div[1]/p"));
         WebElement button = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div[1]/div[3]/a"));
         button.click();
+        // wait for dropdown
         Thread.sleep(500);
+        // get the description, title, and date, then validate said data
         WebElement description = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div[2]/div/div/p"));
         WebElement date = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div[1]/div[2]/p"));
         Assertions.assertEquals("Title", title.getText());
