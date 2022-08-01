@@ -24,7 +24,6 @@ class ValidateFeature {
 
     @Then("I get an error")
     public void i_get_an_error() {
-        // Write code here that turns the phrase above into concrete actions
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             validateText(text);
         });
