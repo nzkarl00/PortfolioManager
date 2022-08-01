@@ -1,6 +1,5 @@
-package nz.ac.canterbury.seng302.portfolio.model.userGroups;
+package nz.ac.canterbury.seng302.portfolio.model;
 
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.Role;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 

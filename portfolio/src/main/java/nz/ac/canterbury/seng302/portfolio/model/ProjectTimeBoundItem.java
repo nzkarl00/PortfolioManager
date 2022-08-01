@@ -1,6 +1,4 @@
-package nz.ac.canterbury.seng302.portfolio.model.timeBoundItems;
-
-import nz.ac.canterbury.seng302.portfolio.model.Project;
+package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -75,7 +73,7 @@ public abstract class ProjectTimeBoundItem {
      * @param description The description of the ProjectItem
      * @throws IllegalArgumentException If one argument is invalid, throws an exception
      */
-    public static void validateProperties(String name, String description) throws IllegalArgumentException {
+    static void validateProperties(String name, String description) throws IllegalArgumentException {
         if (name.length() > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException(String.format("Name length must not exceed %d characters", MAX_NAME_LENGTH));
         } else if (description.length() > MAX_DESCRIPTION_LENGTH) {
