@@ -1,6 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Deadline;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Event;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Milestone;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.ProjectTimeBoundItem;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;

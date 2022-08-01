@@ -1,36 +1,26 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.rpc.context.AttributeContext;
-import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader;
-import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
-import nz.ac.canterbury.seng302.portfolio.model.UserPreference;
-import nz.ac.canterbury.seng302.portfolio.model.UserPreferenceRepository;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.UserPreference;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.UserPreferenceRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
-import nz.ac.canterbury.seng302.portfolio.model.User;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
 import java.util.List;
 
 /**
