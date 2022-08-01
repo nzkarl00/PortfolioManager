@@ -87,8 +87,9 @@
                         function appendSkill(skillText) {
                             let skillTag = document.createElement("button");
                             skillTag.id = "skill_" + skillText
-                            skillTag.className = "table_text user_role_table"
-                            skillTag.innerText = skillText
+                            skillTag.className = "table_text skill_tag"
+                            skillTag.innerText = skillText + " ✖"
+                            skillTag.value = skillText
                             skillTag.onclick = removeSkill;
                             skillRow.appendChild(skillTag);
                             if (skillRow.getBoundingClientRect().right < skillTag.getBoundingClientRect().right) {
@@ -108,7 +109,7 @@
 
                         // Deletes a skill then rebuilds the skill list
                         function removeSkill(event) {
-                            skills.delete(event.target.innerText)
+                            skills.delete(event.target.value)
                             clearSkills()
                             insertSkillRow()
                             for (const skill of skills) {
