@@ -28,7 +28,8 @@
         <form>
                 <div class="row-1" style="display:flex;">
                         <div class="evidence_form_element col-4">
-                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" class="project_edit_data">
+                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" class="project_edit_data" oninput="updateTitle()">
+                            <label class="project_inputAlertBlue" id="titleCharCount">Characters Remaining: 100</label>
                         </div>
                         <div class="evidence_form_element col-3">
                             <b class="evidence_head setWide">Date*:</b> <br><input type="date" class="project_edit_data">
@@ -49,7 +50,8 @@
 
                 <div class="row-1">
                     <div>
-                        <b class="evidence_head setWide">Description*:</b><br> <textarea type="text" class=" description-input project_edit_data horizontal_field bio setWide"></textarea>
+                        <b class="evidence_head setWide">Description*:</b><br> <textarea type="text" id="evidence_desc" oninput="updateDesc()" class=" description-input project_edit_data horizontal_field bio setWide"></textarea>
+                        <label class="project_inputAlertBlue" id="descCharCount">Characters Remaining: 2000</label>
                     </div>
                     <!-- When enter is pressed, default form action is to submit the first button. As our form contains buttons, this empty button exists to consume the default action. -->
                     <button onclick="return false;" style="display: none"></button>
@@ -135,8 +137,16 @@
                             </input>
                         </div>
                         <br>
-                        <div id="links_container" style="width: 100%; display: block">
+                        <div id="links_and_submit" style="display: flex">
+                            <div id="links_container" style="width: 85%; display: block">
 
+                            </div>
+                            <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
+                                <button class="cancel_evidence" type="button">
+                                    <a class="button_a" th:href="@{evidence}">CANCEL</a>
+                                </button>
+                                <button class="save_evidence" id="projectSave" type="submit">SAVE</button>
+                            </div>
                         </div>
                     </div>
                     <script>
@@ -148,6 +158,7 @@
 
                         let links = new Set()
                         let linksContainer = document.getElementById("links_container")
+                        let linkCounter = 0;
 
                         // Adds the link to the set and resets the input.
                         function addLink() {
@@ -162,14 +173,53 @@
                         function appendLink(linkText) {
                             let linkBox = document.createElement("div");
                             linksContainer.appendChild(linkBox)
-                            let newLink = document.createElement("button");
+                            let newLink = document.createElement("a");
                             newLink.id = "link_" + linkText
                             newLink.className = "sprint-description display_data text_button"
-                            newLink.innerText = links.size + ".  " + linkText
-                            // newLink.onclick = removeSkill;
+                            linkCounter++
+                            newLink.innerText = linkCounter + ".  " + linkText
+                            newLink.href = linkText
+                            let linkDelete = document.createElement("button");
+                            linkDelete.className = "fa fa-trash each-deadline"
+                            linkDelete.value = linkText
+                            linkDelete.onclick = removeLink;
                             linkBox.appendChild(newLink)
+                            linkBox.appendChild(linkDelete)
                         }
 
+                        // Deletes a link then rebuilds the link list
+                        function removeLink(event) {
+                            links.delete(event.target.value)
+                            clearLinks()
+                            linkCounter = 0
+                            for (const link of links) {
+                                appendLink(link)
+                            }
+                            return false;
+                        }
+
+                        // Removes all links from display
+                        function clearLinks() {
+                            let linkContainer = document.getElementById("links_container")
+                            while (linkContainer.lastChild) {
+                                linkContainer.removeChild(linkContainer.lastChild)
+                            }
+                        }
+                    </script>
+                    <script>
+                        function updateTitle() {
+                            const titleCounter = document.getElementById("titleCharCount")
+                            const titleInput = document.getElementById("evidence_title")
+                            console.log(titleInput)
+                            titleCounter.innerText = "Characters Remaining: "  + (100 - titleInput.value)
+                        }
+
+                        function updateDesc() {
+                            const descCounter = document.getElementById("descCharCount")
+                            const descInput = document.getElementById("evidence_desc")
+                            console.log(descInput)
+                            descCounter.innerText = "Characters Remaining: "  + (2000 - descInput.value)
+                        }
                     </script>
                 </div>
         </form>

@@ -1253,3 +1253,34 @@ select.form-control {
     margin-bottom: 0.3rem;
     margin-left: 0.3rem;
 }
+
+.cancel_evidence {
+
+    background-color: #FF202E !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+
+.save_evidence {
+
+    background-color: #26D20F !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-colour: #FFFFFF !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
