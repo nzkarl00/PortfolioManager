@@ -1284,3 +1284,9 @@ select.form-control {
     font-family: nexaLight !important;
 
 }
+
+.trim_text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
