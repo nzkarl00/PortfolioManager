@@ -1,7 +1,5 @@
-package nz.ac.canterbury.seng302.portfolio.model.timeBoundItems;
+package nz.ac.canterbury.seng302.portfolio.model;
 
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Milestone;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

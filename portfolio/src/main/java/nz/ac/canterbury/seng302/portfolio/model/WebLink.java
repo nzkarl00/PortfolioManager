@@ -1,8 +1,9 @@
-package nz.ac.canterbury.seng302.portfolio.model.evidence;
-
-import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The entity representation for web links.
