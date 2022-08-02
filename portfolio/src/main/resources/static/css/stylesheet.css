@@ -1290,3 +1290,14 @@ select.form-control {
     overflow: hidden;
     white-space: nowrap;
 }
+
+.each_link {
+    border: none;
+    padding: 1px 10px;
+    text-decoration: none !important;
+    background: #FF202E  !important;
+    margin-left: 10px;
+    margin-bottom: 2px;
+    border-radius: 10px;
+    color: white;
+}

@@ -175,23 +175,21 @@
                             let linkBox = document.createElement("div");
                             linksContainer.appendChild(linkBox)
                             linkBox.className = "trim_text"
-                            let linkWrapper = document.createElement("div");
-                            linkWrapper.className = "trim_text"
-                            linkWrapper.style.width = "90%"
-                            linkBox.appendChild(linkWrapper)
+                            linkBox.style.display = "flex"
                             let newLink = document.createElement("a");
                             newLink.id = "link_" + linkText
-                            newLink.className = "sprint-description display_data text_button"
+                            newLink.className = "sprint-description display_data text_button trim_text"
                             newLink.style.fontSize = "110%"
-                            newLink.width = "100% !important"
+                            newLink.width = "90% !important"
+                            newLink.style.display = "inline-block"
                             linkCounter++
                             newLink.innerText = linkCounter + ".  " + linkText
                             newLink.href = linkText
                             let linkDelete = document.createElement("button");
-                            linkDelete.className = "fa fa-trash each-deadline"
+                            linkDelete.className = "fa fa-trash each_link"
                             linkDelete.value = linkText
                             linkDelete.onclick = removeLink;
-                            linkWrapper.appendChild(newLink)
+                            linkBox.appendChild(newLink)
                             linkBox.appendChild(linkDelete)
                         }
 
