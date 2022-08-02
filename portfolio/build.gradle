@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.2'
+    id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'jacoco'
@@ -87,6 +87,7 @@ def integrationTestTask = tasks.register('integrationTest', Test) {
     description = 'Runs integration tests.'
     group = 'verification'
     useTestNG()
+    finalizedBy cucumber
 }
 
 configurations {
