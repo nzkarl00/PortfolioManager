@@ -101,8 +101,8 @@ task cucumber () {
   doLast {
     javaexec {
       main = "io.cucumber.core.cli.Main"
-      classpath = configurations.cucumberRuntime + sourceSets.test.output
-      args = ['--plugin', 'pretty', '--glue', 'gradle.cucumber', 'src/test/resources']
+      classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+      args = ['--plugin', 'pretty', '--glue', 'nz.ac.canterbury.seng302.portfolio.cucumber', 'src/test/resources']
     }
   }
 }
