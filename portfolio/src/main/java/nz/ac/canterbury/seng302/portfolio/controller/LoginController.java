@@ -5,6 +5,8 @@ import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +25,8 @@ public class LoginController {
 
     @Autowired
     private AuthenticateClientService authenticateClientService;
+
+    Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     /**
      * Attempts to authenticate with the Identity Provider via gRPC.
@@ -94,6 +98,7 @@ public class LoginController {
 
         if (authenticateResponse.getSuccess()) {
             setCookie(request, response, authenticateResponse);
+            logger.info("[COOKIE SET] Cookie has been set for the user " + username);
             return "redirect:account";
         }
 

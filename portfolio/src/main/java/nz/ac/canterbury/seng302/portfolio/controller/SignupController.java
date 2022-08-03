@@ -6,6 +6,8 @@ import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +30,7 @@ public class SignupController {
     @Autowired
     private LoginController loginController;
 
+    Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     String errorShow = "display:none;";
     String successShow = "display:none;";
@@ -104,10 +107,12 @@ public class SignupController {
         // If authenticating a login is successful, then the cookie will be set in the domain.
         if (authenticateResponse.getSuccess()) {
             loginController.setCookie(request, response, authenticateResponse);
+            logger.info("[COOKIE SET] Cookie has been set for the user " + username);
             return "redirect:account";
         }
 
         model.addAttribute("loginMessage", authenticateResponse.getMessage());
+        logger.info("[USER SIGNED UP] User " + username + " has signed up");
         return "redirect:signup";
     }
 }
