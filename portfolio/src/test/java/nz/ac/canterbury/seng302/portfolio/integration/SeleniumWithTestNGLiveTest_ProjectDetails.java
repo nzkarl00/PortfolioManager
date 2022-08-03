@@ -1,7 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.integration;
 import io.cucumber.java.en.Then;
-import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.EvidenceRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import org.junit.jupiter.api.Assertions;

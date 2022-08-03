@@ -42,7 +42,7 @@
                             <b class="evidence_head setWide">Skills:</b><br>
                             <select class="project_edit_data setWide">
                                 <option value="" selected disabled> Choose here</option>
-                                <div th:each="skill: ${skillList}"><div>
+                                <div th:each="skill: ${skillList}"><option th:value="${skill.getId}" th:text="${skill.getTitle}"> </option><div>
                             </select>
                         </div>
                         <div class="evidence_form_element align-content-center col-1">

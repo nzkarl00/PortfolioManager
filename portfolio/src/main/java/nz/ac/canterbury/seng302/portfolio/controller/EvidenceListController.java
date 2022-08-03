@@ -59,7 +59,6 @@ public class EvidenceListController {
     List<Evidence> evidenceList = evidencerepository.findAll();
     List<SkillTag> skillList = skillrepository.findAll();
 
-    System.out.println(skillList);
     model.addAttribute("evidenceList", evidenceList);
     model.addAttribute("skillList", skillList);
 
