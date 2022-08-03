@@ -26,7 +26,8 @@
         <div class="portion_body" >
         <form>
                 <div class="row-1" style="display:flex;">
-                        <div class="evidence_form_element col-4">
+                        <div class="evidence_form_element col-5">
+                            <div class="slight_pad">
                             <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
                             <b class="evidence_head setWide">Category:</b><br>
                             <select class="project_edit_data setWide">
@@ -35,20 +36,19 @@
                                 <option value="Service">&nbsp;&nbsp;Service</option>
                             </select>
                         </div>
-                        <div class="evidence_form_element align-content-center col-1">
                         </div>
-                        <div class="evidence_form_element col-4">
+                        <div class="evidence_form_element col-5">
+                            <div class="slight_pad">
                             <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
                             <b class="evidence_head setWide">Skills:</b><br>
                             <select class="project_edit_data setWide">
                                 <option value="" selected disabled> Choose here</option>
                                 <div th:each="skill: ${skillList}"><option th:value="${skill.getId}" th:text="${skill.getTitle}"> </option><div>
                             </select>
-                        </div>
-                        <div class="evidence_form_element align-content-center col-1">
+                            </div>
                         </div>
                         <div class="evidence_form_element align-content-center col-2">
-                            <a class="button_a" th:href="@{evidence}"><i class="fa fa-search"></i></a>
+                            <button class="search" type="submit"><i class="fa fa-search"></i></button>
                         </div>
                     <br>
                     <br>

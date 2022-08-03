@@ -1305,3 +1305,31 @@ select.form-control {
     border-radius: 10px;
     color: white;
 }
+
+.slight_pad {
+    margin-right: 10% !important;
+
+}
+
+.search {
+
+    background-color: #19DAFF !important;
+    border-radius: 20px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 60% !important;
+    height: 180% !important;
+    align: center !important;
+    font-size: 300% !important;
+    font-colour: #FFFFFF !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+.search:hover {
+
+    background: #056BFA !important;
+    color: #ffffff !important;
+
+}
