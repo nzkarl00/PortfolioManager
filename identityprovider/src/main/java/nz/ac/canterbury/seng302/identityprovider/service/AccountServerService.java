@@ -124,10 +124,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         try {
             // open the names to build users from
-            File firstNames = new ClassPathResource("buildUsers/firstNames.txt").getFile();
+            File firstNames = new ClassPathResource("/buildUsers/firstNames.txt").getFile();
             Scanner firstNamesReader = new Scanner(firstNames);
 
-            File lastNames = new ClassPathResource("buildUsers/lastNames.txt").getFile();
+            File lastNames = new ClassPathResource("/buildUsers/lastNames.txt").getFile();
             Scanner lastNamesReader = new Scanner(lastNames);
 
             Groups MWAG = groupRepo.findAllByGroupShortName("MWAG").get(0);
