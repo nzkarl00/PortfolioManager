@@ -52,6 +52,12 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Autowired
     GroupRepository groupRepo;
 
+    @Value("classpath:buildUsers/firstNames.txt")
+    File firstNames;
+
+    @Value("classpath:buildUsers/lastNames.txt")
+    File lastNames;
+
 
     /**
      * The chance limiting the number of users we add by default into our database
@@ -124,10 +130,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         try {
             // open the names to build users from
-            File firstNames = new ClassPathResource("/buildUsers/firstNames.txt").getFile();
             Scanner firstNamesReader = new Scanner(firstNames);
-
-            File lastNames = new ClassPathResource("/buildUsers/lastNames.txt").getFile();
             Scanner lastNamesReader = new Scanner(lastNames);
 
             Groups MWAG = groupRepo.findAllByGroupShortName("MWAG").get(0);
