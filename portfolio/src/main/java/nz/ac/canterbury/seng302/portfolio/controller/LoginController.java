@@ -91,7 +91,7 @@ public class LoginController {
     ) {
 
         AuthenticateResponse authenticateResponse = authenticateLogin(username, password, model);
-        logger.trace("[LOGIN] Result from authenticateResponse.getSuccess(): " + authenticateResponse.getSuccess());
+        logger.trace("[LOGIN] Result from authenticateResponse: " + authenticateResponse);
 
         if (authenticateResponse == null) {
             return "redirect:login";

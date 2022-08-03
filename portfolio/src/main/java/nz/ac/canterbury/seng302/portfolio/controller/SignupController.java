@@ -99,7 +99,7 @@ public class SignupController {
 
         // Tries to auto authenticate a login after signing up
         AuthenticateResponse authenticateResponse = loginController.authenticateLogin(username, password, model);
-        logger.trace("[LOGIN] Result from authenticateResponse.getSuccess(): " + authenticateResponse.getSuccess());
+        logger.trace("[LOGIN] Result from authenticateResponse: " + authenticateResponse);
 
         if (authenticateResponse == null) {
             return "redirect:signup";
