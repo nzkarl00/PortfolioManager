@@ -2,6 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.cucumber.java.Before;
 import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Deadline;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.DeadlineRepository;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Event;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,15 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDateTime;
 import java.util.Date;
