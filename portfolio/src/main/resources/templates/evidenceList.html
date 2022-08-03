@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head.html :: head('Evidence')">
+
+<body>
+
+
+
+<!-- Navigation Bar -->
+<div th:replace="fragments/validUser.html :: navbar"></div>
+
+<!-- Body -->
+<div class="main">
+  <div class="container">
+
+    <div class="row-1">
+      <br><br><br>
+    </div>
+
+    <!-- Portfolio heading -->
+
+    <div class="row-1">
+
+      <div class="col-12">
+        <p class="body_title_large">List Of Evidence</p>
+      </div>
+
+    </div>
+
+    <!-- Portfolio body -->
+    <div class="row">
+
+      <div class="col-1"></div>
+      <div class="col-lg-10 col-md-12 col-sm-12" >
+      <div th:replace="fragments/evidenceForm.html :: evidenceForm"></div>
+      </div>
+    </div>
+    <br>
+    <div class="row" th:each="evidence: ${evidenceList}">
+
+      <div class="col-1">
+      </div>
+
+
+      <!-- Project Section -->
+      <div class="col-lg-10 col-md-12 col-sm-12" >
+
+        <div class="row-1 evidence_top" style="display:flex;">
+
+          <div class="col-5">
+          <p class="bio evidence_head" th:text="${evidence.getTitle}"/>
+          </div>
+          <div class="col-6">
+            <p class="bio evidence_date" th:text="${evidence.getDate}"/>
+          </div>
+          <div class="col-1 " >
+          <a class="btn float-end" data-toggle="collapse" th:href="'#collapseExample'+${evidence.getId}" role="button" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fa fa-2x fa-arrow-down alignRight" aria-hidden="true"></i>
+          </a>
+            </div>
+
+        </div>
+
+      <div class="row-1">
+
+        <div class="collapse evidence_data no-gutters" th:id="'collapseExample'+${evidence.getId}">
+
+          <div>
+            <p id="description" class="sprint-description evidence_text" th:text="${evidence.getDescription}"/>
+          </div>
+          <br>
+          </div>
+        </div>
+
+        <div class="row-1">
+
+        <div class="evidence_bot">
+          <br>
+        </div>
+        </div>
+
+      </div>
+
+
+
+      <div class="col-2">
+
+
+      </div>
+
+      <div class="col-4">
+
+        <br>
+        <br>
+
+      </div>
+
+    </div>
+
+    <div class="row-1">
+      <br><br><br>
+    </div>
+
+
+  </div>
+</div>
+<!-- JS -->
+<script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -13,6 +13,7 @@ import java.util.List;
 public interface EvidenceRepository extends CrudRepository<Evidence, Integer> {
     Event findById(int id);
     List<Evidence> findByParentUserId(int parentUserId);
+    List<Evidence> findAll();
 
     // NOTE: In future, create a custom getter to fetch a list of evidence based on parent user id and
     // the associated project id.
