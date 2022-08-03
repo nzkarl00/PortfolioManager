@@ -1,6 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.*;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

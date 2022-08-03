@@ -1,7 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.UserPreference;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.UserPreferenceRepository;
+import nz.ac.canterbury.seng302.portfolio.model.UserPreference;
+import nz.ac.canterbury.seng302.portfolio.model.UserPreferenceRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;

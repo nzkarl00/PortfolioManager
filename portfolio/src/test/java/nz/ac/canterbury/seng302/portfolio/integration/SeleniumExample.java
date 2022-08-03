@@ -5,7 +5,7 @@ import org.openqa.selenium.By;
 import org.springframework.boot.web.server.LocalServerPort;
 
 public class SeleniumExample {
-    SeleniumConfig config;
+    public SeleniumConfig config;
     @LocalServerPort
     private int port = 9000;
     public String url = "http://localhost:" + port;

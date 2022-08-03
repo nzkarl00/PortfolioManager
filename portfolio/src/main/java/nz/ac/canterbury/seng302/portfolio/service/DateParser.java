@@ -1,6 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 
 import java.text.SimpleDateFormat;

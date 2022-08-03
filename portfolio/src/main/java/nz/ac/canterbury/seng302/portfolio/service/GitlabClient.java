@@ -1,10 +1,18 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.model.Deadline;
+import nz.ac.canterbury.seng302.portfolio.model.DeadlineRepository;
+import nz.ac.canterbury.seng302.portfolio.model.Deadline;
+import nz.ac.canterbury.seng302.portfolio.model.DeadlineRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.models.Project;
 import org.gitlab4j.api.GitLabApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * A client used to communicate with the Gitlab API.
