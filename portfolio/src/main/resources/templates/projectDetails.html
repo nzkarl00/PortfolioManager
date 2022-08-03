@@ -349,7 +349,7 @@
         const innerEditButton = document.createElement("a")
         innerEditButton.className = "button_a"
         innerEditButton.innerText = "EDIT"
-        innerEditButton.href = "/edit-sprint?id=" + sprint.parentProjectId + "&ids=" + sprint.id
+        innerEditButton.href = "edit-sprint?id=" + sprint.parentProjectId + "&ids=" + sprint.id
         editButton.appendChild(innerEditButton)
 
         const deleteForm = document.createElement("form")
