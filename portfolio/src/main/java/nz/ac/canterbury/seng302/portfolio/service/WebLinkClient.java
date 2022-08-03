@@ -3,14 +3,15 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClient.HttpMethod;
-import org.springframework.web.reactive.function.client.WebClient.UriSpec;
-import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
-//import org.springframework.web.reactive.function.client.ChannelOption;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.reactive.function.client.WebClientException;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
@@ -23,9 +24,9 @@ public class WebLinkClient {
 //        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
 //        .responseTimeout(Duration.ofMillis(5000));
 
-    Logger logger = LoggerFactory.getLogger(WebLinkClient.class);
+    private final Logger logger = LoggerFactory.getLogger(WebLinkClient.class);
 
-    public WebLinkClient(final String url, final String apiKey) {
+    public WebLinkClient() {
     }
 
 
@@ -34,9 +35,26 @@ public class WebLinkClient {
      * Modifies the properties of the link that is received, without returning a new link.
      * @param link
      */
-    public void tryLink(WebLink link) {
-        UriSpec<?> uriSpec = client.method(HttpMethod.GET).uri(link.url);
-
+    public void tryLink(final WebLink link) {
+        final int notFoundCode = 404;
+        Mono<String> uriSpec = client.method(HttpMethod.GET)
+            .uri(link.url)
+            .retrieve()
+            .onStatus(
+                    status -> status.value() == notFoundCode,
+                    clientResponse -> Mono.error(new Error("Status is 404"))
+            )
+            .bodyToMono(String.class);
+        try {
+            String res = uriSpec.block();
+            logger.info(res);
+            link.setFetchResult(false);
+            return
+        } catch (Error e) {
+            logger.warn("Requesting link resulted in a 404");
+        } catch (WebClientException e) {
+            logger.warn("Requesting link resulted in exception", e);
+        }
     }
 
 }
