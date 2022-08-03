@@ -1,9 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
@@ -34,6 +36,8 @@ public class EvidenceListController {
   @Autowired
   private EvidenceRepository evidencerepository;
   @Autowired
+  private SkillTagRepository skillrepository;
+  @Autowired
   private ProjectService projectService;
   @Autowired
   private SprintService sprintService;
@@ -53,7 +57,11 @@ public class EvidenceListController {
   public String evidenceListController( @AuthenticationPrincipal AuthState principal, Model model) throws Exception {
 
     List<Evidence> evidenceList = evidencerepository.findAll();
+    List<SkillTag> skillList = skillrepository.findAll();
+
+    System.out.println(skillList);
     model.addAttribute("evidenceList", evidenceList);
+    model.addAttribute("skillList", skillList);
 
     Integer id = AuthStateInformer.getId(principal);
 

@@ -29,7 +29,7 @@ public class SkillTag {
     @JoinColumn(name="evidence_id")
     protected List<EvidenceTag> evidenceTags;
 
-    @Column(name="title", length = MAX_TITLE_LENGTH, nullable = false)
+    @Column(name="title", unique = true, length = MAX_TITLE_LENGTH, nullable = false)
     protected String title = "";
 
     @Column(name="description", length = MAX_DESCRIPTION_LENGTH, nullable = false)
