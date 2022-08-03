@@ -1,10 +1,10 @@
 stages:
-  - tagChecking
-  - publishProtosToLocalMavenRepo
-  - build
-  - test
-  - lint
-  - sonarqube
+#  - tagChecking
+#  - publishProtosToLocalMavenRepo
+#  - build
+#  - test
+#  - lint
+#  - sonarqube
   - deploy
 
 tag-checker:
@@ -86,6 +86,7 @@ deploy-staging-identityprovider:
       - identityprovider/build/libs
   only:
     - dev
+    - vm
 
 deploy-staging-portfolio:
   stage: deploy
@@ -109,6 +110,7 @@ deploy-staging-portfolio:
       - portfolio/build/libs
   only:
     - dev
+    - vm
 
 deploy-production-identityprovider:
   stage: deploy
