@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -124,10 +125,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         try {
             // open the names to build users from
-            File firstNames = new ClassPathResource("/buildUsers/firstNames.txt", this.getClass().getClassLoader()).getFile();
+            InputStream firstNames = new ClassPathResource("/buildUsers/firstNames.txt", this.getClass().getClassLoader()).getInputStream();
             Scanner firstNamesReader = new Scanner(firstNames);
 
-            File lastNames = new ClassPathResource("/buildUsers/lastNames.txt", this.getClass().getClassLoader()).getFile();
+            InputStream lastNames = new ClassPathResource("/buildUsers/lastNames.txt", this.getClass().getClassLoader()).getInputStream();
             Scanner lastNamesReader = new Scanner(lastNames);
 
             Groups MWAG = groupRepo.findAllByGroupShortName("MWAG").get(0);
@@ -146,7 +147,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
                         groupMembershipRepo.save(new GroupMembership(newAccount, MWAG));
                     }
                 }
-                lastNamesReader = new Scanner(lastNames);
+                // input stream can only be read once, so recall the entire thing
+                lastNamesReader = new Scanner(new ClassPathResource("/buildUsers/lastNames.txt", this.getClass().getClassLoader()).getInputStream());
             }
             firstNamesReader.close();
         } catch (FileNotFoundException e) {
