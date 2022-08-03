@@ -825,7 +825,7 @@
 
 .tooltip {
     position: absolute !important;
-    left: 2% !important;
+    word-wrap: normal !important;
 }
 
 .tooltip.show /* The CSS classes that the tooltip has */ {
@@ -845,6 +845,14 @@
     color: #19DAFF;
     text-align: left !important;
     word-break: break-all !important;
+}
+
+.tooltip_body_evidence {
+    font-family: Nexa !important;
+    font-size: 125% !important;
+    color: #19DAFF;
+    text-align: left !important;
+    word-break: keep-all;
 }
 
 .colour-1 {
