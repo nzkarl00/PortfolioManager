@@ -91,6 +91,7 @@ public class LoginController {
     ) {
 
         AuthenticateResponse authenticateResponse = authenticateLogin(username, password, model);
+        logger.trace("[LOGIN] Result from authenticateResponse.getSuccess(): " + authenticateResponse.getSuccess());
 
         if (authenticateResponse == null) {
             return "redirect:login";
@@ -98,7 +99,6 @@ public class LoginController {
 
         if (authenticateResponse.getSuccess()) {
             setCookie(request, response, authenticateResponse);
-            logger.info("[COOKIE SET] Cookie has been set for the user " + username);
             return "redirect:account";
         }
 
@@ -114,10 +114,12 @@ public class LoginController {
      * @param model to display feedback to user
      */
     public AuthenticateResponse authenticateLogin(String username, String password, Model model) {
+        logger.trace("[LOGIN] Attempting to authenticate user: " + username);
         try {
             return authenticateClientService.authenticate(username, password);
         } catch (StatusRuntimeException e){
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
+            logger.warn("[LOGIN] Failed authenticating user: " + username);
             return null;
         }
     }
@@ -139,5 +141,6 @@ public class LoginController {
                 5 * 60 * 60, // Expires in 5 hours
                 domain.startsWith("localhost") ? null : domain
         );
+        logger.info("[LOGIN] Cookie has been set for user: " + authenticateResponse.getUsername());
     }
 }

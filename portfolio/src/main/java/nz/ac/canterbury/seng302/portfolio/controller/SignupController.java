@@ -99,6 +99,7 @@ public class SignupController {
 
         // Tries to auto authenticate a login after signing up
         AuthenticateResponse authenticateResponse = loginController.authenticateLogin(username, password, model);
+        logger.trace("[LOGIN] Result from authenticateResponse.getSuccess(): " + authenticateResponse.getSuccess());
 
         if (authenticateResponse == null) {
             return "redirect:signup";
@@ -107,12 +108,11 @@ public class SignupController {
         // If authenticating a login is successful, then the cookie will be set in the domain.
         if (authenticateResponse.getSuccess()) {
             loginController.setCookie(request, response, authenticateResponse);
-            logger.info("[COOKIE SET] Cookie has been set for the user " + username);
             return "redirect:account";
         }
 
         model.addAttribute("loginMessage", authenticateResponse.getMessage());
-        logger.info("[USER SIGNED UP] User " + username + " has signed up");
+        logger.info("[SIGNUP] Signup successful for user: " + username);
         return "redirect:signup";
     }
 }
