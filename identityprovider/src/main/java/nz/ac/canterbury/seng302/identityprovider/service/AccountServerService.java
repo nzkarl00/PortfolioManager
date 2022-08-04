@@ -107,6 +107,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
                         "admin", hashedPassword, new Date(), "", "admin@defaultAdmin",
                         null, "admin", "admin", "He/Him"));
         roleRepo.save(new Role(newAdmin, "3admin"));
+        // Id 1 is the MWAG Id
         Groups groupToAddTo = groupRepo.findByGroupId(2);
         GroupMembership groupMemberToAdd = new GroupMembership(newAdmin, groupToAddTo);
         groupMembershipRepo.save(groupMemberToAdd);

@@ -262,11 +262,9 @@ function clearSelected() {
 
                         id = id.substring(0, id.length - 7)
                         if (!($(newThis).hasClass('selected'))) {
-                            console.log(i)
                             $(newThis).addClass('selected');
                             selected.push([groupId, id]);
                         }
-                        console.log(selected)
                     }
                 } else if (e.ctrlKey) {
                     // if it's a regular click, add the user to the selected list

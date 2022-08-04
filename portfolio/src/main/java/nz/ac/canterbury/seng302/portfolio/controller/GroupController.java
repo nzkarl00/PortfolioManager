@@ -176,18 +176,22 @@ public class GroupController {
             @RequestBody() HashMap<Integer, List<Integer>> ids,
             Model model
     ) throws InterruptedException {
+        // Takes all users that are selected
         for (Map.Entry<Integer, List<Integer>> entry : ids.entrySet()) {
+            // If this is a valid group
             if (entry.getKey() >= 0) {
                 ArrayList<Integer> userArray = new ArrayList<Integer>();
+                // If this is the teacher group be sure to check if a teacher is removing themseles
                 if ((entry.getKey() == 1)) {
                     for (Integer userId : entry.getValue()){
+                        // If they are removing themselves, dont add the user unless they are an admin
                         if ((userId.equals(AuthStateInformer.getId(principal))) && !(AuthStateInformer.getRole(principal).equals("admin"))) {
-
                         } else {
                             userArray.add(userId);
                         }
                     }
                 } else {
+                    // If not a teacher group, add all users to the array
                     for (Integer userId : entry.getValue()) {
                         userArray.add(userId);
                     }
