@@ -6,6 +6,8 @@ import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +30,7 @@ public class SignupController {
     @Autowired
     private LoginController loginController;
 
+    Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     String errorShow = "display:none;";
     String successShow = "display:none;";
@@ -89,28 +92,27 @@ public class SignupController {
         if (successCode.contains("Created account")) {
             errorShow = "display:none;";
             successShow = "";
-            System.out.println("Registered");
         } else {
             errorShow = "";
             successShow = "display:none;";
         }
+
         // Tries to auto authenticate a login after signing up
         AuthenticateResponse authenticateResponse = loginController.authenticateLogin(username, password, model);
+        logger.trace("[LOGIN] Result from authenticateResponse: " + authenticateResponse);
 
         if (authenticateResponse == null) {
-            System.out.println("\n\n\n\n\n\n\nNullresponse");
             return "redirect:signup";
         }
-        System.out.println("\n\n\n\n\n\n\n" + authenticateResponse.getSuccess() + authenticateResponse.getMessage());
+
         // If authenticating a login is successful, then the cookie will be set in the domain.
         if (authenticateResponse.getSuccess()) {
             loginController.setCookie(request, response, authenticateResponse);
-            System.out.println("\n\n\n\n\n\n\ngood");
             return "redirect:account";
         }
 
         model.addAttribute("loginMessage", authenticateResponse.getMessage());
-        System.out.println("\n\n\n\n\n\n\nidk");
+        logger.info("[SIGNUP] Signup successful for user: " + username);
         return "redirect:signup";
     }
 }
