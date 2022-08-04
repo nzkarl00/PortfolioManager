@@ -118,7 +118,8 @@ public class AccountServerService extends UserAccountServiceImplBase{
                         "admin", hashedPassword, new Date(), "", "admin@defaultAdmin",
                         null, "admin", "admin", "He/Him"));
         roleRepo.save(new Role(newAdmin, "3admin"));
-        Groups groupToAddTo = groupRepo.findByGroupId(1);
+        // Id 1 is the MWAG Id
+        Groups groupToAddTo = groupRepo.findByGroupId(2);
         GroupMembership groupMemberToAdd = new GroupMembership(newAdmin, groupToAddTo);
         groupMembershipRepo.save(groupMemberToAdd);
 
@@ -446,18 +447,11 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 roleRepo.deleteById(roleIdToRemove);
 
                 // if the role removal is a teacher also remove them from the teacher group
-                if (roleToRemove.equals(groupsServerService.TEACHER_ROLE) || role.equals(groupsServerService.ADMIN_ROLE)) {
-                    int isTeacher = 0;
-                    for ( Role currentRole: user.getRoles()) {
-                        System.out.println(currentRole.getPlainRole());
-                        if ((currentRole.getPlainRole().equals("admin")) || (currentRole.getPlainRole().equals("teacher"))) {
-                            isTeacher += 1;
-                        }
-                    }
-                    if (isTeacher < 2) {
+                if (roleToRemove.equals(groupsServerService.TEACHER_ROLE)) {
+
                         Groups teacherGroup = groupRepo.findAllByGroupShortName(groupsServerService.TEACHER_GROUP_NAME_SHORT).get(0);
                         groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(teacherGroup, user);
-                    }
+
 
                     // if there are no groups left for the user add them to Members Without A Group (MWAG)
                     if (groupMembershipRepo.findAllByRegisteredGroupUser(user).isEmpty()) {
@@ -489,7 +483,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
         roleRepo.save(roleForRepo);
 
         // if the role to add is a teacher, add them to the teacher group and remove from the members without a group.
-        if (role.equals(groupsServerService.TEACHER_ROLE) || role.equals(groupsServerService.ADMIN_ROLE)) {
+        if (role.equals(groupsServerService.TEACHER_ROLE)) {
             Groups teacherGroup = groupRepo.findAllByGroupShortName(groupsServerService.TEACHER_GROUP_NAME_SHORT).get(0);
             groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(teacherGroup, user);
             groupMembershipRepo.save(new GroupMembership(user, teacherGroup));
