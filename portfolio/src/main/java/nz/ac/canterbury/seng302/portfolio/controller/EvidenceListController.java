@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -54,9 +55,20 @@ public class EvidenceListController {
    * @throws Exception
    */
   @GetMapping("/evidence")
-  public String evidenceListController( @AuthenticationPrincipal AuthState principal, Model model) throws Exception {
+  public String evidenceListController( @AuthenticationPrincipal AuthState principal,
+                                        @RequestParam(required = false , value="ui") Integer user_id,
+                                        @RequestParam(required = false , value="pi") Integer project_id,
+                                        @RequestParam(required = false , value="si") Integer skill_id,
+                                        @RequestParam(required = false , value="ci") Integer category_id,
+                                        Model model) throws Exception {
+    List<Evidence> evidenceList;
+    if (project_id != null){
+        Project project = projectService.getProjectById(project_id);
+       evidenceList = evidencerepository.findAllByAssociatedProjectOrderByDateDesc(project);
+    } else {
+      evidenceList = evidencerepository.findAllByOrderByDateDesc();
+    }
 
-    List<Evidence> evidenceList = evidencerepository.findAll();
     List<SkillTag> skillList = skillrepository.findAll();
 
     model.addAttribute("evidenceList", evidenceList);
@@ -80,6 +92,44 @@ public class EvidenceListController {
     }
 
     return "evidenceList";
+  }
+
+  /**
+   * Directs the user to the evidence page with required params
+   * @param principal
+   * @param model The model to be used by the application for web integration
+   * @return redirects to the landing page
+   * @throws Exception
+   */
+  @GetMapping("/search-evidence")
+  public String searchEvidenceParam( @AuthenticationPrincipal AuthState principal,
+                                        @RequestParam(required = false , value="ui") String user_id,
+                                        @RequestParam(required = false , value="pi") String project_id,
+                                        @RequestParam(required = false , value="si") String skill_id,
+                                        @RequestParam(required = false , value="ci") String category_id,
+                                        Model model) throws Exception {
+    String returnString = "redirect:evidence?";
+    if (user_id != null) {
+      returnString += "ui=" + (user_id);
+    }
+    if (project_id != null) {
+      returnString += "pi=" + (project_id);
+    }
+    if (skill_id != null) {
+      returnString += "si=" + (skill_id);
+    }
+    if (category_id != null) {
+      returnString += "ci=" + (category_id);
+    }
+
+    System.out.println("HELLO?");
+    System.out.println(skill_id);
+    System.out.println(category_id);
+    System.out.println(returnString);
+
+    return returnString;
+
+
   }
 
 }

@@ -23,16 +23,17 @@
 <body>
 <div th:fragment="evidenceSearch">
 
-        <form class="row-1 portion_body_tall" style="display:flex;" >
+        <form class="row-1 portion_body_tall" th:action="@{search-evidence}" style="display:flex;" >
 
                         <div class="evidence_form_element col-5">
                             <div class="slight_pad">
                             <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
                             <b class="evidence_head setWide">Category:</b><br>
-                            <select class="project_edit_data setWide">
-                                <option value="Quantitative skills">&nbsp;&nbsp;Quantitative skills</option>
-                                <option value="Qualitative skills">&nbsp;&nbsp;Qualitative skills</option>
-                                <option value="Service">&nbsp;&nbsp;Service</option>
+                            <select id="ci" th:name="ci" class="project_edit_data setWide">
+                                <option value="" selected disabled> Choose here</option>
+                                <option value=0>&nbsp;&nbsp;Quantitative skills</option>
+                                <option value=1>&nbsp;&nbsp;Qualitative skills</option>
+                                <option value=2>&nbsp;&nbsp;Service</option>
                             </select>
                         </div>
                         </div>
@@ -40,13 +41,13 @@
                             <div class="slight_pad">
                             <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
                             <b class="evidence_head setWide">Skill:</b><br>
-                            <select class="project_edit_data setWide">
+                            <select id="si" th:name="si" class="project_edit_data setWide">
                                 <option value="" selected disabled> Choose here</option>
                                 <div th:each="skill: ${skillList}"><option th:value="${skill.getId}" th:text="${skill.getTitle}"> </option><div>
                             </select>
                             </div>
                         </div>
-            <div class="evidence_form_element align-content-center col-1">
+                        <div class="evidence_form_element align-content-center col-1">
                             <button class="search" type="submit"><i class="fa fa-search"></i></button>
                         </div>
         </form>
