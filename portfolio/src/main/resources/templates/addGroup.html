@@ -17,8 +17,6 @@
     <div class="row-1">
       <br><br><br>
     </div>
-
-
     <!-- Signup Form -->
     <form class="row" th:action="@{createGroup}" method="post">
 
@@ -27,14 +25,14 @@
       <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
         <div>
           <label class="project_subhead" >Long Name*:</label>
-          <input class="project_edit_data horizontal_field" id="longName" oninput="updateTitleLong()" type="text" th:name="longName" th:value="*{longName}" maxlength="50" title="Long Name can be a max of 50 characters" required><br/>
+          <input class="project_edit_data horizontal_field" id="longName" oninput="updateTitle('longName', 50, 'maxLen')" type="text" th:name="longName" th:value="*{longName}" maxlength="50" title="Long Name can be a max of 50 characters" required><br/>
           <label class="project_inputAlertBlue" id="maxLen">Characters Remaining: 50</label>
         </div>
 
 
         <div>
           <label class="project_subhead">Short Name*:</label>
-          <input class="project_edit_data horizontal_field"  id="shortName" oninput="updateTitleShort()" th:name="shortName" th:value="*{shortName}" maxlength="10" title="Short Name can be a max of 10 characters" required><br/>
+          <input class="project_edit_data horizontal_field"  id="shortName" oninput="updateTitle('shortName', 10, 'maxLenShort')" th:name="shortName" th:value="*{shortName}" maxlength="10" title="Short Name can be a max of 10 characters" required><br/>
           <label class="project_inputAlertBlue" id="maxLenShort">Characters Remaining: 10</label>
         </div>
       </div>
@@ -51,47 +49,9 @@
       </div>
 
       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-      <script type="text/javascript" th:inline="javascript">
-        /**
-         * Updates the number of characters remaining for the title based on the current event type and title length
-         */
-        function updateTitleLong() {
-          let maxLen = 50;
+      <script type="text/javascript" th:src="@{js/nameLengthCheck.js}"></script>
 
-          document.getElementById("longName").maxLength = maxLen;
-          let titleVal = (document.getElementById("longName"));
-          let titleLen = titleVal.value.length;
 
-          if ((maxLen - titleLen) < 0) {
-            document.getElementById("maxLen").innerHTML = "Your title is " + (Math.abs(maxLen - titleLen)).toString() + " characters too long";
-            document.getElementById("maxLen").classList.add('project_inputAlertRed');
-            document.getElementById("maxLen").classList.remove('project_inputAlertBlue');
-          } else {
-            document.getElementById("maxLen").innerHTML = "Characters Remaining: " + (maxLen - titleLen).toString();
-            document.getElementById("maxLen").classList.add('project_inputAlertBlue');
-            document.getElementById("maxLen").classList.remove('project_inputAlertRed');
-          }
-
-        }
-        function updateTitleShort() {
-          let maxLen = 10;
-
-          document.getElementById("shortName").maxLength = maxLen;
-          let titleVal = (document.getElementById("shortName"));
-          let titleLen = titleVal.value.length;
-
-          if ((maxLen - titleLen) < 0) {
-            document.getElementById("maxLenShort").innerHTML = "Your title is " + (Math.abs(maxLen - titleLen)).toString() + " characters too long";
-            document.getElementById("maxLenShort").classList.add('project_inputAlertRed');
-            document.getElementById("maxLenShort").classList.remove('project_inputAlertBlue');
-          } else {
-            document.getElementById("maxLenShort").innerHTML = "Characters Remaining: " + (maxLen - titleLen).toString();
-            document.getElementById("maxLenShort").classList.add('project_inputAlertBlue');
-            document.getElementById("maxLenShort").classList.remove('project_inputAlertRed');
-          }
-
-        }
-      </script>
 
 
       <div class="col-2"></div>
