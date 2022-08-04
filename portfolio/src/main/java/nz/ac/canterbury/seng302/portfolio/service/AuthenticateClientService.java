@@ -5,12 +5,16 @@ import io.grpc.StatusRuntimeException;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class AuthenticateClientService {
 
     @GrpcClient("identity-provider-grpc-server")
     private AuthenticationServiceGrpc.AuthenticationServiceBlockingStub authenticationStub;
+
+    Logger logger = LoggerFactory.getLogger(AuthenticateClientService.class);
 
     /**
      *
@@ -19,11 +23,14 @@ public class AuthenticateClientService {
      * @return
      */
     public AuthenticateResponse authenticate(final String username, final String password)  {
+        logger.info("[Authenticate] attempting to authenticate user with IDP, username: " + username);
         AuthenticateRequest authRequest = AuthenticateRequest.newBuilder()
                 .setUsername(username)
                 .setPassword(password)
                 .build();
-        return authenticationStub.authenticate(authRequest); // creates the token for the cookie here
+        AuthenticateResponse authRes = authenticationStub.authenticate(authRequest); // creates the token for the cookie here
+        logger.info("[Authenticate] received authentication response from IDP, username: " + username);
+        return authRes;
     }
 
     public AuthState checkAuthState() throws StatusRuntimeException {

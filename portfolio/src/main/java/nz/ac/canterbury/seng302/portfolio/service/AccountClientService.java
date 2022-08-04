@@ -18,6 +18,9 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The GRPC client side service class
  * contains many of the protobuf implementations to allow communication between the idp and portfolio servers
@@ -27,6 +30,8 @@ public class AccountClientService
 
     @GrpcClient("identity-provider-grpc-server")
     UserAccountServiceGrpc.UserAccountServiceBlockingStub accountServiceStub;
+
+    Logger logger = LoggerFactory.getLogger(AccountClientService.class);
 
     /**
      * makes a UserRegisterRequest to receive a UserRegisterResponse
@@ -43,6 +48,7 @@ public class AccountClientService
                                          String firstName, String lastName,
                                          String personalPronouns,
                                          String email) {
+        logger.info("[REGISTER] Attempting to register user with IDP, username: " + username);
         UserRegisterRequest registerRequest = UserRegisterRequest.newBuilder()
                 .setUsername(username)
                 .setPassword(password)
@@ -51,7 +57,9 @@ public class AccountClientService
                 .setPersonalPronouns(personalPronouns)
                 .setEmail(email)
                 .build();
-        return accountServiceStub.register(registerRequest);
+        UserRegisterResponse res = accountServiceStub.register(registerRequest);
+        logger.info("[REGISTER] Received register response for user from IDP, username: " + username);
+        return res;
     }
 
     /**
