@@ -53,7 +53,7 @@ public class AccountProfile {
     @OneToMany(mappedBy = "registeredUser", cascade = CascadeType.ALL)
     protected List<Role> roles;
 
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @LazyCollection(LazyCollectionOption.TRUE)
     @OneToMany (mappedBy = "registeredGroupUser", cascade = CascadeType.ALL)
     protected List<GroupMembership> groups;
 
