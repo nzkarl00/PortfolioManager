@@ -4,10 +4,11 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +31,17 @@ import java.util.List;
 public class EvidenceListController {
 
   @Autowired
-  private ProjectRepository repository;
-  @Autowired
   private EvidenceRepository evidencerepository;
-  @Autowired
-  private ProjectService projectService;
-  @Autowired
-  private SprintService sprintService;
   @Autowired
   private AccountClientService accountClientService;
   @Autowired
   private NavController navController;
+  @Autowired
+  private SkillTagRepository skillTagRepository;
+  @Autowired
+  private EvidenceService evidenceService;
+  @Autowired
+  private SprintRepository sprintRepository;
 
   /**
    * Directs the user to the landing project page
@@ -54,6 +55,9 @@ public class EvidenceListController {
 
     List<Evidence> evidenceList = evidencerepository.findAll();
     model.addAttribute("evidenceList", evidenceList);
+//    List<String> skillTagList = new ArrayList<String>(evidenceService.getAllUniqueSkills());
+    List<Sprint> skillTagList = (List<Sprint>) sprintRepository.findAll();
+    model.addAttribute("allSkills", skillTagList);
 
     Integer id = AuthStateInformer.getId(principal);
 
@@ -63,7 +67,7 @@ public class EvidenceListController {
     navController.updateModelForNav(principal, model, userReply, id);
 
     // End of Attributes for header
-    model.addAttribute("allSkills", )
+
     String role = AuthStateInformer.getRole(principal);
 
     if (role.equals("teacher") || role.equals("admin")) {
