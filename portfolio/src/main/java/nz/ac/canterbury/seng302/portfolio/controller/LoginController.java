@@ -5,6 +5,8 @@ import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +25,8 @@ public class LoginController {
 
     @Autowired
     private AuthenticateClientService authenticateClientService;
+
+    Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     /**
      * Attempts to authenticate with the Identity Provider via gRPC.
@@ -87,6 +91,7 @@ public class LoginController {
     ) {
 
         AuthenticateResponse authenticateResponse = authenticateLogin(username, password, model);
+        logger.trace("[LOGIN] Result from authenticateResponse: " + authenticateResponse);
 
         if (authenticateResponse == null) {
             return "redirect:login";
@@ -109,10 +114,12 @@ public class LoginController {
      * @param model to display feedback to user
      */
     public AuthenticateResponse authenticateLogin(String username, String password, Model model) {
+        logger.trace("[LOGIN] Attempting to authenticate user: " + username);
         try {
             return authenticateClientService.authenticate(username, password);
         } catch (StatusRuntimeException e){
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
+            logger.warn("[LOGIN] Failed authenticating user: " + username);
             return null;
         }
     }
@@ -134,5 +141,6 @@ public class LoginController {
                 5 * 60 * 60, // Expires in 5 hours
                 domain.startsWith("localhost") ? null : domain
         );
+        logger.info("[LOGIN] Cookie has been set for user: " + authenticateResponse.getUsername());
     }
 }

@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;

@@ -1,12 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.util.Date;
 import java.time.LocalDate;
-import java.util.Calendar;
 
 import static org.junit.jupiter.api.Assertions.*;
 
