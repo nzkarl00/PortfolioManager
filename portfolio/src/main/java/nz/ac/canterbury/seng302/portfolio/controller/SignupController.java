@@ -98,19 +98,15 @@ public class SignupController {
         AuthenticateResponse authenticateResponse = loginController.authenticateLogin(username, password, model);
 
         if (authenticateResponse == null) {
-            System.out.println("\n\n\n\n\n\n\nNullresponse");
             return "redirect:signup";
         }
-        System.out.println("\n\n\n\n\n\n\n" + authenticateResponse.getSuccess() + authenticateResponse.getMessage());
         // If authenticating a login is successful, then the cookie will be set in the domain.
         if (authenticateResponse.getSuccess()) {
             loginController.setCookie(request, response, authenticateResponse);
-            System.out.println("\n\n\n\n\n\n\ngood");
             return "redirect:account";
         }
 
         model.addAttribute("loginMessage", authenticateResponse.getMessage());
-        System.out.println("\n\n\n\n\n\n\nidk");
         return "redirect:signup";
     }
 }

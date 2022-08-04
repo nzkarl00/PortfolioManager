@@ -19,6 +19,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 public class ProfilePhotoController {
@@ -29,9 +31,13 @@ public class ProfilePhotoController {
     @Autowired
     FileSystemUtils fsUtils;
 
+    Logger logger = LoggerFactory.getLogger(ProfilePhotoController.class);
+
     @RequestMapping(value = "/image/{personId}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getPhoto(@PathVariable int personId) throws IOException {
+        logger.info(String.format("[PHOTO] Received request to get photo for user ID: %d", personId));
         String photoRelPath = repo.findById(personId).getPhotoPath();
+        logger.trace(String.format("[PHOTO] Resolved photo path for user ID: %d", personId));
         InputStream inputStream;
         if (photoRelPath.equals("DEFAULT")) {
             inputStream = new ClassPathResource("images/default_account_icon.jpeg").getInputStream();
@@ -41,6 +47,8 @@ public class ProfilePhotoController {
         }
 
         byte[] bytes = StreamUtils.copyToByteArray(inputStream);
+
+        logger.info(String.format("[PHOTO] Finished resolving photo for user ID: %d", personId));
 
         return ResponseEntity
                 .ok()

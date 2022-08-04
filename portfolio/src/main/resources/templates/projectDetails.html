@@ -945,6 +945,7 @@
                 var childNode = dayRenderInfo.el.firstChild;
 
                 const events = document.createElement("div")
+                /**
                 events.id = (dayRenderInfo.date).toString().substring(0, 16) + "eventList"
                 client.get("/events-count", {params:{"date":dayRenderInfo.date, "project":[[${project.getId()}]]}})
                     .then((response) => {
@@ -1040,6 +1041,7 @@
                 childNode.appendChild(deadlines)
 
                 childNode.appendChild(milestones)
+                 **/
             },
 
             // Greys out area's not in use by the project
@@ -1138,14 +1140,17 @@
     let initialFalseId = 0.5;
     sprintList = []
 
+    connect('calendar');
+
     for (const sprint of initialSprintList) {
 
         sprintList.push(sprint)
 
-        buildInBetweenSprint(initialDate,sprint.startDate, initialFalseId)
+        //buildInBetweenSprint(initialDate,sprint.startDate, initialFalseId)
         buildSprint(sprint)
         initialDate = sprint.endDate;
         initialFalseId += 1;
+        /**
         client.get("/events", {params:{"id":[[${project.getId()}]], "sprintId":sprint.id}})
             .then((response) => {
                 for (const events of response.data) {
@@ -1173,13 +1178,11 @@
                     this.sprint = sprint
                     buildEvent(event, sprint.id)
                 }
-            })
+            })**/
     }
-    buildInBetweenSprint(initialDate,[[${project.getEndDate()}]] , initialFalseId)
+    //buildInBetweenSprint(initialDate,[[${project.getEndDate()}]] , initialFalseId)
 
     document.addEventListener('DOMContentLoaded', function() { renderCalendar(initialSprintList) });
-
-    connect('calendar');
     /*]]>*/
 </script>
 
