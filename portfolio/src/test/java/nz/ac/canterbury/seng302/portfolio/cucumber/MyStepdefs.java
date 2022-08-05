@@ -7,6 +7,7 @@ import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 
 import java.io.File;
@@ -98,17 +99,20 @@ public class MyStepdefs {
 
     @Then("There will be the data for the evidence I created")
     public void thereWillBeTheDataForTheEvidenceICreated() throws InterruptedException {
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight)");
+        Thread.sleep(1500);
         // get the title of the evidence and the button to open the dropdown
-        WebElement title = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div[1]/div[1]/p"));
-        WebElement button = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div[1]/div[3]/a"));
+        WebElement title = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[5]/div[2]/div[1]/div[1]/p"));
+        WebElement button = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[5]/div[2]/div[1]/div[3]/a"));
         button.click();
         // wait for dropdown
         Thread.sleep(500);
         // get the description, title, and date, then validate said data
-        WebElement description = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div[2]/div/div/p"));
-        WebElement date = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div[1]/div[2]/p"));
-        Assertions.assertEquals("Title", title.getText());
-        Assertions.assertEquals("Description", description.getText());
-        Assertions.assertEquals("3020-01-10", date.getText());
+        WebElement description = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[5]/div[2]/div[2]/div/div/p"));
+        WebElement date = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[5]/div[2]/div[1]/div[2]/p"));
+        Assertions.assertEquals("Test Evidence", title.getText());
+        Assertions.assertEquals("This is a Description. It is going to be reasonably long but not too long in order to show how text will be potentially cut off.", description.getText());
+        Assertions.assertEquals("2022-07-29", date.getText());
     }
 }
