@@ -47,14 +47,8 @@ public class LandingController {
   @GetMapping("/landing")
   public String landing( @AuthenticationPrincipal AuthState principal, Model model) throws Exception {
 
+
     List<Project> projectList = projectService.getAllProjects();
-    if (projectList.isEmpty()) {
-      String thisYear = new SimpleDateFormat("yyyy").format(new Date());
-      Project project = new Project("Project "+thisYear, "", LocalDate.now(),
-              LocalDate.now().plusMonths(8));
-      repository.save(project);
-    }
-    projectList = projectService.getAllProjects();
     model.addAttribute("projects", projectList);
 
     Integer id = AuthStateInformer.getId(principal);
