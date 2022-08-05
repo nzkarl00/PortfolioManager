@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface SkillTagRepository  extends CrudRepository<SkillTag, Integer> {
     SkillTag findById(int id);
+    List<SkillTag> findAll();
 }

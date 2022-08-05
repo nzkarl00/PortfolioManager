@@ -115,6 +115,17 @@
 
 }
 
+.portion_body_tall {
+
+  font-family: nexa !important;
+  background-color: #D9F9FF !important;
+  border-radius: 35px  !important;
+  height: 500% !important;
+  padding: 2rem !important;
+    padding-bottom: 6rem !important;
+
+}
+
 .login_error {
 
   font-family: nexaBold !important;
@@ -1312,4 +1323,31 @@ select.form-control {
     margin-bottom: 2px;
     border-radius: 10px;
     color: white;
+}
+
+.slight_pad {
+    margin-right: 5% !important;
+
+}
+
+.search {
+
+    background-color: #19DAFF !important;
+    border-radius: 20px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    height: 200% !important;
+    align: center !important;
+    padding-top: 10% !important;
+    font-size: 250% !important;
+    font-colour: #FFFFFF !important;
+    font-family: nexaLight !important;
+
+}
+.search:hover {
+
+    background: #056BFA !important;
+    color: #ffffff !important;
+
 }

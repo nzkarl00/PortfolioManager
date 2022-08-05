@@ -59,6 +59,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         inProject_deleteDeadlineSprint2();
         inProject_deleteMilestoneSprint2();
         inProject_addBetweenMilestone();
+
     }
 
     @AfterSuite
