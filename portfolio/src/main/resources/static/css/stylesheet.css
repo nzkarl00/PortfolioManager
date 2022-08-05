@@ -290,6 +290,7 @@
 
 }
 
+
 .project_edit_data {
 
 
@@ -757,6 +758,10 @@
     color: #19DAFF !important;
 }
 
+.constrain-overflow {
+    overflow: hidden;
+}
+
 .each-deadline {
     border: none;
     padding: 2px 10px;
@@ -820,7 +825,7 @@
 
 .tooltip {
     position: absolute !important;
-    left: 2% !important;
+    word-wrap: normal !important;
 }
 
 .tooltip.show /* The CSS classes that the tooltip has */ {
@@ -840,6 +845,14 @@
     color: #19DAFF;
     text-align: left !important;
     word-break: break-all !important;
+}
+
+.tooltip_body_evidence {
+    font-family: Nexa !important;
+    font-size: 125% !important;
+    color: #19DAFF;
+    text-align: left !important;
+    word-break: keep-all;
 }
 
 .colour-1 {
@@ -1091,5 +1104,212 @@
 
 .increase_size {
     font-size: 125% !important;
+}
 
+.evidence_top {
+
+    background: #D9F9FF !important;
+    border-radius: 20px 20px 0px 0px;
+    padding: 10px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+
+
+}
+
+.evidence_bot {
+
+    background: #D9F9FF !important;
+    border-radius: 0px 0px 20px 20px;
+
+
+}
+
+
+.evidence_data {
+
+
+    font-family: nexa !important;
+    color: #000000 !important;
+    font-size: 110% !important;
+    background-color: #D9F9FF !important;
+    overflow-wrap: break-word;
+    border-radius: 0px 0px 0px 0px !important;
+    margin-bottom:  0px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
+.fa-arrow-down {
+    color: #19DAFF !important;
+}
+
+.alignRight {
+
+    align: right !important;
+}
+
+
+.evidence_head {
+    font-family: nexaBold !important;
+    color: #19DAFF !important;
+    font-size: 175% !important;
+
+}
+.evidence_date {
+    font-family: nexaLight !important;
+    color: #19DAFF !important;
+    font-size: 175% !important;
+
+}
+
+.evidence_text {
+    font-family: nexaLight !important;
+    font-size: 115% !important;
+
+}
+
+.evidence_form_element {
+    font-family: nexaBold !important;
+    height: 2.5em !important;
+}
+
+.evidence_form_element_select_container {
+    font-family: nexaBold !important;
+    height: 2.7em !important;
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+.evidence_form_element_wide {
+    font-family: nexaBold !important;
+    width: 100% !important;
+    height: 2.5em !important;
+}
+
+.setWide {
+
+    width: 100% !important;
+}
+
+.evidence_form_element_select {
+    font-family: nexaBold !important;
+    height: 1.5em !important;
+    min-height: 1.5em !important;
+    white-space: nowrap;
+    margin: 0 !important;
+    vertical-align: top !important;
+    padding-top: -30px !important;
+    margin-top: -2px !important;
+}
+
+.evidence_form_element_text {
+    font-family: nexaBold !important;
+    height: 2em !important;
+    min-height: 2em !important;
+    white-space: nowrap;
+    vertical-align: top !important;
+}
+
+.evidence_form_element_select_item {
+    height: 1.7em !important;
+    min-height: 1.7em !important;
+}
+
+.no_padding {
+    padding: 0 !important;
+  }
+
+.optionSelect {
+    background-color: #19DAFF !important;
+    color: #FFFFFF !important;
+
+}
+
+select.form-control {
+    -webkit-appearance: none;
+    -webkit-border-radius: 0px;
+    -moz-appearance: none;
+}
+
+.text_button {
+    background: none;
+    border: none;
+    margin: 0;
+    padding-left: 2em;
+    cursor: pointer;
+}
+
+.skill_tag {
+    background-color:#19DAFF; !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    padding: 0.3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+}
+
+.skill_tag:hover {
+    background-color:#FF202E; !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    padding: 0.3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+}
+
+.cancel_evidence {
+
+    background-color: #FF202E !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+
+.save_evidence {
+
+    background-color: #26D20F !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-colour: #FFFFFF !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+
+.trim_text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.each_link {
+    border: none;
+    padding: 1px 10px;
+    text-decoration: none !important;
+    background: #FF202E  !important;
+    margin-left: 10px;
+    margin-bottom: 2px;
+    border-radius: 10px;
+    color: white;
 }

@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.integration;
 
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
@@ -16,8 +17,9 @@ public class SeleniumConfig {
      * Makes the browser to test implementation on
      */
     public SeleniumConfig() {
-        Capabilities capabilities = DesiredCapabilities.firefox();
-        driver = new FirefoxDriver(capabilities);
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
+        firefoxOptions.setCapability("marionette", true);
+        driver = new FirefoxDriver(firefoxOptions);
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
 

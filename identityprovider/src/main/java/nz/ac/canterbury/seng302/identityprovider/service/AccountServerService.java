@@ -11,6 +11,8 @@ import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
@@ -50,13 +52,22 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Autowired
     GroupRepository groupRepo;
 
+
+    /**
+     * The chance limiting the number of users we add by default into our database
+     * 0.98 means 1/50 of the possible users will be added
+     * meaning ~1000 users will be added from the 50,000 combinations
+     * from 50 lastnames and 1000 firstnames
+     */
+    static final Double CHANCE = 0.90;
+
     /**
      * if there are no users in the db, build a set of 5001 default users
      */
     @PostConstruct
     private void buildDefaultUsers() {
         // if no users exist
-        if (repo.findById(1) == null) {
+        if (repo.findByUsername("admin") == null) {
 
             //https://www.baeldung.com/java-random-string
             int leftLimit = 48; // letter 'a'
@@ -107,18 +118,18 @@ public class AccountServerService extends UserAccountServiceImplBase{
                         "admin", hashedPassword, new Date(), "", "admin@defaultAdmin",
                         null, "admin", "admin", "He/Him"));
         roleRepo.save(new Role(newAdmin, "3admin"));
-        Groups groupToAddTo = groupRepo.findByGroupId(1);
+        // Id 1 is the MWAG Id
+        Groups groupToAddTo = groupRepo.findByGroupId(2);
         GroupMembership groupMemberToAdd = new GroupMembership(newAdmin, groupToAddTo);
         groupMembershipRepo.save(groupMemberToAdd);
 
-
         try {
             // open the names to build users from
-            File firstNames = new File(System.getProperty("user.dir") + "/src/main/resources/buildUsers/firstNames.txt");
+            File firstNames = new ClassPathResource("buildUsers/firstNames.txt").getFile();
             Scanner firstNamesReader = new Scanner(firstNames);
 
-            File lastNames = new File(System.getProperty("user.dir") + "/src/main/resources/buildUsers/lastNames.txt");
-            Scanner lastNamesReader = new Scanner(firstNames);
+            File lastNames = new ClassPathResource("buildUsers/lastNames.txt").getFile();
+            Scanner lastNamesReader = new Scanner(lastNames);
 
             Groups MWAG = groupRepo.findAllByGroupShortName("MWAG").get(0);
 
@@ -127,17 +138,22 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 String firstName = firstNamesReader.nextLine();
                 while (lastNamesReader.hasNextLine()) {
                     String lastName = lastNamesReader.nextLine();
-                    AccountProfile newAccount = repo.save(
-                            new AccountProfile(
-                                    firstName + lastName, hashedPassword, new Date(), "", firstName + "." + lastName + "@default",
-                                    null, firstName, lastName, "He/Him"));
-                    roleRepo.save(new Role(newAccount, "1student"));
-                    groupMembershipRepo.save(new GroupMembership(newAccount, MWAG));
+                    if (Math.random() > CHANCE) {
+                        AccountProfile newAccount = repo.save(
+                                new AccountProfile(
+                                        firstName + lastName, hashedPassword, new Date(), "", firstName + "." + lastName + "@default",
+                                        null, firstName, lastName, "He/Him"));
+                        roleRepo.save(new Role(newAccount, "1student"));
+                        groupMembershipRepo.save(new GroupMembership(newAccount, MWAG));
+                    }
                 }
+                lastNamesReader = new Scanner(lastNames);
             }
             firstNamesReader.close();
         } catch (FileNotFoundException e) {
             System.out.println("File could not be found");
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -431,18 +447,11 @@ public class AccountServerService extends UserAccountServiceImplBase{
                 roleRepo.deleteById(roleIdToRemove);
 
                 // if the role removal is a teacher also remove them from the teacher group
-                if (roleToRemove.equals(groupsServerService.TEACHER_ROLE) || role.equals(groupsServerService.ADMIN_ROLE)) {
-                    int isTeacher = 0;
-                    for ( Role currentRole: user.getRoles()) {
-                        System.out.println(currentRole.getPlainRole());
-                        if ((currentRole.getPlainRole().equals("admin")) || (currentRole.getPlainRole().equals("teacher"))) {
-                            isTeacher += 1;
-                        }
-                    }
-                    if (isTeacher < 2) {
+                if (roleToRemove.equals(groupsServerService.TEACHER_ROLE)) {
+
                         Groups teacherGroup = groupRepo.findAllByGroupShortName(groupsServerService.TEACHER_GROUP_NAME_SHORT).get(0);
                         groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(teacherGroup, user);
-                    }
+
 
                     // if there are no groups left for the user add them to Members Without A Group (MWAG)
                     if (groupMembershipRepo.findAllByRegisteredGroupUser(user).isEmpty()) {
@@ -474,7 +483,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
         roleRepo.save(roleForRepo);
 
         // if the role to add is a teacher, add them to the teacher group and remove from the members without a group.
-        if (role.equals(groupsServerService.TEACHER_ROLE) || role.equals(groupsServerService.ADMIN_ROLE)) {
+        if (role.equals(groupsServerService.TEACHER_ROLE)) {
             Groups teacherGroup = groupRepo.findAllByGroupShortName(groupsServerService.TEACHER_GROUP_NAME_SHORT).get(0);
             groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(teacherGroup, user);
             groupMembershipRepo.save(new GroupMembership(user, teacherGroup));

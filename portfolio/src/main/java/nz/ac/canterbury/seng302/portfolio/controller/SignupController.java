@@ -6,6 +6,8 @@ import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +30,7 @@ public class SignupController {
     @Autowired
     private LoginController loginController;
 
+    Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     String errorShow = "display:none;";
     String successShow = "display:none;";
@@ -96,6 +99,7 @@ public class SignupController {
 
         // Tries to auto authenticate a login after signing up
         AuthenticateResponse authenticateResponse = loginController.authenticateLogin(username, password, model);
+        logger.trace("[LOGIN] Result from authenticateResponse: " + authenticateResponse);
 
         if (authenticateResponse == null) {
             return "redirect:signup";
@@ -108,6 +112,7 @@ public class SignupController {
         }
 
         model.addAttribute("loginMessage", authenticateResponse.getMessage());
+        logger.info("[SIGNUP] Signup successful for user: " + username);
         return "redirect:signup";
     }
 }

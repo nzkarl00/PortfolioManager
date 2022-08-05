@@ -1,12 +1,19 @@
 package nz.ac.canterbury.seng302.portfolio.integration;
+import io.cucumber.java.en.Then;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
@@ -38,7 +45,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         whenPortfolioIsLoaded_thenCreateNewProject();
 
         whenPortfolioIsLoaded_thenCreateNewSprint();
-        inProject_addDeadline();
+         inProject_addDeadline();
         inProject_addMilestone();
         inProject_addSecondDeadline();
         inProject_addThirdDeadline();
@@ -58,7 +65,6 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
     public void tearDown() {
         seleniumExample.closeWindow();
     }
-
 
     /**
      * Gets the password for the pre-generated admin account from the application files
@@ -357,7 +363,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
 
         WebElement deadlineCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 deadlineList"));
         String deadlineCalendarString = deadlineCalendar.getText();
-        Assertions.assertEquals("D - 3", deadlineCalendarString);
+        Assertions.assertEquals("D - 2", deadlineCalendarString);
 
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
@@ -443,7 +449,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
 
         WebElement deadlineCalendar = seleniumExample.config.getDriver().findElement(By.id("Tue Jan 04 2033 deadlineList"));
         String deadlineCalendarString = deadlineCalendar.getText();
-        Assertions.assertEquals("D - 2", deadlineCalendarString);
+        Assertions.assertEquals("D - 1", deadlineCalendarString);
 
         detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();

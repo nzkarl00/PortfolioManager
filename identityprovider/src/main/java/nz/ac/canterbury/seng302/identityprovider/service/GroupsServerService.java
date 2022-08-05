@@ -158,6 +158,14 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
         for (GroupMembership groupMember : groupMemberships) {
             AccountProfile user = groupMember.getRegisteredGroupUser();
+            List<GroupMembership> usersGroups = groupMembershipRepo.findAllByRegisteredGroupUser(user);
+
+            //If this is their last group, add to the MWAG
+            if (usersGroups.size() <= 1) {
+                List<Groups> noMembership = groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT);
+                groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembership.get(0), user);
+                groupMembershipRepo.save(new GroupMembership(noMembership.get(0), user));
+            }
 
             // If this user from the groupToRemoveFrom is the actual user requested for removal.
             if ((request.getUserIdsList()).contains(user.getId())) {
