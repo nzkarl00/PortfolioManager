@@ -131,8 +131,8 @@
                 e.stopPropagation();
                 $(this).closest(".MultiCheckBoxDetail").next().UpdateSelect();
 
-                var val = ($(".MultiCheckBoxDetailBody input:checked").length == $(".MultiCheckBoxDetailBody input").length)
-                $(".MultiCheckBoxDetailHeader input").prop("checked", val);
+                var value = ($(".MultiCheckBoxDetailBody input:checked").length == $(".MultiCheckBoxDetailBody input").length)
+                $(".MultiCheckBoxDetailHeader input").prop("checked", value);
             });
 
             $(document).on("click", ".MultiCheckBoxDetail .cont", function (e) {
@@ -144,8 +144,8 @@
                 var multiCheckBoxDetailBody = $(this).closest(".MultiCheckBoxDetailBody");
                 multiCheckBoxDetail.next().UpdateSelect();
 
-                var val = ($(".MultiCheckBoxDetailBody input:checked").length == $(".MultiCheckBoxDetailBody input").length)
-                $(".MultiCheckBoxDetailHeader input").prop("checked", val);
+                var value = ($(".MultiCheckBoxDetailBody input:checked").length == $(".MultiCheckBoxDetailBody input").length)
+                $(".MultiCheckBoxDetailHeader input").prop("checked", value);
             });
 
             $(document).mouseup(function (e) {
@@ -176,12 +176,12 @@
                 var multiCheckBoxDetailBody = detail.find(".MultiCheckBoxDetailBody");
 
                 this.find("option").each(function () {
-                    var val = $(this).attr("value");
+                    var value = $(this).attr("value");
 
-                    if (val == undefined)
-                        val = '';
+                    if (value == undefined)
+                        value = '';
 
-                    multiCheckBoxDetailBody.append("<div class='cont'><div><input type='checkbox' class='mulinput' value='" + val + "' /></div><div>" + $(this).text() + "</div></div>");
+                    multiCheckBoxDetailBody.append("<div class='cont'><div><input type='checkbox' class='mulinput' value='" + value + "' /></div><div>" + $(this).text() + "</div></div>");
                 });
 
                 multiCheckBoxDetailBody.css("max-height", (parseInt($(".MultiCheckBoxDetail").css("max-height")) - 28) + "px");
@@ -190,10 +190,10 @@
                 var arr = [];
 
                 this.prev().find(".mulinput:checked").each(function () {
-                    arr.push($(this).val());
+                    arr.push($(this).value());
                 });
 
-                this.val(arr);
+                this.value(arr);
             },
         });
     </script>
@@ -234,113 +234,101 @@
                     <b class="evidence_head setWide" id="skills_input">Skills:</b><br>
                     <div class="col-12" id="skills_div" style="display: flex; justify-content: center; align-items: center;">
                             <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
+                        <div class="evidence_form_element_wide">
                         <div class="autocomplete evidence_form_element_wide">
                         <input type="text" id="add_skill_input" maxlength=100 oninput="updateSkills()"  class="evidence_form_element_wide project_edit_data">
-                            <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill(); return false;"></button>
                         </input>
                         </div>
+                        </div>
+                       <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill(); return false;"></button>
                         <script>
+                            /* reference https://www.w3schools.com/howto/howto_js_autocomplete.asp*/
                             function autocomplete(inp, arr) {
-                                /*the autocomplete function takes two arguments,
-                                the text field element and an array of possible autocompleted values:*/
-                                var currentFocus;
-                                /*execute a function when someone writes in the text field:*/
+                                
+                                let currentItem;
+                                
                                 inp.addEventListener("input", function(e) {
-                                    var a, b, i, val = this.value;
-                                    /*close any already open lists of autocompleted values*/
-                                    closeAllLists();
-                                    if (!val) { return false;}
-                                    currentFocus = -1;
-                                    /*create a DIV element that will contain the items (values):*/
-                                    a = document.createElement("DIV");
-                                    a.setAttribute("id", this.id + "autocomplete-list");
-                                    a.setAttribute("class", "autocomplete-items");
-                                    /*append the DIV element as a child of the autocomplete container:*/
-                                    this.parentNode.appendChild(a);
-                                    /*for each item in the array...*/
-                                    for (i = 0; i < arr.length; i++) {
-                                        /*check if the item starts with the same letters as the text field value:*/
-                                        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-                                            /*create a DIV element for each matching element:*/
-                                            b = document.createElement("DIV");
-                                            /*make the matching letters bold:*/
-                                            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                                            b.innerHTML += arr[i].substr(val.length);
-                                            /*insert a input field that will hold the current array item's value:*/
-                                            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-                                            /*execute a function when someone clicks on the item value (DIV element):*/
-                                            b.addEventListener("click", function(e) {
-                                                /*insert the value for the autocomplete text field:*/
-                                                inp.value = this.getElementsByTagName("input")[0].value;
-                                                /*close the list of autocompleted values,
-                                                (or any other open lists of autocompleted values:*/
-                                                closeAllLists();
+                                    let value = this.value
+                                    closeAllLists()
+                                    if (!value) { return false}
+                                    currentItem = -1
+
+                                    // Create autocomplete option container
+                                    let optionContainer = document.createElement("div");
+                                    optionContainer.setAttribute("id", "skills_autocomplete_container")
+                                    optionContainer.setAttribute("class", "autocomplete-items")
+                                    this.parentNode.appendChild(optionContainer)
+
+                                    // Add possible autocomplete options to the container
+                                    for (let i = 0; i < arr.length; i++) {
+                                        if (arr[i].substr(0, value.length).toUpperCase() == value.toUpperCase()) {
+                                            let optionItem = document.createElement("div")
+                                            optionItem.innerHTML = "<strong>" + arr[i].substr(0, value.length) + "</strong>"
+                                            optionItem.innerHTML += arr[i].substr(value.length)
+                                            optionItem.value = arr[i]
+                                            optionItem.addEventListener("click", function(e) {
+                                                inp.value = optionItem.value
+                                                addSkill()
+                                                updateSkills()
+                                                closeAllLists()
                                             });
-                                            a.appendChild(b);
+                                            optionContainer.appendChild(optionItem)
                                         }
                                     }
                                 });
-                                /*execute a function presses a key on the keyboard:*/
+
+                                // Mapping for down, up and enter keys to navigate the list of autocomplete options.
                                 inp.addEventListener("keydown", function(e) {
-                                    var x = document.getElementById(this.id + "autocomplete-list");
-                                    if (x) x = x.getElementsByTagName("div");
-                                    if (e.keyCode == 40) {
-                                        /*If the arrow DOWN key is pressed,
-                                        increase the currentFocus variable:*/
-                                        currentFocus++;
-                                        /*and and make the current item more visible:*/
-                                        addActive(x);
-                                    } else if (e.keyCode == 38) { //up
-                                        /*If the arrow UP key is pressed,
-                                        decrease the currentFocus variable:*/
-                                        currentFocus--;
-                                        /*and and make the current item more visible:*/
-                                        addActive(x);
-                                    } else if (e.keyCode == 13) {
-                                        /*If the ENTER key is pressed, prevent the form from being submitted,*/
-                                        e.preventDefault();
-                                        if (currentFocus > -1) {
-                                            /*and simulate a click on the "active" item:*/
-                                            if (x) x[currentFocus].click();
+                                    let optionContainer = document.getElementById("skills_autocomplete_container")
+                                    if (optionContainer) {
+                                        optionContainer = optionContainer.getElementsByTagName("div")
+                                    }
+                                    if (e.keyCode === 40) { // DOWN
+                                        currentItem++
+                                        addActive(optionContainer)
+                                    } else if (e.keyCode === 38) { // UP
+                                        currentItem--
+                                        addActive(optionContainer)
+                                    } else if (e.keyCode === 13) { // ENTER
+                                        e.preventDefault()
+                                        if (currentItem > -1) {
+                                            if (optionContainer) optionContainer[currentItem].click()
                                         }
+                                        closeAllLists()
                                     }
                                 });
+
+                                // Sets an autocomplete list item to be active
                                 function addActive(x) {
-                                    /*a function to classify an item as "active":*/
-                                    if (!x) return false;
-                                    /*start by removing the "active" class on all items:*/
-                                    removeActive(x);
-                                    if (currentFocus >= x.length) currentFocus = 0;
-                                    if (currentFocus < 0) currentFocus = (x.length - 1);
-                                    /*add class "autocomplete-active":*/
-                                    x[currentFocus].classList.add("autocomplete-active");
+                                    if (!x) return false
+                                    removeActive(x)
+                                    if (currentItem >= x.length) currentItem = 0
+                                    if (currentItem < 0) currentItem = (x.length - 1)
+                                    x[currentItem].classList.add("autocomplete-active")
                                 }
+
+                                // Deactivates all active autocomplete items
                                 function removeActive(x) {
-                                    /*a function to remove the "active" class from all autocomplete items:*/
-                                    for (var i = 0; i < x.length; i++) {
-                                        x[i].classList.remove("autocomplete-active");
+                                    for (let i = 0; i < x.length; i++) {
+                                        x[i].classList.remove("autocomplete-active")
                                     }
                                 }
-                                function closeAllLists(elmnt) {
-                                    /*close all autocomplete lists in the document,
-                                    except the one passed as an argument:*/
-                                    var x = document.getElementsByClassName("autocomplete-items");
-                                    for (var i = 0; i < x.length; i++) {
-                                        if (elmnt != x[i] && elmnt != inp) {
-                                            x[i].parentNode.removeChild(x[i]);
+
+                                // Closes autocomplete lists that aren't the parameter
+                                function closeAllLists(activeInput) {
+                                    let x = document.getElementsByClassName("autocomplete-items")
+                                    for (let i = 0; i < x.length; i++) {
+                                        if (activeInput != x[i] && activeInput != inp) {
+                                            x[i].parentNode.removeChild(x[i])
                                         }
                                     }
                                 }
-                                /*execute a function when someone clicks in the document:*/
+
+                                // When the user clicks anywhere, close all autocompletes that are not selected
                                 document.addEventListener("click", function (e) {
-                                    closeAllLists(e.target);
+                                    closeAllLists(e.target)
                                 });
                             }
-
-                            let allSkills = [[${allSkills}]];
-                            console.log(allSkills)
-
-                            autocomplete(document.getElementById("add_skill_input"), allSkills);
                         </script>
                     </div>
                     <label class="project_inputAlertBlue" id="skillCharCount" style="padding-left: 5px">Characters Remaining: 100</label>
@@ -363,6 +351,9 @@
                             let newSkill = document.getElementById("add_skill_input").value
                             if (skills.has(newSkill)) return;
                             skills.add(newSkill)
+                            allSkills = allSkills.filter(s => s !== newSkill)
+                            autocomplete(document.getElementById("add_skill_input"), allSkills)
+                            console.log(allSkills)
                             document.getElementById("add_skill_input").value = ""
                             appendSkill(newSkill)
                         }
@@ -394,6 +385,8 @@
                         // Deletes a skill then rebuilds the skill list
                         function removeSkill(event) {
                             skills.delete(event.target.value)
+                            allSkills.add(event.target.value)
+                            autocomplete(document.getElementById("add_skill_input"), allSkills)
                             clearSkills()
                             insertSkillRow()
                             for (const skill of skills) {
@@ -515,6 +508,12 @@
                 </div>
         </form>
         </div>
+    <script th:inline="javascript">
+        let allSkills = [[${allSkills}]];
+        console.log(allSkills.pop())
+
+        autocomplete(document.getElementById("add_skill_input"), allSkills);
+    </script>
 </div>
 </body>
 </html>

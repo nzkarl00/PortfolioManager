@@ -1310,6 +1310,7 @@ select.form-control {
     /*the container must be positioned relative:*/
     position: relative;
     display: flex;
+    width: 90%;
 }
 
 .autocomplete-items {
@@ -1322,6 +1323,8 @@ select.form-control {
     top: 100%;
     left: 0;
     right: 0;
+    font-family: nexaLight !important;
+
 }
 .autocomplete-items div {
     padding: 10px;

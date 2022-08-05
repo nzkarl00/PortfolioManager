@@ -22,7 +22,7 @@ public class EvidenceService {
     public Set<String> getAllUniqueSkills() {
         List<SkillTag> tagList = (List<SkillTag>) skillTagRepository.findAll();
         Set<String> skillList = new HashSet<String>();
-        tagList.stream().forEach(tag -> skillList.add(tag.getTitle()));
+        tagList.stream().forEach(tag -> skillList.add((String) tag.getTitle()));
         return skillList;
     }
 }

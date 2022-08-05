@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * responsible for the main/landing page of the project(s)
@@ -55,8 +56,7 @@ public class EvidenceListController {
 
     List<Evidence> evidenceList = evidencerepository.findAll();
     model.addAttribute("evidenceList", evidenceList);
-//    List<String> skillTagList = new ArrayList<String>(evidenceService.getAllUniqueSkills());
-    List<Sprint> skillTagList = (List<Sprint>) sprintRepository.findAll();
+    Set<String> skillTagList = evidenceService.getAllUniqueSkills();
     model.addAttribute("allSkills", skillTagList);
 
     Integer id = AuthStateInformer.getId(principal);
