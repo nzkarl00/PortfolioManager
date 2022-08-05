@@ -221,29 +221,35 @@
                     }
                     displayEdits()
                 } else {
-                    if (JupdateType == "SPRINT") {
+                    if (updateType == "SPRINT") {
                         client.get("/sprints", {params:{"id":[[${project.getId()}]]}})
                             .then((response) => {
                                 sprintList = response.data
+                                buildAll(sprintList, deadlineList, eventList, milestoneList)
+                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                             })
                     } else if (updateType == "DEADLINE") {
                         client.get("/deadlines", {params:{"id":[[${project.getId()}]]}})
                             .then((response) => {
                                 deadlineList = response.data
+                                buildAll(sprintList, deadlineList, eventList, milestoneList)
+                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                             })
                     } else if (updateType == "EVENT") {
                         client.get("/events", {params:{"id":[[${project.getId()}]]}})
                             .then((response) => {
                                 eventList = response.data
+                                buildAll(sprintList, deadlineList, eventList, milestoneList)
+                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                             })
                     } else if (updateType == "MILESTONE") {
                         client.get("/milestones", {params:{"id":[[${project.getId()}]]}})
                             .then((response) => {
                                 milestoneList = response.data
+                                buildAll(sprintList, deadlineList, eventList, milestoneList)
+                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                             })
                     }
-                    buildAll(sprintList, deadlineList, eventList, milestoneList)
-                    renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                 }
             });
         });
