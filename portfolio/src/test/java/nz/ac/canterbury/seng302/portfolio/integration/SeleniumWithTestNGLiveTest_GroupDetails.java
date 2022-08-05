@@ -40,6 +40,7 @@ public class SeleniumWithTestNGLiveTest_GroupDetails {
         whenAddedTeacherRole_AccessGroupsPage();
         whenOnGroupsPage_AccessTeacherGroup_ForDetails();
 
+
     }
 
     @AfterSuite

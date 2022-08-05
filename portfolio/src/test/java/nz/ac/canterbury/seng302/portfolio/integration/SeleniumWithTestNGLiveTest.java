@@ -38,6 +38,7 @@ public class SeleniumWithTestNGLiveTest {
                 whenPortfolioIsLoaded_thenLoginAdmin_forTests();
                 whenProjectIsAccessed_thenGoToAddDates();
                 whenAddingDate_CheckTitleLen();
+
         }
 
         @AfterSuite
