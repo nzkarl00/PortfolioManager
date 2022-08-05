@@ -17,8 +17,9 @@ public class SeleniumConfig {
      * Makes the browser to test implementation on
      */
     public SeleniumConfig() {
-        Capabilities capabilities = DesiredCapabilities.firefox();
-        driver = new FirefoxDriver(capabilities);
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
+        firefoxOptions.setCapability("marionette", true);
+        driver = new FirefoxDriver(firefoxOptions);
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
 

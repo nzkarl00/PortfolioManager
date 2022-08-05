@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head.html :: head('Edit Group')"></head>
-<body>
+<body onload="updateTitle('shortName', 10, 'maxLenShort');updateTitle('longName', 50, 'maxLen')">
 
 
 
@@ -24,17 +24,17 @@
 
             <div class="col-lg-2 col-m-1 col-2"></div>
 
-            <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
+            <div class="col-lg-7 col-md-8 col-sm-12 portion_body" >
                 <div>
-                    <label class="project_subhead" >Long Name*:</label>
-                    <input onKeyUp="updateCount('longName', 50, 'longCount')" class="project_edit_data horizontal_field" id="longName" type="text" th:name="longName" th:value="*{longName}" maxlength="50" title="Long Name can be a max of 50 characters" required><br/>
-                    <p id="longCount"></p>
+                    <label class="project_subhead" onload="updateTitle('longName', 50, 'maxLen')" >Long Name*:</label>
+                    <input oninput="updateTitle('longName', 50, 'maxLen')"  class="project_edit_data horizontal_field" id="longName" type="text" th:name="longName" th:value="*{longName}" maxlength="50" title="Long Name can be a max of 50 characters" required><br/>
+                    <label  class="project_inputAlertBlue" id="maxLen">Characters Remaining: 50</label>
                 </div>
 
                 <div>
                     <label class="project_subhead">Short Name*:</label>
-                    <input onKeyUp="updateCount('shortName', 10, 'shortCount')" class="project_edit_data horizontal_field"  id="shortName" th:name="shortName" th:value="*{shortName}" maxlength="10" title="Short Name can be a max of 10 characters" required><br/>
-                    <p id="shortCount"></p>
+                    <input oninput="updateTitle('shortName', 10, 'maxLenShort')" onload="updateTitle('shortName', 10, 'maxLenShort')" class="project_edit_data horizontal_field"  id="shortName" th:name="shortName" th:value="*{shortName}" maxlength="10" title="Short Name can be a max of 10 characters" required><br/>
+                    <label class="project_inputAlertBlue" id="maxLenShort">Characters Remaining: 10</label>
                 </div>
 
                 <div>
@@ -87,6 +87,9 @@
             <div class="col-2"></div>
 
         </form>
+
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script type="text/javascript" th:src="@{js/nameLengthCheck.js}"></script>
 
         <br>
 

@@ -158,8 +158,8 @@ let latest;
 function removeFromSelected(item) {
     let i = 0;
     for (const user of selected) {
-        if (user === item) {
-            selected.splice(i);
+        if (user[0] == item[0] && user[1] == item[1]) {
+            selected.splice(i, 1);
         }
         i++;
     }
@@ -275,6 +275,8 @@ function clearSelected() {
                     if ($(this).hasClass('selected')) {
                         $(this).removeClass('selected');
                         removeFromSelected([groupId, id])
+                        console.log(selected)
+                        console.log([groupId, id])
                     }
                     else {
                         $(this).addClass('selected');
