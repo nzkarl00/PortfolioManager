@@ -2,10 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
@@ -20,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,6 +34,8 @@ public class EvidenceListController {
   private ProjectRepository repository;
   @Autowired
   private EvidenceRepository evidencerepository;
+  @Autowired
+  private EvidenceTagRepository evidencetagrepository;
   @Autowired
   private SkillTagRepository skillrepository;
   @Autowired
@@ -62,12 +62,8 @@ public class EvidenceListController {
                                         @RequestParam(required = false , value="ci") Integer category_id,
                                         Model model) throws Exception {
     List<Evidence> evidenceList;
-    if (project_id != null){
-        Project project = projectService.getProjectById(project_id);
-       evidenceList = evidencerepository.findAllByAssociatedProjectOrderByDateDesc(project);
-    } else {
-      evidenceList = evidencerepository.findAllByOrderByDateDesc();
-    }
+
+    evidenceList = getEvidenceFunction(user_id, project_id, category_id, skill_id);
 
     List<SkillTag> skillList = skillrepository.findAll();
 
@@ -92,6 +88,36 @@ public class EvidenceListController {
     }
 
     return "evidenceList";
+  }
+
+  /**
+   * Takes the parameters and returns the appropriate evidence list based on search priority
+   * @param user_id Id of user to get evidence from
+   * @param project_id Id of project to get evidence from
+   * @param category_id Id of category to get evidence from
+   * @param skill_id Id of skill to get evidence from
+   * @return A properly sorted and filtered list of evidence
+   * @throws Exception
+   */
+  private List<Evidence> getEvidenceFunction(Integer user_id, Integer project_id, Integer category_id, Integer skill_id) throws Exception {
+
+    if (project_id != null){
+      Project project = projectService.getProjectById(Integer.valueOf(project_id));
+      return evidencerepository.findAllByAssociatedProjectOrderByDateDesc(project);
+    } else if (user_id != null){
+      return evidencerepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(user_id));
+    }else if (category_id != null){
+      return evidencerepository.findAllByOrderByDateDesc();
+    }else if (skill_id != null){
+      List<EvidenceTag> evidenceTags = evidencetagrepository.findAllByParentSkillTagId(Integer.valueOf(skill_id));
+      List<Evidence> evidenceSkillList = new ArrayList<>();
+      for (EvidenceTag tag: evidenceTags){
+        evidenceSkillList.add(tag.getParentEvidence());
+      }
+      return evidenceSkillList;
+    }else{
+      return evidencerepository.findAllByOrderByDateDesc();
+    }
   }
 
   /**
@@ -121,11 +147,6 @@ public class EvidenceListController {
     if (category_id != null) {
       returnString += "ci=" + (category_id);
     }
-
-    System.out.println("HELLO?");
-    System.out.println(skill_id);
-    System.out.println(category_id);
-    System.out.println(returnString);
 
     return returnString;
 

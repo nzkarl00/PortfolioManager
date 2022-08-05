@@ -16,4 +16,5 @@ public interface EvidenceRepository extends CrudRepository<Evidence, Integer> {
     Event findById(int id);
     List<Evidence> findAllByOrderByDateDesc();
     List<Evidence> findAllByAssociatedProjectOrderByDateDesc(Project parent_project);
+    List<Evidence> findAllByParentUserIdOrderByDateDesc(Integer valueOf);
 }

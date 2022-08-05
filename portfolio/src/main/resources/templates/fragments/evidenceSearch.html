@@ -29,7 +29,7 @@
                             <div class="slight_pad">
                             <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
                             <b class="evidence_head setWide">Category:</b><br>
-                            <select id="ci" th:name="ci" class="project_edit_data setWide">
+                            <select id="ci" th:name="ci"  onclick="resetElement('si')" class="project_edit_data setWide">
                                 <option value="" selected disabled> Choose here</option>
                                 <option value=0>&nbsp;&nbsp;Quantitative skills</option>
                                 <option value=1>&nbsp;&nbsp;Qualitative skills</option>
@@ -41,7 +41,7 @@
                             <div class="slight_pad">
                             <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
                             <b class="evidence_head setWide">Skill:</b><br>
-                            <select id="si" th:name="si" class="project_edit_data setWide">
+                            <select id="si" th:name="si" onclick="resetElement('ci')" class="project_edit_data setWide">
                                 <option value="" selected disabled> Choose here</option>
                                 <div th:each="skill: ${skillList}"><option th:value="${skill.getId}" th:text="${skill.getTitle}"> </option><div>
                             </select>
@@ -51,6 +51,12 @@
                             <button class="search" type="submit"><i class="fa fa-search"></i></button>
                         </div>
         </form>
+    <script type="text/javascript" th:inline="javascript">
+        function resetElement(element_id){
+
+            document.getElementById(element_id).selectedIndex = "";
+        }
+    </script>
 </div>
 </body>
 </html>
