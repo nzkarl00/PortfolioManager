@@ -1,0 +1,30 @@
+2022-08-04 16:14:51,056 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting PortfolioApplication using Java 17.0.3 on cs18194kq with PID 116322 (/csse/users/tmo89/Desktop/Seng302/team-700/portfolio/build/classes/java/main started by tmo89 in /csse/users/tmo89/Desktop/Seng302/team-700/portfolio)
+2022-08-04 16:14:51,057 DEBUG org.springframework.boot.StartupInfoLogger [restartedMain] Running with Spring Boot v2.6.3, Spring v5.3.15
+2022-08-04 16:14:51,059 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2022-08-04 16:14:53,711 DEBUG org.springframework.web.filter.GenericFilterBean [restartedMain] Filter 'jwtAuthenticationFilter' configured for use
+2022-08-04 16:14:57,242 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started PortfolioApplication in 6.612 seconds (JVM running for 7.369)
+2022-08-04 16:16:12,286 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting PortfolioApplication using Java 17.0.3 on cs18194kq with PID 116933 (/csse/users/tmo89/Desktop/Seng302/team-700/portfolio/build/classes/java/main started by tmo89 in /csse/users/tmo89/Desktop/Seng302/team-700/portfolio)
+2022-08-04 16:16:12,288 DEBUG org.springframework.boot.StartupInfoLogger [restartedMain] Running with Spring Boot v2.6.3, Spring v5.3.15
+2022-08-04 16:16:12,288 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2022-08-04 16:16:14,591 DEBUG org.springframework.web.filter.GenericFilterBean [restartedMain] Filter 'jwtAuthenticationFilter' configured for use
+2022-08-04 16:16:17,545 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started PortfolioApplication in 5.633 seconds (JVM running for 6.331)
+2022-08-04 16:18:41,812 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting PortfolioApplication using Java 17.0.3 on cs18194kq with PID 117704 (/csse/users/tmo89/Desktop/Seng302/team-700/portfolio/build/classes/java/main started by tmo89 in /csse/users/tmo89/Desktop/Seng302/team-700/portfolio)
+2022-08-04 16:18:41,814 DEBUG org.springframework.boot.StartupInfoLogger [restartedMain] Running with Spring Boot v2.6.3, Spring v5.3.15
+2022-08-04 16:18:41,814 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2022-08-04 16:18:43,914 DEBUG org.springframework.web.filter.GenericFilterBean [restartedMain] Filter 'jwtAuthenticationFilter' configured for use
+2022-08-04 16:18:46,899 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started PortfolioApplication in 5.425 seconds (JVM running for 6.167)
+2022-08-04 16:21:14,707 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting PortfolioApplication using Java 17.0.3 on cs18194kq with PID 118458 (/csse/users/tmo89/Desktop/Seng302/team-700/portfolio/build/classes/java/main started by tmo89 in /csse/users/tmo89/Desktop/Seng302/team-700/portfolio)
+2022-08-04 16:21:14,708 DEBUG org.springframework.boot.StartupInfoLogger [restartedMain] Running with Spring Boot v2.6.3, Spring v5.3.15
+2022-08-04 16:21:14,708 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2022-08-04 16:21:16,906 DEBUG org.springframework.web.filter.GenericFilterBean [restartedMain] Filter 'jwtAuthenticationFilter' configured for use
+2022-08-04 16:21:20,107 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started PortfolioApplication in 5.723 seconds (JVM running for 6.449)
+2022-08-04 16:25:02,554 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting PortfolioApplication using Java 17.0.3 on cs18194kq with PID 119477 (/csse/users/tmo89/Desktop/Seng302/team-700/portfolio/build/classes/java/main started by tmo89 in /csse/users/tmo89/Desktop/Seng302/team-700/portfolio)
+2022-08-04 16:25:02,556 DEBUG org.springframework.boot.StartupInfoLogger [restartedMain] Running with Spring Boot v2.6.3, Spring v5.3.15
+2022-08-04 16:25:02,556 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2022-08-04 16:25:04,690 DEBUG org.springframework.web.filter.GenericFilterBean [restartedMain] Filter 'jwtAuthenticationFilter' configured for use
+2022-08-04 16:25:07,713 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started PortfolioApplication in 5.495 seconds (JVM running for 6.184)
+2022-08-04 16:41:33,110 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Starting PortfolioApplication using Java 17.0.3 on cs18194kq with PID 122830 (/csse/users/tmo89/Desktop/Seng302/team-700/portfolio/build/classes/java/main started by tmo89 in /csse/users/tmo89/Desktop/Seng302/team-700/portfolio)
+2022-08-04 16:41:33,111 DEBUG org.springframework.boot.StartupInfoLogger [restartedMain] Running with Spring Boot v2.6.3, Spring v5.3.15
+2022-08-04 16:41:33,112 INFO org.springframework.boot.SpringApplication [restartedMain] No active profile set, falling back to default profiles: default
+2022-08-04 16:41:35,344 DEBUG org.springframework.web.filter.GenericFilterBean [restartedMain] Filter 'jwtAuthenticationFilter' configured for use
+2022-08-04 16:41:38,356 INFO org.springframework.boot.StartupInfoLogger [restartedMain] Started PortfolioApplication in 5.576 seconds (JVM running for 6.349)

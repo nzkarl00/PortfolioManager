@@ -1,15 +1,15 @@
-package nz.ac.canterbury.seng302.portfolio.model;
+package nz.ac.canterbury.seng302.portfolio.service;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Validate {
+public class ValidateService {
 
     /**
      * Basic text checker, checks there are at least 3 non-special characters from any language
      * @param text The text to check
      */
-    public static void validateText(String text) {
+    public static void validateEnoughCharacters(String text) {
         int charCount = 0;
         //This pattern will match characters from any language, note it also excludes whitespace
         //https://stackoverflow.com/a/64293069

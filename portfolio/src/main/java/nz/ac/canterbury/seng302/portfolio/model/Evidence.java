@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import static nz.ac.canterbury.seng302.portfolio.model.Validate.validateText;
+import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validateEnoughCharacters;
 
 /**
  * An abstract class designed to provide a base for the three specific types of time bound items related to a project.
@@ -94,8 +94,8 @@ public class Evidence {
         } else if (date.isBefore(parentProject.getLocalStartDate())) {
             throw new IllegalArgumentException("Evidence date is before parent project start date");
         }
-        validateText(title);
-        validateText(description);
+        validateEnoughCharacters(title);
+        validateEnoughCharacters(description);
     }
 
     /**
