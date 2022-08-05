@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 
@@ -66,5 +67,13 @@ public class AccountController {
         model.addAttribute("bio", userReply.getBio());
 
         return "account";
+    }
+
+    @GetMapping("/evidenceList")
+    public String getAccountEvidence(@AuthenticationPrincipal AuthState principal,
+                                     Model model) {
+        Integer user_id = AuthStateInformer.getId(principal);
+        return "redirect:evidence?ui=" + String.valueOf(user_id);
+
     }
 }
