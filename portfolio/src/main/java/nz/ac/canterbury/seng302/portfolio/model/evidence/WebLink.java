@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.model.evidence;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 
 import javax.persistence.*;
+import java.util.regex.Pattern;
 
 /**
  * The entity representation for web links.
@@ -19,6 +20,8 @@ import javax.persistence.*;
 @Entity()
 public class WebLink {
     public static final int MAX_URL_LENGTH = 1000;
+    private static final Pattern httpsPattern = Pattern.compile("^https://.*$");
+    private static final Pattern protocolPattern = Pattern.compile("^https?://.*$");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,19 +57,59 @@ public class WebLink {
     private boolean secure = false;
 
     /**
-     * Wheter or not the Link results in a 404 error, ie. it is not found
+     * Whether or not the Link results in a 404 error, ie. it is not found
      * Defaults to null, must be fetched first.
      */
-    @Transient
+    @Column(name="not_found")
     private boolean notFound = false;
 
     /**
+     * No Arg constructor for Hibernate
+     */
+    protected WebLink() {}
+
+    /**
      * Crate a Link with the given URL
+     * Procondition:
+     * - url must be a valid URL, use urlIsValid to check
      * @param url the URL of the link
      */
     public WebLink (String url, Evidence parentEvidence) {
+        urlIsValid(url);
         this.url = url;
+        this.secure = urlIsHttps(url);
         this.parentEvidence = parentEvidence;
+    }
+
+    /**
+     * Checks if the supplied URL is valid
+     * @param url
+     * @return true if valid
+     * @throws IllegalArgumentException if URL is invalid, specifying the reason
+     */
+    public boolean urlIsValid(String url) {
+        if (!urlHasProtocol(url)) {
+            throw new IllegalArgumentException("URL must contain an HTTP(s) protocol definition");
+        }
+        return true;
+    }
+
+    /**
+     * True if the URL has https as the protocol
+     * @param url
+     * @return
+     */
+    private boolean urlIsHttps(String url) {
+        return httpsPattern.matcher(url).matches();
+    }
+
+    /**
+     * True if the URL has http as the protocol
+     * @param url
+     * @return
+     */
+    private boolean urlHasProtocol(String url) {
+        return protocolPattern.matcher(url).matches();
     }
 
     /**
@@ -89,14 +132,9 @@ public class WebLink {
 
     /**
      * Whether or not the fetching of the link indicated that the link was secure, ie. HTTPS
-     * Precondition:
-     * - Link has been fetched
      * @return true if the link is a secure link
      */
     public boolean isSecure() {
-        if (!fetched) {
-            throw new IllegalStateException("Link must be fetched first");
-        }
         return secure;
     }
 
@@ -123,23 +161,11 @@ public class WebLink {
 
     /**
      * Sets the results of fetching the link, and marks the link as fetched
-     * @param fetched
-     * @param secure whether the fetch resulted in marking the link as secure
      * @param notFound whether the fetch resulted in a 404
      */
-    public void setFetchResult(boolean secure, boolean notFound) {
+    public void setFetchResult(boolean notFound) {
         this.fetched = true;
-        this.secure = secure;
         this.notFound = notFound;
-    }
-
-    /**
-     * Set that the link is a secure one.
-     * @param secure
-     */
-    public void setSecure(boolean secure) {
-        assert(fetched);
-        this.secure = secure;
     }
 
     /**

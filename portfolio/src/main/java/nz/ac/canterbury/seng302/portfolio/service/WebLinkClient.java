@@ -40,36 +40,41 @@ public class WebLinkClient {
     /**
      * Given a supplied web link, attempt to fetch the link.
      * Modifies the properties of the link that is received, without returning a new link.
-     * @param link
+     * Utilises Mono to aid in parallelisation / asynchronous calling, ie. avoid blocking.
+     * @param link The web link to update
+     * @return A mono resolving to the Web Link passed as a parameter
      */
-    public void tryLink(final WebLink link) {
-        Mono<ResponseEntity<String>> uriSpec = client.method(HttpMethod.GET)
+    public Mono<WebLink> tryLink(final WebLink link) {
+        final String NOT_FOUND_ERROR_MESSAGE = "Status is 404";
+        return client.method(HttpMethod.GET)
             .uri(link.url)
             .retrieve()
             .onStatus(
                     status -> status == HttpStatus.NOT_FOUND,
                     clientResponse -> Mono.error(new Error("Status is 404"))
             )
-            .toEntity(String.class);
-
-        try {
-            ResponseEntity res = uriSpec.block();
-            logger.info(res.getStatusCode().toString());
-            logger.info(res.getHeaders().toString());
-            logger.info(res.getHeaders().getLocation().toString());
-        } catch (Error e) {
-            logger.warn("Requesting link resulted in a 404");
-        } catch (WebClientRequestException e) {
-            if (e.getCause().getClass() == UnknownHostException.class) {
-                logger.warn(String.format(
-                    "Requesting link resulted in unknown host error, link: %s",
-                    link.url
-                ));
-            } else {
-                logger.warn("Requesting link resulted in exception", e);
-            }
-            link.setFetchResult(false, true);
-        }
+            .toEntity(String.class)
+            .doOnError(throwable -> {
+                if (throwable.getClass() == WebClientRequestException.class) {
+                    if (throwable.getCause().getClass() == UnknownHostException.class) {
+                        logger.warn(String.format(
+                                "Requesting link resulted in unknown host error, link: %s",
+                                link.url
+                        ));
+                    } else {
+                        logger.warn("Requesting link resulted in exception", throwable);
+                    }
+                    link.setFetchResult(true);
+                } else if (throwable.getMessage().equals(NOT_FOUND_ERROR_MESSAGE)) {
+                    logger.warn("Requesting link resulted in a 404");
+                    link.setFetchResult(true);
+                }
+            })
+            .doOnNext(responseEntity -> {
+                logger.debug("Fetching URL resulted in status code: " + responseEntity.getStatusCode().toString());
+                link.setFetchResult(false);
+            })
+            .map(e -> link);
     }
 
 }
