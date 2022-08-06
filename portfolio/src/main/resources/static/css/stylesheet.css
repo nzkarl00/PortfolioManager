@@ -574,7 +574,8 @@
     font-family: nexaLight !important;
 
 }
-.save:hover {
+
+.save_hover:hover {
 
     background: #08F722 !important;
     color: #ffffff !important;
@@ -1294,7 +1295,7 @@ select.form-control {
 
 .save_evidence {
 
-    background-color: #26D20F !important;
+    background-color: #26D20F;
     border-radius: 15px !important;
     border-style: none !important;
     color: #ffffff !important;
@@ -1304,6 +1305,20 @@ select.form-control {
     font-colour: #FFFFFF !important;
     padding: 0.5rem !important;
     margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+
+.add_evidence {
+
+    background-color: #26D20F;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-colour: #FFFFFF !important;
+    padding: 0.5rem !important;
     font-family: nexaLight !important;
 
 }
