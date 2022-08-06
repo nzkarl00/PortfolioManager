@@ -15,6 +15,11 @@
 
     <div class="row-1">
       <br><br><br>
+      <div class="alert-info editAlert display_data" role="alert" id="display_box" th:utext="${errorMessage}"></div>
+      <p class="alert-info editAlert display_data" role="alert" id="info_message_no_add_button" th:if="${!showForm}">
+        New evidence can be added through the project details page (this is a view only page)
+      </p>
+
     </div>
 
     <!-- Portfolio heading -->
@@ -22,7 +27,7 @@
     <div class="row-1">
 
       <div class="col-12">
-        <p class="body_title_large">List Of Evidence</p>
+        <p class="body_title_large" th:text="${showForm? project.getName + ' - Evidence List' : 'List Of Evidence'}"></p>
       </div>
 
     </div>
@@ -39,8 +44,8 @@
     <div class="row">
 
       <div class="col-1"></div>
-      <div class="col-lg-10 col-md-12 col-sm-12" >
-        <div th:replace="fragments/evidenceForm.html :: evidenceForm"></div>
+      <div class="col-lg-10 col-md-12 col-sm-12">
+        <div th:replace="${showForm} ? ~{fragments/evidenceForm.html :: evidenceForm} : ~{}"></div>
       </div>
     </div>
     <br>
@@ -86,14 +91,9 @@
           <br>
         </div>
         </div>
-
       </div>
 
-
-
       <div class="col-2">
-
-
       </div>
 
       <div class="col-4">
@@ -114,5 +114,40 @@
 </div>
 <!-- JS -->
 <script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+
+  // Set timeout for display message. From -  https://bobbyhadz.com/blog/javascript-hide-element-after-few-seconds
+  setTimeout(() => {
+    const box = document.getElementById('display_box');
+    const displayMessageForNoAddButton = document.getElementById('info_message_no_add_button');
+
+    // removes element from DOM
+    box.style.display = 'none';
+    displayMessageForNoAddButton.style.display = 'none';
+
+    // hides element (still takes up space on page)
+    // box.style.visibility = 'hidden';
+  }, 5000); // time in milliseconds
+
+  // If required fields are filled in, enable save button
+  function canSaveCheck() {
+    const descriptionField = document.getElementById('evidence_desc').value;
+    const titleField = document.getElementById('evidence_title').value;
+    const dateField = document.getElementById('date_input').value;
+    var saveButton = document.getElementById('projectSave');
+    if (descriptionField.length > 0 && titleField.length > 0 && dateField.length > 0) {
+      saveButton.disabled = false;
+      saveButton.style.backgroundColor = "#26D20F";
+      if (!saveButton.classList.contains("save_hover")) {
+        saveButton.className += " save_hover";
+      }
+    } else {
+      saveButton.disabled = true;
+      saveButton.style.backgroundColor = "lightgray";
+      saveButton.classList.remove("save_hover");
+    }
+  }
+
+</script>
 </body>
 </html>

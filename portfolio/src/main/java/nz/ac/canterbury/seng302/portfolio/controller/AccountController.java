@@ -59,6 +59,7 @@ public class AccountController {
 
         String name = userReply.getFirstName() + " " +  userReply.getLastName();
         model.addAttribute("roles", roles);
+        model.addAttribute("userId", userReply.getId());
         model.addAttribute("pronouns", userReply.getPersonalPronouns());
         model.addAttribute("name",  name);
         model.addAttribute("nickname",  userReply.getNickname());
@@ -67,13 +68,5 @@ public class AccountController {
         model.addAttribute("bio", userReply.getBio());
 
         return "account";
-    }
-
-    @GetMapping("/evidenceList")
-    public String getAccountEvidence(@AuthenticationPrincipal AuthState principal,
-                                     Model model) {
-        Integer user_id = AuthStateInformer.getId(principal);
-        return "redirect:evidence?ui=" + String.valueOf(user_id);
-
     }
 }

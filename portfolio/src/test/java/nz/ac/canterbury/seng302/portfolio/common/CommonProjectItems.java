@@ -1,9 +1,32 @@
 package nz.ac.canterbury.seng302.portfolio.common;
 
+import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 public final class CommonProjectItems {
+
+    public static Project getValidProject() {
+        Date april1 = DateParser.stringToDate("2022-05-01");
+        Date may1 = DateParser.stringToDate("2022-10-01");
+        Project testProject = new Project("testName", "testDescription", april1, may1);
+        return testProject;
+    }
+
+    public static Evidence getValidEvidence() {
+        Project testProject = getValidProject();
+        LocalDate may4 = LocalDate.parse("2022-05-04");
+        Evidence evidence = new Evidence(0, testProject, "Evidence One", "This evidence is the first to be submitted", may4);
+
+        return evidence;
+    }
+
     public static MultiValueMap<String, String> validParamsDeadline = getValid();
     public static MultiValueMap<String, String> validParamsEvent = getValidEvent();
 
