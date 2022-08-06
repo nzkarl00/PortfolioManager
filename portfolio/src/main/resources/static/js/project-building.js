@@ -125,7 +125,7 @@ function buildSprint(sprint) {
     }
 }
 
-function buildDeadline(deadline, sprintId) {
+function buildDeadline(deadline, sprintId, sprintProjectId) {
     const mainDiv = document.getElementById("deadlinesList" + sprintId)
     const eachDeadline = document.createElement("form")
     const deleteDeadline = document.createElement("button")
@@ -144,6 +144,7 @@ function buildDeadline(deadline, sprintId) {
 
     projectId.style = "display:none;"
     projectId.name = "projectId"
+    projectId.value = sprintProjectId
     projectId.id = "projectId"
     projectId.type = "number"
 
@@ -230,7 +231,7 @@ function getSprintEndIds(event) {
     return endId
 }
 
-function buildEvent(event, sprintId) {
+function buildEvent(event, sprintId, sprintProjectId) {
     const mainDiv = document.getElementById("eventsList" + sprintId)
     const eachEvent = document.createElement("form")
     const deleteEvent = document.createElement("button")
@@ -242,6 +243,7 @@ function buildEvent(event, sprintId) {
 
     projectId.style = "display:none;"
     projectId.name = "projectId"
+    projectId.value = sprintProjectId
     projectId.id = "projectId"
     projectId.type = "number"
 
@@ -306,7 +308,7 @@ function buildEvent(event, sprintId) {
     eachEvent.appendChild(eventType)
 }
 
-function buildMilestone(milestone, sprintId) {
+function buildMilestone(milestone, sprintId, sprintProjectId) {
     const mainDiv = document.getElementById("milestonesList" + sprintId)
     const eachMilestone = document.createElement("form")
     const deleteMilestone = document.createElement("button")
@@ -325,6 +327,7 @@ function buildMilestone(milestone, sprintId) {
 
     projectId.style = "display:none;"
     projectId.name = "projectId"
+    projectId.value = sprintProjectId
     projectId.id = "projectId"
     projectId.type = "number"
 
@@ -385,7 +388,7 @@ function buildMilestone(milestone, sprintId) {
 }
 
 // build an in-between sprint in html from js
-function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, eventList, milestoneList) {
+function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, eventList, milestoneList, projectId) {
 
     const startDate = startDateDate.toString();
     const endDate = endDateDate.toString();
@@ -459,7 +462,7 @@ function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, even
         deadlinesList.style.display = "none"
     } else {
         for (const deadline of tempDeadlines) {
-            buildDeadline(deadline, id)
+            buildDeadline(deadline, id, projectId)
         }
     }
 
@@ -470,7 +473,7 @@ function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, even
         milestonesList.style.display = "none"
     } else {
         for (const milestone of tempMilestones) {
-            buildMilestone(milestone, id)
+            buildMilestone(milestone, id, projectId)
         }
     }
 
@@ -484,7 +487,7 @@ function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, even
         }
     } else {
         for (const event of tempEvents) {
-            buildEvent(event, id)
+            buildEvent(event, id, projectId)
         }
     }
 }

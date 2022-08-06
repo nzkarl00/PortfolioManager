@@ -546,26 +546,27 @@
     connect('calendar');
 
     function buildAll(sprintList, deadlineList, eventList, milestoneList) {
+        deleteAllSprints();
         for (const sprint of sprintList) {
 
-            buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId, deadlineList, eventList, milestoneList)
+            buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId, deadlineList, eventList, milestoneList, sprint.parentProjectId)
             buildSprint(sprint)
             initialDate = sprint.endDate;
             initialFalseId += 1;
 
             for (const deadline of getSprintTimeBound(deadlineList, sprint.startDate, sprint.endDate)) {
-                buildDeadline(deadline, sprint.id)
+                buildDeadline(deadline, sprint.id, sprint.parentProjectId)
             }
 
             for (const milestone of getSprintTimeBound(milestoneList, sprint.startDate, sprint.endDate)) {
-                buildMilestone(milestone, sprint.id)
+                buildMilestone(milestone, sprint.id, sprint.parentProjectId)
             }
 
             for (const event of getSprintTimeBound(eventList, sprint.startDate, sprint.endDate)) {
-                buildEvent(event, sprint.id)
+                buildEvent(event, sprint.id, sprint.parentProjectId)
             }
         }
-        buildInBetweenSprint(initialDate,[[${project.getEndDate()}]] , initialFalseId, deadlineList, eventList, milestoneList)
+        buildInBetweenSprint(initialDate,[[${project.getEndDate()}]] , initialFalseId, deadlineList, eventList, milestoneList, [[${project.getId()}]])
     }
     // this needs to happen to allow time for the tooltips to be imported into the js or something
     // js is gross
