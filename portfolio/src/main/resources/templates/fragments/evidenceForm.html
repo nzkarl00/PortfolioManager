@@ -39,15 +39,15 @@
                                 </div>
                             <div id="category_multiselect_items" class="category_box" style="display: none">
                                 <label for="category_quantitative" class="category_item" style="display: block">
-                                    <input type="checkbox" th:name="categoryQuantitative" class="category_item" id="category_quantitative" onchange="updateCategories(this)" />
+                                    <input type="checkbox" autocomplete="off" th:name="categoryQuantitative" class="category_item" value="Quantitative Skills" id="category_quantitative" onchange="updateCategories(this)" />
                                     Quantitative Skills
                                 </label>
                                 <label for="category_qualitative" class="category_item" style="display: block">
-                                    <input type="checkbox" th:name="categoryQualitative" class="category_item" id="category_qualitative" onchange="updateCategories(this)" />
+                                    <input type="checkbox" autocomplete="off" th:name="categoryQualitative" class="category_item" value="Qualitative Skills" id="category_qualitative" onchange="updateCategories(this)" />
                                     Qualitative Skills
                                 </label>
                                 <label for="category_service" class="category_item" style="display: block">
-                                    <input type="checkbox" th:name="categoryService" class="category_item" id="category_service" onchange="updateCategories(this)" />
+                                    <input type="checkbox" autocomplete="off" th:name="categoryService" class="category_item" value="Service" id="category_service" onchange="updateCategories(this)" />
                                     Service
                                 </label>
                             </div>
@@ -68,12 +68,23 @@
                         }
 
                         function updateCategories(event) {
-                            console.log(event)
+                            newCategory = event.value
+                            if (selectedCategories.has(newCategory)) {
+                                selectedCategories.delete(newCategory)
+                            } else {
+                                selectedCategories.add(event.value)
+                            }
+                            let categoryDisplay = document.getElementById("evidence_category")
+                            if (selectedCategories.size == 0) {
+                                categoryDisplay.innerText = "Select Categories"
+                            } else {
+                                categoryDisplay.innerText = [...selectedCategories].join(', ')
+                            }
                         }
 
                         document.addEventListener("click", function (e) {
                             let categoryOptions = document.getElementById("category_multiselect_items")
-                            if (e.target != document.getElementById("evidence_category")) {
+                            if (e.target != document.getElementById("evidence_category") && e.target.className != "category_item") {
                                 categoryOptions.style.display = "none"
                                 categoryOptionsShown = true
                             }
