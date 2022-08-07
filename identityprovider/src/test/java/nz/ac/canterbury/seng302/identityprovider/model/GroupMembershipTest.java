@@ -1,8 +1,10 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import org.junit.jupiter.api.Test;
+
 import java.util.Date;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GroupMembershipTest {
 

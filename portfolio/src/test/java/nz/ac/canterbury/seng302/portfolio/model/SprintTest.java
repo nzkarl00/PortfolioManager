@@ -4,13 +4,14 @@ package nz.ac.canterbury.seng302.portfolio.model;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 
 import static nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint.dateToString;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SprintTest {
     private int expectedSprintId;

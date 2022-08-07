@@ -1,8 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
-import org.checkerframework.checker.units.qual.Length;
-import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.time.LocalDate;

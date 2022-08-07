@@ -1,19 +1,15 @@
 package nz.ac.canterbury.seng302.portfolio.integration;
-import io.cucumber.java.en.Then;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
+
 import org.junit.jupiter.api.Assertions;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 

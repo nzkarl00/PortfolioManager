@@ -1,22 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import nz.ac.canterbury.seng302.shared.identityprovider.ChangePasswordRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.ChangePasswordResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.ModifyRoleOfUserRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 
 /**
  * The GRPC client side service class

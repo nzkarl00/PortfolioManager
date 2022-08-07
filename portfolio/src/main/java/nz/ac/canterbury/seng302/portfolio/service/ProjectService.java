@@ -1,15 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
-import org.hibernate.annotations.NotFound;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.time.LocalDate;
 
 // more info here https://codebun.com/spring-boot-crud-application-using-thymeleaf-and-spring-data-jpa/
 
@@ -29,7 +28,7 @@ public class ProjectService {
     /**
      * Get project by id
      */
-    public Project getProjectById(Integer id) throws Exception {
+    public Project getProjectById(Integer id) throws CustomExceptions.ProjectItemNotFoundException {
 
         Optional<Project> project = repository.findById(id);
         if(project.orElse(null)!=null) {
@@ -37,7 +36,7 @@ public class ProjectService {
         }
         else
         {
-            throw new Exception("Project not found");
+            throw new CustomExceptions.ProjectItemNotFoundException("Project not found");
         }
     }
 
