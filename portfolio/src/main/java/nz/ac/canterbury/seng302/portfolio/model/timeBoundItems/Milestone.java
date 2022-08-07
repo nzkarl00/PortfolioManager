@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
  * The date concept of ProjectItem class, are treated as the same thing, only one date exists.
  */
 @Entity
-@Table(name="milestone")
 public class Milestone extends ProjectTimeBoundItem {
     protected Milestone() {}
 

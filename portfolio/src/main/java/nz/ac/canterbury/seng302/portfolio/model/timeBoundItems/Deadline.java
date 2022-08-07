@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
  * The startDate and endDate concept of ProjectItem class, are treated as the same thing, only one date exists.
  */
 @Entity
-@Table(name="deadline")
 public class Deadline extends ProjectTimeBoundItem {
     protected Deadline() {}
 
