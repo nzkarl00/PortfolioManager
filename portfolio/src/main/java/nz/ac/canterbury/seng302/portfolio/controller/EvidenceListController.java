@@ -6,6 +6,12 @@ import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
+import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
@@ -23,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * responsible for the main/landing page of the project(s)
@@ -31,7 +38,7 @@ import java.util.Optional;
 public class EvidenceListController {
 
   @Autowired
-  private EvidenceRepository evidencerepository;
+  private EvidenceRepository evidenceRepository;
   @Autowired
   private EvidenceTagRepository evidenceTagRepository;
   @Autowired
@@ -42,6 +49,8 @@ public class EvidenceListController {
   private AccountClientService accountClientService;
   @Autowired
   private NavController navController;
+  @Autowired
+  private EvidenceService evidenceService;
 
   private String errorMessage = "";
 
@@ -70,6 +79,8 @@ public class EvidenceListController {
     List<SkillTag> skillList = skillRepository.findAll();
 
     model.addAttribute("evidenceList", evidenceList);
+    Set<String> skillTagList = evidenceService.getAllUniqueSkills();
+    model.addAttribute("allSkills", skillTagList);
     model.addAttribute("skillList", skillList);
 
     Integer id = AuthStateInformer.getId(principal);
@@ -148,7 +159,7 @@ public class EvidenceListController {
     // If no error occurs then save the evidence to the repo
     if(errorMessage.equals("")) {
       Evidence evidence = new Evidence(accountID, parentProject, title, description, evidenceDate);
-      evidencerepository.save(evidence);
+      evidenceRepository.save(evidence);
       logger.info(String.format("Evidence has been created and saved to the repo evidenceId=<%s>", evidence.getId()));
       errorMessage = "Evidence has been added";
     }
@@ -168,11 +179,11 @@ public class EvidenceListController {
 
     if (projectId != null){
       Project project = projectService.getProjectById(Integer.valueOf(projectId));
-      return evidencerepository.findAllByAssociatedProjectOrderByDateDesc(project);
+      return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
     } else if (userId != null){
-      return evidencerepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
+      return evidenceRepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
     }else if (categoryId != null){
-      return evidencerepository.findAllByOrderByDateDesc();
+      return evidenceRepository.findAllByOrderByDateDesc();
     }else if (skillId != null){
       List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(Integer.valueOf(skillId));
       List<Evidence> evidenceSkillList = new ArrayList<>();
@@ -181,7 +192,7 @@ public class EvidenceListController {
       }
       return evidenceSkillList;
     }else{
-      return evidencerepository.findAllByOrderByDateDesc();
+      return evidenceRepository.findAllByOrderByDateDesc();
     }
   }
 
