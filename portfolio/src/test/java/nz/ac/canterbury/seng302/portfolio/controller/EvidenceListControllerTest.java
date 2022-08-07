@@ -7,12 +7,14 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTagRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,11 +52,10 @@ public class EvidenceListControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private EvidenceRepository evidenceRepository;
     @MockBean
-    private EvidenceTagRepository evidencetagrepository;
+    private EvidenceTagRepository evidenceTagRepository;
     @MockBean
     private SkillTagRepository skillRepository;
     @MockBean
@@ -63,7 +64,8 @@ public class EvidenceListControllerTest {
     private AccountClientService accountClientService;
     @MockBean
     private NavController navController;
-
+    @MockBean
+    private EvidenceService evidenceService;
 
     @Before
     public void setup() throws Exception {
@@ -118,7 +120,6 @@ public class EvidenceListControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
-
         when(projectService.getProjectById(0)).thenReturn(testProject);
 
         // Executing the mocked post request, checking that the page is displayed

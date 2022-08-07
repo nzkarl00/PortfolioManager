@@ -38,7 +38,7 @@ import java.util.Set;
 public class EvidenceListController {
 
   @Autowired
-  private EvidenceRepository evidencerepository;
+  private EvidenceRepository evidenceRepository;
   @Autowired
   private EvidenceTagRepository evidenceTagRepository;
   @Autowired
@@ -50,11 +50,7 @@ public class EvidenceListController {
   @Autowired
   private NavController navController;
   @Autowired
-  private SkillTagRepository skillTagRepository;
-  @Autowired
   private EvidenceService evidenceService;
-  @Autowired
-  private SprintRepository sprintRepository;
 
   private String errorMessage = "";
 
@@ -163,7 +159,7 @@ public class EvidenceListController {
     // If no error occurs then save the evidence to the repo
     if(errorMessage.equals("")) {
       Evidence evidence = new Evidence(accountID, parentProject, title, description, evidenceDate);
-      evidencerepository.save(evidence);
+      evidenceRepository.save(evidence);
       logger.info(String.format("Evidence has been created and saved to the repo evidenceId=<%s>", evidence.getId()));
       errorMessage = "Evidence has been added";
     }
@@ -183,11 +179,11 @@ public class EvidenceListController {
 
     if (projectId != null){
       Project project = projectService.getProjectById(Integer.valueOf(projectId));
-      return evidencerepository.findAllByAssociatedProjectOrderByDateDesc(project);
+      return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
     } else if (userId != null){
-      return evidencerepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
+      return evidenceRepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
     }else if (categoryId != null){
-      return evidencerepository.findAllByOrderByDateDesc();
+      return evidenceRepository.findAllByOrderByDateDesc();
     }else if (skillId != null){
       List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(Integer.valueOf(skillId));
       List<Evidence> evidenceSkillList = new ArrayList<>();
@@ -196,7 +192,7 @@ public class EvidenceListController {
       }
       return evidenceSkillList;
     }else{
-      return evidencerepository.findAllByOrderByDateDesc();
+      return evidenceRepository.findAllByOrderByDateDesc();
     }
   }
 
