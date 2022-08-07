@@ -13,7 +13,7 @@ function getSprintTimeBound(timeBoundList, start, end) {
 
 function getCalendarTimeBound(timeBoundList, start) {
     let startDate = Date.parse(start)
-    let endDate = Date.parse(start)+86400000
+    let endDate = Date.parse(start)+86399999
     let returning = [];
     for (const timeBoundItem of timeBoundList) {
         let date = Date.parse(timeBoundItem.startDate)
