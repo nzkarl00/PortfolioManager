@@ -59,6 +59,7 @@ public class AccountController {
 
         String name = userReply.getFirstName() + " " +  userReply.getLastName();
         model.addAttribute("roles", roles);
+        model.addAttribute("userId", userReply.getId());
         model.addAttribute("pronouns", userReply.getPersonalPronouns());
         model.addAttribute("name",  name);
         model.addAttribute("nickname",  userReply.getNickname());
