@@ -1,3 +1,5 @@
+#This change is to post this branch to the vm
+
 stages:
 #  - tagChecking
   - publishProtosToLocalMavenRepo
