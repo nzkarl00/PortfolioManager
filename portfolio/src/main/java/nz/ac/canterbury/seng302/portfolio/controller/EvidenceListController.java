@@ -160,19 +160,21 @@ public class EvidenceListController {
       errorMessage = "Evidence has been added";
 
       //Create new skill for any skill that doesn't exist, create evidence tag for all skills
-      List<String> SkillItemsString = Arrays.asList(skills.split("~"));
-      Project projectCurrent = projectService.getProjectById(projectId);
-      for (String skillString: SkillItemsString){
-        String validSkillString = skillString.replace(" ", "_");
-        SkillTag skillCheck = skillrepository.findByTitle(validSkillString);
-        if (skillCheck == null){
-          SkillTag newSkill = new SkillTag(projectCurrent, validSkillString);
-          skillrepository.save(newSkill);
-          EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
-          evidencetagrepository.save(noSkillEvidence);
-        } else {
-          EvidenceTag noSkillEvidence = new EvidenceTag(skillCheck, evidence);
-          evidencetagrepository.save(noSkillEvidence);
+      if (skills.replace(" ", "").length() > 0) {
+        List<String> SkillItemsString = Arrays.asList(skills.split("~"));
+        Project projectCurrent = projectService.getProjectById(projectId);
+        for (String skillString : SkillItemsString) {
+          String validSkillString = skillString.replace(" ", "_");
+          SkillTag skillCheck = skillrepository.findByTitle(validSkillString);
+          if (skillCheck == null) {
+            SkillTag newSkill = new SkillTag(projectCurrent, validSkillString);
+            skillrepository.save(newSkill);
+            EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
+            evidencetagrepository.save(noSkillEvidence);
+          } else {
+            EvidenceTag noSkillEvidence = new EvidenceTag(skillCheck, evidence);
+            evidencetagrepository.save(noSkillEvidence);
+          }
         }
       }
 

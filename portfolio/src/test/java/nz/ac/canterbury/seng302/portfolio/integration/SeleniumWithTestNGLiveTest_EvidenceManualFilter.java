@@ -105,7 +105,7 @@ public class SeleniumWithTestNGLiveTest_EvidenceManualFilter {
     public void swapTo_Skill() {
         Select categoryCI = new Select(seleniumExample.config.getDriver().findElement(By.id("ci")));
         Select categorySI = new Select(seleniumExample.config.getDriver().findElement(By.id("si")));
-        categorySI.selectByValue("1");
+        categorySI.selectByValue("2");
         WebElement option = categoryCI.getFirstSelectedOption();
         String defaultItem = option.getText();
         Assertions.assertEquals("Choose here", defaultItem);

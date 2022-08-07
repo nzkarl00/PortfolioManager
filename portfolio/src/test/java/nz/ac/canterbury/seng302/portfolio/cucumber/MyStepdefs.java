@@ -49,18 +49,28 @@ public class MyStepdefs {
 
     private SeleniumExample seleniumExample;
 
+
     String passwordText = "";
 
 
     @Given("There is evidence in the table")
     public void thereIsEvidenceInTheTable() throws InterruptedException {
+        seleniumExample.config.getDriver().get(seleniumExample.url + "/evidence?pi=1");
+        WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+        button.click();
+        WebElement titleField = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
+        titleField.sendKeys("Test Evidence");
+        WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
+        description.sendKeys("This is a Description. It is going to be reasonably long but not too long in order to show how text will be potentially cut off.");
+        WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+        Assertions.assertTrue(saveButton.isEnabled());
+        saveButton.submit();
         // When evidence adding exists, add here, until then it must be added manually
     }
 
     @And("I am authenticated as a admin")
     public void iAmAuthenticatedAsAAdmin() throws FileNotFoundException {
         seleniumExample = new SeleniumExample("");
-
         getPassword_ForAdmin_FromTextFile();
         whenPortfolioIsLoaded_thenLoginAdmin_forTests();
     }
@@ -113,10 +123,9 @@ public class MyStepdefs {
         Thread.sleep(500);
         // get the description, title, and date, then validate said data
         WebElement description = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[5]/div[2]/div[2]/div/div/p"));
-        WebElement date = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[5]/div[2]/div[1]/div[2]/p"));
         Assertions.assertEquals("Test Evidence", title.getText());
         Assertions.assertEquals("This is a Description. It is going to be reasonably long but not too long in order to show how text will be potentially cut off.", description.getText());
-        Assertions.assertEquals("2022-07-29", date.getText());
+
     }
 
 
