@@ -10,4 +10,6 @@ public interface EvidenceTagRepository  extends CrudRepository<EvidenceTag, Inte
     EvidenceTag findById(int id);
 
     List<EvidenceTag> findAllByParentSkillTagId(Integer integer);
+
+    List<EvidenceTag> findAllByParentEvidenceId(Integer evidence);
 }

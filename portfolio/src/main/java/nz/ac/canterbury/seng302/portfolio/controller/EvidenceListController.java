@@ -29,10 +29,7 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * responsible for the main/landing page of the project(s)
@@ -125,7 +122,7 @@ public class EvidenceListController {
           @RequestParam(value = "dateInput") String date,
           @RequestParam(value = "projectId") Integer projectId,
           @RequestParam(value = "evidenceCategory") Optional <String> evidenceCategory,
-          @RequestParam(value = "skillsInput") Optional <String> skills,
+          @RequestParam(value = "skillHidden") String skills,
           @RequestParam(value = "linksInput") Optional <String> links,
           @RequestParam(value = "descriptionInput") String description,
           Model model
@@ -155,12 +152,38 @@ public class EvidenceListController {
             && !(evidenceDate.isEqual(projectEndDate) || evidenceDate.isEqual(projectStartDate))) {
       errorMessage = "Dates must fall within project dates";
     }
-    // If no error occurs then save the evidence to the repo
+    // If no error occurs then save the evidence to the repo and relavent skills
     if(errorMessage.equals("")) {
       Evidence evidence = new Evidence(accountID, parentProject, title, description, evidenceDate);
       evidencerepository.save(evidence);
       logger.info(String.format("Evidence has been created and saved to the repo evidenceId=<%s>", evidence.getId()));
       errorMessage = "Evidence has been added";
+
+      //Create new skill for any skill that doesn't exist, create evidence tag for all skills
+      List<String> SkillItemsString = Arrays.asList(skills.split("~"));
+      Project projectCurrent = projectService.getProjectById(projectId);
+      for (String skillString: SkillItemsString){
+        String validSkillString = skillString.replace(" ", "_");
+        SkillTag skillCheck = skillrepository.findByTitle(validSkillString);
+        if (skillCheck == null){
+          SkillTag newSkill = new SkillTag(projectCurrent, validSkillString);
+          skillrepository.save(newSkill);
+          EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
+          evidencetagrepository.save(noSkillEvidence);
+        } else {
+          EvidenceTag noSkillEvidence = new EvidenceTag(skillCheck, evidence);
+          evidencetagrepository.save(noSkillEvidence);
+        }
+      }
+
+      // If there's no skills, add the no_skills
+      List<EvidenceTag> evidenceTagList = evidencetagrepository.findAllByParentEvidenceId(evidence.getId());
+      if (evidenceTagList.size() == 0) {
+        SkillTag noSkillTag = skillrepository.findByTitle("No_skills");
+        EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
+        evidencetagrepository.save(noSkillEvidence);
+      }
+
     }
     model.addAttribute("errorMessage", errorMessage);
     return "redirect:evidence?pi=" + projectId;
@@ -184,7 +207,7 @@ public class EvidenceListController {
     }else if (categoryId != null){
       return evidencerepository.findAllByOrderByDateDesc();
     }else if (skillId != null){
-      List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(Integer.valueOf(skillId));
+      List<EvidenceTag> evidenceTags = evidencetagrepository.findAllByParentSkillTagId(Integer.valueOf(skillId));
       List<Evidence> evidenceSkillList = new ArrayList<>();
       for (EvidenceTag tag: evidenceTags){
         evidenceSkillList.add(tag.getParentEvidence());

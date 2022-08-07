@@ -235,7 +235,8 @@
                     <b class="evidence_head setWide" id="skills_input">Skills:</b><br>
                     <div class="col-12" id="skills_div" style="display: flex; justify-content: center; align-items: center;">
                             <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
-                        <input type="text" id="add_skill_input" maxlength=100 oninput="updateSkills()"  class="evidence_form_element_wide project_edit_data">
+                        <input type="hidden" id="skillHidden" th:name="skillHidden">
+                        <input type="text" id="add_skill_input" maxlength=100 oninput="updateSkills()" class="evidence_form_element_wide project_edit_data">
                             <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill(); return false;"></button>
                         </input>
                     </div>
@@ -250,6 +251,13 @@
                             if (event.key !== "Enter") return;
                             addSkill()
                         })
+
+                        //Returns the skills
+                        function getSkills() {
+                            let skillStore = document.getElementById("skillHidden")
+                            const skillList = Array.from(skills).join('~');
+                            skillStore.value = skillList
+                        }
 
                         let skills = new Set()
                         let skillRow = document.getElementById("skill_sub_1");
@@ -277,6 +285,7 @@
                                 insertSkillRow()
                                 skillRow.appendChild(skillTag);
                             }
+                            getSkills()
                         }
 
                         /* Creates a new row for skill tags to be placed on, for some reason inserting <br> couldn't do this*/
