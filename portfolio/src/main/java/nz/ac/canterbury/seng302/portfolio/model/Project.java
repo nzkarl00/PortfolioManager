@@ -4,9 +4,9 @@ import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Deadline;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 /**

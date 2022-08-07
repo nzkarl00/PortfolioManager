@@ -2,7 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.model;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RoleTest {
 

@@ -1,19 +1,11 @@
 package nz.ac.canterbury.seng302.identityprovider.authentication;
 
-import io.cucumber.messages.types.Meta;
-import io.grpc.Metadata;
-import io.grpc.MethodDescriptor;
-import io.grpc.ServerCall;
-import io.grpc.ServerCallHandler;
-import io.grpc.Status;
+import io.grpc.*;
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
 import nz.ac.canterbury.seng302.identityprovider.model.Role;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class AuthenticationServerInterceptorTest {
 

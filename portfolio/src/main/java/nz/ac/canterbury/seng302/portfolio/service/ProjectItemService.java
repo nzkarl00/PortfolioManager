@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,20 +28,22 @@ public class ProjectItemService {
             case "Event":
                 item = eventRepository.findById(id);
                 break;
+            default:
+                throw new CustomExceptions.ProjectItemTypeException("Project item type not recognised");
         }
         if(item!=null) {
             return item.get();
         }
         else
         {
-            throw new Exception("Project item not found");
+            throw new CustomExceptions.ProjectItemNotFoundException("Project item not found");
         }
     }
 
     /**
      * Get deadline by its id.
      */
-    public Deadline getDeadlineById(Integer id) throws Exception {
+    public Deadline getDeadlineById(Integer id) throws CustomExceptions.ProjectItemNotFoundException {
 
         Optional<Deadline> deadline = deadlineRepository.findById(id);
         if(deadline!=null) {
@@ -48,14 +51,14 @@ public class ProjectItemService {
         }
         else
         {
-            throw new Exception("Deadline not found");
+            throw new CustomExceptions.ProjectItemNotFoundException("Deadline not found");
         }
     }
 
     /**
      * Get event by its id.
      */
-    public Event getEventById(Integer id) throws Exception {
+    public Event getEventById(Integer id) throws CustomExceptions.ProjectItemNotFoundException {
 
         Optional<Event> event = eventRepository.findById(id);
         if(event!=null) {
@@ -63,14 +66,14 @@ public class ProjectItemService {
         }
         else
         {
-            throw new Exception("Event not found");
+            throw new CustomExceptions.ProjectItemNotFoundException("Event not found");
         }
     }
 
     /**
      * Get milestone by its id.
      */
-    public Milestone getMilestoneById(Integer id) throws Exception {
+    public Milestone getMilestoneById(Integer id) throws CustomExceptions.ProjectItemNotFoundException {
 
         Optional<Milestone> milestone = milestoneRepository.findById(id);
         if(milestone!=null) {
@@ -78,7 +81,7 @@ public class ProjectItemService {
         }
         else
         {
-            throw new Exception("Milestone not found");
+            throw new CustomExceptions.ProjectItemNotFoundException("Milestone not found");
         }
     }
 
