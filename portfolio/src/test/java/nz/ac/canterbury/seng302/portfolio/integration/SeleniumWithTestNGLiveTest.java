@@ -1,13 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.integration;
 
-import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,6 +37,7 @@ public class SeleniumWithTestNGLiveTest {
                 whenPortfolioIsLoaded_thenLoginAdmin_forTests(seleniumExample, passwordText);
                 whenProjectIsAccessed_thenGoToAddDates();
                 whenAddingDate_CheckTitleLen();
+
         }
 
         @AfterSuite

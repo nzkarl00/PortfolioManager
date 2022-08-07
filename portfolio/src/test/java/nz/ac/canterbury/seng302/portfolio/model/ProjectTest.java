@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
-import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;
@@ -8,7 +7,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ProjectTest {
 

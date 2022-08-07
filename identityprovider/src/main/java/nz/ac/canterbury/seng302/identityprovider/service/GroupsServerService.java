@@ -3,18 +3,14 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.*;
-import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupsServiceGrpc.GroupsServiceImplBase;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
-import java.util.List;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -158,6 +154,14 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
         for (GroupMembership groupMember : groupMemberships) {
             AccountProfile user = groupMember.getRegisteredGroupUser();
+            List<GroupMembership> usersGroups = groupMembershipRepo.findAllByRegisteredGroupUser(user);
+
+            //If this is their last group, add to the MWAG
+            if (usersGroups.size() <= 1) {
+                List<Groups> noMembership = groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT);
+                groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembership.get(0), user);
+                groupMembershipRepo.save(new GroupMembership(noMembership.get(0), user));
+            }
 
             // If this user from the groupToRemoveFrom is the actual user requested for removal.
             if ((request.getUserIdsList()).contains(user.getId())) {

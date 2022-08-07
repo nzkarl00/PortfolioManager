@@ -1,30 +1,29 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.Group;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.GitlabClient;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.beans.factory.annotation.Value;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.gitlab4j.api.models.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.HashMap;
 import java.util.*;
 
 @Controller
@@ -173,9 +172,27 @@ public class GroupController {
             @RequestBody() HashMap<Integer, List<Integer>> ids,
             Model model
     ) throws InterruptedException {
+        // Takes all users that are selected
         for (Map.Entry<Integer, List<Integer>> entry : ids.entrySet()) {
+            // If this is a valid group
             if (entry.getKey() >= 0) {
-                groupsClientService.removeUserFromGroup(entry.getKey(), (ArrayList<Integer>) entry.getValue());
+                ArrayList<Integer> userArray = new ArrayList<Integer>();
+                // If this is the teacher group be sure to check if a teacher is removing themseles
+                if ((entry.getKey() == 1)) {
+                    for (Integer userId : entry.getValue()){
+                        // If they are removing themselves, dont add the user unless they are an admin
+                        if ((userId.equals(AuthStateInformer.getId(principal))) && !(AuthStateInformer.getRole(principal).equals("admin"))) {
+                        } else {
+                            userArray.add(userId);
+                        }
+                    }
+                } else {
+                    // If not a teacher group, add all users to the array
+                    for (Integer userId : entry.getValue()) {
+                        userArray.add(userId);
+                    }
+                }
+                groupsClientService.removeUserFromGroup(entry.getKey(), userArray);
             }
         }
         clipboard = ids.get(-1);

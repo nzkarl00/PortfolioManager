@@ -2,11 +2,8 @@ package nz.ac.canterbury.seng302.identityprovider.util;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.springframework.stereotype.Service;
-import org.springframework.core.io.Resource;
 
 public class FileSystemUtils {
 

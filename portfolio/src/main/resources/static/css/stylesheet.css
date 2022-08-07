@@ -115,6 +115,17 @@
 
 }
 
+.portion_body_tall {
+
+  font-family: nexa !important;
+  background-color: #D9F9FF !important;
+  border-radius: 35px  !important;
+  height: 500% !important;
+  padding: 2rem !important;
+    padding-bottom: 6rem !important;
+
+}
+
 .login_error {
 
   font-family: nexaBold !important;
@@ -563,7 +574,8 @@
     font-family: nexaLight !important;
 
 }
-.save:hover {
+
+.save_hover:hover {
 
     background: #08F722 !important;
     color: #ffffff !important;
@@ -825,7 +837,7 @@
 
 .tooltip {
     position: absolute !important;
-    left: 2% !important;
+    word-wrap: normal !important;
 }
 
 .tooltip.show /* The CSS classes that the tooltip has */ {
@@ -845,6 +857,14 @@
     color: #19DAFF;
     text-align: left !important;
     word-break: break-all !important;
+}
+
+.tooltip_body_evidence {
+    font-family: Nexa !important;
+    font-size: 125% !important;
+    color: #19DAFF;
+    text-align: left !important;
+    word-break: keep-all;
 }
 
 .colour-1 {
@@ -1275,7 +1295,7 @@ select.form-control {
 
 .save_evidence {
 
-    background-color: #26D20F !important;
+    background-color: #26D20F;
     border-radius: 15px !important;
     border-style: none !important;
     color: #ffffff !important;
@@ -1285,6 +1305,20 @@ select.form-control {
     font-colour: #FFFFFF !important;
     padding: 0.5rem !important;
     margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+
+.add_evidence {
+
+    background-color: #26D20F;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-colour: #FFFFFF !important;
+    padding: 0.5rem !important;
     font-family: nexaLight !important;
 
 }
@@ -1340,4 +1374,31 @@ select.form-control {
     /*when navigating through the items using the arrow keys:*/
     background-color: DodgerBlue !important;
     color: #ffffff;
+}
+
+.slight_pad {
+    margin-right: 5% !important;
+
+}
+
+.search {
+
+    background-color: #19DAFF !important;
+    border-radius: 20px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    height: 200% !important;
+    align: center !important;
+    padding-top: 10% !important;
+    font-size: 250% !important;
+    font-colour: #FFFFFF !important;
+    font-family: nexaLight !important;
+
+}
+.search:hover {
+
+    background: #056BFA !important;
+    color: #ffffff !important;
+
 }

@@ -200,15 +200,15 @@
     <!-- https://www.codeproject.com/Tips/5162015/Multi-select-Check-Box-List-or-Checkbox-Dropdown-w-->
     <!-- Code no longer sourced from the above link -->
 
-        <div class="portion_body" >
-        <form>
+        <div class="portion_body"  style="display: none" id="evidence_form">
+        <form th:action="@{add-evidence}" method="post">
                 <div class="row-1" style="display:flex;">
                         <div class="evidence_form_element col-4">
-                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" oninput="updateTitle()">
+                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" th:name="titleInput" oninput="updateTitle(); canSaveCheck()" required>
                             <label class="project_inputAlertBlue" id="titleCharCount">Characters Remaining: 100</label>
                         </div>
                         <div class="evidence_form_element col-3">
-                            <b class="evidence_head setWide">Date*:</b> <br><input type="date" class="project_edit_data">
+                            <b class="evidence_head setWide">Date*:</b> <br><input type="date" th:name="dateInput" th:value="${date}"  th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}" class="project_edit_data" id="date_input" oninput="canSaveCheck()" required>
                         </div>
                         <div class="evidence_form_element align-content-center col-5">
                             <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
@@ -226,9 +226,10 @@
 
                 <div class="row-1">
                     <div>
-                        <b class="evidence_head setWide">Description*:</b><br> <textarea type="text" maxlength="2000" id="evidence_desc" oninput="updateDesc()" class=" description-input project_edit_data horizontal_field bio setWide"></textarea>
+                        <b class="evidence_head setWide">Description*:</b><br> <textarea type="text" maxlength="2000" id="evidence_desc" oninput="updateDesc(); canSaveCheck()" class=" description-input project_edit_data horizontal_field bio setWide" th:name="descriptionInput" required></textarea>
                         <label class="project_inputAlertBlue" id="descCharCount">Characters Remaining: 2000</label>
                     </div>
+                    <input type="number" th:name="projectId" th:value="${project.getId}" style="display: none" >
                     <!-- When enter is pressed, default form action is to submit the first button. As our form contains buttons, this empty button exists to consume the default action. -->
                     <button onclick="return false;" style="display: none"></button>
                     <b class="evidence_head setWide" id="skills_input">Skills:</b><br>
@@ -327,10 +328,8 @@
 
                             </div>
                             <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
-                                <button class="cancel_evidence" type="button">
-                                    <a class="button_a" th:href="@{evidence}">CANCEL</a>
-                                </button>
-                                <button class="save_evidence" id="projectSave" type="submit">SAVE</button>
+                                <button class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button">CANCEL</button>
+                                <button class="save_evidence" id="projectSave" style="background: lightgray" type="submit" disabled>SAVE</button>
                             </div>
                         </div>
                     </div>
@@ -414,10 +413,28 @@
                             const skillInput = document.getElementById("add_skill_input")
                             skillCounter.innerText = "Characters Remaining: "  + (100 - skillInput.value.length)
                         }
+
+                        // Enable form and hide add evidence form
+                        function displayAddEvidenceForm() {
+                            document.getElementById('evidence_form').style = "display: block";
+                            document.getElementById('add_button').style = "display: none";
+                        }
+
+                        // Enable add evidence button and hide form
+                        function displayAddButton() {
+                            document.getElementById('evidence_form').style = "display: none";
+                            document.getElementById('add_button').style = "display: block";
+                        }
                     </script>
                 </div>
         </form>
         </div>
+    <br>
+    <div class="row">
+        <div class="col-1"></div>
+        <button class="add_evidence col-10" onclick="displayAddEvidenceForm()" id="add_button"> + Add Evidence </button>
+        <div class="col-1"></div>
+    </div>
     <script type="text/javascript" th:src="@{js/autocomplete.js}"></script>
     <script th:inline="javascript">
         let allSkills = [[${allSkills}]];

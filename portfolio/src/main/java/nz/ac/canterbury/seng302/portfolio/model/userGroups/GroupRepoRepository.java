@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.model.userGroups;
 
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

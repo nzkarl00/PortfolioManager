@@ -17,8 +17,6 @@
     <div class="row-1">
       <br><br><br>
     </div>
-
-
     <!-- Signup Form -->
     <form class="row" th:action="@{createGroup}" method="post">
 
@@ -27,14 +25,15 @@
       <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
         <div>
           <label class="project_subhead" >Long Name*:</label>
-          <input class="project_edit_data horizontal_field" id="longName" type="text" th:name="longName" th:value="*{longName}" maxlength="50" title="Long Name can be a max of 50 characters" required><br/>
+          <input class="project_edit_data horizontal_field" id="longName" oninput="updateTitle('longName', 50, 'maxLen')" type="text" th:name="longName" th:value="*{longName}" maxlength="50" title="Long Name can be a max of 50 characters" required><br/>
+          <label class="project_inputAlertBlue" id="maxLen">Characters Remaining: 50</label>
         </div>
 
 
         <div>
           <label class="project_subhead">Short Name*:</label>
-          <input class="project_edit_data horizontal_field"  id="shortName" th:name="shortName" th:value="*{shortName}" maxlength="10" title="Short Name can be a max of 10 characters" required><br/>
-
+          <input class="project_edit_data horizontal_field"  id="shortName" oninput="updateTitle('shortName', 10, 'maxLenShort')" th:name="shortName" th:value="*{shortName}" maxlength="10" title="Short Name can be a max of 10 characters" required><br/>
+          <label class="project_inputAlertBlue" id="maxLenShort">Characters Remaining: 10</label>
         </div>
       </div>
 
@@ -49,6 +48,10 @@
         </button>
 
       </div>
+
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script type="text/javascript" th:src="@{js/nameLengthCheck.js}"></script>
+
 
 
 

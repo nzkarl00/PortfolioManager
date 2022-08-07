@@ -115,6 +115,7 @@ public class GroupsClientService extends GroupsServiceGrpc.GroupsServiceImplBase
 
         for (Integer userId : userIds) {
             request.addUserIds(userId);
+
         }
 
         return groupServiceStub.removeGroupMembers(request.build());

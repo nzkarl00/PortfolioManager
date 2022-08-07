@@ -5,7 +5,6 @@ import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +30,6 @@ public class LandingController {
   @Autowired
   private ProjectService projectService;
   @Autowired
-  private SprintService sprintService;
-  @Autowired
   private AccountClientService accountClientService;
   @Autowired
   private NavController navController;
@@ -45,7 +42,7 @@ public class LandingController {
    * @throws Exception
    */
   @GetMapping("/landing")
-  public String landing( @AuthenticationPrincipal AuthState principal, Model model) throws Exception {
+  public String landing( @AuthenticationPrincipal AuthState principal, Model model) {
 
     List<Project> projectList = projectService.getAllProjects();
     if (projectList.isEmpty()) {

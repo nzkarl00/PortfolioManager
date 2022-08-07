@@ -2,15 +2,12 @@ package nz.ac.canterbury.seng302.portfolio.integration;
 
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
 import java.util.Scanner;
 
 
@@ -39,6 +36,7 @@ public class SeleniumWithTestNGLiveTest_GroupDetails {
         whenLoggedInAsAdmin_AddTeacherRoleToSelf_ForTest();
         whenAddedTeacherRole_AccessGroupsPage();
         whenOnGroupsPage_AccessTeacherGroup_ForDetails();
+
 
     }
 

@@ -8,15 +8,10 @@ import nz.ac.canterbury.seng302.shared.identityprovider.ProfilePhotoUploadMetada
 import nz.ac.canterbury.seng302.shared.identityprovider.UploadUserProfilePhotoRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class AccountPhotoService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
