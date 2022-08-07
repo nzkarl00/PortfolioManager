@@ -17,6 +17,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
+import static nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins.getPassword_ForAdmin_FromTextFile;
+import static nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins.whenPortfolioIsLoaded_thenLoginAdmin_forTests;
+
 
 /**
  * Note this is a template to pull from
@@ -39,8 +42,8 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
     public void setUp() throws FileNotFoundException, InterruptedException {
         seleniumExample = new SeleniumExample("");
 
-        getPassword_ForAdmin_FromTextFile();
-        whenPortfolioIsLoaded_thenLoginAdmin_forTests();
+        passwordText = getPassword_ForAdmin_FromTextFile();
+        whenPortfolioIsLoaded_thenLoginAdmin_forTests(seleniumExample, passwordText);
 
         whenPortfolioIsLoaded_thenCreateNewProject();
 
@@ -66,16 +69,6 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         seleniumExample.closeWindow();
     }
 
-    /**
-     * Gets the password for the pre-generated admin account from the application files
-     * @throws FileNotFoundException
-     */
-    public void getPassword_ForAdmin_FromTextFile() throws FileNotFoundException {
-        String originpath = System.getProperty("user.dir");
-        File passwordFile = new File(originpath.substring(0, originpath.length()-9) + "identityprovider/defaultAdminPassword.txt");
-        Scanner passwordReader = new Scanner(passwordFile);
-        passwordText = passwordReader.nextLine();
-    }
 
     /**
      * Takes an element and validates that it returns a tooltip with valid text
@@ -89,24 +82,6 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         List<WebElement> tooltipList = tooltip.findElements(By.xpath(".//*"));
         String tooltipText = tooltipList.get(0).getText() + tooltipList.get(1).getText() + tooltipList.get(2).getText();
         Assertions.assertEquals(expectedText, tooltipText);
-    }
-
-
-    /**
-     * load up the page then login to the admin user
-     */
-    public void whenPortfolioIsLoaded_thenLoginAdmin_forTests() {
-        seleniumExample.config.getDriver().get(seleniumExample.url);
-        WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
-        username.sendKeys("admin");
-        WebElement password = seleniumExample.config.getDriver().findElement(By.id("password"));
-        password.sendKeys(passwordText);
-        WebElement loginButton = seleniumExample.config.getDriver().findElement(By.id("login-button"));
-        loginButton.click();
-
-        WebElement fullName = seleniumExample.config.getDriver().findElement(By.id("full-name"));
-        Assertions.assertEquals("admin admin", fullName.getText());
-        seleniumExample.config.getDriver().get(seleniumExample.url + "/landing");
     }
 
     /**

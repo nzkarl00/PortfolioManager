@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EvidenceServiceTest {
@@ -65,13 +66,13 @@ public class EvidenceServiceTest {
     void skillListContainsAllItems() {
         Mockito.when(skillTagRepository.findAll()).thenReturn(testSkillTagList);
         Set<String> skills = evidenceService.getAllUniqueSkills();
-        assertEquals(true, skills.containsAll(List.of("C#", "C", "C++", "CSS")));
+        assertTrue(skills.containsAll(List.of("C#", "C", "C++", "CSS")));
     }
 
     @Test
     void skillListHasNoDuplicates() {
         Mockito.when(skillTagRepository.findAll()).thenReturn(testSkillTagList);
         Set<String> skills = evidenceService.getAllUniqueSkills();
-        assertEquals(true, skills.size() == 4);
+        assertEquals(4, skills.size());
     }
 }
