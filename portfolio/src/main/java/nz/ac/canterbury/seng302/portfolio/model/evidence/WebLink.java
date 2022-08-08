@@ -67,6 +67,8 @@ public class WebLink {
         this.parentEvidence = parentEvidence;
     }
 
+    protected WebLink() {}
+
     /**
      * Gets the Database ID of the weblink.
      * A unique identifier.
