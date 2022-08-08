@@ -123,12 +123,13 @@ public class EvidenceListController {
           @RequestParam(value = "titleInput") String title,
           @RequestParam(value = "dateInput") String date,
           @RequestParam(value = "projectId") Integer projectId,
-          @RequestParam(value = "evidenceCategory") Optional <String> evidenceCategory,
+          @RequestParam(value = "categoryHidden") String categories,
           @RequestParam(value = "skillHidden") String skills,
           @RequestParam(value = "linksInput") Optional <String> links,
           @RequestParam(value = "descriptionInput") String description,
           Model model
   ) throws Exception {
+    System.out.println(categories);
     logger.info(String.format("Attempting to add new evidence"));
     this.errorMessage = "";
 

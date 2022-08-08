@@ -39,22 +39,29 @@
                                 </div>
                             <div id="category_multiselect_items" class="category_box" style="display: none">
                                 <label for="category_quantitative" class="category_item" style="display: block">
-                                    <input type="checkbox" autocomplete="off" th:name="categoryQuantitative" class="category_item" value="Quantitative Skills" id="category_quantitative" onchange="updateCategories(this)" />
+                                    <input type="checkbox" autocomplete="off" class="category_item" value="Quantitative Skills" id="category_quantitative" onchange="updateCategories(this)" />
                                     Quantitative Skills
                                 </label>
                                 <label for="category_qualitative" class="category_item" style="display: block">
-                                    <input type="checkbox" autocomplete="off" th:name="categoryQualitative" class="category_item" value="Qualitative Skills" id="category_qualitative" onchange="updateCategories(this)" />
+                                    <input type="checkbox" autocomplete="off" class="category_item" value="Qualitative Skills" id="category_qualitative" onchange="updateCategories(this)" />
                                     Qualitative Skills
                                 </label>
                                 <label for="category_service" class="category_item" style="display: block">
-                                    <input type="checkbox" autocomplete="off" th:name="categoryService" class="category_item" value="Service" id="category_service" onchange="updateCategories(this)" />
+                                    <input type="checkbox" autocomplete="off" class="category_item" value="Service" id="category_service" onchange="updateCategories(this)" />
                                     Service
                                 </label>
                             </div>
                         </div>
+                    <input type="hidden" id="category_hidden" th:name="categoryHidden">
                     <script>
                         let categoryOptionsShown = true;
                         let selectedCategories = new Set()
+
+                        function storeCategories() {
+                            let categoryStore = document.getElementById("category_hidden")
+                            const categoriesToSave = Array.from(selectedCategories).join('~');
+                            categoryStore.value = categoriesToSave
+                        }
 
                         function showCategories() {
                             let categoryOptions = document.getElementById("category_multiselect_items")
