@@ -12,5 +12,7 @@ public interface SprintRepository extends CrudRepository<Sprint, Integer> {
     Sprint findById(int id);
     List<Sprint> findByParentProjectId(int parentProjectId);
 
+    List<Sprint> findByParentProjectIdOrderBySprintStartDate(int parentProjectId);
+
     List<Sprint> getSprintByParentProjectIdOrderBySprintStartDateAsc(Integer projectId);
 }

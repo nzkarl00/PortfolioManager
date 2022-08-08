@@ -316,7 +316,7 @@ public class DetailsController {
     @GetMapping("/sprints")
     public ResponseEntity<List<Sprint>> getProjectSprints(@AuthenticationPrincipal AuthState principal,
                                             @RequestParam(value="id") Integer projectId) {
-        return ResponseEntity.ok(repository.findByParentProjectId(projectId));
+        return ResponseEntity.ok(repository.findByParentProjectIdOrderBySprintStartDate(projectId));
     }
 
     /**

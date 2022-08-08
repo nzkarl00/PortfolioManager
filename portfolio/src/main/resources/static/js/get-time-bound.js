@@ -1,6 +1,8 @@
 function getSprintTimeBound(timeBoundList, start, end) {
     let startDate = Date.parse(start)
     let endDate = Date.parse(end)
+    console.log(startDate)
+    console.log(endDate)
     let returning = [];
     for (const timeBoundItem of timeBoundList) {
         let date = Date.parse(timeBoundItem.startDate)
