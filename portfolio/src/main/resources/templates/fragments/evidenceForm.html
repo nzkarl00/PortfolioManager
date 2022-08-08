@@ -232,7 +232,10 @@
                     <input type="number" th:name="projectId" th:value="${project.getId}" style="display: none" >
                     <!-- When enter is pressed, default form action is to submit the first button. As our form contains buttons, this empty button exists to consume the default action. -->
                     <button onclick="return false;" style="display: none"></button>
-                    <b class="evidence_head setWide" id="skills_input">Skills:</b><br>
+                    <div class="row-1">
+                        <b class="evidence_head setWide" id="skills_input">Skills:</b>
+                        <p style="display:none;" id="skill_error">Only letters, underscores, hyphens, and numbers are allowed</p>
+                    </div>
                     <div class="col-12" id="skills_div" style="display: flex; justify-content: center; align-items: center;">
                             <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
                         <div class="evidence_form_element_wide">
@@ -270,6 +273,12 @@
                         function addSkill() {
                             let newSkill = document.getElementById("add_skill_input").value
                             if (skills.has(newSkill)) return;
+                            // check to see if it matches the correct skill format
+                            const validate = newSkill.match(/^[a-zA-Z-_0-9]+$/)
+                            if (!validate || !validate.length == 1) {
+                                document.getElementById("skill_error").style = "color:red;";
+                                return
+                            }
                             skills.add(newSkill)
                             allSkills = allSkills.filter(s => s !== newSkill)
                             autocomplete(document.getElementById("add_skill_input"), allSkills)
