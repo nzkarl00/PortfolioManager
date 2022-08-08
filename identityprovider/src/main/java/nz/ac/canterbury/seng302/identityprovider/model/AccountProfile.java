@@ -154,7 +154,8 @@ public class AccountProfile {
             return null;
         }
         Role highestRole = roles.get(0);
-        for (int i = 1; i < roles.size(); i++) {
+
+        for (int i = 0; i < roles.size(); i++) {
             Role currentRole = roles.get(i);
             if (currentRole.getRole().equals("3admin")) {
                 return currentRole;
