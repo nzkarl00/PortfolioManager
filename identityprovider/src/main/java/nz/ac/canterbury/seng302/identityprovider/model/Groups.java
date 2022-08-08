@@ -26,7 +26,7 @@ public class Groups {
     // The fundamental difference between the annotations is that @OneToMany and its parameters (e.g. fetch = FetchType.EAGER) is a pure JPA.
     // It can be used with any JPA provider, such as Hibernate or EclipseLink.
     //@LazyCollection on the other hand, is Hibernate specific, and obviously works only if Hibernate is used.
-    @LazyCollection(LazyCollectionOption.FALSE)
+    //@LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany (mappedBy = "registeredGroups", cascade = CascadeType.ALL)
     protected List<GroupMembership> members;
 

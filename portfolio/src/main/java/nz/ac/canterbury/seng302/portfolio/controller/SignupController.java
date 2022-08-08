@@ -99,7 +99,6 @@ public class SignupController {
         if (authenticateResponse == null) {
             return "redirect:signup";
         }
-
         // If authenticating a login is successful, then the cookie will be set in the domain.
         if (authenticateResponse.getSuccess()) {
             loginController.setCookie(request, response, authenticateResponse);
