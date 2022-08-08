@@ -48,7 +48,7 @@
                 <!-- Edit project button-->
                 <div class="row">
                     <div class="col-2"></div>
-                    <form th:action="@{/landing}" method="get" th:class="${role == 'admin' || role == 'teacher'} ? 'col-lg-4 col-md-4 col-sm-12 col-12 align-items-end' : 'col-sm-12 col-12 align-items-end returnButtonCenter'">
+                    <form th:action="@{landing}" method="get" th:class="${role == 'admin' || role == 'teacher'} ? 'col-lg-4 col-md-4 col-sm-12 col-12 align-items-end' : 'col-sm-12 col-12 align-items-end returnButtonCenter'">
                         <button class="edit" style="padding-top:0rem;" type="submit">
                             <i class="fa fa-arrow-left"></i>&nbsp;
                             Return
@@ -1055,7 +1055,7 @@
 
             eventResize: function (eventResizeInfo) {
                 let form = document.createElement('form'); // Creating the form which will be used to post new sprint data.
-                form.setAttribute("th:action", "@{/details}");
+                form.setAttribute("th:action", "@{details}");
                 form.setAttribute("method", "post");
                 let formId = document.createElement("input"); // Adding sprint ID field to the form
                 formId.setAttribute("type", "hidden");

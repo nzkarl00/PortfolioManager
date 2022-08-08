@@ -75,7 +75,7 @@
                             />
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                <form th:action="@{/delete-group}" method="post">
+                                <form th:action="@{delete-group}" method="post">
                                     <button type="submit" class="btn btn-primary bg-danger" th:name="action" >Delete</button>
                                     <input style="display: none" id="groupId" type="number" th:value="${group.getId()}" name="groupId">
                                 </form>
@@ -139,9 +139,9 @@
 </div>
 </body>
 
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
 <script th:inline="javascript">
