@@ -6,16 +6,8 @@ import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -27,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
@@ -176,14 +167,14 @@ public class EvidenceListController {
         Project projectCurrent = projectService.getProjectById(projectId);
         for (String skillString : SkillItemsString) {
           String validSkillString = skillString.replace(" ", "_");
-          SkillTag skillCheck = skillRepository.findByTitle(validSkillString);
-          if (skillCheck == null) {
+          SkillTag skillFromRepo = skillRepository.findByTitle(validSkillString);
+          if (skillFromRepo == null) {
             SkillTag newSkill = new SkillTag(projectCurrent, validSkillString);
             skillRepository.save(newSkill);
             EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
             evidenceTagRepository.save(noSkillEvidence);
           } else {
-            EvidenceTag noSkillEvidence = new EvidenceTag(skillCheck, evidence);
+            EvidenceTag noSkillEvidence = new EvidenceTag(skillFromRepo, evidence);
             evidenceTagRepository.save(noSkillEvidence);
           }
         }

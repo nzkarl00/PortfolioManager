@@ -257,7 +257,7 @@
                         })
 
                         //Returns the skills
-                        function getSkills() {
+                        function storeSkills() {
                             let skillStore = document.getElementById("skillHidden")
                             const skillList = Array.from(skills).join('~');
                             skillStore.value = skillList
@@ -291,7 +291,7 @@
                                 insertSkillRow()
                                 skillRow.appendChild(skillTag);
                             }
-                            getSkills()
+                            storeSkills()
                         }
 
                         /* Creates a new row for skill tags to be placed on, for some reason inserting <br> couldn't do this*/
