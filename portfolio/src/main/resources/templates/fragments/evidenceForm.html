@@ -237,6 +237,7 @@
                             <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
                         <div class="evidence_form_element_wide">
                         <div class="autocomplete evidence_form_element_wide">
+                            <input type="hidden" id="skillHidden" th:name="skillHidden">
                         <input type="text" autocomplete="off" id="add_skill_input" maxlength=100 oninput="updateSkills()"  class="evidence_form_element_wide project_edit_data">
                         </input>
                         </div>
@@ -254,6 +255,13 @@
                             if (event.key !== "Enter") return;
                             addSkill()
                         })
+
+                        //Returns the skills
+                        function storeSkills() {
+                            let skillStore = document.getElementById("skillHidden")
+                            const skillList = Array.from(skills).join('~');
+                            skillStore.value = skillList
+                        }
 
                         let skills = new Set()
                         let skillRow = document.getElementById("skill_sub_1");
@@ -283,6 +291,7 @@
                                 insertSkillRow()
                                 skillRow.appendChild(skillTag);
                             }
+                            storeSkills()
                         }
 
                         /* Creates a new row for skill tags to be placed on, for some reason inserting <br> couldn't do this*/

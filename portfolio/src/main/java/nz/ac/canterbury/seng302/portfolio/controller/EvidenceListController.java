@@ -6,11 +6,8 @@ import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -30,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.*;
 
 /**
  * responsible for the main/landing page of the project(s)
@@ -74,9 +72,9 @@ public class EvidenceListController {
 
     List<Evidence> evidenceList;
 
-    evidenceList = getEvidenceFunction(userId, projectId, categoryId, skillId);
-
     List<SkillTag> skillList = skillRepository.findAll();
+
+    evidenceList = getEvidenceFunction(userId, projectId, categoryId, skillId);
 
     model.addAttribute("evidenceList", evidenceList);
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
@@ -126,7 +124,7 @@ public class EvidenceListController {
           @RequestParam(value = "dateInput") String date,
           @RequestParam(value = "projectId") Integer projectId,
           @RequestParam(value = "evidenceCategory") Optional <String> evidenceCategory,
-          @RequestParam(value = "skillsInput") Optional <String> skills,
+          @RequestParam(value = "skillHidden") String skills,
           @RequestParam(value = "linksInput") Optional <String> links,
           @RequestParam(value = "descriptionInput") String description,
           Model model
@@ -156,12 +154,40 @@ public class EvidenceListController {
             && !(evidenceDate.isEqual(projectEndDate) || evidenceDate.isEqual(projectStartDate))) {
       errorMessage = "Dates must fall within project dates";
     }
-    // If no error occurs then save the evidence to the repo
+    // If no error occurs then save the evidence to the repo and relavent skills
     if(errorMessage.equals("")) {
       Evidence evidence = new Evidence(accountID, parentProject, title, description, evidenceDate);
       evidenceRepository.save(evidence);
       logger.info(String.format("Evidence has been created and saved to the repo evidenceId=<%s>", evidence.getId()));
       errorMessage = "Evidence has been added";
+
+      //Create new skill for any skill that doesn't exist, create evidence tag for all skills
+      if (skills.replace(" ", "").length() > 0) {
+        List<String> SkillItemsString = Arrays.asList(skills.split("~"));
+        Project projectCurrent = projectService.getProjectById(projectId);
+        for (String skillString : SkillItemsString) {
+          String validSkillString = skillString.replace(" ", "_");
+          SkillTag skillFromRepo = skillRepository.findByTitle(validSkillString);
+          if (skillFromRepo == null) {
+            SkillTag newSkill = new SkillTag(projectCurrent, validSkillString);
+            skillRepository.save(newSkill);
+            EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
+            evidenceTagRepository.save(noSkillEvidence);
+          } else {
+            EvidenceTag noSkillEvidence = new EvidenceTag(skillFromRepo, evidence);
+            evidenceTagRepository.save(noSkillEvidence);
+          }
+        }
+      }
+
+      // If there's no skills, add the no_skills
+      List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+      if (evidenceTagList.size() == 0) {
+        SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
+        EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
+        evidenceTagRepository.save(noSkillEvidence);
+      }
+
     }
     model.addAttribute("errorMessage", errorMessage);
     return "redirect:evidence?pi=" + projectId;
@@ -196,6 +222,8 @@ public class EvidenceListController {
     }
   }
 
+
+
   /**
    * Directs the user to the evidence page with required params
    * @param principal
@@ -205,23 +233,23 @@ public class EvidenceListController {
    */
   @GetMapping("/search-evidence")
   public String searchEvidenceParam( @AuthenticationPrincipal AuthState principal,
-                                        @RequestParam(required = false , value="ui") String userId,
-                                        @RequestParam(required = false , value="pi") String projectId,
-                                        @RequestParam(required = false , value="si") String skillId,
-                                        @RequestParam(required = false , value="ci") String categoryId,
+                                        @RequestParam(required = false , value="ui") String user_id,
+                                        @RequestParam(required = false , value="pi") String project_id,
+                                        @RequestParam(required = false , value="si") String skill_id,
+                                        @RequestParam(required = false , value="ci") String category_id,
                                         Model model) throws Exception {
     String returnString = "redirect:evidence?";
-    if (userId != null) {
-      returnString += "ui=" + (userId);
+    if (user_id != null) {
+      returnString += "ui=" + (user_id);
     }
-    if (projectId != null) {
-      returnString += "pi=" + (projectId);
+    if (project_id != null) {
+      returnString += "pi=" + (project_id);
     }
-    if (skillId != null) {
-      returnString += "si=" + (skillId);
+    if (skill_id != null) {
+      returnString += "si=" + (skill_id);
     }
-    if (categoryId != null) {
-      returnString += "ci=" + (categoryId);
+    if (category_id != null) {
+      returnString += "ci=" + (category_id);
     }
 
     return returnString;

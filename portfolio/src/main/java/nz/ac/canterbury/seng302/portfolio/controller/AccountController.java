@@ -66,4 +66,12 @@ public class AccountController {
 
         return "account";
     }
+
+    @GetMapping("/evidenceList")
+    public String getAccountEvidence(@AuthenticationPrincipal AuthState principal,
+                                     Model model) {
+        Integer user_id = AuthStateInformer.getId(principal);
+        return "redirect:evidence?ui=" + String.valueOf(user_id);
+
+    }
 }

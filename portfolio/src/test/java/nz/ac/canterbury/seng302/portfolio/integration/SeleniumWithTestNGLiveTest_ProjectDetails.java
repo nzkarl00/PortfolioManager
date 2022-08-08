@@ -36,6 +36,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
 
     @BeforeSuite
     public void setUp() throws FileNotFoundException, InterruptedException {
+
         seleniumExample = new SeleniumExample("");
 
         passwordText = getPassword_ForAdmin_FromTextFile();
@@ -146,7 +147,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
-        WebElement firstSprint = allSprints.findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div/div[2]/div[2]"));
+        WebElement firstSprint = allSprints.findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div/div[3]/div[2]/div[3]"));
         WebElement sprintCheckDate = firstSprint.findElement(By.id("sprintDate"));
         WebElement sprintCheckDesc = firstSprint.findElement(By.id("sprintDesc"));
         WebElement sprintCheckName = firstSprint.findElement(By.id("sprintName"));
@@ -195,7 +196,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
-        WebElement firstSprint = allSprints.findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div/div[2]/div[2]"));
+        WebElement firstSprint = allSprints.findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div/div[3]/div[2]"));
         sprint1Id = (firstSprint.getAttribute("id")).substring(6);
 
         WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlinesList"+sprint1Id));
