@@ -1402,3 +1402,29 @@ select.form-control {
     color: #ffffff !important;
 
 }
+
+.wrapper {
+    position: relative;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+}
+
+.category_box {
+    border: 1px #000000 solid;
+    position: absolute;
+    z-index: 99;
+    width: 27em;
+}
+
+.category_item {
+    background-color: #FFF;
+    padding: 0.2em;
+    margin: 0;
+}
+
+.category_item:hover {
+    background-color: #c1c1c1;
+}

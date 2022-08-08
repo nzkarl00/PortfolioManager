@@ -123,8 +123,8 @@ public class EvidenceListController {
           @RequestParam(value = "titleInput") String title,
           @RequestParam(value = "dateInput") String date,
           @RequestParam(value = "projectId") Integer projectId,
-          @RequestParam(value = "evidenceCategory") Optional <String> evidenceCategory,
-          @RequestParam(value = "skillHidden") String skills,
+          @RequestParam(value = "categoryInput") String categories,
+          @RequestParam(value = "skillInput") String skills,
           @RequestParam(value = "linksInput") Optional <String> links,
           @RequestParam(value = "descriptionInput") String description,
           Model model
