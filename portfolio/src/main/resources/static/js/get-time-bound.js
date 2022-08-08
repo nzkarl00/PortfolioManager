@@ -6,7 +6,7 @@ function getSprintTimeBound(timeBoundList, start, end) {
     let returning = [];
     for (const timeBoundItem of timeBoundList) {
         let date = Date.parse(timeBoundItem.startDate)
-        if (date >= startDate && date <= endDate) {
+        if (date >= startDate && date < endDate) {
             returning.push(timeBoundItem)
         }
     }
