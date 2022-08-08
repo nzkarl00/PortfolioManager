@@ -2,8 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.model.userGroups;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 
-import java.util.Locale;
-
 /**
  * A class mainly responsible to parse, convert the GRPC UserRoles to this more usable class Role
  */

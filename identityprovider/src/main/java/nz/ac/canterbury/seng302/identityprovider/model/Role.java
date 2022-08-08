@@ -1,6 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
+
 import javax.persistence.*;
-import java.beans.ConstructorProperties;
 
 /**
  * The entity representation for the Role and roles table

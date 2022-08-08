@@ -5,7 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.model.userGroups.UserPreferenceReposit
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,7 +23,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.*;
+import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.invalidAuthState;
+import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.testUserStudent;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

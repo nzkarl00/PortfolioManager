@@ -1,21 +1,20 @@
 package nz.ac.canterbury.seng302.portfolio.integration;
-import io.cucumber.java.en.Then;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
+
 import org.junit.jupiter.api.Assertions;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
+
+import static nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins.getPassword_ForAdmin_FromTextFile;
+import static nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins.whenPortfolioIsLoaded_thenLoginAdmin_forTests;
 
 
 /**
@@ -37,10 +36,11 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
 
     @BeforeSuite
     public void setUp() throws FileNotFoundException, InterruptedException {
+
         seleniumExample = new SeleniumExample("");
 
-        getPassword_ForAdmin_FromTextFile();
-        whenPortfolioIsLoaded_thenLoginAdmin_forTests();
+        passwordText = getPassword_ForAdmin_FromTextFile();
+        whenPortfolioIsLoaded_thenLoginAdmin_forTests(seleniumExample, passwordText);
 
         whenPortfolioIsLoaded_thenCreateNewProject();
 
@@ -59,6 +59,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         inProject_deleteDeadlineSprint2();
         inProject_deleteMilestoneSprint2();
         inProject_addBetweenMilestone();
+
     }
 
     @AfterSuite
@@ -66,16 +67,6 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         seleniumExample.closeWindow();
     }
 
-    /**
-     * Gets the password for the pre-generated admin account from the application files
-     * @throws FileNotFoundException
-     */
-    public void getPassword_ForAdmin_FromTextFile() throws FileNotFoundException {
-        String originpath = System.getProperty("user.dir");
-        File passwordFile = new File(originpath.substring(0, originpath.length()-9) + "identityprovider/defaultAdminPassword.txt");
-        Scanner passwordReader = new Scanner(passwordFile);
-        passwordText = passwordReader.nextLine();
-    }
 
     /**
      * Takes an element and validates that it returns a tooltip with valid text
@@ -89,24 +80,6 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         List<WebElement> tooltipList = tooltip.findElements(By.xpath(".//*"));
         String tooltipText = tooltipList.get(0).getText() + tooltipList.get(1).getText() + tooltipList.get(2).getText();
         Assertions.assertEquals(expectedText, tooltipText);
-    }
-
-
-    /**
-     * load up the page then login to the admin user
-     */
-    public void whenPortfolioIsLoaded_thenLoginAdmin_forTests() {
-        seleniumExample.config.getDriver().get(seleniumExample.url);
-        WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
-        username.sendKeys("admin");
-        WebElement password = seleniumExample.config.getDriver().findElement(By.id("password"));
-        password.sendKeys(passwordText);
-        WebElement loginButton = seleniumExample.config.getDriver().findElement(By.id("login-button"));
-        loginButton.click();
-
-        WebElement fullName = seleniumExample.config.getDriver().findElement(By.id("full-name"));
-        Assertions.assertEquals("admin admin", fullName.getText());
-        seleniumExample.config.getDriver().get(seleniumExample.url + "/landing");
     }
 
     /**
@@ -174,7 +147,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
-        WebElement firstSprint = allSprints.findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div/div[2]/div[2]"));
+        WebElement firstSprint = allSprints.findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div/div[3]/div[2]/div[3]"));
         WebElement sprintCheckDate = firstSprint.findElement(By.id("sprintDate"));
         WebElement sprintCheckDesc = firstSprint.findElement(By.id("sprintDesc"));
         WebElement sprintCheckName = firstSprint.findElement(By.id("sprintName"));
@@ -223,7 +196,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
-        WebElement firstSprint = allSprints.findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div/div[2]/div[2]"));
+        WebElement firstSprint = allSprints.findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div/div[3]/div[2]"));
         sprint1Id = (firstSprint.getAttribute("id")).substring(6);
 
         WebElement deadlineList = seleniumExample.config.getDriver().findElement(By.id("deadlinesList"+sprint1Id));

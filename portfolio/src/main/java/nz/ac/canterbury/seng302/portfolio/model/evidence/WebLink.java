@@ -1,7 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
-import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
-
 import javax.persistence.*;
 
 /**
@@ -123,7 +121,6 @@ public class WebLink {
 
     /**
      * Sets the results of fetching the link, and marks the link as fetched
-     * @param fetched
      * @param secure whether the fetch resulted in marking the link as secure
      * @param notFound whether the fetch resulted in a 404
      */

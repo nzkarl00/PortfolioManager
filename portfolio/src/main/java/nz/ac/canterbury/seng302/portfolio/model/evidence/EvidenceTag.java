@@ -34,4 +34,8 @@ public class EvidenceTag {
         parentEvidence = evidence;
         parentSkillTag = tag;
     }
+
+    public Evidence getParentEvidence() {
+        return parentEvidence;
+    }
 }

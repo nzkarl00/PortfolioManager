@@ -2,15 +2,11 @@ package nz.ac.canterbury.seng302.portfolio.model.timeBoundItems;
 
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import javax.persistence.Column;
 
 /**
  * The entity representation for the Sprint and sprint table

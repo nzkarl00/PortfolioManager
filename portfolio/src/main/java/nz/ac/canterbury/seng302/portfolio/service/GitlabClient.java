@@ -1,8 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import org.gitlab4j.api.GitLabApi;
-import org.gitlab4j.api.models.Project;
 import org.gitlab4j.api.GitLabApiException;
+import org.gitlab4j.api.models.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,15 +14,12 @@ import org.slf4j.LoggerFactory;
  */
 public class GitlabClient {
     private String gitlabInstanceURL;
-
-    private final String apiKey;
     private final GitLabApi client;
 
     Logger logger = LoggerFactory.getLogger(GitlabClient.class);
 
     public GitlabClient(final String url, final String apiKey) {
         this.gitlabInstanceURL = url;
-        this.apiKey = apiKey;
         System.out.println(gitlabInstanceURL);
         this.client = new GitLabApi(url, apiKey);
     }

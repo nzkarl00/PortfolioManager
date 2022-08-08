@@ -1,7 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.integration;
 
-import nz.ac.canterbury.seng302.portfolio.integration.SeleniumConfig;
-import org.openqa.selenium.By;
 import org.springframework.boot.web.server.LocalServerPort;
 
 public class SeleniumExample {

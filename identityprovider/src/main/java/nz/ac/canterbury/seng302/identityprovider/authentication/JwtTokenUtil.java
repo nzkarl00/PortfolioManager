@@ -1,22 +1,20 @@
 package nz.ac.canterbury.seng302.identityprovider.authentication;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
+import nz.ac.canterbury.seng302.identityprovider.service.Account;
+import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.crypto.SecretKey;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
-import nz.ac.canterbury.seng302.identityprovider.service.Account;
-import nz.ac.canterbury.seng302.identityprovider.model.AccountProfile;
-import nz.ac.canterbury.seng302.identityprovider.model.Role;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import javax.crypto.SecretKey;
 
 public class JwtTokenUtil implements Serializable {
 

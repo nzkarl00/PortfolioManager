@@ -1,7 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.cucumber.java.Before;
-import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.DeadlineRepository;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Event;
@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.*;
-import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateTeacher;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonProjectItems.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.refEq;
