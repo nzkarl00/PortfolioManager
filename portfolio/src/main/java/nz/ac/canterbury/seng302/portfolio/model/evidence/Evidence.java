@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validateEnoughCharacters;
+
 /**
  * An abstract class designed to provide a base for the three specific types of time bound items related to a project.
  * They are Milestones, Deadlines and Events.
@@ -99,6 +101,8 @@ public class Evidence {
         } else if (date.isBefore(parentProject.getLocalStartDate())) {
             throw new IllegalArgumentException("Evidence date is before parent project start date");
         }
+        validateEnoughCharacters(title);
+        validateEnoughCharacters(description);
     }
 
     /**
