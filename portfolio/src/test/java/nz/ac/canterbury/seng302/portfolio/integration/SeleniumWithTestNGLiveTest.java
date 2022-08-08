@@ -30,6 +30,7 @@ public class SeleniumWithTestNGLiveTest {
 
         @BeforeSuite
         public void setUp() throws FileNotFoundException {
+
                 seleniumExample = new SeleniumExample("");
                 whenPortfolioIsLoaded_thenRegisterWorks();
                 whenPortfolioIsLoaded_thenLoginWorks();

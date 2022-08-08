@@ -28,6 +28,7 @@ public class SeleniumWithTestNGLiveTest_GroupDetails {
 
     @BeforeSuite
     public void setUp() throws FileNotFoundException, InterruptedException {
+
         seleniumExample = new SeleniumExample("");
 
         getPassword_ForAdmin_FromTextFile();

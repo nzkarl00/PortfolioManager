@@ -103,11 +103,15 @@
                     <input type="number" th:name="projectId" th:value="${project.getId}" style="display: none" >
                     <!-- When enter is pressed, default form action is to submit the first button. As our form contains buttons, this empty button exists to consume the default action. -->
                     <button onclick="return false;" style="display: none"></button>
-                    <b class="evidence_head setWide" id="skills_input">Skills:</b><br>
+                    <div class="row-1">
+                        <b class="evidence_head setWide" id="skills_input">Skills:</b>
+                        <p style="display:none;" id="skill_error">Only letters, underscores, hyphens, and numbers are allowed</p>
+                    </div>
                     <div class="col-12" id="skills_div" style="display: flex; justify-content: center; align-items: center;">
                             <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
                         <div class="evidence_form_element_wide">
                         <div class="autocomplete evidence_form_element_wide">
+                            <input type="hidden" id="skillHidden" th:name="skillHidden">
                         <input type="text" autocomplete="off" id="add_skill_input" maxlength=100 oninput="updateSkills()"  class="evidence_form_element_wide project_edit_data">
                         </input>
                         </div>
@@ -126,6 +130,13 @@
                             addSkill()
                         })
 
+                        //Returns the skills
+                        function storeSkills() {
+                            let skillStore = document.getElementById("skillHidden")
+                            const skillList = Array.from(skills).join('~');
+                            skillStore.value = skillList
+                        }
+
                         let skills = new Set()
                         let skillRow = document.getElementById("skill_sub_1");
 
@@ -133,6 +144,12 @@
                         function addSkill() {
                             let newSkill = document.getElementById("add_skill_input").value
                             if (skills.has(newSkill)) return;
+                            // check to see if it matches the correct skill format
+                            const validate = newSkill.match(/^[a-zA-Z-_0-9]+$/)
+                            if (!validate || !validate.length == 1) {
+                                document.getElementById("skill_error").style = "color:red;";
+                                return
+                            }
                             skills.add(newSkill)
                             allSkills = allSkills.filter(s => s !== newSkill)
                             autocomplete(document.getElementById("add_skill_input"), allSkills)
@@ -154,6 +171,7 @@
                                 insertSkillRow()
                                 skillRow.appendChild(skillTag);
                             }
+                            storeSkills()
                         }
 
                         /* Creates a new row for skill tags to be placed on, for some reason inserting <br> couldn't do this*/
@@ -303,7 +321,7 @@
     <br>
     <div class="row">
         <div class="col-1"></div>
-        <button class="add_evidence col-10" onclick="displayAddEvidenceForm()" id="add_button"> + Add Evidence </button>
+        <button class="add_evidence col-10" onclick="displayAddEvidenceForm(); canSaveCheck()" id="add_button"> + Add Evidence </button>
         <div class="col-1"></div>
     </div>
     <script type="text/javascript" th:src="@{js/autocomplete.js}"></script>

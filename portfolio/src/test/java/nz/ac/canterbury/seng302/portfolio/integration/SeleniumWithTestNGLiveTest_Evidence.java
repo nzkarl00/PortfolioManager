@@ -42,7 +42,9 @@ public class SeleniumWithTestNGLiveTest_Evidence {
      * Inputs a new skill, checks a tag has been added
      */
     public void whenLoggedInAsAdmin_AddSkill_ForTest() {
-        seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl);
+        seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
+        WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+        button.click();
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
         skillsInput.sendKeys("new skill");
@@ -56,7 +58,9 @@ public class SeleniumWithTestNGLiveTest_Evidence {
      * Inputs a second skill, checks there are now two skill tags
      */
     public void whenLoggedInAsAdmin_AddTwoSkills_ForTest() {
-        seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl);
+        seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
+        WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+        button.click();
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
         skillsInput.sendKeys("new skill");
@@ -72,7 +76,9 @@ public class SeleniumWithTestNGLiveTest_Evidence {
      * Removes the first skill, checks it has been removed and the second tag is unchanged
      */
     public void whenLoggedInAsAdmin_AddTwoSkills_ThenRemoveFirstSkill_ForTest() {
-        seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl);
+        seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
+        WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+        button.click();
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
         skillsInput.sendKeys("new skill");
