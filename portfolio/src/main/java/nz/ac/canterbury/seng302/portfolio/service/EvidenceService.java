@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.Category;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.CategoryRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
@@ -24,9 +23,9 @@ public class EvidenceService {
      * Get a list of all unique skill tag names
      */
     public Set<String> getAllUniqueSkills() {
-        List<SkillTag> tagList = (List<SkillTag>) skillTagRepository.findAll();
-        Set<String> skillList = new HashSet<String>();
-        tagList.stream().forEach(tag -> skillList.add((String) tag.getTitle()));
+        List<SkillTag> tagList = skillTagRepository.findAll();
+        Set<String> skillList = new HashSet<>();
+        tagList.forEach(tag -> skillList.add(tag.getTitle()));
         return skillList;
     }
 
@@ -37,6 +36,6 @@ public class EvidenceService {
      */
     public List<String> getCategoryStringsByEvidenceId(int evidenceId) {
         List<Category> categoryList = categoryRepository.findAllByParentEvidence(evidenceId);
-        return categoryList.stream().map(category -> category.getCategoryName()).collect(Collectors.toList());
+        return categoryList.stream().map(Category::getCategoryName).collect(Collectors.toList());
     }
 }

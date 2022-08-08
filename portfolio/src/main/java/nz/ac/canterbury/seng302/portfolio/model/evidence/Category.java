@@ -1,11 +1,16 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 @Entity
 public class Category {
 
     public static final int MAX_CATEGORY_NAME_LENGTH = 100;
+    public static final List<String> validCategoryNames = List.of("Qualitative Skills", "Quantitative Skills", "Service");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,4 +51,10 @@ public class Category {
      * @return The name of the category
      */
     public String getCategoryName() {return categoryName;}
+
+    public static void validateCategoryName(String name) throws IllegalArgumentException {
+        if (!validCategoryNames.contains(name)) {
+            throw new IllegalArgumentException("Category name is not valid, must be one of " + validCategoryNames.toString());
+        }
+    }
 }
