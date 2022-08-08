@@ -1,10 +1,11 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
-import io.cucumber.java.bs.A;
-import io.cucumber.java.en_old.Ac;
-import org.junit.jupiter.api.BeforeAll;
+
 import org.junit.jupiter.api.Test;
+
 import java.util.Date;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class AccountProfileTest {
 

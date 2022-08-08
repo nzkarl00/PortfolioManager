@@ -1,10 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -14,16 +17,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -137,7 +134,7 @@ public class DetailsController {
             @RequestParam(value = "deleteprojectId") Integer projectId,
             @RequestParam(value = "sprintId") Integer sprintId,
             Model model
-    ) throws Exception {
+    ) throws CustomExceptions.ProjectItemNotFoundException {
         String role = AuthStateInformer.getRole(principal);
 
         if (role.equals("teacher") || role.equals("admin")) {
@@ -175,7 +172,7 @@ public class DetailsController {
             @RequestParam(value = "projectId") Integer projectId,
             @RequestParam(value = "dateId") Integer eventId,
             Model model
-    ) throws Exception {
+    ) throws CustomExceptions.ProjectItemNotFoundException {
         String role = AuthStateInformer.getRole(principal);
 
         if (role.equals("teacher") || role.equals("admin")) {
@@ -193,7 +190,6 @@ public class DetailsController {
      * @param deadlineId  deadline id under project to delete
      * @param model     the model to add attributes to
      * @return A location of where to go next
-     * @throws Exception
      */
     @PostMapping("delete-deadline")
     public String deadlineDelete(
@@ -201,7 +197,7 @@ public class DetailsController {
             @RequestParam(value = "projectId") Integer projectId,
             @RequestParam(value = "dateId") Integer deadlineId,
             Model model
-    ) throws Exception {
+    ) throws CustomExceptions.ProjectItemNotFoundException {
         String role = AuthStateInformer.getRole(principal);
 
         if (role.equals("teacher") || role.equals("admin")) {
@@ -227,7 +223,7 @@ public class DetailsController {
             @RequestParam(value = "projectId") Integer projectId,
             @RequestParam(value = "dateId") Integer milestoneId,
             Model model
-    ) throws Exception {
+    ) throws CustomExceptions.ProjectItemNotFoundException {
         String role = AuthStateInformer.getRole(principal);
 
         if (role.equals("teacher") || role.equals("admin")) {
@@ -243,7 +239,7 @@ public class DetailsController {
                                          @RequestParam(value="id") Integer projectId,
                                          @RequestParam(value="sprintId") Integer sprintId,
                                          @RequestParam(value="start") Date sprintStartDate,
-                                         @RequestParam(value="end") Date sprintEndDate) throws Exception {
+                                         @RequestParam(value="end") Date sprintEndDate) throws CustomExceptions.ProjectItemNotFoundException {
 
         String role = AuthStateInformer.getRole(principal);
         String redirect = "redirect:details?id=" + projectId;
@@ -319,7 +315,7 @@ public class DetailsController {
     @GetMapping("/deadlines")
     public ResponseEntity<List<Deadline>> getProjectDeadlines(@AuthenticationPrincipal AuthState principal,
                                                               @RequestParam(value="id") Integer projectId,
-                                                              @RequestParam(value="sprintId") Integer sprintId) throws Exception {
+                                                              @RequestParam(value="sprintId") Integer sprintId) throws CustomExceptions.ProjectItemNotFoundException {
         List<Deadline> deadlines = deadlineRepo.findAllByParentProjectOrderByStartDateAsc(projectService.getProjectById(projectId));
         Optional<Sprint> sprint = repository.findById(sprintId);
         List<Deadline> sendingDeadlines = new ArrayList<>();
@@ -537,7 +533,7 @@ public class DetailsController {
     @GetMapping("/milestones")
     public ResponseEntity<List<Milestone>> getProjectMilestones(@AuthenticationPrincipal AuthState principal,
                                                           @RequestParam(value="id") Integer projectId,
-                                                              @RequestParam(value="sprintId") Integer sprintId) throws Exception {
+                                                              @RequestParam(value="sprintId") Integer sprintId) throws CustomExceptions.ProjectItemNotFoundException {
         List<Milestone> milestones = milestoneRepo.findAllByParentProjectOrderByStartDateAsc(projectService.getProjectById(projectId));
         Optional<Sprint> sprint = repository.findById(sprintId);
         List<Milestone> sendingMilestones = new ArrayList<>();
@@ -561,7 +557,7 @@ public class DetailsController {
     @GetMapping("/events")
     public ResponseEntity<List<Event>> getProjectEvents(@AuthenticationPrincipal AuthState principal,
                                                                 @RequestParam(value="id") Integer projectId,
-                                                                @RequestParam(value="sprintId") Integer sprintId) throws Exception {
+                                                                @RequestParam(value="sprintId") Integer sprintId) throws CustomExceptions.ProjectItemNotFoundException {
         List<Event> events = eventRepo.findAllByParentProjectOrderByStartDateAsc(projectService.getProjectById(projectId));
         Optional<Sprint> sprint = repository.findById(sprintId);
         List<Event> sendingEvents = new ArrayList<>();

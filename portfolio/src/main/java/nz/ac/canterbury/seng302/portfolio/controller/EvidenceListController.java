@@ -1,10 +1,16 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.DateParser;
+import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
+import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
@@ -13,6 +19,8 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -21,14 +29,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.*;
 
 /**
@@ -38,17 +45,19 @@ import java.util.*;
 public class EvidenceListController {
 
   @Autowired
-  private EvidenceRepository evidencerepository;
+  private EvidenceRepository evidenceRepository;
   @Autowired
-  private EvidenceTagRepository evidencetagrepository;
+  private EvidenceTagRepository evidenceTagRepository;
   @Autowired
-  private SkillTagRepository skillrepository;
+  private SkillTagRepository skillRepository;
   @Autowired
   private ProjectService projectService;
   @Autowired
   private AccountClientService accountClientService;
   @Autowired
   private NavController navController;
+  @Autowired
+  private EvidenceService evidenceService;
 
   private String errorMessage = "";
 
@@ -72,11 +81,13 @@ public class EvidenceListController {
 
     List<Evidence> evidenceList;
 
-    List<SkillTag> skillList = skillrepository.findAll();
+    List<SkillTag> skillList = skillRepository.findAll();
 
     evidenceList = getEvidenceFunction(userId, projectId, categoryId, skillId);
 
     model.addAttribute("evidenceList", evidenceList);
+    Set<String> skillTagList = evidenceService.getAllUniqueSkills();
+    model.addAttribute("allSkills", skillTagList);
     model.addAttribute("skillList", skillList);
 
     Integer id = AuthStateInformer.getId(principal);
@@ -155,7 +166,7 @@ public class EvidenceListController {
     // If no error occurs then save the evidence to the repo and relavent skills
     if(errorMessage.equals("")) {
       Evidence evidence = new Evidence(accountID, parentProject, title, description, evidenceDate);
-      evidencerepository.save(evidence);
+      evidenceRepository.save(evidence);
       logger.info(String.format("Evidence has been created and saved to the repo evidenceId=<%s>", evidence.getId()));
       errorMessage = "Evidence has been added";
 
@@ -165,25 +176,25 @@ public class EvidenceListController {
         Project projectCurrent = projectService.getProjectById(projectId);
         for (String skillString : SkillItemsString) {
           String validSkillString = skillString.replace(" ", "_");
-          SkillTag skillCheck = skillrepository.findByTitle(validSkillString);
+          SkillTag skillCheck = skillRepository.findByTitle(validSkillString);
           if (skillCheck == null) {
             SkillTag newSkill = new SkillTag(projectCurrent, validSkillString);
-            skillrepository.save(newSkill);
+            skillRepository.save(newSkill);
             EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
-            evidencetagrepository.save(noSkillEvidence);
+            evidenceTagRepository.save(noSkillEvidence);
           } else {
             EvidenceTag noSkillEvidence = new EvidenceTag(skillCheck, evidence);
-            evidencetagrepository.save(noSkillEvidence);
+            evidenceTagRepository.save(noSkillEvidence);
           }
         }
       }
 
       // If there's no skills, add the no_skills
-      List<EvidenceTag> evidenceTagList = evidencetagrepository.findAllByParentEvidenceId(evidence.getId());
+      List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
       if (evidenceTagList.size() == 0) {
-        SkillTag noSkillTag = skillrepository.findByTitle("No_skills");
+        SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
         EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
-        evidencetagrepository.save(noSkillEvidence);
+        evidenceTagRepository.save(noSkillEvidence);
       }
 
     }
@@ -203,20 +214,20 @@ public class EvidenceListController {
 
     if (projectId != null){
       Project project = projectService.getProjectById(Integer.valueOf(projectId));
-      return evidencerepository.findAllByAssociatedProjectOrderByDateDesc(project);
+      return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
     } else if (userId != null){
-      return evidencerepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
+      return evidenceRepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
     }else if (categoryId != null){
-      return evidencerepository.findAllByOrderByDateDesc();
+      return evidenceRepository.findAllByOrderByDateDesc();
     }else if (skillId != null){
-      List<EvidenceTag> evidenceTags = evidencetagrepository.findAllByParentSkillTagId(Integer.valueOf(skillId));
+      List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(Integer.valueOf(skillId));
       List<Evidence> evidenceSkillList = new ArrayList<>();
       for (EvidenceTag tag: evidenceTags){
         evidenceSkillList.add(tag.getParentEvidence());
       }
       return evidenceSkillList;
     }else{
-      return evidencerepository.findAllByOrderByDateDesc();
+      return evidenceRepository.findAllByOrderByDateDesc();
     }
   }
 

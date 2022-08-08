@@ -131,8 +131,8 @@
                 e.stopPropagation();
                 $(this).closest(".MultiCheckBoxDetail").next().UpdateSelect();
 
-                var val = ($(".MultiCheckBoxDetailBody input:checked").length == $(".MultiCheckBoxDetailBody input").length)
-                $(".MultiCheckBoxDetailHeader input").prop("checked", val);
+                var value = ($(".MultiCheckBoxDetailBody input:checked").length == $(".MultiCheckBoxDetailBody input").length)
+                $(".MultiCheckBoxDetailHeader input").prop("checked", value);
             });
 
             $(document).on("click", ".MultiCheckBoxDetail .cont", function (e) {
@@ -144,8 +144,8 @@
                 var multiCheckBoxDetailBody = $(this).closest(".MultiCheckBoxDetailBody");
                 multiCheckBoxDetail.next().UpdateSelect();
 
-                var val = ($(".MultiCheckBoxDetailBody input:checked").length == $(".MultiCheckBoxDetailBody input").length)
-                $(".MultiCheckBoxDetailHeader input").prop("checked", val);
+                var value = ($(".MultiCheckBoxDetailBody input:checked").length == $(".MultiCheckBoxDetailBody input").length)
+                $(".MultiCheckBoxDetailHeader input").prop("checked", value);
             });
 
             $(document).mouseup(function (e) {
@@ -176,12 +176,12 @@
                 var multiCheckBoxDetailBody = detail.find(".MultiCheckBoxDetailBody");
 
                 this.find("option").each(function () {
-                    var val = $(this).attr("value");
+                    var value = $(this).attr("value");
 
-                    if (val == undefined)
-                        val = '';
+                    if (value == undefined)
+                        value = '';
 
-                    multiCheckBoxDetailBody.append("<div class='cont'><div><input type='checkbox' class='mulinput' value='" + val + "' /></div><div>" + $(this).text() + "</div></div>");
+                    multiCheckBoxDetailBody.append("<div class='cont'><div><input type='checkbox' class='mulinput' value='" + value + "' /></div><div>" + $(this).text() + "</div></div>");
                 });
 
                 multiCheckBoxDetailBody.css("max-height", (parseInt($(".MultiCheckBoxDetail").css("max-height")) - 28) + "px");
@@ -190,10 +190,10 @@
                 var arr = [];
 
                 this.prev().find(".mulinput:checked").each(function () {
-                    arr.push($(this).val());
+                    arr.push($(this).value());
                 });
 
-                this.val(arr);
+                this.value(arr);
             },
         });
     </script>
@@ -235,10 +235,14 @@
                     <b class="evidence_head setWide" id="skills_input">Skills:</b><br>
                     <div class="col-12" id="skills_div" style="display: flex; justify-content: center; align-items: center;">
                             <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
-                        <input type="hidden" id="skillHidden" th:name="skillHidden">
-                        <input type="text" id="add_skill_input" maxlength=100 oninput="updateSkills()" class="evidence_form_element_wide project_edit_data">
-                            <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill(); return false;"></button>
+                        <div class="evidence_form_element_wide">
+                        <div class="autocomplete evidence_form_element_wide">
+                            <input type="hidden" id="skillHidden" th:name="skillHidden">
+                        <input type="text" autocomplete="off" id="add_skill_input" maxlength=100 oninput="updateSkills()"  class="evidence_form_element_wide project_edit_data">
                         </input>
+                        </div>
+                        </div>
+                       <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill(); return false;"></button>
                     </div>
                     <label class="project_inputAlertBlue" id="skillCharCount" style="padding-left: 5px">Characters Remaining: 100</label>
                     <br>
@@ -267,6 +271,8 @@
                             let newSkill = document.getElementById("add_skill_input").value
                             if (skills.has(newSkill)) return;
                             skills.add(newSkill)
+                            allSkills = allSkills.filter(s => s !== newSkill)
+                            autocomplete(document.getElementById("add_skill_input"), allSkills)
                             document.getElementById("add_skill_input").value = ""
                             appendSkill(newSkill)
                         }
@@ -299,6 +305,8 @@
                         // Deletes a skill then rebuilds the skill list
                         function removeSkill(event) {
                             skills.delete(event.target.value)
+                            allSkills.push(event.target.value)
+                            autocomplete(document.getElementById("add_skill_input"), allSkills)
                             clearSkills()
                             insertSkillRow()
                             for (const skill of skills) {
@@ -436,6 +444,11 @@
         <button class="add_evidence col-10" onclick="displayAddEvidenceForm()" id="add_button"> + Add Evidence </button>
         <div class="col-1"></div>
     </div>
+    <script type="text/javascript" th:src="@{js/autocomplete.js}"></script>
+    <script th:inline="javascript">
+        let allSkills = [[${allSkills}]];
+        autocomplete(document.getElementById("add_skill_input"), allSkills);
+    </script>
 </div>
 </body>
 </html>
