@@ -27,7 +27,7 @@
     <div class="row-1">
 
       <div class="col-12">
-        <p class="body_title_large" th:text="${showForm? project.getName + ' - Evidence List' : 'List Of Evidence'}"></p>
+        <p class="body_title_large" id="title" th:text="${title}"></p>
       </div>
 
     </div>
@@ -128,7 +128,7 @@
 
     // hides element (still takes up space on page)
     // box.style.visibility = 'hidden';
-  }, 5000); // time in milliseconds
+  }, 10000); // time in milliseconds
 
   // If required fields are filled in, enable save button
   function canSaveCheck() {

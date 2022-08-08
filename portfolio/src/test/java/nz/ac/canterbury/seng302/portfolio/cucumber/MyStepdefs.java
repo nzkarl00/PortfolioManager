@@ -12,6 +12,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,10 +23,15 @@ public class MyStepdefs {
 
     private SeleniumExample seleniumExample;
 
+    private boolean registered = false;
+
     @Given("User is logged in.")
     public void userIsLoggedIn() {
         seleniumExample = new SeleniumExample("");
-        whenPortfolioIsLoaded_thenRegisterWorks();
+        if (!registered) {
+            whenPortfolioIsLoaded_thenRegisterWorks();
+            registered = true;
+        }
         whenPortfolioIsLoaded_thenLoginWorks();
     }
 
@@ -154,7 +160,7 @@ public class MyStepdefs {
     @Then("There will be the data for the evidence I created")
     public void thereWillBeTheDataForTheEvidenceICreated() throws InterruptedException {
         ((JavascriptExecutor) seleniumExample.config.getDriver())
-                .executeScript("window.scrollTo(0, document.body.scrollHeight)");
+            .executeScript("window.scrollTo(0, document.body.scrollHeight)");
         Thread.sleep(1500);
         // get the title of the evidence and the button to open the dropdown
         WebElement title = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[5]/div[2]/div[1]/div[1]/p"));
@@ -213,12 +219,25 @@ public class MyStepdefs {
         Assertions.assertFalse(saveButton.isEnabled());
     }
 
+    String skillName;
+
+    @When("I click the cancel button")
+    public void i_click_the_cancel_button() {
+        WebElement cancelButton = seleniumExample.config.getDriver().findElement(By.id("cancelButton"));
+        cancelButton.sendKeys(Keys.ENTER);
+
+    }
+
+    @Then("I can see the evidence creation page extract and replace by a plus button")
+    public void i_can_see_the_evidence_creation_page_extract_and_replace_by_a_plus_button() {
+        WebElement addButton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+        Assertions.assertTrue(addButton.isEnabled());
+    }
+
     @When("User navigates to {string}.")
     public void userNavigatesTo(String arg0) {
         seleniumExample.config.getDriver().get(seleniumExample.url + "/" + arg0);
     }
-
-    String skillName;
 
     @When("User inputs {string} into the skill input textbox.")
     public void userInputsIntoTheSkillInputTextbox(String arg0) {
@@ -238,6 +257,7 @@ public class MyStepdefs {
     @Then("There will not be a skill displayed.")
     public void thereWillNotBeASkillDisplayed() {
         List<WebElement> skills = seleniumExample.config.getDriver().findElements(By.id("skill_" + skillName));
+        System.out.println(skills);
         Assertions.assertTrue(skills.isEmpty());
     }
 
@@ -252,16 +272,27 @@ public class MyStepdefs {
         seleniumExample.closeWindow();
     }
 
-    @When("I click the cancel button")
-    public void i_click_the_cancel_button() {
-        WebElement cancelButton = seleniumExample.config.getDriver().findElement(By.id("cancelButton"));
-        cancelButton.sendKeys(Keys.ENTER);
-
+    @When("User selects the Quantitative skills option in the category dropdown")
+    public void userSelectsTheOptionInTheCategoryDropdown() {
+        Select category = new Select(seleniumExample.config.getDriver().findElement(By.id("ci")));
+        category.selectByValue("0");
     }
 
-    @Then("I can see the evidence creation page extract and replace by a plus button")
-    public void i_can_see_the_evidence_creation_page_extract_and_replace_by_a_plus_button() {
-        WebElement addButton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
-        Assertions.assertTrue(addButton.isEnabled());
+    @And("User clicks search button")
+    public void userClicksSearchButton() {
+        WebElement searchButton = seleniumExample.config.getDriver().findElement(By.id("searchEvidence"));
+        searchButton.click();
+    }
+
+    @Then("user is directed to a page where the heading is {string}")
+    public void userIsDirectedToAPageWhereTheHeadingIs(String arg0) {
+        WebElement title = seleniumExample.config.getDriver().findElement(By.id("title"));
+        Assertions.assertEquals(arg0, title.getText());
+    }
+
+    @When("User selects the {string} option in the skills dropdown")
+    public void userSelectsTheOptionInTheSkillsDropdown(String arg0) {
+        Select category = new Select(seleniumExample.config.getDriver().findElement(By.id("si")));
+        category.selectByVisibleText(arg0);
     }
 }

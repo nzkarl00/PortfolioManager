@@ -71,10 +71,10 @@ public class EvidenceListController {
     logger.info(String.format("Fetching evidence details"));
 
     List<Evidence> evidenceList;
+    setPageTitle(model,"List Of Evidence");
 
+    evidenceList = getEvidenceFunction(model, userId, projectId, categoryId, skillId);
     List<SkillTag> skillList = skillRepository.findAll();
-
-    evidenceList = getEvidenceFunction(userId, projectId, categoryId, skillId);
 
     model.addAttribute("evidenceList", evidenceList);
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
@@ -103,6 +103,9 @@ public class EvidenceListController {
     return "evidenceList";
   }
 
+  private void setPageTitle(Model model, String title) {
+    model.addAttribute("title", title);
+  }
 
   /**
    * Saves a new evidence if the user has permissions and the correct input is given
@@ -110,7 +113,7 @@ public class EvidenceListController {
    * @param title evidence title
    * @param date evidence date
    * @param projectId the id of the project that the evidence is linked too
-   * @param evidenceCategory the category the evidence is associated with
+   * @param categories the category the evidence is associated with
    * @param skills the skills the evidence is associated with
    * @param description evidence description
    * @param model The model to be used by the application for web integration
@@ -192,6 +195,7 @@ public class EvidenceListController {
     model.addAttribute("errorMessage", errorMessage);
     return "redirect:evidence?pi=" + projectId;
   }
+
   /**
    * Takes the parameters and returns the appropriate evidence list based on search priority
    * @param userId Id of user to get evidence from
@@ -201,17 +205,35 @@ public class EvidenceListController {
    * @return A properly sorted and filtered list of evidence
    * @throws Exception
    */
-  private List<Evidence> getEvidenceFunction(Integer userId, Integer projectId, Integer categoryId, Integer skillId) throws Exception {
+  private List<Evidence> getEvidenceFunction(Model model, Integer userId, Integer projectId, Integer categoryId, Integer skillId) throws Exception {
 
     if (projectId != null){
-      Project project = projectService.getProjectById(Integer.valueOf(projectId));
+      Project project = projectService.getProjectById(projectId);
+      setPageTitle(model, "Evidence from project: " + project.getName());
       return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
     } else if (userId != null){
-      return evidenceRepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
+      UserResponse userReply;
+      userReply = accountClientService.getUserById(userId); // Get the user
+      setPageTitle(model, "Evidence from user: " + userReply.getUsername());
+      return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
     }else if (categoryId != null){
+      switch (categoryId) {
+        case 0:
+          setPageTitle(model, "Evidence from category: Quantitative Skills");
+          break;
+        case 1:
+          setPageTitle(model, "Evidence from category: Qualitative Skills");
+          break;
+        case 2:
+          setPageTitle(model, "Evidence from category: Service");
+          break;
+      }
+
       return evidenceRepository.findAllByOrderByDateDesc();
     }else if (skillId != null){
-      List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(Integer.valueOf(skillId));
+      Optional<SkillTag> skillTag = skillRepository.findById(skillId);
+      setPageTitle(model, "Evidence from skill tag: " + skillTag.get().getTitle().replaceAll("_", " "));
+      List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(skillId);
       List<Evidence> evidenceSkillList = new ArrayList<>();
       for (EvidenceTag tag: evidenceTags){
         evidenceSkillList.add(tag.getParentEvidence());
