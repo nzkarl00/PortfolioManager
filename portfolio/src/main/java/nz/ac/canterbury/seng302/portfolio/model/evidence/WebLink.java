@@ -50,13 +50,6 @@ public class WebLink {
     private boolean fetched = false;
 
     /**
-     * Whether or not the Link is a secure one, ie. uses HTTPS
-     * Defaults to null, must be fetched first.
-     */
-    @Transient
-    private boolean secure = false;
-
-    /**
      * Whether or not the Link results in a 404 error, ie. it is not found
      * Defaults to null, must be fetched first.
      */
@@ -77,7 +70,6 @@ public class WebLink {
     public WebLink (String url, Evidence parentEvidence) {
         urlIsValid(url);
         this.url = url;
-        this.secure = urlIsHttps(url);
         this.parentEvidence = parentEvidence;
     }
 
@@ -135,7 +127,7 @@ public class WebLink {
      * @return true if the link is a secure link
      */
     public boolean isSecure() {
-        return secure;
+        return urlIsHttps(url);
     }
 
     /**
