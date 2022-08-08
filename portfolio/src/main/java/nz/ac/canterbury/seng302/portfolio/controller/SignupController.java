@@ -104,10 +104,6 @@ public class SignupController {
         if (authenticateResponse == null) {
             return "redirect:signup";
         }
-<<<<<<< HEAD
-=======
-
->>>>>>> dev
         // If authenticating a login is successful, then the cookie will be set in the domain.
         if (authenticateResponse.getSuccess()) {
             loginController.setCookie(request, response, authenticateResponse);
@@ -115,10 +111,7 @@ public class SignupController {
         }
 
         model.addAttribute("loginMessage", authenticateResponse.getMessage());
-<<<<<<< HEAD
-=======
         logger.info("[SIGNUP] Signup successful for user: " + username);
->>>>>>> dev
         return "redirect:signup";
     }
 }
