@@ -269,20 +269,6 @@ public class EvidenceListController {
       return resultList;
   }
 
-  /**
-   * Splits an HTML form input list, into multiple array elements.
-   * @param stringFromHTML
-   * @return
-   */
-  private List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
-      if (stringFromHTML.equals("")) {
-          return new ArrayList();
-      }
-
-      List<String> resultList = Arrays.asList(stringFromHTML.split("~"));
-      return resultList;
-  }
-
   private String validateMandatoryFields(String title, String description, LocalDate evidenceDate, LocalDate projectStartDate, LocalDate projectEndDate) {
       this.errorMessage = "";
 
