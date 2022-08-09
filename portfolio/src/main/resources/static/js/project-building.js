@@ -477,7 +477,7 @@ function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, even
         }
     }
 
-    let tempEvents = getBetweenTimeBound(eventList, startDateDate, endDateDate, position)
+    let tempEvents = getBetweenEvent(eventList, startDateDate, endDateDate, position)
     if (tempEvents.length == 0) {
         emptyLists += 1;
         events.style.display = "none"
