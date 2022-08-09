@@ -42,9 +42,7 @@ function getBetweenTimeBound(timeBoundList, start, end, position) {
     for (const timeBoundItem of timeBoundList) {
         let date = Date.parse(timeBoundItem.startDate)
         if (position == "start") {
-            if (date >= startDate - 86399999 && date < endDate) {
-                returning.push(timeBoundItem)
-            }
+            returning.push(timeBoundItem)
         } else if (position == "middle") {
             if (date > startDate && date < endDate) {
                 returning.push(timeBoundItem)
@@ -54,7 +52,6 @@ function getBetweenTimeBound(timeBoundList, start, end, position) {
                 returning.push(timeBoundItem)
             }
         }
-
     }
     return returning
 }
@@ -88,14 +85,13 @@ function getBetweenEvent(timeBoundList, start, end, position) {
                 addItem(returning, timeBoundItem)
             }
         }
-
     }
     return returning
 }
 
 function getCalendarTimeBound(timeBoundList, start) {
     let startDate = Date.parse(start)
-    let endDate = Date.parse(start)+86399999
+    let endDate = Date.parse(start) + 86399999
     let returning = [];
     for (const timeBoundItem of timeBoundList) {
         let date = Date.parse(timeBoundItem.startDate)

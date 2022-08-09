@@ -188,7 +188,8 @@ public class AddDatesController {
 
         Deadline deadline = new Deadline(project, eventName, eventDescription, endDate);
         deadlineRepository.save(deadline);
-        dateSocketService.sendDeadlineCalendarChange(project, deadline);
+        System.out.println(deadline);
+        dateSocketService.sendDeadlineCalendarChange(project);
         return "redirect:details?id=";
     }
 
@@ -219,7 +220,7 @@ public class AddDatesController {
 
         Milestone milestone = new Milestone(project, eventName, eventDescription, endDate);
         milestoneRepository.save(milestone);
-        dateSocketService.sendMilestoneCalendarChange(project, milestone);
+        dateSocketService.sendMilestoneCalendarChange(project);
         return "redirect:details?id=";
     }
 
@@ -253,7 +254,7 @@ public class AddDatesController {
 
         Event event = new Event(project, eventName, eventDescription, startDate, endDate);
         eventRepository.save(event);
-        dateSocketService.sendEventCalendarChange(project, event);
+        dateSocketService.sendEventCalendarChange(project);
         return "redirect:details?id=";
     }
 

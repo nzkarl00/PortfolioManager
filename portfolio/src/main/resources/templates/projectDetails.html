@@ -375,7 +375,6 @@
                 events.id = (dayRenderInfo.date).toString().substring(0, 16) + "eventList"
                 events.innerHTML = '<i class="fa fa-star"></i>' + ' E - ' + (tempEventList.length).toString();
                 let eventDayTooltip = ""
-
                 if (tempEventList.length === 0){
                     eventDayTooltip = '<p class="tooltip_body">' + "No Events For This Day" + "</p>" + '<p class="tooltip_end"></p>'
                     events.className = "hiddenCalendar calendarDeadline"
@@ -397,9 +396,11 @@
                     html: true
                 });
 
+                const deadlines = document.createElement("div")
+
                 let tempDeadlineList = getCalendarTimeBound(deadlineList, dayRenderInfo.date)
 
-                const deadlines = document.createElement("div")
+
                 deadlines.id = (dayRenderInfo.date).toString().substring(0, 16) + "deadlineList"
                 deadlines.innerHTML = '<i class="fa fa-calendar-o"></i>' + ' D - ' + (tempDeadlineList.length).toString();
                 let deadlineDayTooltip = ""
@@ -549,6 +550,7 @@
 
     // initial loading, base the TimeBoundItems off of thymeleaf
     // then set the calendar and the details tabs with the correct data
+<<<<<<< HEAD
 
     let sprintList = [[${sprints}]];
     let eventList = [[${events}]];
@@ -563,14 +565,16 @@
 
     function buildAll(sprintList, deadlineList, eventList, milestoneList) {
         deleteAllSprints();
-        for (const sprint of sprintList) {
+        // Sets the starting date for in-between sections and starting id
+        let initialDate = [[${project.getStartDate()}]];
+        let initialFalseId = 0.5;
 
-            if (initialFalseId == 0.5){
+        for (const sprint of sprintList) {
+            if (initialFalseId == 0.5) {
                 buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId, deadlineList, eventList, milestoneList, sprint.parentProjectId, "start")
             } else {
                 buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId, deadlineList, eventList, milestoneList, sprint.parentProjectId, "middle")
             }
-
             buildSprint(sprint)
             initialDate = sprint.endDate;
             initialFalseId += 1;
@@ -595,7 +599,7 @@
         renderCalendar(sprintList, deadlineList, eventList, milestoneList);
 
         buildAll(sprintList, deadlineList, eventList, milestoneList)
-    }, 10)
+    }, 20)
 
 
 

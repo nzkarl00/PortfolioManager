@@ -29,50 +29,6 @@ public class DateSocketService {
     /**
      * Send an update event message through websockets to all the users on the same project details page
      */
-    public void sendEventCalendarChange(Project project, Event event) {
-        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
-        // loop through sprints
-        for (Sprint sprint: sprints) {
-            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.getStartDate());
-            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.getEndDate());
-            // if deadline is within sprint
-            if (event.getEndDate().isAfter(startDate) && event.getStartDate().isBefore(endDate)) {
-                /// send a deadline update
-                this.template.convertAndSend("/topic/calendar/" + project.getId()
-                        , new EventUpdate(FetchUpdateType.EVENT, sprint.getId()));
-            }
-        }
-    }
-
-    /**
-     * Send an update deadline message through websockets to all the users on the same project details page
-     */
-    public void sendDeadlineCalendarChange(Project project, Deadline deadline) {
-        List<Sprint> sprints = repository.findByParentProjectId(project.getId());
-        // loop through sprints
-        for (Sprint sprint: sprints) {
-            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.getStartDate());
-            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.getEndDate());
-            // if deadline is within sprint
-            if (deadline.getEndDate().isAfter(startDate) && deadline.getStartDate().isBefore(endDate)) {
-                /// send a deadline update
-                this.template.convertAndSend("/topic/calendar/" + project.getId()
-                        , new EventUpdate(FetchUpdateType.DEADLINE, sprint.getId()));
-            }
-        }
-    }
-
-    /**
-     * Send an update milestone message through websockets to all the users on the same project details page
-     */
-    public void sendMilestoneCalendarChange(Project project, Milestone milestone) {
-        this.template.convertAndSend("/topic/calendar/" + project.getId()
-                , new EventUpdate(FetchUpdateType.MILESTONE, 1));
-    }
-
-    /**
-     * Send an update event message through websockets to all the users on the same project details page
-     */
     public void sendEventCalendarChange(Project project) {
         this.template.convertAndSend("/topic/calendar/" + project.getId()
                 , new EventUpdate(FetchUpdateType.EVENT, 1));

@@ -47,11 +47,11 @@ public class SeleniumWithTestNGLiveTest_Evidence {
         button.click();
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
-        skillsInput.sendKeys("new skill");
+        skillsInput.sendKeys("new_skill");
         addSkillButton.click();
         List<WebElement> skillTags = seleniumExample.config.getDriver().findElements(By.className("skill_tag"));
         Assertions.assertEquals(1, skillTags.size());
-        Assertions.assertEquals("new skill ✖", skillTags.get(0).getText());
+        Assertions.assertEquals("new_skill ✖", skillTags.get(0).getText());
     }
 
     /**
@@ -63,13 +63,13 @@ public class SeleniumWithTestNGLiveTest_Evidence {
         button.click();
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
-        skillsInput.sendKeys("new skill");
+        skillsInput.sendKeys("new_skill");
         addSkillButton.click();
-        skillsInput.sendKeys("new skill 2");
+        skillsInput.sendKeys("new_skill_2");
         addSkillButton.click();
         List<WebElement> skillTags = seleniumExample.config.getDriver().findElements(By.className("skill_tag"));
         Assertions.assertEquals(2, skillTags.size());
-        Assertions.assertEquals("new skill 2 ✖", skillTags.get(1).getText());
+        Assertions.assertEquals("new_skill_2 ✖", skillTags.get(1).getText());
     }
 
     /**
@@ -81,14 +81,14 @@ public class SeleniumWithTestNGLiveTest_Evidence {
         button.click();
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
-        skillsInput.sendKeys("new skill");
+        skillsInput.sendKeys("new_skill");
         addSkillButton.click();
-        skillsInput.sendKeys("new skill 2");
+        skillsInput.sendKeys("new_skill_2");
         addSkillButton.click();
         List<WebElement> skillTags = seleniumExample.config.getDriver().findElements(By.className("skill_tag"));
         skillTags.get(0).click();
         skillTags = seleniumExample.config.getDriver().findElements(By.className("skill_tag"));
         Assertions.assertEquals(1, skillTags.size());
-        Assertions.assertEquals("new skill 2 ✖", skillTags.get(0).getText());
+        Assertions.assertEquals("new_skill_2 ✖", skillTags.get(0).getText());
     }
 }

@@ -154,7 +154,7 @@ public class EditDatesController {
         deadline.setDescription(description);
         deadline.setStartDate(dateStart);
         projectItemService.saveDeadlineEdit(deadline);
-        dateSocketService.sendDeadlineCalendarChange(project, deadline);
+        dateSocketService.sendDeadlineCalendarChange(project);
         return "redirect:details?id=" + project.getId();
     }
 
@@ -188,7 +188,7 @@ public class EditDatesController {
         event.setStartDate(dateStart);
         event.setEndDate(dateEnd);
         projectItemService.saveEventEdit(event);
-        dateSocketService.sendEventCalendarChange(project, event);
+        dateSocketService.sendEventCalendarChange(project);
         return "redirect:details?id=" + project.getId();
     }
 
@@ -213,7 +213,7 @@ public class EditDatesController {
         milestone.setDescription(description);
         milestone.setStartDate(dateStart);
         projectItemService.saveMilestoneEdit(milestone);
-        dateSocketService.sendMilestoneCalendarChange(project, milestone);
+        dateSocketService.sendMilestoneCalendarChange(project);
         return "redirect:details?id=" + project.getId();
     }
 }
