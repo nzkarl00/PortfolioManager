@@ -11,4 +11,6 @@ public interface SkillTagRepository  extends CrudRepository<SkillTag, Integer> {
     List<SkillTag> findAll();
 
     SkillTag findByTitle(String title);
+
+    SkillTag findByTitleIgnoreCase(String validSkillString);
 }
