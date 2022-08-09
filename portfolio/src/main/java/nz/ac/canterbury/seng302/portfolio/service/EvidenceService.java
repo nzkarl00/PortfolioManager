@@ -75,6 +75,16 @@ public class EvidenceService {
     }
 
     /**
+     * Takes an evidence ID and returns a list of all skill tags that are associated with it.
+     * @param evidenceId The evidence ID to be checked against
+     * @return List of skilltag title strings
+     */
+    public List<SkillTag> getSkillTagByEvidenceId(int evidenceId) {
+        List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidenceId);
+        return evidenceTagList.stream().map(evidenceTag -> evidenceTag.getParentSkillTag()).collect(Collectors.toList());
+    }
+
+    /**
      * Takes an evidence ID and returns the string name of all categories that belong to it
      * @param evidenceId The ID of evidence being searched for categories
      * @return List of category names as strings that belong to the evidence of id evidenceId

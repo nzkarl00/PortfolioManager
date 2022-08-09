@@ -81,7 +81,7 @@
 
           <div>
             <p id="description" class="sprint-description evidence_text" th:text="${evidence.getDescription}"/>
-            <h4>Skills </h4>
+            <p class="bio evidence_head">Skills </p>
             <div th:id="'evidence_skills_'+${evidence.getId}" style="width: 100%"> </div>
           </div>
           <br>
@@ -161,8 +161,9 @@
     let evidenceSkillTag = document.createElement("button");
     evidenceSkillTag.id = "evidence_skill_" + skillText
     evidenceSkillTag.className = "table_text evidence_skill_tag"
-    evidenceSkillTag.innerText = skillText
-    evidenceSkillTag.value = skillText
+    evidenceSkillTag.innerText = skillText.title
+    evidenceSkillTag.value = skillText.title
+    evidenceSkillTag.onclick = function() {window.location.href = "evidence?si=" + skillText.id}
     evidenceSkillRow.appendChild(evidenceSkillTag);
     if (evidenceSkillRow.getBoundingClientRect().right < evidenceSkillTag.getBoundingClientRect().right) {
       evidenceSkillRow.removeChild(evidenceSkillTag);
