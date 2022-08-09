@@ -371,22 +371,22 @@ public class EvidenceListController {
    * @return redirects to the landing page
    */
   @GetMapping("/search-evidence")
-  public String searchEvidenceParam(@RequestParam(required = false, value = "ui") String user_id,
-                                    @RequestParam(required = false, value = "pi") String project_id,
-                                    @RequestParam(required = false, value = "si") String skill_id,
-                                    @RequestParam(required = false, value = "ci") String category_id) {
+  public String searchEvidenceParam(@RequestParam(required = false, value = "ui") String userId,
+                                    @RequestParam(required = false, value = "pi") String projectId,
+                                    @RequestParam(required = false, value = "si") String skillId,
+                                    @RequestParam(required = false, value = "ci") String categoryId) {
     String returnString = "redirect:evidence?";
-    if (user_id != null) {
-      returnString += "ui=" + (user_id);
+    if (userId != null) {
+      returnString += "ui=" + (userId);
     }
-    if (project_id != null) {
-      returnString += "pi=" + (project_id);
+    if (projectId != null) {
+      returnString += "pi=" + (projectId);
     }
-    if (skill_id != null) {
-      returnString += "si=" + (skill_id);
+    if (skillId != null) {
+      returnString += "si=" + (skillId);
     }
-    if (category_id != null) {
-      returnString += "ci=" + (category_id);
+    if (categoryId != null) {
+      returnString += "ci=" + (categoryId);
     }
 
     return returnString;
