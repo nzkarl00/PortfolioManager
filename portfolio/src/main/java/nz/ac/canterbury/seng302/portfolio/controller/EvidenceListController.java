@@ -49,6 +49,8 @@ public class EvidenceListController {
   private NavController navController;
   @Autowired
   private EvidenceService evidenceService;
+  @Autowired
+  private CategoryRepository categoryRepository;
 
   private String errorMessage = "";
 
@@ -163,12 +165,22 @@ public class EvidenceListController {
       evidenceRepository.save(evidence);
       logger.info(String.format("Evidence has been created and saved to the repo evidenceId=<%s>", evidence.getId()));
       errorMessage = "Evidence has been added";
+      logger.info(categories);
+      //Create all selected categories for the new piece of evidence
+      if (categories.replace(" ", "").length() > 0) {
+        List<String> categoryList = Arrays.asList(categories.split("~"));
+        for (String categoryString: categoryList) {
+          Category newCategory = new Category(evidence, categoryString);
+          logger.info(newCategory.toString());
+          categoryRepository.save(newCategory);
+        }
+      }
 
       //Create new skill for any skill that doesn't exist, create evidence tag for all skills
       if (skills.replace(" ", "").length() > 0) {
-        List<String> SkillItemsString = Arrays.asList(skills.split("~"));
+        List<String> skillItemsString = Arrays.asList(skills.split("~"));
         Project projectCurrent = projectService.getProjectById(projectId);
-        for (String skillString : SkillItemsString) {
+        for (String skillString : skillItemsString) {
           String validSkillString = skillString.replace(" ", "_");
           SkillTag skillFromRepo = skillRepository.findByTitle(validSkillString);
           if (skillFromRepo == null) {

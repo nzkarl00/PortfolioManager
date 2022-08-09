@@ -57,4 +57,13 @@ public class Category {
             throw new IllegalArgumentException("Category name is not valid, must be one of " + validCategoryNames.toString());
         }
     }
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", parentEvidence=" + parentEvidence +
+                ", categoryName='" + categoryName + '\'' +
+                '}';
+    }
 }

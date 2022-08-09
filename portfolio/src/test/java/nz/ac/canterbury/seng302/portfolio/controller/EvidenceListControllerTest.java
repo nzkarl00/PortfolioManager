@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTagRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
@@ -66,6 +63,8 @@ public class EvidenceListControllerTest {
     private NavController navController;
     @MockBean
     private EvidenceService evidenceService;
+    @MockBean
+    private CategoryRepository categoryRepository;
 
     @Before
     public void setup() throws Exception {
@@ -110,7 +109,7 @@ public class EvidenceListControllerTest {
      * the params get checks inside the post controller. The test verifies if the evidence created is the one saved
      * in the evidence repo
      * @throws Exception
-     *
+     */
     @Test
     public void postValidEvidence() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
@@ -135,7 +134,7 @@ public class EvidenceListControllerTest {
      * the params get checks inside the post controller. The test verifies if the evidence created is not saved
      * in the evidence repo
      * @throws Exception
-     *
+     */
     @Test
     public void postInValidEvidence_RequiredError() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
@@ -161,7 +160,7 @@ public class EvidenceListControllerTest {
      * the params get checks inside the post controller. The test verifies if the evidence created is not saved
      * in the evidence repo
      * @throws Exception
-     *
+     */
     @Test
     public void postInValidEvidence_DateError() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
@@ -180,7 +179,5 @@ public class EvidenceListControllerTest {
         verify(evidenceRepository, never()).save(Mockito.any(Evidence.class)); // Verifies evidence was not saved
 
     }
-
-    */
 
 }
