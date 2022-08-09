@@ -71,8 +71,6 @@ public class WebLink {
         this.parentEvidence = parentEvidence;
     }
 
-    protected WebLink() {}
-
     /**
      * Checks if the supplied URL is valid
      * @param url
