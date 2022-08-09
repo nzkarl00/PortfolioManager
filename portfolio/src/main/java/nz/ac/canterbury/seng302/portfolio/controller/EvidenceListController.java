@@ -80,9 +80,9 @@ public class EvidenceListController {
 
     List<Evidence> evidenceList = evidenceService.getFilteredEvidenceForUserInProject(userId, projectId, categoryId, skillId);
     setTitle(model, userId, projectId, categoryId, skillId);
-    HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
+    HashMap<Integer, List<SkillTag>> evidenceSkillMap = new HashMap<>();
     for (Evidence evidence: evidenceList) {
-      evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
+      evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagByEvidenceId(evidence.getId()));
     }
     model.addAttribute("skillMap", evidenceSkillMap);
     model.addAttribute("evidenceList", evidenceList);
@@ -255,6 +255,20 @@ public class EvidenceListController {
       return resultList;
   }
 
+  /**
+   * Splits an HTML form input list, into multiple array elements.
+   * @param stringFromHTML
+   * @return
+   */
+  private List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
+      if (stringFromHTML.equals("")) {
+          return new ArrayList();
+      }
+
+      List<String> resultList = Arrays.asList(stringFromHTML.split("~"));
+      return resultList;
+  }
+
   private String validateMandatoryFields(String title, String description, LocalDate evidenceDate, LocalDate projectStartDate, LocalDate projectEndDate) {
       this.errorMessage = "";
 
@@ -281,7 +295,7 @@ public class EvidenceListController {
   private void addSkillsToRepo(Project parentProject, Evidence evidence, String skills) {
       //Create new skill for any skill that doesn't exist, create evidence tag for all skills
       if (skills.replace(" ", "").length() > 0) {
-          List<String> skillList = extractListFromHTMLString(skills);
+          List<String> skillList = extractListFromHTMLStringSkills(skills);
 
           for (String skillString : skillList) {
               String validSkillString = skillString.replace(" ", "_");
