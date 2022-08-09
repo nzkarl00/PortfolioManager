@@ -42,7 +42,7 @@ function getBetweenTimeBound(timeBoundList, start, end, position) {
     for (const timeBoundItem of timeBoundList) {
         let date = Date.parse(timeBoundItem.startDate)
         if (position == "start") {
-            if (date >= startDate && date < endDate) {
+            if (date >= startDate - 86399999 && date < endDate) {
                 returning.push(timeBoundItem)
             }
         } else if (position == "middle") {
@@ -67,10 +67,10 @@ function getBetweenEvent(timeBoundList, start, end, position) {
         let date = Date.parse(timeBoundItem.startDate)
         let endEvent = Date.parse(timeBoundItem.endDate)
         if (position == "start") {
-            if (date >= startDate && date < endDate) {
+            if (date >= startDate - 86399999 && date < endDate) {
                 addItem(returning, timeBoundItem)
             }
-            if (endEvent >= startDate && endEvent < endDate) {
+            if (endEvent >= startDate - 86399999 && endEvent < endDate) {
                 addItem(returning, timeBoundItem)
             }
         } else if (position == "middle") {
