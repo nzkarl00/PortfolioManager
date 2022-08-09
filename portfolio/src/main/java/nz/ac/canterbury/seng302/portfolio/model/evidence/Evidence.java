@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -44,6 +46,7 @@ public class Evidence {
     protected Project associatedProject;
 
     @OneToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
     @JoinColumn(name="evidence_tag_id")
     protected List<EvidenceTag> evidenceTags;
 

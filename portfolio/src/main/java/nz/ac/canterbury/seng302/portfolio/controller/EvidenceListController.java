@@ -73,12 +73,18 @@ public class EvidenceListController {
                                         Model model) throws Exception {
     logger.info(String.format("Fetching evidence details"));
 
-    List<Evidence> evidenceList;
     setPageTitle(model,"List Of Evidence");
 
-    evidenceList = getEvidenceFunction(model, userId, projectId, categoryId, skillId);
     List<SkillTag> skillList = skillRepository.findAll();
 
+
+    List<Evidence> evidenceList = evidenceService.getFilteredEvidenceForUserInProject(userId, projectId, categoryId, skillId);
+    setTitle(model, userId, projectId, categoryId, skillId);
+    HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
+    for (Evidence evidence: evidenceList) {
+      evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
+    }
+    model.addAttribute("skillMap", evidenceSkillMap);
     model.addAttribute("evidenceList", evidenceList);
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
     Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
@@ -305,6 +311,7 @@ public class EvidenceListController {
 
   /**
    * Takes the parameters and returns the appropriate evidence list based on search priority
+   * @param model The Spring model
    * @param userId Id of user to get evidence from
    * @param projectId Id of project to get evidence from
    * @param categoryId Id of category to get evidence from
@@ -312,45 +319,39 @@ public class EvidenceListController {
    * @return A properly sorted and filtered list of evidence
    * @throws Exception
    */
-  private List<Evidence> getEvidenceFunction(Model model, Integer userId, Integer projectId, Integer categoryId, Integer skillId) throws Exception {
+  private void setTitle(Model model, Integer userId, Integer projectId, Integer categoryId, Integer skillId) throws Exception {
 
     if (projectId != null){
       Project project = projectService.getProjectById(projectId);
       setPageTitle(model, "Evidence from project: " + project.getName());
-      return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
+      return;
     } else if (userId != null){
-      UserResponse userReply;
-      userReply = accountClientService.getUserById(userId); // Get the user
+      UserResponse userReply = accountClientService.getUserById(userId); // Get the user
       setPageTitle(model, "Evidence from user: " + userReply.getUsername());
-      return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
+      return;
     }else if (categoryId != null){
       switch (categoryId) {
         case 0:
           setPageTitle(model, "Evidence from category: Quantitative Skills");
-          break;
+          return;
         case 1:
           setPageTitle(model, "Evidence from category: Qualitative Skills");
-          break;
+          return;
         case 2:
           setPageTitle(model, "Evidence from category: Service");
-          break;
+          return;
       }
-
-      return evidenceRepository.findAllByOrderByDateDesc();
-    }else if (skillId != null){
+    } else if (skillId != null){
       Optional<SkillTag> skillTag = skillRepository.findById(skillId);
-      setPageTitle(model, "Evidence from skill tag: " + skillTag.get().getTitle().replaceAll("_", " "));
-      List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(skillId);
-      List<Evidence> evidenceSkillList = new ArrayList<>();
-      for (EvidenceTag tag: evidenceTags){
-        evidenceSkillList.add(tag.getParentEvidence());
+      if (!skillTag.isPresent()) {
+        throw new InvalidArgumentException("Skill with corresponding ID does not exist");
       }
-      return evidenceSkillList;
+      setPageTitle(model, "Evidence from skill tag: " + skillTag.get().getTitle().replaceAll("_", " "));
+      return;
     }else{
-      return evidenceRepository.findAllByOrderByDateDesc();
+      return;
     }
   }
-
 
 
   /**
