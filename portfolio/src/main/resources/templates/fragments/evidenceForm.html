@@ -60,6 +60,7 @@
                         function storeCategories() {
                             let categoryStore = document.getElementById("category_hidden")
                             const categoriesToSave = Array.from(selectedCategories).join('~');
+                            console.log(categoriesToSave)
                             categoryStore.value = categoriesToSave
                         }
 
@@ -75,7 +76,7 @@
                         }
 
                         function updateCategories(event) {
-                            newCategory = event.value
+                            let newCategory = event.value
                             if (selectedCategories.has(newCategory)) {
                                 selectedCategories.delete(newCategory)
                             } else {
@@ -87,6 +88,7 @@
                             } else {
                                 categoryDisplay.innerText = [...selectedCategories].join(', ')
                             }
+                            storeCategories()
                         }
 
                         document.addEventListener("click", function (e) {
