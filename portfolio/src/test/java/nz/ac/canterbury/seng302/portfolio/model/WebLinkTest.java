@@ -27,27 +27,30 @@ class WebLinkTest {
     @Test
     public void isFetched() {
         assertEquals(false, link.isFetched());
-        link.setFetchResult(true, true);
+        link.setFetchResult(true);
         assertEquals(true, link.isFetched());
     }
 
     @Test
-    public void isSecure_throwsOnUnfetchedLink() {
-        String expectedMessage = "Link must be fetched first";
+    public void constructor_throwsOnNoProtocol() {
+        String expectedMessage = "URL must contain an HTTP(s) protocol definition";
 
-        Exception argumentException = Assertions.assertThrows(IllegalStateException.class, () -> {
-            link.isSecure();
+        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            new WebLink("url-no-protocol", evidence);
         });
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
     }
 
    @Test
-   public void isSecure_doesNotThrowOnFetched() {
-       link.setFetchResult(true, true);
-       Assertions.assertDoesNotThrow(() -> {
-          link.isSecure();
-       });
+   public void isSecure_trueOnHttpsURL() {
+      Assertions.assertTrue(link.isSecure());
    }
+
+    @Test
+    public void isSecure_falseOnHttpURL() {
+        link = new WebLink("http://google.com", evidence);
+        Assertions.assertFalse(link.isSecure());
+    }
 
     @Test
     public void isNotFound_throwsOnUnfetchedLink() {
@@ -61,7 +64,7 @@ class WebLinkTest {
 
     @Test
     public void isNotFound_doesNotThrowOnFetched() {
-        link.setFetchResult(true, true);
+        link.setFetchResult(true);
         Assertions.assertDoesNotThrow(() -> {
             link.isNotFound();
         });
@@ -74,48 +77,21 @@ class WebLinkTest {
 
     @Test
     public void setFetchResult_setsFalse() {
-        link.setFetchResult(false, false);
+        link.setFetchResult(false);
         assertEquals(true, link.isFetched());
         assertEquals(false, link.isNotFound());
-        assertEquals(false, link.isSecure());
     }
 
     @Test
     public void setFetchResult_setsTrue() {
-        link.setFetchResult(true, true);
+        link.setFetchResult(true);
         assertEquals(true, link.isFetched());
         assertEquals(true, link.isNotFound());
-        assertEquals(true, link.isSecure());
-    }
-
-    @Test
-    public void setSecure() {
-        link.setFetchResult(true, true);
-
-        assertEquals(true, link.isSecure());
-        link.setSecure(false);
-        assertEquals(false, link.isSecure());
-        link.setSecure(true);
-        assertEquals(true, link.isSecure());
-    }
-
-    @Test
-    public void setSecure_throwsIfNotAlreadyFetched() {
-        // Note: I have looked all over for a way to test
-        // That assert statements are being triggered, but this is the best I've found
-        // The @Rule doesn't seem to work
-        // See: https://stackoverflow.com/questions/15216438/junit-testing-exceptions
-        try {
-            link.setSecure(true);
-            fail("Should throw an assertion error");
-        } catch(AssertionError e) {
-            assertTrue(true);
-        }
     }
 
     @Test
     public void setNotFound() {
-        link.setFetchResult(true, true);
+        link.setFetchResult(true);
 
         assertEquals(true, link.isNotFound());
         link.setNotFound(false);

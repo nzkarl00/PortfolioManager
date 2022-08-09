@@ -30,7 +30,13 @@
                             <label class="project_inputAlertBlue" id="titleCharCount">Characters Remaining: 100</label>
                         </div>
                         <div class="evidence_form_element col-3">
-                            <b class="evidence_head setWide">Date*:</b> <br><input type="date" th:name="dateInput" th:value="${date}"  th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}" class="project_edit_data" id="date_input" oninput="canSaveCheck()" required>
+                            <b class="evidence_head setWide">Date*:</b>
+                            <br>
+                            <input type="date" th:name="dateInput" th:value="${date}"
+                                   th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}"
+                                   class="project_edit_data" id="date_input"
+                                   oninput="canSaveCheck()" required
+                            >
                         </div>
                         <div class="evidence_form_element align-content-center col-5">
                                 <b class="evidence_head setWide">Category:</b><br>
@@ -104,7 +110,12 @@
 
                 <div class="row-1">
                     <div>
-                        <b class="evidence_head setWide">Description*:</b><br> <textarea type="text" maxlength="2000" id="evidence_desc" oninput="updateDesc(); canSaveCheck()" class=" description-input project_edit_data horizontal_field bio setWide" th:name="descriptionInput" required></textarea>
+                        <b class="evidence_head setWide">Description*:</b>
+                        <br>
+                        <textarea type="text" maxlength="2000" id="evidence_desc" oninput="updateDesc(); canSaveCheck()"
+                                  class=" description-input project_edit_data horizontal_field bio setWide"
+                                  th:name="descriptionInput" required
+                        ></textarea>
                         <label class="project_inputAlertBlue" id="descCharCount">Characters Remaining: 2000</label>
                     </div>
                     <input type="number" th:name="projectId" th:value="${project.getId}" style="display: none" >
@@ -210,19 +221,28 @@
                             }
                         }
                     </script>
+
+                    <!-- Start of link section of the form, which includes the 1. "Links" title, 2. input, and 3. list of inputted links -->
                     <div class="col-12">
+                        <!-- 1. "Links" title-->
                         <b class="evidence_head setWide" id="links_input">Links:</b><br>
+
+                        <!-- 2. Input field where user can add links -->
                         <div class="col-12" id="links_div" style="display: flex; justify-content: center; align-items: center;">
                             <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
                             <input type="text" id="add_link_input" class="evidence_form_element_wide project_edit_data">
                             <button id="add_link_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addLink(); return false;"></button>
                             </input>
-                        </div>
-                        <br>
-                        <div id="links_and_submit" style="display: flex">
-                            <div id="links_container" style="width: 85%; display: block">
+                        </div><br>
 
+
+                        <div id="links_and_submit" style="display: flex">
+
+                            <!-- 3. List of all the links the user added from the input field -->
+                            <div id="links_container" style="width: 85%; display: block">
+                                <input type="hidden" id="linksInput" th:name="linksInput">
                             </div>
+
                             <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
                                 <button class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button">CANCEL</button>
                                 <button class="save_evidence" id="projectSave" style="background: lightgray" type="submit" disabled>SAVE</button>
@@ -236,17 +256,30 @@
                             addLink()
                         })
 
-                        let links = new Set()
+                        let links = new Set();
                         let linksContainer = document.getElementById("links_container")
                         let linkCounter = 0;
 
                         // Adds the link to the set and resets the input.
                         function addLink() {
                             let newLink = document.getElementById("add_link_input").value
+                            if (newLink === "") {
+                                return;
+                            }
+                            if (!validateLink(newLink)) {
+                                alert('Link is not valid, please ensure link includes http(s):// protocol');
+                                return;
+                            }
                             if (links.has(newLink)) return;
                             links.add(newLink)
                             document.getElementById("add_link_input").value = ""
                             appendLink(newLink)
+                        }
+
+                        // Validate a link
+                        function validateLink(link) {
+                            let pattern = /^https?:\/\/.*$/
+                            return pattern.test(link);
                         }
 
                         // Inserts a new link into the form
@@ -270,6 +303,16 @@
                             linkDelete.onclick = removeLink;
                             linkBox.appendChild(newLink)
                             linkBox.appendChild(linkDelete)
+                            storeLinks()
+                        }
+
+                        // Store the javascript set of links into a hidden HTML divider,
+                        // which can be retrieved in Java from the linkInput ID
+                        // This is to transfer the frontend set of links into the backend.
+                        function storeLinks() {
+                            let linksInput = document.getElementById("linksInput")
+                            const linkList = Array.from(links).join(' ');
+                            linksInput.value = linkList
                         }
 
                         // Deletes a link then rebuilds the link list
@@ -290,8 +333,7 @@
                                 linkContainer.removeChild(linkContainer.lastChild)
                             }
                         }
-                    </script>
-                    <script>
+
                         function updateTitle() {
                             const titleCounter = document.getElementById("titleCharCount")
                             const titleInput = document.getElementById("evidence_title")
@@ -333,7 +375,7 @@
     </div>
     <script type="text/javascript" th:src="@{js/autocomplete.js}"></script>
     <script th:inline="javascript">
-        let allSkills = [[${allSkills}]];
+        let allSkills = [[${autoSkills}]];
         autocomplete(document.getElementById("add_skill_input"), allSkills);
     </script>
 </div>
