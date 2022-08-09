@@ -1,12 +1,87 @@
 function getSprintTimeBound(timeBoundList, start, end) {
     let startDate = Date.parse(start)
-    let endDate = Date.parse(end)
+    let endDate = Date.parse(end)+86399999
     let returning = [];
     for (const timeBoundItem of timeBoundList) {
         let date = Date.parse(timeBoundItem.startDate)
-        if (date >= startDate && date < endDate) {
+        if (date >= startDate && date <= endDate) {
             returning.push(timeBoundItem)
         }
+    }
+    return returning
+}
+
+function getSprintEvent(timeBoundList, start, end) {
+    let startDate = Date.parse(start)
+    let endDate = Date.parse(end)+86399999
+    let returning = [];
+    for (const timeBoundItem of timeBoundList) {
+        let date = Date.parse(timeBoundItem.startDate)
+        let endEvent = Date.parse(timeBoundItem.endDate)
+        if (date >= startDate && date <= endDate) {
+            returning.push(timeBoundItem)
+        }
+        if (endEvent >= startDate && endEvent <= endDate) {
+            returning.push(timeBoundItem)
+        }
+    }
+    return returning
+}
+
+function getBetweenTimeBound(timeBoundList, start, end, position) {
+    let startDate = Date.parse(start)+86399999
+    let endDate = Date.parse(end)+86399999
+    let returning = [];
+    for (const timeBoundItem of timeBoundList) {
+        let date = Date.parse(timeBoundItem.startDate)
+        if (position == "start") {
+            if (date >= startDate && date < endDate) {
+                returning.push(timeBoundItem)
+            }
+        } else if (position == "middle") {
+            if (date > startDate && date < endDate) {
+                returning.push(timeBoundItem)
+            }
+        } else {
+            if (date > startDate && date <= endDate) {
+                returning.push(timeBoundItem)
+            }
+        }
+
+    }
+    return returning
+}
+
+function getBetweenEvent(timeBoundList, start, end, position) {
+    let startDate = Date.parse(start)+86399999
+    let endDate = Date.parse(end)+86399999
+    let returning = [];
+    for (const timeBoundItem of timeBoundList) {
+        let date = Date.parse(timeBoundItem.startDate)
+        let endEvent = Date.parse(timeBoundItem.endDate)
+        if (position == "start") {
+            if (date >= startDate && date < endDate) {
+                returning.push(timeBoundItem)
+            }
+            if (endEvent >= startDate && endEvent < endDate) {
+                returning.push(timeBoundItem)
+            }
+        } else if (position == "middle") {
+            if (date > startDate && date < endDate) {
+                returning.push(timeBoundItem)
+            }
+            if (endEvent > startDate && endEvent < endDate) {
+                returning.push(timeBoundItem)
+            }
+        } else {
+            if (date > startDate && date <= endDate) {
+                returning.push(timeBoundItem)
+            }
+            if (endEvent > startDate && endEvent <= endDate) {
+                returning.push(timeBoundItem)
+            }
+        }
+
     }
     return returning
 }

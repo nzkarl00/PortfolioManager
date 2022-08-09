@@ -455,7 +455,7 @@ function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, even
 
     var emptyLists = 0;
 
-    let tempDeadlines = getSprintTimeBound(deadlineList, startDateDate, endDateDate)
+    let tempDeadlines = getBetweenTimeBound(deadlineList, startDateDate, endDateDate)
     if (tempDeadlines.length == 0) {
         emptyLists += 1;
         deadlines.style.display = "none"
@@ -466,7 +466,7 @@ function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, even
         }
     }
 
-    let tempMilestones = getSprintTimeBound(milestoneList, startDateDate, endDateDate)
+    let tempMilestones = getBetweenTimeBound(milestoneList, startDateDate, endDateDate)
     if (tempMilestones.length == 0) {
         emptyLists += 1;
         milestones.style.display = "none"
@@ -477,7 +477,7 @@ function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, even
         }
     }
 
-    let tempEvents = getSprintTimeBound(eventList, startDateDate, endDateDate)
+    let tempEvents = getBetweenEvent(eventList, startDateDate, endDateDate)
     if (tempEvents.length == 0) {
         emptyLists += 1;
         events.style.display = "none"
