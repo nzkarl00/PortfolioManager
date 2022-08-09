@@ -42,7 +42,9 @@ function getBetweenTimeBound(timeBoundList, start, end, position) {
     for (const timeBoundItem of timeBoundList) {
         let date = Date.parse(timeBoundItem.startDate)
         if (position == "start") {
-            returning.push(timeBoundItem)
+            if (date >= startDate - 86399999 && date < endDate) {
+                returning.push(timeBoundItem)
+            }
         } else if (position == "middle") {
             if (date > startDate && date < endDate) {
                 returning.push(timeBoundItem)
