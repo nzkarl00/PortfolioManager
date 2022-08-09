@@ -254,6 +254,20 @@ public class EvidenceListController {
       List<String> resultList = Arrays.asList(stringFromHTML.split(" "));
       return resultList;
   }
+  
+  /**
+   * Splits an HTML form input list, into multiple array elements.
+   * @param stringFromHTML
+   * @return
+   */
+  private List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
+      if (stringFromHTML.equals("")) {
+          return new ArrayList();
+      }
+
+      List<String> resultList = Arrays.asList(stringFromHTML.split("~"));
+      return resultList;
+  }
 
   /**
    * Splits an HTML form input list, into multiple array elements.
@@ -299,7 +313,7 @@ public class EvidenceListController {
 
           for (String skillString : skillList) {
               String validSkillString = skillString.replace(" ", "_");
-              SkillTag skillFromRepo = skillRepository.findByTitle(validSkillString);
+              SkillTag skillFromRepo = skillRepository.findByTitleIgnoreCase(validSkillString);
 
               if (skillFromRepo == null) {
                   SkillTag newSkill = new SkillTag(parentProject, validSkillString);
