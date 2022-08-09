@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.List;
@@ -26,6 +28,7 @@ public class SkillTag {
      * There can be many Evidences with many SkillTags
      */
     @OneToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
     @JoinColumn(name="evidence_id")
     protected List<EvidenceTag> evidenceTags;
 

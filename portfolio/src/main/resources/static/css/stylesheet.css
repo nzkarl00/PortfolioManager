@@ -1403,6 +1403,32 @@ select.form-control {
 
 }
 
+.evidence_skill_tag {
+    background-color:#19DAFF; !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    padding: 0.3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+}
+
+.evidence_skill_tag:hover {
+    background-color: #26D20F !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    padding: 0.3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+}
+
 .wrapper {
     position: relative;
     left: 0;
