@@ -117,7 +117,7 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
     /**
      * load up the page then login to the admin user
      */
-    public void whenPortfolioIsLoaded_thenCreateNewSprint() {
+    public void whenPortfolioIsLoaded_thenCreateNewSprint() throws InterruptedException {
         seleniumExample.config.getDriver().get(projectInfoUrl);
         WebElement detailAccess = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         WebElement addDateAccess = seleniumExample.config.getDriver().findElement(By.id("addDateButton"));
@@ -146,6 +146,8 @@ public class SeleniumWithTestNGLiveTest_ProjectDetails {
         seleniumExample.config.getDriver().get(projectInfoUrl);
         WebElement detailAccessCheck = seleniumExample.config.getDriver().findElement(By.id("toDetails"));
         detailAccessCheck.click();
+
+        Thread.sleep(1000);
         WebElement allSprints = seleniumExample.config.getDriver().findElement(By.id("sprints"));
         WebElement firstSprint = allSprints.findElement(By.xpath("/html/body/div[2]/div/div[3]/div[2]/div/div[3]/div[2]/div[3]"));
         WebElement sprintCheckDate = firstSprint.findElement(By.id("sprintDate"));

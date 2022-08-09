@@ -38,4 +38,6 @@ public class EvidenceTag {
     public Evidence getParentEvidence() {
         return parentEvidence;
     }
+
+    public SkillTag getParentSkillTag() { return parentSkillTag; }
 }

@@ -375,8 +375,6 @@
                 events.id = (dayRenderInfo.date).toString().substring(0, 16) + "eventList"
                 events.innerHTML = '<i class="fa fa-star"></i>' + ' E - ' + (tempEventList.length).toString();
                 let eventDayTooltip = ""
-
-
                 if (tempEventList.length === 0){
                     eventDayTooltip = '<p class="tooltip_body">' + "No Events For This Day" + "</p>" + '<p class="tooltip_end"></p>'
                     events.className = "hiddenCalendar calendarDeadline"
@@ -558,6 +556,10 @@
     let milestoneList = [[${milestones}]];
     let deadlineList = [[${deadlines}]];
 
+    // Sets the starting date for in-between sections and starting id
+    let initialDate = [[${project.getStartDate()}]];
+    let initialFalseId = 0.5;
+
     connect('calendar');
 
     function buildAll(sprintList, deadlineList, eventList, milestoneList) {
@@ -565,6 +567,7 @@
         // Sets the starting date for in-between sections and starting id
         let initialDate = [[${project.getStartDate()}]];
         let initialFalseId = 0.5;
+
         for (const sprint of sprintList) {
             if (initialFalseId == 0.5) {
                 buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId, deadlineList, eventList, milestoneList, sprint.parentProjectId, "start")
@@ -583,7 +586,7 @@
                 buildMilestone(milestone, sprint.id, sprint.parentProjectId)
             }
 
-            for (const event of getSprintTimeBound(eventList, sprint.startDate, sprint.endDate)) {
+            for (const event of getSprintEvent(eventList, sprint.startDate, sprint.endDate)) {
                 buildEvent(event, sprint.id, sprint.parentProjectId)
             }
         }
