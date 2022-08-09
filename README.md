@@ -80,9 +80,9 @@ From here you may either register a user or login to the default user account.
 
 ## Default Account Credentials
 #### UserName:
-
+admin, teacher, and student
 #### Password:
-
+Password123!
 ## Dependencies
 
 ### Bootstrap
