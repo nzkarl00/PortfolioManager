@@ -29,9 +29,24 @@
                             <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" th:name="titleInput" oninput="updateTitle(); canSaveCheck()" required>
                             <label class="project_inputAlertBlue" id="titleCharCount">Characters Remaining: 100</label>
                         </div>
-                        <div class="evidence_form_element col-3">
-                            <b class="evidence_head setWide">Date*:</b>
-                            <br>
+                    <div id="date_container" class="evidence_form_element col-3">
+                        <div style="display: flex">
+                            <b class="evidence_head">Date*:</b> <br>
+                            <i id="evidence_date_tool" class="fa fa-question-circle-o" style="padding-left: 0.2em; font-size: 200%"></i>
+
+
+                        </div>
+                        <script>
+                            let dateTooltip = '<span class="tooltip_body_evidence">This is the date the evidence occurred, date selection is restricted to the boundaries of the project it is assigned to.</span>'
+
+                            $("#evidence_date_tool").tooltip({
+                                title: dateTooltip,
+                                placement: "top",
+                                trigger: "hover",
+                                container: "body",
+                                html: true
+                            });
+                        </script>
                             <input type="date" th:name="dateInput" th:value="${date}"
                                    th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}"
                                    class="project_edit_data" id="date_input"
