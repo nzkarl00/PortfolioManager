@@ -369,12 +369,12 @@
 
                 var childNode = dayRenderInfo.el.firstChild;
 
+                let tempEventList = getCalendarTimeBound(eventList, dayRenderInfo.date)
+
                 const events = document.createElement("div")
                 events.id = (dayRenderInfo.date).toString().substring(0, 16) + "eventList"
-                events.innerHTML = '<i class="fa fa-star"></i>' + ' E - ' + (eventList.length).toString();
+                events.innerHTML = '<i class="fa fa-star"></i>' + ' E - ' + (tempEventList.length).toString();
                 let eventDayTooltip = ""
-
-                let tempEventList = getCalendarTimeBound(eventList, dayRenderInfo.date)
 
                 if (tempEventList.length === 0){
                     eventDayTooltip = '<p class="tooltip_body">' + "No Events For This Day" + "</p>" + '<p class="tooltip_end"></p>'
@@ -397,12 +397,12 @@
                     html: true
                 });
 
+                let tempDeadlineList = getCalendarTimeBound(deadlineList, dayRenderInfo.date)
+
                 const deadlines = document.createElement("div")
                 deadlines.id = (dayRenderInfo.date).toString().substring(0, 16) + "deadlineList"
-                deadlines.innerHTML = '<i class="fa fa-calendar-o"></i>' + ' D - ' + (deadlineList.length).toString();
+                deadlines.innerHTML = '<i class="fa fa-calendar-o"></i>' + ' D - ' + (tempDeadlineList.length).toString();
                 let deadlineDayTooltip = ""
-
-                let tempDeadlineList = getCalendarTimeBound(deadlineList, dayRenderInfo.date)
 
                 if (tempDeadlineList.length === 0){
                     deadlineDayTooltip = '<p class="tooltip_body">' + "No Deadlines For This Day" + "</p>" + '<p class="tooltip_end"></p>'
@@ -425,12 +425,12 @@
                     html: true
                 });
 
+                let tempMilestoneList = getCalendarTimeBound(milestoneList, dayRenderInfo.date)
+
                 const milestones = document.createElement("div")
                 milestones.id = (dayRenderInfo.date).toString().substring(0, 16) + "milestoneList"
-                milestones.innerHTML = '<i class="fa fa-flag"></i>' + ' M - ' + (milestoneList.length).toString();
+                milestones.innerHTML = '<i class="fa fa-flag"></i>' + ' M - ' + (tempMilestoneList.length).toString();
                 let milestonesDayTooltip = ""
-
-                let tempMilestoneList = getCalendarTimeBound(milestoneList, dayRenderInfo.date)
 
                 if (tempMilestoneList.length === 0){
                     milestonesDayTooltip = '<p class="tooltip_body">' + "No Milestones For This Day" + "</p>" + '<p class="tooltip_end"></p>'
@@ -565,7 +565,12 @@
         deleteAllSprints();
         for (const sprint of sprintList) {
 
-            buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId, deadlineList, eventList, milestoneList, sprint.parentProjectId)
+            if (initialFalseId == 0.5){
+                buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId, deadlineList, eventList, milestoneList, sprint.parentProjectId, "start")
+            } else {
+                buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId, deadlineList, eventList, milestoneList, sprint.parentProjectId, "middle")
+            }
+
             buildSprint(sprint)
             initialDate = sprint.endDate;
             initialFalseId += 1;
@@ -578,11 +583,11 @@
                 buildMilestone(milestone, sprint.id, sprint.parentProjectId)
             }
 
-            for (const event of getSprintTimeBound(eventList, sprint.startDate, sprint.endDate)) {
+            for (const event of getSprintEvent(eventList, sprint.startDate, sprint.endDate)) {
                 buildEvent(event, sprint.id, sprint.parentProjectId)
             }
         }
-        buildInBetweenSprint(initialDate,[[${project.getEndDate()}]] , initialFalseId, deadlineList, eventList, milestoneList, [[${project.getId()}]])
+        buildInBetweenSprint(initialDate,[[${project.getEndDate()}]] , initialFalseId, deadlineList, eventList, milestoneList, [[${project.getId()}]], "end")
     }
     // this needs to happen to allow time for the tooltips to be imported into the js or something
     // js is gross

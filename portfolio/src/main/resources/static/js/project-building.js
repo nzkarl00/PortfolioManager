@@ -388,7 +388,7 @@ function buildMilestone(milestone, sprintId, sprintProjectId) {
 }
 
 // build an in-between sprint in html from js
-function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, eventList, milestoneList, projectId) {
+function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, eventList, milestoneList, projectId, position) {
 
     const startDate = startDateDate.toString();
     const endDate = endDateDate.toString();
@@ -455,7 +455,7 @@ function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, even
 
     var emptyLists = 0;
 
-    let tempDeadlines = getBetweenTimeBound(deadlineList, startDateDate, endDateDate)
+    let tempDeadlines = getBetweenTimeBound(deadlineList, startDateDate, endDateDate, position)
     if (tempDeadlines.length == 0) {
         emptyLists += 1;
         deadlines.style.display = "none"
@@ -466,7 +466,7 @@ function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, even
         }
     }
 
-    let tempMilestones = getBetweenTimeBound(milestoneList, startDateDate, endDateDate)
+    let tempMilestones = getBetweenTimeBound(milestoneList, startDateDate, endDateDate, position)
     if (tempMilestones.length == 0) {
         emptyLists += 1;
         milestones.style.display = "none"
@@ -477,7 +477,7 @@ function buildInBetweenSprint(startDateDate, endDateDate, id, deadlineList, even
         }
     }
 
-    let tempEvents = getBetweenEvent(eventList, startDateDate, endDateDate)
+    let tempEvents = getBetweenEvent(eventList, startDateDate, endDateDate, position)
     if (tempEvents.length == 0) {
         emptyLists += 1;
         events.style.display = "none"

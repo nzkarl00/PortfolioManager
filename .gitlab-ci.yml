@@ -1,4 +1,4 @@
-#This  change is to post this branch to the vm
+#This change is to post this branch to the vm
 
 stages:
 #  - tagChecking
@@ -88,7 +88,6 @@ deploy-staging-identityprovider:
       - identityprovider/build/libs
   only:
     - dev
-    - vm
 
 deploy-staging-portfolio:
   stage: deploy
@@ -112,7 +111,6 @@ deploy-staging-portfolio:
       - portfolio/build/libs
   only:
     - dev
-    - vm
 
 deploy-production-identityprovider:
   stage: deploy
