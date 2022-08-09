@@ -80,7 +80,7 @@ From here you may either register a user or login to the default user account.
 
 ## Default Account Credentials
 #### UserName:
-admin, teacher, and student
+admin, teacher, or student. Each account is for the corresponding roles
 #### Password:
 Password123!
 ## Dependencies
