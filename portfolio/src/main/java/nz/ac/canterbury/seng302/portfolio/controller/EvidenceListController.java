@@ -82,11 +82,14 @@ public class EvidenceListController {
 
     List<Evidence> evidenceList = evidenceService.getFilteredEvidenceForUserInProject(userId, projectId, categoryId, skillId);
     setTitle(model, userId, projectId, categoryId, skillId);
-    HashMap<Integer, List<SkillTag>> evidenceSkillMap = new HashMap<>();
+    HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
+    HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
     for (Evidence evidence: evidenceList) {
-      evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagByEvidenceId(evidence.getId()));
+      evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
+      evidenceCategoryMap.put(evidence.getId(), evidenceService.getCategoryStringsByEvidenceId(evidence.getId()));
     }
     model.addAttribute("skillMap", evidenceSkillMap);
+    model.addAttribute("categoryMap", evidenceCategoryMap);
     model.addAttribute("evidenceList", evidenceList);
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
     Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
