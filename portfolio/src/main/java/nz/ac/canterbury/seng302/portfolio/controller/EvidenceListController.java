@@ -148,9 +148,9 @@ public class EvidenceListController {
       Project parentProject = projectService.getProjectById(projectId);
       if (parentProject == null) {
           logger.debug("[EVIDENCE] Attempted to add evidence to a project that could not be found");
-          // TODO: Change to 404
+          // In future we can use a 404 here
           errorMessage = "Project does not exist";
-          return "redirect:evidence?pi=" + projectId;
+          return "redirect:evidence";
       }
 
       LocalDate evidenceDate = LocalDate.parse(date);
