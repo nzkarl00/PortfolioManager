@@ -1251,6 +1251,14 @@ select.form-control {
     cursor: pointer;
 }
 
+.evidence_link {
+    background: none;
+    border: none;
+    margin: 0;
+    padding-left: 0.5em;
+    cursor: pointer;
+}
+
 .skill_tag {
     background-color:#19DAFF; !important;
     border-radius: 15px !important;

@@ -16,6 +16,8 @@ public class EvidenceService {
     @Autowired
     private SkillTagRepository skillTagRepository;
     @Autowired
+    private WebLinkRepository webLinkRepository;
+    @Autowired
     EvidenceRepository evidenceRepository;
     @Autowired
     EvidenceTagRepository evidenceTagRepository;
@@ -82,11 +84,21 @@ public class EvidenceService {
     /**
      * Takes an evidence ID and returns a list of all skill tags that are associated with it.
      * @param evidenceId The evidence ID to be checked against
-     * @return List of skilltag title strings
+     * @return List of skilltag
      */
     public List<SkillTag> getSkillTagByEvidenceId(int evidenceId) {
         List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidenceId);
         return evidenceTagList.stream().map(evidenceTag -> evidenceTag.getParentSkillTag()).collect(Collectors.toList());
+    }
+
+    /**
+     * Takes an evidence ID and returns a list of all links that are associated with it.
+     * @param parentEvidenceId The evidence ID to be checked against
+     * @return List of links
+     */
+    public List<WebLink> getLinksByEvidenceId(int parentEvidenceId) {
+        List<WebLink> links = webLinkRepository.findByParentEvidence(parentEvidenceId);
+        return links;
     }
 
     /**

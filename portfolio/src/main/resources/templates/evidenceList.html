@@ -5,60 +5,62 @@
 <body>
 
 
-
 <!-- Navigation Bar -->
 <div th:replace="fragments/validUser.html :: navbar"></div>
 
 <!-- Body -->
 <div class="main">
-  <div class="container">
+    <div class="container">
 
-    <div class="row-1">
-      <br><br><br>
-      <div class="alert-info editAlert display_data" role="alert" id="display_box" th:utext="${errorMessage}"></div>
-      <p class="alert-info editAlert display_data" role="alert" id="info_message_no_add_button" th:if="${!showForm}">
-        New evidence can be added through the project details page (this is a view only page)
-      </p>
+        <div class="row-1">
+            <br><br><br>
+            <div class="alert-info editAlert display_data" role="alert" id="display_box"
+                 th:utext="${errorMessage}"></div>
+            <p class="alert-info editAlert display_data" role="alert" id="info_message_no_add_button"
+               th:if="${!showForm}">
+                New evidence can be added through the project details page (this is a view only page)
+            </p>
 
-    </div>
+        </div>
 
-    <!-- Portfolio heading -->
+        <!-- Portfolio heading -->
 
-    <div class="row-1">
+        <div class="row-1">
 
-      <div class="col-12">
-        <p class="body_title_large" id="title" th:text="${title}"></p>
-      </div>
+            <div class="col-12">
+                <p class="body_title_large" id="title" th:text="${title}"></p>
+            </div>
 
-    </div>
+        </div>
 
-    <!-- Portfolio body -->
-    <div class="row">
+        <!-- Portfolio body -->
+        <div class="row">
 
-      <div class="col-1"></div>
-      <div class="col-lg-10 col-md-12 col-sm-12" >
-        <div th:replace="fragments/evidenceSearch.html :: evidenceSearch"></div>
-      </div>
-    </div>
-    <br>
-    <div class="row">
-
-
-      <div class="col-1"></div>
-      <div class="col-lg-10 col-md-12 col-sm-12">
-        <div th:replace="${showForm} ? ~{fragments/evidenceForm.html :: evidenceForm} : ~{}"></div>
-      </div>
-    </div>
-    <br>
-    <div class="row" th:each="evidence: ${evidenceList}">
-
-      <div class="col-1">
-      </div>
+            <div class="col-1"></div>
+            <div class="col-lg-10 col-md-12 col-sm-12">
+                <div th:replace="fragments/evidenceSearch.html :: evidenceSearch"></div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
 
 
-      <!-- Project Section -->
-      <div class="col-lg-10 col-md-12 col-sm-12" >
+            <div class="col-1"></div>
+            <div class="col-lg-10 col-md-12 col-sm-12">
+                <div th:replace="${showForm} ? ~{fragments/evidenceForm.html :: evidenceForm} : ~{}"></div>
+            </div>
+        </div>
+        <br>
+        <div class="row" th:each="evidence: ${evidenceList}">
 
+            <div class="col-1">
+            </div>
+
+
+            <!-- Evidence Section which includes 1. heading, 2. infom and 3. bottom -->
+            <div class="col-lg-10 col-md-12 col-sm-12">
+
+                <!-- 1. evidence heading  -->
         <div class="row-1 evidence_top" style="display:flex;">
 
           <div class="col-5">
@@ -77,102 +79,112 @@
 
         </div>
 
-      <div class="row-1">
+                <!-- 2. evidence information that can be expanded or collapsed  -->
+                <div class="row-1">
+                    <div class="collapse evidence_data no-gutters" th:id="'collapseExample'+${evidence.getId}">
+                        <div>
 
-        <div class="collapse evidence_data no-gutters" th:id="'collapseExample'+${evidence.getId}">
+                            <p id="description" class="sprint-description evidence_text" th:text="${evidence.getDescription}"/>
 
-          <div>
-            <p id="description" class="sprint-description evidence_text" th:text="${evidence.getDescription}"/>
-            <p class="bio evidence_head">Skills </p>
-            <div th:id="'evidence_si_'+${evidence.getId}" style="width: 100%"> </div>
-          </div>
-          <br>
-          </div>
-        </div>
+                            <p class="bio evidence_head">Skills </p>
+                            <div th:id="'evidence_si_'+${evidence.getId}" style="width: 100%">
+                            </div>
 
-        <div class="row-1">
+                            <p class="bio evidence_head">Links </p>
+                            <div th:id="'evidence_links_'+${evidence.getId}" style="width: 100%">
+                                <div class="row" th:each="link: ${evidence.getLinks()}">
 
-        <div class="evidence_bot">
-          <br>
-        </div>
-        </div>
-      </div>
+                                    <div id="links_container" style="width: 85%; display: block; padding: 2rem">
+                                        <div class="trim_text" style="display: flex">
+                                            <i class="fa fa-lock" aria-hidden="true" style="padding-top: 0.35rem"></i>
+                                            <a th:id="'evidence_links_text_'+${link.getUrl}"
+                                               th:text="${link.getUrlWithoutProtocol}"
+                                               th:href="${link.getUrl}"
+                                               class="sprint-description display_data evidence_link trim_text"
+                                               style="font-size: 110%;
+                                               display: inline-block;">
+                                            </a>
+                                        </div>
+                                    </div>
 
-      <div class="col-2">
-      </div>
+                                </div>
+                            </div>
 
-      <div class="col-4">
+                        </div>
+                        <br>
+                    </div>
+                </div>
+
+                <!-- 3.. evidence bottom  -->
+                <div class="row-1">
+                    <div class="evidence_bot">
+                        <br>
+                    </div>
+                </div>
+
+            </div>
+
+    <div class="col-2">
+    </div>
+
+    <div class="col-4">
 
         <br>
         <br>
 
-      </div>
+    </div>
 
     </div>
 
     <div class="row-1">
-      <br><br><br>
+        <br><br><br>
     </div>
 
 
   </div>
 </div>
-<!-- JS -->
-<script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
-<script type="text/javascript" th:inline="javascript">
+                <!-- 2. End of evidence information that can be expanded or collapsed  -->
 
-  // Set timeout for display message. From -  https://bobbyhadz.com/blog/javascript-hide-element-after-few-seconds
-  setTimeout(() => {
-    const box = document.getElementById('display_box');
-    const displayMessageForNoAddButton = document.getElementById('info_message_no_add_button');
+            <!-- End of Evidence Section -->
 
-    // removes element from DOM
-    box.style.display = 'none';
-    displayMessageForNoAddButton.style.display = 'none';
+            <!-- JS -->
+            <script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
+            <script type="text/javascript" th:inline="javascript">
 
-    // hides element (still takes up space on page)
-    // box.style.visibility = 'hidden';
-  }, 10000); // time in milliseconds
+                // Set timeout for display message. From -  https://bobbyhadz.com/blog/javascript-hide-element-after-few-seconds
+                setTimeout(() => {
+                    const box = document.getElementById('display_box');
+                    const displayMessageForNoAddButton = document.getElementById('info_message_no_add_button');
 
-  // If required fields are filled in, enable save button
-  function canSaveCheck() {
-    const descriptionField = document.getElementById('evidence_desc').value;
-    const titleField = document.getElementById('evidence_title').value;
-    const dateField = document.getElementById('date_input').value;
-    var saveButton = document.getElementById('projectSave');
-    if (descriptionField.length > 0 && titleField.length > 0 && dateField.length > 0) {
-      saveButton.disabled = false;
-      saveButton.style.backgroundColor = "#26D20F";
-      if (!saveButton.classList.contains("save_hover")) {
-        saveButton.className += " save_hover";
-      }
-    } else {
-      saveButton.disabled = true;
-      saveButton.style.backgroundColor = "lightgray";
-      saveButton.classList.remove("save_hover");
-    }
-  }
+                    // removes element from DOM
+                    box.style.display = 'none';
+                    displayMessageForNoAddButton.style.display = 'none';
 
-</script>
-<script th:inline="javascript">
+                    // hides element (still takes up space on page)
+                    // box.style.visibility = 'hidden';
+                }, 10000); // time in milliseconds
 
-  let evidenceSkillRow;
+                // If required fields are filled in, enable save button
+                function canSaveCheck() {
+                    const descriptionField = document.getElementById('evidence_desc').value;
+                    const titleField = document.getElementById('evidence_title').value;
+                    const dateField = document.getElementById('date_input').value;
+                    var saveButton = document.getElementById('projectSave');
+                    if (descriptionField.length > 0 && titleField.length > 0 && dateField.length > 0) {
+                        saveButton.disabled = false;
+                        saveButton.style.backgroundColor = "#26D20F";
+                        if (!saveButton.classList.contains("save_hover")) {
+                            saveButton.className += " save_hover";
+                        }
+                    } else {
+                        saveButton.disabled = true;
+                        saveButton.style.backgroundColor = "lightgray";
+                        saveButton.classList.remove("save_hover");
+                    }
+                }
 
-  // Inserts a new skill tag into the form
-  function appendSkillToEvidence(skillText, evidenceId) {
-    let evidenceSkillTag = document.createElement("button");
-    evidenceSkillTag.id = "evidence_skill_" + skillText
-    evidenceSkillTag.className = "table_text evidence_skill_tag"
-    evidenceSkillTag.innerText = skillText.title
-    evidenceSkillTag.value = skillText.title
-    evidenceSkillTag.onclick = function() {window.location.href = "evidence?si=" + skillText.id}
-    evidenceSkillRow.appendChild(evidenceSkillTag);
-    if (evidenceSkillRow.getBoundingClientRect().right < evidenceSkillTag.getBoundingClientRect().right) {
-      evidenceSkillRow.removeChild(evidenceSkillTag);
-      addSkillRowToEvidence(evidenceId)
-      evidenceSkillRow.appendChild(evidenceSkillTag);
-    }
-  }
+            </script>
+            <script th:inline="javascript">
 
   function addTagToEvidence(value, evidenceId, type) {
     let newItem = document.createElement("button");
@@ -213,7 +225,7 @@
 
   categoryMap = [[${categoryMap}]]
   for (const evidence of [[${evidenceList}]]) {
-    addTagRowToEvidence(evidence.id, "ci")
+    addTagRowToEvidence(evidence.id, "category")
     for (const evidenceCategory of categoryMap[evidence.id].sort()) {
       addTagToEvidence(evidenceCategory, evidence.id, "ci")
     }
