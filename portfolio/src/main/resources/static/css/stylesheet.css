@@ -1124,7 +1124,6 @@
     border-radius: 20px 20px 0px 0px;
     padding: 10px !important;
     padding-left: 15px !important;
-    padding-right: 15px !important;
 
 
 }
@@ -1408,9 +1407,7 @@ select.form-control {
     border-radius: 15px !important;
     border-style: none !important;
     color: #ffffff !important;
-    padding: 0.3rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding: 0.3rem 1rem;
     display: inline-block !important;
     margin-bottom: 0.3rem;
     margin-left: 0.3rem;
@@ -1418,15 +1415,21 @@ select.form-control {
 
 .evidence_skill_tag:hover {
     background-color: #26D20F !important;
-    border-radius: 15px !important;
+}
+
+.evidence_category_tag {
+    background-color:#19DAFF; !important;
     border-style: none !important;
     color: #ffffff !important;
-    padding: 0.3rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding: 0.3rem 1rem;
     display: inline-block !important;
     margin-bottom: 0.3rem;
     margin-left: 0.3rem;
+    font-size: 80% !important;;
+}
+
+.evidence_category_tag:hover {
+    background-color: #26D20F !important;;
 }
 
 .wrapper {

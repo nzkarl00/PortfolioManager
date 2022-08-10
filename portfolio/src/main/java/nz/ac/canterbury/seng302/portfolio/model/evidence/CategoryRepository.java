@@ -8,6 +8,6 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends CrudRepository<Category, Integer> {
     Category findById(int id);
-    List<Category> findAllByParentEvidence(int parentEvidenceId);
+    List<Category> findAllByParentEvidenceId(int parentEvidenceId);
     List<Category> findAll();
 }
