@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.MalformedURLException;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +19,7 @@ class WebLinkTest {
 //    public ExpectedException exception = ExpectedException.none();
 
     @BeforeEach
-    void beforeEach() {
+    void beforeEach() throws MalformedURLException {
         // Refresh to a new link
         evidence = new Evidence(1, null, "Title", "Desc", LocalDate.of(2022, 1, 25));
         link = new WebLink("https://example.com", evidence);
@@ -35,7 +36,7 @@ class WebLinkTest {
     public void constructor_throwsOnNoProtocol() {
         String expectedMessage = "URL must contain an HTTP(s) protocol definition";
 
-        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        Exception argumentException = Assertions.assertThrows(MalformedURLException.class, () -> {
             new WebLink("url-no-protocol", evidence);
         });
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
@@ -46,10 +47,12 @@ class WebLinkTest {
       Assertions.assertTrue(link.isSecure());
    }
 
-    @Test
+    @Test()
     public void isSecure_falseOnHttpURL() {
-        link = new WebLink("http://google.com", evidence);
-        Assertions.assertFalse(link.isSecure());
+        Assertions.assertDoesNotThrow(() -> {
+            link = new WebLink("http://google.com", evidence);
+            Assertions.assertFalse(link.isSecure());
+        });
     }
 
     @Test

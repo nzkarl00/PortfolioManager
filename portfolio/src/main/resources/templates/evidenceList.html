@@ -90,16 +90,16 @@
                             <div th:id="'evidence_si_'+${evidence.getId}" style="width: 100%">
                             </div>
 
-                            <p class="bio evidence_head">Links </p>
-                            <div th:id="'evidence_links_'+${evidence.getId}" style="width: 100%">
+                            <p class="bio evidence_head" th:if="${evidence.getLinks().size() > 0}">Links </p>
+                            <div th:id="'evidence_links_'+${evidence.getId}" th:if="${evidence.getLinks().size() > 0}" style="width: 100%">
                                 <div class="row" th:each="link: ${evidence.getLinks()}">
 
-                                    <div id="links_container" style="width: 85%; display: block; padding: 2rem">
+                                    <div id="links_container" style="width: 85%; display: block; padding: 0.5rem 2rem">
                                         <div class="trim_text" style="display: flex">
                                             <i class="fa fa-lock" aria-hidden="true" style="padding-top: 0.35rem"></i>
-                                            <a th:id="'evidence_links_text_'+${link.getUrl}"
+                                            <a th:id="'evidence_links_text_'+${link.getUrl.toString()}"
                                                th:text="${link.getUrlWithoutProtocol}"
-                                               th:href="${link.getUrl}"
+                                               th:href="${link.getUrl.toString()}"
                                                class="sprint-description display_data evidence_link trim_text"
                                                style="font-size: 110%;
                                                display: inline-block;">

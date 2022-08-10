@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -212,7 +213,13 @@ public class EvidenceListController {
 
       if (extractedLinks != null) {
           logger.debug("[EVIDENCE] Saving web links");
-          webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
+          try {
+              webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
+          } catch (MalformedURLException e) {
+              logger.error("[EVIDENCE] Somehow links were attempted for construction with malformed URL", e);
+              logger.error("[EVIDENCE] Links not saved");
+          }
+
       }
 
       return "redirect:evidence?pi=" + projectId;
@@ -225,10 +232,12 @@ public class EvidenceListController {
    */
   private Optional<String> validateLinks(List<String> links) {
     for (String link : links) {
-      if (!WebLink.urlHasProtocol(link)) {
-        logger.trace("[WEBLINK] Rejecting web link as the link is not valid, link: " + link);
-        return Optional.of("The provided link is not valid, must contain http(s):// protocol: " + link);
-      };
+        try {
+            WebLink.urlIsValid(link);
+        } catch (MalformedURLException e) {
+            logger.trace("[WEBLINK] Rejecting web link as the link is not valid, link: " + link);
+            return Optional.of("The provided link is not valid, must contain http(s):// protocol: " + link);
+        }
     }
     return Optional.empty();
   }
@@ -239,7 +248,7 @@ public class EvidenceListController {
    * @param parentEvidence The evidence object which the weblink belongs to
    * @return An array of weblink objects which contain both the link text and the parent evidence
    */
-  private List<WebLink> constructLinks(List<String> links, Evidence parentEvidence) {
+  private List<WebLink> constructLinks(List<String> links, Evidence parentEvidence) throws MalformedURLException {
     ArrayList<WebLink> resultLinks = new ArrayList<>();
     // Validate all links
     for (String link : links) {
@@ -334,8 +343,8 @@ public class EvidenceListController {
    * @param model The Spring model
    * @param userId Id of user to get evidence from
    * @param projectId Id of project to get evidence from
-   * @param categoryId Id of category to get evidence from
-   * @param skillId Id of skill to get evidence from
+   * @param categoryName name of category to get evidence from
+   * @param skillName name of skill to get evidence from
    * @throws InvalidArgumentException possible exceptions can be raised from project ID not being valid and skillID not being valid
    */
   private void setTitle(Model model, Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
