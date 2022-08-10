@@ -225,7 +225,7 @@
 
   categoryMap = [[${categoryMap}]]
   for (const evidence of [[${evidenceList}]]) {
-    addTagRowToEvidence(evidence.id, "category")
+    addTagRowToEvidence(evidence.id, "ci")
     for (const evidenceCategory of categoryMap[evidence.id].sort()) {
       addTagToEvidence(evidenceCategory, evidence.id, "ci")
     }
