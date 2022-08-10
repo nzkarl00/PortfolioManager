@@ -86,6 +86,7 @@ public class EvidenceListController {
     model.addAttribute("allSkills", skillTagList);
     model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("skillList", skillList);
+    model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
 
     int id = AuthStateInformer.getId(principal);
 
