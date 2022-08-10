@@ -90,7 +90,7 @@ public class EvidenceService {
      * @return List of category names as strings that belong to the evidence of id evidenceId
      */
     public List<String> getCategoryStringsByEvidenceId(int evidenceId) {
-        List<Category> categoryList = categoryRepository.findAllByParentEvidence(evidenceId);
+        List<Category> categoryList = categoryRepository.findAllByParentEvidenceId(evidenceId);
         return categoryList.stream().map(Category::getCategoryName).collect(Collectors.toList());
     }
 }

@@ -1,15 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 @Entity
 public class Category {
 
-    public static final int MAX_CATEGORY_NAME_LENGTH = 100;
+    public static final int MAX_CATEGORY_NAME_LENGTH = 30;
     public static final List<String> validCategoryNames = List.of("Qualitative Skills", "Quantitative Skills", "Service");
 
     @Id
@@ -18,16 +15,16 @@ public class Category {
     private int id;
 
     /**
-     * Every web link is associated with a parent piece of evidence.
+     * Every category associated with a parent piece of evidence.
      */
     @ManyToOne
     @JoinColumn(name="parent_evidence_id", nullable=false)
     protected Evidence parentEvidence;
 
     /**
-     * The URL of the link.
+     * The name of the category, one of "Qualitative Skills", "Quantitative Skills", "Service"
      */
-    @Column(name="category_name", length = 30, nullable = false)
+    @Column(name="category_name", length = MAX_CATEGORY_NAME_LENGTH, nullable = false)
     public String categoryName;
 
     public Category(Evidence parentEvidence, String categoryName) {
@@ -56,5 +53,14 @@ public class Category {
         if (!validCategoryNames.contains(name)) {
             throw new IllegalArgumentException("Category name is not valid, must be one of " + validCategoryNames.toString());
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", parentEvidence=" + parentEvidence +
+                ", categoryName='" + categoryName + '\'' +
+                '}';
     }
 }

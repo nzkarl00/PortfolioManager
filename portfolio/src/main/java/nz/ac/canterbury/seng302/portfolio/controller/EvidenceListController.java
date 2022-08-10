@@ -2,12 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.DateParser;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -23,11 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.*;
 
 /**
@@ -52,6 +41,8 @@ public class EvidenceListController {
   private NavController navController;
   @Autowired
   private EvidenceService evidenceService;
+  @Autowired
+  private CategoryRepository categoryRepository;
 
   private String errorMessage = "";
 
@@ -62,7 +53,7 @@ public class EvidenceListController {
    * @param principal
    * @param model The model to be used by the application for web integration
    * @return redirects to the landing page
-   * @throws Exception
+   * @throws Exception which is raised by the repositories having a potential failure when reading objects from the DB
    */
   @GetMapping("/evidence")
   public String evidenceListController( @AuthenticationPrincipal AuthState principal,
@@ -71,20 +62,22 @@ public class EvidenceListController {
                                         @RequestParam(required = false , value="si") Integer skillId,
                                         @RequestParam(required = false , value="ci") Integer categoryId,
                                         Model model) throws Exception {
-    logger.info(String.format("Fetching evidence details"));
+    logger.info("[EVIDENCE] Request to view list of evidence");
 
     setPageTitle(model,"List Of Evidence");
 
     List<SkillTag> skillList = skillRepository.findAll();
 
-
     List<Evidence> evidenceList = evidenceService.getFilteredEvidenceForUserInProject(userId, projectId, categoryId, skillId);
     setTitle(model, userId, projectId, categoryId, skillId);
-    HashMap<Integer, List<SkillTag>> evidenceSkillMap = new HashMap<>();
+    HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
+    HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
     for (Evidence evidence: evidenceList) {
-      evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagByEvidenceId(evidence.getId()));
+      evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
+      evidenceCategoryMap.put(evidence.getId(), evidenceService.getCategoryStringsByEvidenceId(evidence.getId()));
     }
     model.addAttribute("skillMap", evidenceSkillMap);
+    model.addAttribute("categoryMap", evidenceCategoryMap);
     model.addAttribute("evidenceList", evidenceList);
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
     Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
@@ -93,7 +86,7 @@ public class EvidenceListController {
     model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("skillList", skillList);
 
-    Integer id = AuthStateInformer.getId(principal);
+    int id = AuthStateInformer.getId(principal);
 
     // Attributes For header
     UserResponse userReply;
@@ -145,7 +138,11 @@ public class EvidenceListController {
           @RequestParam(value = "descriptionInput") String description,
           Model model
   ) throws Exception {
-      logger.info(String.format("Attempting to add new evidence"));
+      logger.info("[EVIDENCE] Attempting to add new evidence");
+      if (!principal.getIsAuthenticated()) {
+          logger.debug("[EVIDENCE] Redirecting, user not authenticated");
+          return "redirect:evidence?pi=" + projectId.toString();
+      }
 
       Integer accountID = AuthStateInformer.getId(principal);
       Project parentProject = projectService.getProjectById(projectId);
@@ -155,6 +152,7 @@ public class EvidenceListController {
           errorMessage = "Project does not exist";
           return "redirect:evidence?pi=" + projectId;
       }
+
       LocalDate evidenceDate = LocalDate.parse(date);
       LocalDate projectStartDate = parentProject.getLocalStartDate();
       LocalDate projectEndDate = parentProject.getLocalEndDate();
@@ -191,6 +189,16 @@ public class EvidenceListController {
       evidenceRepository.save(evidence);
       logger.info(String.format("[EVIDENCE] Saved evidence to repo, id=<%s>", evidence.getId()));
       errorMessage = "Evidence has been added";
+      logger.info(categories);
+      //Create all selected categories for the new piece of evidence
+      if (categories.replace(" ", "").length() > 0) {
+        String[] categoryList = categories.split("~");
+        for (String categoryString: categoryList) {
+          Category newCategory = new Category(evidence, categoryString);
+          logger.info(newCategory.toString());
+          categoryRepository.save(newCategory);
+        }
+      }
 
       addSkillsToRepo(parentProject, evidence, skills);
 
@@ -227,12 +235,12 @@ public class EvidenceListController {
 
   /**
    * Construct web links, must be validated first.
-   * @param links
-   * @param parentEvidence
-   * @return
+   * @param links The link of links which are associated with a given piece of evidence
+   * @param parentEvidence The evidence object which the weblink belongs to
+   * @return An array of weblink objects which contain both the link text and the parent evidence
    */
   private List<WebLink> constructLinks(List<String> links, Evidence parentEvidence) {
-    ArrayList<WebLink> resultLinks = new ArrayList<WebLink>();
+    ArrayList<WebLink> resultLinks = new ArrayList<>();
     // Validate all links
     for (String link : links) {
       // Web links are valid, so construct them all
@@ -243,30 +251,28 @@ public class EvidenceListController {
 
   /**
    * Splits an HTML form input list, into multiple array elements.
-   * @param stringFromHTML
-   * @return
+   * @param stringFromHTML The string of values posted by the evidence form in format Item1~Item2~Item3
+   * @return An array of the individual values present in the string
    */
   private List<String> extractListFromHTMLString(String stringFromHTML) {
       if (stringFromHTML.equals("")) {
-          return new ArrayList();
+          return new ArrayList<>();
       }
 
-      List<String> resultList = Arrays.asList(stringFromHTML.split(" "));
-      return resultList;
+      return Arrays.asList(stringFromHTML.split(" "));
   }
-  
+
   /**
    * Splits an HTML form input list, into multiple array elements.
-   * @param stringFromHTML
-   * @return
+   * @param stringFromHTML The skill string posted by the evidence form in format Skill1~Skill2~Skill3
+   * @return Gets the individual skills from the HTML string which is joined by "~"
    */
   private List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
       if (stringFromHTML.equals("")) {
-          return new ArrayList();
+          return new ArrayList<>();
       }
 
-      List<String> resultList = Arrays.asList(stringFromHTML.split("~"));
-      return resultList;
+      return Arrays.asList(stringFromHTML.split("~"));
   }
 
   private String validateMandatoryFields(String title, String description, LocalDate evidenceDate, LocalDate projectStartDate, LocalDate projectEndDate) {
@@ -330,70 +336,53 @@ public class EvidenceListController {
    * @param projectId Id of project to get evidence from
    * @param categoryId Id of category to get evidence from
    * @param skillId Id of skill to get evidence from
-   * @return A properly sorted and filtered list of evidence
-   * @throws Exception
+   * @throws InvalidArgumentException possible exceptions can be raised from project ID not being valid and skillID not being valid
    */
   private void setTitle(Model model, Integer userId, Integer projectId, Integer categoryId, Integer skillId) throws Exception {
 
     if (projectId != null){
       Project project = projectService.getProjectById(projectId);
       setPageTitle(model, "Evidence from project: " + project.getName());
-      return;
     } else if (userId != null){
       UserResponse userReply = accountClientService.getUserById(userId); // Get the user
       setPageTitle(model, "Evidence from user: " + userReply.getUsername());
-      return;
     }else if (categoryId != null){
-      switch (categoryId) {
-        case 0:
-          setPageTitle(model, "Evidence from category: Quantitative Skills");
-          return;
-        case 1:
-          setPageTitle(model, "Evidence from category: Qualitative Skills");
-          return;
-        case 2:
-          setPageTitle(model, "Evidence from category: Service");
-          return;
-      }
+        switch (categoryId) {
+            case 0 -> setPageTitle(model, "Evidence from category: Quantitative Skills");
+            case 1 -> setPageTitle(model, "Evidence from category: Qualitative Skills");
+            case 2 -> setPageTitle(model, "Evidence from category: Service");
+        }
     } else if (skillId != null){
       Optional<SkillTag> skillTag = skillRepository.findById(skillId);
       if (!skillTag.isPresent()) {
         throw new InvalidArgumentException("Skill with corresponding ID does not exist");
       }
       setPageTitle(model, "Evidence from skill tag: " + skillTag.get().getTitle().replaceAll("_", " "));
-      return;
-    }else{
-      return;
     }
   }
 
 
   /**
    * Directs the user to the evidence page with required params
-   * @param principal
-   * @param model The model to be used by the application for web integration
    * @return redirects to the landing page
-   * @throws Exception
    */
   @GetMapping("/search-evidence")
-  public String searchEvidenceParam( @AuthenticationPrincipal AuthState principal,
-                                        @RequestParam(required = false , value="ui") String user_id,
-                                        @RequestParam(required = false , value="pi") String project_id,
-                                        @RequestParam(required = false , value="si") String skill_id,
-                                        @RequestParam(required = false , value="ci") String category_id,
-                                        Model model) throws Exception {
+  public String searchEvidenceParam(@RequestParam(required = false, value = "ui") String userId,
+                                    @RequestParam(required = false, value = "pi") String projectId,
+                                    @RequestParam(required = false, value = "si") String skillId,
+                                    @RequestParam(required = false, value = "ci") String categoryId) {
     String returnString = "redirect:evidence?";
-    if (user_id != null) {
-      returnString += "ui=" + (user_id);
+    if (userId != null) {
+      returnString += "ui=" + (userId);
     }
-    if (project_id != null) {
-      returnString += "pi=" + (project_id);
+    if (projectId != null) {
+      returnString += "pi=" + (projectId);
     }
-    if (skill_id != null) {
-      returnString += "si=" + (skill_id);
+    if (skillId != null) {
+      returnString += "si=" + (skillId);
     }
-    if (category_id != null) {
-      returnString += "ci=" + (category_id);
+    if (categoryId != null) {
+      returnString += "ci=" + (categoryId);
     }
 
     return returnString;
