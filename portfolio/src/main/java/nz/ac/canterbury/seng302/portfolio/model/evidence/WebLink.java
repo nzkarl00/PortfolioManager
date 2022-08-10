@@ -1,7 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.regex.Pattern;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * The entity representation for web links.
@@ -30,6 +34,7 @@ public class WebLink {
      * Every web link is associated with a parent piece of evidence.
      */
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name="parent_evidence_id", nullable=false)
     protected Evidence parentEvidence;
 
@@ -37,7 +42,7 @@ public class WebLink {
      * The URL of the link.
      */
     @Column(name="url", length = MAX_URL_LENGTH, nullable = false)
-    public String url;
+    public URL url;
 
     /**
      * Whether or not the Link has been fetched with a client, to check if it is secure or not found
@@ -65,32 +70,36 @@ public class WebLink {
      * - url must be a valid URL, use urlIsValid to check
      * @param url the URL of the link
      */
-    public WebLink (String url, Evidence parentEvidence) {
+    public WebLink (String url, Evidence parentEvidence) throws MalformedURLException {
         urlIsValid(url);
-        this.url = url;
+        this.url = new URL(url);
         this.parentEvidence = parentEvidence;
+    }
+
+    public String getUrl() {
+        return this.url.toString();
+    }
+
+    public String getUrlWithoutProtocol() {
+        return this.url.toString().substring(this.url.toString().indexOf("://") + 3);
     }
 
     /**
      * Checks if the supplied URL is valid
      * @param url
      * @return true if valid
-     * @throws IllegalArgumentException if URL is invalid, specifying the reason
+     * @throws MalformedURLException if URL is invalid, specifying the reason
      */
-    public boolean urlIsValid(String url) {
+    public static boolean urlIsValid(String url) throws MalformedURLException {
         if (!urlHasProtocol(url)) {
-            throw new IllegalArgumentException("URL must contain an HTTP(s) protocol definition");
+            throw new MalformedURLException("URL must contain an HTTP(s) protocol definition");
+        }
+        try {
+            new URL(url);
+        } catch(MalformedURLException e) {
+            throw new MalformedURLException("URL is not properly formed");
         }
         return true;
-    }
-
-    /**
-     * True if the URL has https as the protocol
-     * @param url
-     * @return
-     */
-    private static boolean urlIsHttps(String url) {
-        return httpsPattern.matcher(url).matches();
     }
 
     /**
@@ -125,7 +134,7 @@ public class WebLink {
      * @return true if the link is a secure link
      */
     public boolean isSecure() {
-        return urlIsHttps(url);
+        return url.getProtocol().equals("https");
     }
 
     /**
@@ -159,7 +168,6 @@ public class WebLink {
 
     /**
      * Sets the results of fetching the link, and marks the link as fetched
-     * @param secure whether the fetch resulted in marking the link as secure
      * @param notFound whether the fetch resulted in a 404
      */
     public void setFetchResult(boolean notFound) {

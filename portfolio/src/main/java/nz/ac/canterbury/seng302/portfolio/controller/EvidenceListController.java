@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -59,8 +60,8 @@ public class EvidenceListController {
   public String evidenceListController( @AuthenticationPrincipal AuthState principal,
                                         @RequestParam(required = false , value="ui") Integer userId,
                                         @RequestParam(required = false , value="pi") Integer projectId,
-                                        @RequestParam(required = false , value="si") Integer skillId,
-                                        @RequestParam(required = false , value="ci") Integer categoryId,
+                                        @RequestParam(required = false , value="si") String skillName,
+                                        @RequestParam(required = false , value="ci") String categoryName,
                                         Model model) throws Exception {
     logger.info("[EVIDENCE] Request to view list of evidence");
 
@@ -68,8 +69,8 @@ public class EvidenceListController {
 
     List<SkillTag> skillList = skillRepository.findAll();
 
-    List<Evidence> evidenceList = evidenceService.getFilteredEvidenceForUserInProject(userId, projectId, categoryId, skillId);
-    setTitle(model, userId, projectId, categoryId, skillId);
+    List<Evidence> evidenceList = evidenceService.getFilteredEvidenceForUserInProject(userId, projectId, categoryName, skillName);
+    setTitle(model, userId, projectId, categoryName, skillName);
     HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
     HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
     for (Evidence evidence: evidenceList) {
@@ -148,9 +149,9 @@ public class EvidenceListController {
       Project parentProject = projectService.getProjectById(projectId);
       if (parentProject == null) {
           logger.debug("[EVIDENCE] Attempted to add evidence to a project that could not be found");
-          // TODO: Change to 404
+          // In future we can use a 404 here
           errorMessage = "Project does not exist";
-          return "redirect:evidence?pi=" + projectId;
+          return "redirect:evidence";
       }
 
       LocalDate evidenceDate = LocalDate.parse(date);
@@ -212,7 +213,13 @@ public class EvidenceListController {
 
       if (extractedLinks != null) {
           logger.debug("[EVIDENCE] Saving web links");
-          webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
+          try {
+              webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
+          } catch (MalformedURLException e) {
+              logger.error("[EVIDENCE] Somehow links were attempted for construction with malformed URL", e);
+              logger.error("[EVIDENCE] Links not saved");
+          }
+
       }
 
       return "redirect:evidence?pi=" + projectId;
@@ -225,10 +232,12 @@ public class EvidenceListController {
    */
   private Optional<String> validateLinks(List<String> links) {
     for (String link : links) {
-      if (!WebLink.urlHasProtocol(link)) {
-        logger.trace("[WEBLINK] Rejecting web link as the link is not valid, link: " + link);
-        return Optional.of("The provided link is not valid, must contain http(s):// protocol: " + link);
-      };
+        try {
+            WebLink.urlIsValid(link);
+        } catch (MalformedURLException e) {
+            logger.trace("[WEBLINK] Rejecting web link as the link is not valid, link: " + link);
+            return Optional.of("The provided link is not valid, must contain http(s):// protocol: " + link);
+        }
     }
     return Optional.empty();
   }
@@ -239,7 +248,7 @@ public class EvidenceListController {
    * @param parentEvidence The evidence object which the weblink belongs to
    * @return An array of weblink objects which contain both the link text and the parent evidence
    */
-  private List<WebLink> constructLinks(List<String> links, Evidence parentEvidence) {
+  private List<WebLink> constructLinks(List<String> links, Evidence parentEvidence) throws MalformedURLException {
     ArrayList<WebLink> resultLinks = new ArrayList<>();
     // Validate all links
     for (String link : links) {
@@ -343,11 +352,11 @@ public class EvidenceListController {
    * @param model The Spring model
    * @param userId Id of user to get evidence from
    * @param projectId Id of project to get evidence from
-   * @param categoryId Id of category to get evidence from
-   * @param skillId Id of skill to get evidence from
+   * @param categoryName name of category to get evidence from
+   * @param skillName name of skill to get evidence from
    * @throws InvalidArgumentException possible exceptions can be raised from project ID not being valid and skillID not being valid
    */
-  private void setTitle(Model model, Integer userId, Integer projectId, Integer categoryId, Integer skillId) throws Exception {
+  private void setTitle(Model model, Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
 
     if (projectId != null){
       Project project = projectService.getProjectById(projectId);
@@ -355,18 +364,10 @@ public class EvidenceListController {
     } else if (userId != null){
       UserResponse userReply = accountClientService.getUserById(userId); // Get the user
       setPageTitle(model, "Evidence from user: " + userReply.getUsername());
-    }else if (categoryId != null){
-        switch (categoryId) {
-            case 0 -> setPageTitle(model, "Evidence from category: Quantitative Skills");
-            case 1 -> setPageTitle(model, "Evidence from category: Qualitative Skills");
-            case 2 -> setPageTitle(model, "Evidence from category: Service");
-        }
-    } else if (skillId != null){
-      Optional<SkillTag> skillTag = skillRepository.findById(skillId);
-      if (!skillTag.isPresent()) {
-        throw new InvalidArgumentException("Skill with corresponding ID does not exist");
-      }
-      setPageTitle(model, "Evidence from skill tag: " + skillTag.get().getTitle().replaceAll("_", " "));
+    }else if (categoryName != null){
+        setPageTitle(model, "Evidence from category: " + categoryName);
+    } else if (skillName != null){
+            setPageTitle(model, "Evidence from skill tag: " + skillName.replaceAll("_", " "));
     }
   }
 
@@ -378,8 +379,8 @@ public class EvidenceListController {
   @GetMapping("/search-evidence")
   public String searchEvidenceParam(@RequestParam(required = false, value = "ui") String userId,
                                     @RequestParam(required = false, value = "pi") String projectId,
-                                    @RequestParam(required = false, value = "si") String skillId,
-                                    @RequestParam(required = false, value = "ci") String categoryId) {
+                                    @RequestParam(required = false, value = "si") String skillName,
+                                    @RequestParam(required = false, value = "ci") String categoryName) {
     String returnString = "redirect:evidence?";
     if (userId != null) {
       returnString += "ui=" + (userId);
@@ -387,11 +388,11 @@ public class EvidenceListController {
     if (projectId != null) {
       returnString += "pi=" + (projectId);
     }
-    if (skillId != null) {
-      returnString += "si=" + (skillId);
+    if (skillName != null) {
+      returnString += "si=" + (skillName);
     }
-    if (categoryId != null) {
-      returnString += "ci=" + (categoryId);
+    if (categoryName != null) {
+      returnString += "ci=" + (categoryName);
     }
 
     return returnString;

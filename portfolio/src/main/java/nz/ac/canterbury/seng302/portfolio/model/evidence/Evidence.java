@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -55,6 +56,11 @@ public class Evidence {
     protected String description = "";
     @Column(name="date", nullable = false)
     protected LocalDate date;
+
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
+    @JsonBackReference
+    protected List<WebLink> links;
 
     public Evidence() {}
 
@@ -218,5 +224,9 @@ public class Evidence {
 
     public List<EvidenceTag> getEvidenceTags() {
         return evidenceTags;
+    }
+
+    public List<WebLink> getLinks() {
+        return links;
     }
 }

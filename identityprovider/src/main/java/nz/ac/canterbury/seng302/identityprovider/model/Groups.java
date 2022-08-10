@@ -1,8 +1,5 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
 import javax.persistence.*;
 import java.util.List;
 

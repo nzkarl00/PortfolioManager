@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,8 @@ import java.util.stream.Collectors;
 public class EvidenceService {
     @Autowired
     private SkillTagRepository skillTagRepository;
+    @Autowired
+    private WebLinkRepository webLinkRepository;
     @Autowired
     EvidenceRepository evidenceRepository;
     @Autowired
@@ -43,18 +44,23 @@ public class EvidenceService {
      * @param categoryId Id of category to get evidence from
      * @param skillId Id of skill to get evidence from
      * @return A properly sorted and filtered list of evidence
-     * @throws Exception can be raised if the project associated with the project ID is not found
+     * @throws Exception
      */
-    public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, Integer categoryId, Integer skillId) throws CustomExceptions.ProjectItemNotFoundException {
+    public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
         if (projectId != null){
-            Project project = projectService.getProjectById(projectId);
+            Project project = projectService.getProjectById(Integer.valueOf(projectId));
             return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
         } else if (userId != null){
-            return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
-        }else if (categoryId != null){
-            return evidenceRepository.findAllByOrderByDateDesc();
-        }else if (skillId != null){
-            List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(skillId);
+            return evidenceRepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
+        }else if (categoryName != null){
+            List<Category> categoryTag = categoryRepository.findAllByCategoryName(categoryName);
+            List<Evidence> evidenceCategoryList = new ArrayList<>();
+            for (Category tag: categoryTag){
+                evidenceCategoryList.add(tag.getParentEvidence());
+            }
+            return evidenceCategoryList;
+        }else if (skillName != null){
+            List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(skillTagRepository.findByTitle(skillName).getId());
             List<Evidence> evidenceSkillList = new ArrayList<>();
             for (EvidenceTag tag: evidenceTags){
                 evidenceSkillList.add(tag.getParentEvidence());
@@ -73,6 +79,26 @@ public class EvidenceService {
     public List<String> getSkillTagStringsByEvidenceId(int evidenceId) {
         List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidenceId);
         return evidenceTagList.stream().map(evidenceTag -> evidenceTag.getParentSkillTag().getTitle()).collect(Collectors.toList());
+    }
+
+    /**
+     * Takes an evidence ID and returns a list of all skill tags that are associated with it.
+     * @param evidenceId The evidence ID to be checked against
+     * @return List of skilltag
+     */
+    public List<SkillTag> getSkillTagByEvidenceId(int evidenceId) {
+        List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidenceId);
+        return evidenceTagList.stream().map(evidenceTag -> evidenceTag.getParentSkillTag()).collect(Collectors.toList());
+    }
+
+    /**
+     * Takes an evidence ID and returns a list of all links that are associated with it.
+     * @param parentEvidenceId The evidence ID to be checked against
+     * @return List of links
+     */
+    public List<WebLink> getLinksByEvidenceId(int parentEvidenceId) {
+        List<WebLink> links = webLinkRepository.findByParentEvidence(parentEvidenceId);
+        return links;
     }
 
     /**

@@ -2,25 +2,16 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 
 import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
-
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.reactive.function.client.WebClientException;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import reactor.core.publisher.Mono;
 
 import java.net.UnknownHostException;
-import java.net.http.HttpClient;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 
 /**
  * TODO
@@ -47,7 +38,7 @@ public class WebLinkClient {
     public Mono<WebLink> tryLink(final WebLink link) {
         final String NOT_FOUND_ERROR_MESSAGE = "Status is 404";
         return client.method(HttpMethod.GET)
-            .uri(link.url)
+            .uri(link.getUrl())
             .retrieve()
             .onStatus(
                     status -> status == HttpStatus.NOT_FOUND,

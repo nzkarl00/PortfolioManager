@@ -7,13 +7,10 @@ import org.openqa.selenium.WebElement;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 import static nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins.getPassword_ForAdmin_FromTextFile;
 import static nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins.whenPortfolioIsLoaded_thenLoginAdmin_forTests;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Note this is a template to pull from
