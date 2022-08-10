@@ -177,7 +177,7 @@ public class EvidenceListController {
       List<String> extractedLinks = null;
       if (links.isPresent()) {
           extractedLinks = extractListFromHTMLString(links.get());
-          Optional<String> possibleError = validateLinks(extractedLinks);
+          Optional<String> possibleError = evidenceService.validateLinks(extractedLinks);
           if (possibleError.isPresent()) {
               errorMessage = possibleError.get();
               return "redirect:evidence?pi=" + projectId;
@@ -201,7 +201,7 @@ public class EvidenceListController {
         }
       }
 
-      addSkillsToRepo(parentProject, evidence, skills);
+      evidenceService.addSkillsToRepo(parentProject, evidence, skills);
 
       // If there's no skills, add the no_skills
       List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
@@ -299,8 +299,10 @@ public class EvidenceListController {
       }
 
       // Check if the given evidence date is within the project date
-      if (!(evidenceDate.isAfter(projectStartDate) && evidenceDate.isBefore(projectEndDate))
-          && !(evidenceDate.isEqual(projectEndDate) || evidenceDate.isEqual(projectStartDate))) {
+      if (!(evidenceDate.isAfter(projectStartDate) &&
+          evidenceDate.isBefore(projectEndDate))
+          && !(evidenceDate.isEqual(projectEndDate) ||
+          evidenceDate.isEqual(projectStartDate))) {
           errorMessage = "Dates must fall within project dates";
       }
 

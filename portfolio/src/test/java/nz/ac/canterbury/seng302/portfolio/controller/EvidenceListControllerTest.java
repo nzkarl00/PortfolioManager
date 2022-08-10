@@ -50,8 +50,6 @@ public class EvidenceListControllerTest {
         may4
     );
 
-
-
     @Autowired
     private MockMvc mockMvc;
     @MockBean
@@ -157,7 +155,7 @@ public class EvidenceListControllerTest {
         //verify(evidencerepository, times(1)).save(Mockito.any(Evidence.class)); // Verifies evidence was saved
         verify(evidenceRepository).save(refEq(testEvidence));
         verify(categoryRepository).save(Mockito.any(Category.class));
-        verify(skillRepository, times(3)).save(Mockito.any(SkillTag.class));
+        verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidence), Mockito.any(String.class));
     }
 
     /**
@@ -184,7 +182,7 @@ public class EvidenceListControllerTest {
         //verify(evidencerepository, times(1)).save(Mockito.any(Evidence.class)); // Verifies evidence was saved
         verify(evidenceRepository).save(refEq(testEvidence));
         verify(categoryRepository, times(3)).save(Mockito.any(Category.class));
-        verify(skillRepository, times(3)).save(Mockito.any(SkillTag.class));
+        verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidence), Mockito.any(String.class));
     }
 
     /**

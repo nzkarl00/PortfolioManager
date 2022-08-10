@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class WebLinkTest {
     WebLink link;
     Evidence evidence;
+    String testUrl = "https://example.com";
 
 //    @Rule
 //    public ExpectedException exception = ExpectedException.none();
@@ -22,7 +23,7 @@ class WebLinkTest {
     void beforeEach() throws MalformedURLException {
         // Refresh to a new link
         evidence = new Evidence(1, null, "Title", "Desc", LocalDate.of(2022, 1, 25));
-        link = new WebLink("https://example.com", evidence);
+        link = new WebLink(testUrl, evidence);
     }
 
     @Test
@@ -30,6 +31,15 @@ class WebLinkTest {
         assertFalse(link.isFetched());
         link.setFetchResult(true);
         assertTrue(link.isFetched());
+    }
+
+    @Test
+    public void getUrlWithoutProtocol() {
+        assertEquals(testUrl, link.getUrl());
+        String checkPoint = "://";
+        Integer checkPointIndex = testUrl.indexOf(checkPoint) + checkPoint.length();
+        String expectedUrlWithoutProto = testUrl.substring(checkPointIndex);
+        assertEquals(expectedUrlWithoutProto, link.getUrlWithoutProtocol());
     }
 
     @Test
