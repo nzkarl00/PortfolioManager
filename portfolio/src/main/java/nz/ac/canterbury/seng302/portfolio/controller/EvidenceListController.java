@@ -280,12 +280,12 @@ public class EvidenceListController {
 
       // https://stackoverflow.com/questions/14278170/how-to-check-whether-a-string-contains-at-least-one-alphabet-in-java
       // Checks if there is at least one character in title
-      if(!(title.matches(".*[a-zA-Z]+.*")) || title.length() <= 1) {
+      if(!(title.length() <= 1 || containsLetter(title))) {
           errorMessage = "Title must more than one character and should not be only made from numbers and symbols";
       }
 
       // Checks if there is at least one character in description
-      if(!(description.matches(".*[a-zA-Z]+.*")) || description.length() <= 1) {
+      if(!(description.length() <= 1 || containsLetter(description))) {
           errorMessage = "Description must more than one character and should not be only made from numbers and symbols";
       }
 
@@ -296,6 +296,15 @@ public class EvidenceListController {
       }
 
       return errorMessage;
+  }
+
+  public boolean containsLetter(String sample) {
+      for (int i=0; i < sample.length(); ++i) {
+          if (Character.isLetter(sample.charAt(i))) {
+              return true;
+          }
+      }
+      return false;
   }
 
   private void addSkillsToRepo(Project parentProject, Evidence evidence, String skills) {
