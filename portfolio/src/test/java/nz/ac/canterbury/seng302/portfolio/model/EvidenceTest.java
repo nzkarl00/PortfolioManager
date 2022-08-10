@@ -1,26 +1,35 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
 import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.MalformedURLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EvidenceTest {
     Evidence model;
     static Project exampleProject;
+    String testUrl = "https://example.com";
+    WebLink link;
+    Evidence evidence;
 
     @BeforeEach
-    void beforeEach() {
+    void beforeEach() throws MalformedURLException {
         exampleProject = new Project(
                 "Name",
                 "Desc",
                 LocalDate.of(2022, 1, 20),
                 LocalDate.of(2022, 1, 27)
         );
+        evidence = new Evidence(1, exampleProject, "Title", "Desc", LocalDate.of(2022, 1, 25));
+        link = new WebLink(testUrl, evidence);
     }
 
     @Test

@@ -58,6 +58,9 @@ public class Evidence {
     @Column(name="date", nullable = false)
     protected LocalDate date;
 
+    /**
+     * The list of links associated with this peice of evidence
+     */
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     @JsonBackReference
@@ -227,6 +230,10 @@ public class Evidence {
         return evidenceTags;
     }
 
+    /**
+     * Gets a list of all the links associated with this evidence
+     * @return links
+     */
     public List<WebLink> getLinks() {
         return links;
     }
