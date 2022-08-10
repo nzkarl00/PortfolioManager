@@ -1410,7 +1410,7 @@ select.form-control {
 
 }
 
-.evidence_skill_tag {
+.evidence_si_tag {
     background-color:#19DAFF; !important;
     border-radius: 15px !important;
     border-style: none !important;
@@ -1421,13 +1421,14 @@ select.form-control {
     margin-left: 0.3rem;
 }
 
-.evidence_skill_tag:hover {
+.evidence_si_tag:hover {
     background-color: #26D20F !important;
 }
 
-.evidence_category_tag {
+.evidence_ci_tag {
     background-color:#19DAFF; !important;
     border-style: none !important;
+    border-radius: 10px !important;
     color: #ffffff !important;
     padding: 0.3rem 1rem;
     display: inline-block !important;
@@ -1436,7 +1437,7 @@ select.form-control {
     font-size: 80% !important;;
 }
 
-.evidence_category_tag:hover {
+.evidence_ci_tag:hover {
     background-color: #26D20F !important;;
 }
 
