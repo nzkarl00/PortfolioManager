@@ -280,12 +280,12 @@ public class EvidenceListController {
 
       // https://stackoverflow.com/questions/14278170/how-to-check-whether-a-string-contains-at-least-one-alphabet-in-java
       // Checks if there is at least one character in title
-      if(!(title.length() <= 1 || containsLetter(title))) {
+      if(title.length() < 1 || !containsLetter(title)) {
           errorMessage = "Title must more than one character and should not be only made from numbers and symbols";
       }
 
       // Checks if there is at least one character in description
-      if(!(description.length() <= 1 || containsLetter(description))) {
+      if(description.length() < 1 || !containsLetter(description)) {
           errorMessage = "Description must more than one character and should not be only made from numbers and symbols";
       }
 
