@@ -23,7 +23,6 @@ import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validat
 public class Evidence {
     public static final int MAX_TITLE_LENGTH = 100;
     public static final int MAX_DESCRIPTION_LENGTH = 2000;
-    public static final DateTimeFormatter htmlDateFormat = DateTimeFormatter.ofPattern("YYYY-MM-dd");
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

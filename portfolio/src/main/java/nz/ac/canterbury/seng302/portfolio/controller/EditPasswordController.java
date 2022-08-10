@@ -29,11 +29,11 @@ public class EditPasswordController {
     @Autowired
     private NavController navController;
 
-    String password = ""; //TODO these still need db implementation
-    String passwordConfirm = "";
-    String passwordErrorShow = "display:none;";
-    String passwordSuccessShow = "display:none;";
-    String passwordSuccessCode = "successCode";
+    private String password = "";
+    private String passwordConfirm = "";
+    private String passwordErrorShow = "display:none;";
+    private String passwordSuccessShow = "display:none;";
+    private String passwordSuccessCode = "successCode";
 
     /**
      * Directs to the password edit page, adding attributes to display
@@ -42,7 +42,7 @@ public class EditPasswordController {
      */
     @GetMapping("/edit-password")
     public String passwordForm(Model model,
-                              @AuthenticationPrincipal AuthState principal) throws IOException {
+                              @AuthenticationPrincipal AuthState principal) {
 
         int id = AuthStateInformer.getId(principal);
         UserResponse userReply = accountClientService.getUserById(id);

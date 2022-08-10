@@ -289,16 +289,13 @@ public class EvidenceListController {
 
       // https://stackoverflow.com/questions/14278170/how-to-check-whether-a-string-contains-at-least-one-alphabet-in-java
       // Checks if there is at least one character in title
-      if (!(title.matches(".*[a-zA-Z]+.*")) || title.length() <= 1) {
-          errorMessage =
-              "Title must more than one character and should not be only made from numbers and symbols";
+      if(title.length() < 1 || !containsLetter(title)) {
+          errorMessage = "Title must more than one character and should not be only made from numbers and symbols";
       }
 
       // Checks if there is at least one character in description
-      if (!(description.matches(".*[a-zA-Z]+.*")) ||
-          description.length() <= 1) {
-          errorMessage =
-              "Description must more than one character and should not be only made from numbers and symbols";
+      if(description.length() < 1 || !containsLetter(description)) {
+          errorMessage = "Description must more than one character and should not be only made from numbers and symbols";
       }
 
       // Check if the given evidence date is within the project date
@@ -310,6 +307,46 @@ public class EvidenceListController {
       }
 
       return errorMessage;
+  }
+
+  public boolean containsLetter(String sample) {
+      for (int i=0; i < sample.length(); ++i) {
+          if (Character.isLetter(sample.charAt(i))) {
+              return true;
+          }
+      }
+      return false;
+  }
+
+  private void addSkillsToRepo(Project parentProject, Evidence evidence, String skills) {
+      //Create new skill for any skill that doesn't exist, create evidence tag for all skills
+      if (skills.replace(" ", "").length() > 0) {
+          List<String> skillList = extractListFromHTMLStringSkills(skills);
+
+          for (String skillString : skillList) {
+              String validSkillString = skillString.replace(" ", "_");
+              SkillTag skillFromRepo = skillRepository.findByTitleIgnoreCase(validSkillString);
+
+              if (skillFromRepo == null) {
+                  SkillTag newSkill = new SkillTag(parentProject, validSkillString);
+                  skillRepository.save(newSkill);
+                  EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
+                  evidenceTagRepository.save(noSkillEvidence);
+              } else {
+                  EvidenceTag noSkillEvidence = new EvidenceTag(skillFromRepo, evidence);
+                  evidenceTagRepository.save(noSkillEvidence);
+              }
+          }
+      }
+
+      // If there's no skills, add the no_skills
+      List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+      if (evidenceTagList.size() == 0) {
+          SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
+          EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
+          evidenceTagRepository.save(noSkillEvidence);
+      }
+
   }
 
   /**

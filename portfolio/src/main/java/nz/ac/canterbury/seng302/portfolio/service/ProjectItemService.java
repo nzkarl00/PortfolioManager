@@ -59,21 +59,13 @@ public class ProjectItemService {
     }
 
     public ProjectTimeBoundItem getProjectItemByIdAndType(String type, Integer id) throws Exception {
-        Optional<? extends ProjectTimeBoundItem> item = null;
-        switch (type) {
-            case "Deadline":
-                item = deadlineRepository.findById(id);
-                break;
-            case "Milestone":
-                item = milestoneRepository.findById(id);
-                break;
-            case "Event":
-                item = eventRepository.findById(id);
-                break;
-            default:
-                throw new CustomExceptions.ProjectItemTypeException("Project item type not recognised");
-        }
-        if(item!=null) {
+        Optional<? extends ProjectTimeBoundItem> item = switch (type) {
+            case "Deadline" -> deadlineRepository.findById(id);
+            case "Milestone" -> milestoneRepository.findById(id);
+            case "Event" -> eventRepository.findById(id);
+            default -> throw new CustomExceptions.ProjectItemTypeException("Project item type not recognised");
+        };
+        if(item.isPresent()) {
             return item.get();
         }
         else
@@ -88,7 +80,7 @@ public class ProjectItemService {
     public Deadline getDeadlineById(Integer id) throws CustomExceptions.ProjectItemNotFoundException {
 
         Optional<Deadline> deadline = deadlineRepository.findById(id);
-        if(deadline!=null) {
+        if(deadline.isPresent()) {
             return deadline.get();
         }
         else
@@ -103,7 +95,7 @@ public class ProjectItemService {
     public Event getEventById(Integer id) throws CustomExceptions.ProjectItemNotFoundException {
 
         Optional<Event> event = eventRepository.findById(id);
-        if(event!=null) {
+        if(event.isPresent()) {
             return event.get();
         }
         else
@@ -118,7 +110,7 @@ public class ProjectItemService {
     public Milestone getMilestoneById(Integer id) throws CustomExceptions.ProjectItemNotFoundException {
 
         Optional<Milestone> milestone = milestoneRepository.findById(id);
-        if(milestone!=null) {
+        if(milestone.isPresent()) {
             return milestone.get();
         }
         else

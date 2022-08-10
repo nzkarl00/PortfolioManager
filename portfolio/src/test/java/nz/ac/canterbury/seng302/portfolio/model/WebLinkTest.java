@@ -28,9 +28,9 @@ class WebLinkTest {
 
     @Test
     public void isFetched() {
-        assertEquals(false, link.isFetched());
+        assertFalse(link.isFetched());
         link.setFetchResult(true);
-        assertEquals(true, link.isFetched());
+        assertTrue(link.isFetched());
     }
 
     @Test
@@ -46,9 +46,7 @@ class WebLinkTest {
     public void constructor_throwsOnNoProtocol() {
         String expectedMessage = "URL must contain an HTTP(s) protocol definition";
 
-        Exception argumentException = Assertions.assertThrows(MalformedURLException.class, () -> {
-            new WebLink("url-no-protocol", evidence);
-        });
+        Exception argumentException = Assertions.assertThrows(MalformedURLException.class, () -> new WebLink("url-no-protocol", evidence));
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
     }
 
@@ -69,9 +67,7 @@ class WebLinkTest {
     public void isNotFound_throwsOnUnfetchedLink() {
         String expectedMessage = "Link must be fetched first";
 
-        Exception argumentException = Assertions.assertThrows(IllegalStateException.class, () -> {
-            link.isNotFound();
-        });
+        Exception argumentException = Assertions.assertThrows(IllegalStateException.class, () -> link.isNotFound());
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
     }
 
@@ -91,35 +87,30 @@ class WebLinkTest {
     @Test
     public void setFetchResult_setsFalse() {
         link.setFetchResult(false);
-        assertEquals(true, link.isFetched());
-        assertEquals(false, link.isNotFound());
+        assertTrue(link.isFetched());
+        assertFalse(link.isNotFound());
     }
 
     @Test
     public void setFetchResult_setsTrue() {
         link.setFetchResult(true);
-        assertEquals(true, link.isFetched());
-        assertEquals(true, link.isNotFound());
+        assertTrue(link.isFetched());
+        assertTrue(link.isNotFound());
     }
 
     @Test
     public void setNotFound() {
         link.setFetchResult(true);
 
-        assertEquals(true, link.isNotFound());
+        assertTrue(link.isNotFound());
         link.setNotFound(false);
-        assertEquals(false, link.isNotFound());
+        assertFalse(link.isNotFound());
         link.setNotFound(true);
-        assertEquals(true, link.isNotFound());
+        assertTrue(link.isNotFound());
     }
 
     @Test
     public void setNotFound_throwsIfNotAlreadyFetched() {
-        try {
-            link.setNotFound(true);
-            fail("Should throw an assertion error");
-        } catch(AssertionError e) {
-            assertTrue(true);
-        }
+            assertThrows(AssertionError.class, () -> link.setNotFound(true));
     }
 }
