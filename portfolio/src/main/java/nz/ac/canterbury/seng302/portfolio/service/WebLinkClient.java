@@ -38,7 +38,7 @@ public class WebLinkClient {
     public Mono<WebLink> tryLink(final WebLink link) {
         final String NOT_FOUND_ERROR_MESSAGE = "Status is 404";
         return client.method(HttpMethod.GET)
-            .uri(link.url)
+            .uri(link.getUrl())
             .retrieve()
             .onStatus(
                     status -> status == HttpStatus.NOT_FOUND,

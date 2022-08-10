@@ -26,7 +26,7 @@
         <form th:action="@{add-evidence}" method="post">
                 <div class="row-1" style="display:flex;">
                         <div class="evidence_form_element col-4">
-                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" th:name="titleInput" oninput="updateTitle(); canSaveCheck()" required>
+                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" minlength="2" th:name="titleInput" oninput="updateTitle(); canSaveCheck()" required>
                             <label class="project_inputAlertBlue" id="titleCharCount">Characters Remaining: 100</label>
                         </div>
                     <div id="date_container" class="evidence_form_element col-3">
@@ -130,7 +130,7 @@
                         <br>
                         <textarea type="text" maxlength="2000" id="evidence_desc" oninput="updateDesc(); canSaveCheck()"
                                   class=" description-input project_edit_data horizontal_field bio setWide"
-                                  th:name="descriptionInput" required
+                                  th:name="descriptionInput" required minlength="2"
                         ></textarea>
                         <label class="project_inputAlertBlue" id="descCharCount">Characters Remaining: 2000</label>
                     </div>
@@ -160,7 +160,7 @@
                     <script>
                         // Event listener to add skills when enter is pressed and the skill input is selected
                         document.querySelector("#add_skill_input").addEventListener("keyup", event => {
-                            if (event.key !== "Enter") return;
+                            if (event.key !== "Enter" && event.key !== " ") return;
                             addSkill()
                         })
 
@@ -177,7 +177,14 @@
                         // Adds the skill to the set and resets the input.
                         function addSkill() {
                             let newSkill = document.getElementById("add_skill_input").value
-                            if (skills.has(newSkill)) return;
+                            if (newSkill.slice(-1) === " ") {
+                                newSkill = newSkill.slice(0, -1);
+                            }
+
+                            if (skills.has(newSkill)) {
+                                document.getElementById("add_skill_input").value = "";
+                                return;
+                            }
                             // check to see if it matches the correct skill format
                             const validate = newSkill.match(/^[a-zA-Z-_0-9]+$/)
                             if (!validate || !validate.length == 1) {
@@ -294,7 +301,7 @@
 
                         // Validate a link
                         function validateLink(link) {
-                            let pattern = /^https?:\/\/.*$/
+                            let pattern = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
                             return pattern.test(link);
                         }
 

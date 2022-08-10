@@ -80,9 +80,11 @@ From here you may either register a user or login to the default user account.
 
 ## Default Account Credentials
 #### UserName:
+
 admin, teacher, or student. Each account is for the corresponding roles
 #### Password:
 Password123!
+
 ## Dependencies
 
 ### Bootstrap
@@ -96,9 +98,17 @@ it utilized here to display project details and visually show the dates for spri
 milestones to the user. The application uses version 5.11.2 of Fullcalendar.
 
 ### Axios
+A library to make API calls simple and easy to use.
+We use the latest version sourced from https://unpkg.com/axios/dist/axios.min.js
 
 ### Websockets
+A set of libraries that allow for live updating through the web protocol that is web sockets.
+This allows for live updating of our project page.
+We use version 'org.webjars:stomp-websocket:2.3.4'
 
+### DataTables
+Datatables converts a html table to a datatable which will sort, paginate, search automatically.
+We use version 1.12
 ## Test Dependencies
 
 ### Selenium
@@ -107,7 +117,9 @@ to automate manual testing that sees if the user of the application can see the 
 the correct actions are performed. This is used as a part of the integrationTest part of our pipeline. The application uses version 3.4.0.
 
 ### JUnit
-
+Junit is a library to unit test classes in an automatic manner, in combination with the gitlab pipeline
+any branch that is merged to dev must pass all tests.
+We use version 7.2.3
 
 ## Contributors
 

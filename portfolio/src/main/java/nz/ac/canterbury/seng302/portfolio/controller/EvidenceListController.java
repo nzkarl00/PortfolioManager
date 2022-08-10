@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -148,9 +149,9 @@ public class EvidenceListController {
       Project parentProject = projectService.getProjectById(projectId);
       if (parentProject == null) {
           logger.debug("[EVIDENCE] Attempted to add evidence to a project that could not be found");
-          // TODO: Change to 404
+          // In future we can use a 404 here
           errorMessage = "Project does not exist";
-          return "redirect:evidence?pi=" + projectId;
+          return "redirect:evidence";
       }
 
       LocalDate evidenceDate = LocalDate.parse(date);
@@ -176,7 +177,7 @@ public class EvidenceListController {
       List<String> extractedLinks = null;
       if (links.isPresent()) {
           extractedLinks = extractListFromHTMLString(links.get());
-          Optional<String> possibleError = validateLinks(extractedLinks);
+          Optional<String> possibleError = evidenceService.validateLinks(extractedLinks);
           if (possibleError.isPresent()) {
               errorMessage = possibleError.get();
               return "redirect:evidence?pi=" + projectId;
@@ -200,7 +201,7 @@ public class EvidenceListController {
         }
       }
 
-      addSkillsToRepo(parentProject, evidence, skills);
+      evidenceService.addSkillsToRepo(parentProject, evidence, skills);
 
       // If there's no skills, add the no_skills
       List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
@@ -212,7 +213,13 @@ public class EvidenceListController {
 
       if (extractedLinks != null) {
           logger.debug("[EVIDENCE] Saving web links");
-          webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
+          try {
+              webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
+          } catch (MalformedURLException e) {
+              logger.error("[EVIDENCE] Somehow links were attempted for construction with malformed URL", e);
+              logger.error("[EVIDENCE] Links not saved");
+          }
+
       }
 
       return "redirect:evidence?pi=" + projectId;
@@ -225,10 +232,12 @@ public class EvidenceListController {
    */
   private Optional<String> validateLinks(List<String> links) {
     for (String link : links) {
-      if (!WebLink.urlHasProtocol(link)) {
-        logger.trace("[WEBLINK] Rejecting web link as the link is not valid, link: " + link);
-        return Optional.of("The provided link is not valid, must contain http(s):// protocol: " + link);
-      };
+        try {
+            WebLink.urlIsValid(link);
+        } catch (MalformedURLException e) {
+            logger.trace("[WEBLINK] Rejecting web link as the link is not valid, link: " + link);
+            return Optional.of("The provided link is not valid, must contain http(s):// protocol: " + link);
+        }
     }
     return Optional.empty();
   }
@@ -239,7 +248,7 @@ public class EvidenceListController {
    * @param parentEvidence The evidence object which the weblink belongs to
    * @return An array of weblink objects which contain both the link text and the parent evidence
    */
-  private List<WebLink> constructLinks(List<String> links, Evidence parentEvidence) {
+  private List<WebLink> constructLinks(List<String> links, Evidence parentEvidence) throws MalformedURLException {
     ArrayList<WebLink> resultLinks = new ArrayList<>();
     // Validate all links
     for (String link : links) {
@@ -280,53 +289,27 @@ public class EvidenceListController {
 
       // https://stackoverflow.com/questions/14278170/how-to-check-whether-a-string-contains-at-least-one-alphabet-in-java
       // Checks if there is at least one character in title
-      if(!(title.matches(".*[a-zA-Z]+.*")) || title.length() <= 1) {
-          errorMessage = "Title must more than one character and should not be only made from numbers and symbols";
+      if (!(title.matches(".*[a-zA-Z]+.*")) || title.length() <= 1) {
+          errorMessage =
+              "Title must more than one character and should not be only made from numbers and symbols";
       }
 
       // Checks if there is at least one character in description
-      if(!(description.matches(".*[a-zA-Z]+.*")) || description.length() <= 1) {
-          errorMessage = "Description must more than one character and should not be only made from numbers and symbols";
+      if (!(description.matches(".*[a-zA-Z]+.*")) ||
+          description.length() <= 1) {
+          errorMessage =
+              "Description must more than one character and should not be only made from numbers and symbols";
       }
 
       // Check if the given evidence date is within the project date
-      if (!(evidenceDate.isAfter(projectStartDate) && evidenceDate.isBefore(projectEndDate))
-          && !(evidenceDate.isEqual(projectEndDate) || evidenceDate.isEqual(projectStartDate))) {
+      if (!(evidenceDate.isAfter(projectStartDate) &&
+          evidenceDate.isBefore(projectEndDate))
+          && !(evidenceDate.isEqual(projectEndDate) ||
+          evidenceDate.isEqual(projectStartDate))) {
           errorMessage = "Dates must fall within project dates";
       }
 
       return errorMessage;
-  }
-
-  private void addSkillsToRepo(Project parentProject, Evidence evidence, String skills) {
-      //Create new skill for any skill that doesn't exist, create evidence tag for all skills
-      if (skills.replace(" ", "").length() > 0) {
-          List<String> skillList = extractListFromHTMLStringSkills(skills);
-
-          for (String skillString : skillList) {
-              String validSkillString = skillString.replace(" ", "_");
-              SkillTag skillFromRepo = skillRepository.findByTitleIgnoreCase(validSkillString);
-
-              if (skillFromRepo == null) {
-                  SkillTag newSkill = new SkillTag(parentProject, validSkillString);
-                  skillRepository.save(newSkill);
-                  EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
-                  evidenceTagRepository.save(noSkillEvidence);
-              } else {
-                  EvidenceTag noSkillEvidence = new EvidenceTag(skillFromRepo, evidence);
-                  evidenceTagRepository.save(noSkillEvidence);
-              }
-          }
-      }
-
-      // If there's no skills, add the no_skills
-      List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
-      if (evidenceTagList.size() == 0) {
-          SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
-          EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
-          evidenceTagRepository.save(noSkillEvidence);
-      }
-
   }
 
   /**
@@ -334,8 +317,8 @@ public class EvidenceListController {
    * @param model The Spring model
    * @param userId Id of user to get evidence from
    * @param projectId Id of project to get evidence from
-   * @param categoryId Id of category to get evidence from
-   * @param skillId Id of skill to get evidence from
+   * @param categoryName name of category to get evidence from
+   * @param skillName name of skill to get evidence from
    * @throws InvalidArgumentException possible exceptions can be raised from project ID not being valid and skillID not being valid
    */
   private void setTitle(Model model, Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
