@@ -11,7 +11,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,13 @@ public class EvidenceListControllerTest {
 
     private static final Project testProject = getValidProject();
     private static final LocalDate may4 = LocalDate.parse("2022-05-04");
-    private static final Evidence testEvidence = new Evidence(0, testProject, "Evidence One", "This evidence is the first to be submitted", may4);
+    private static final Evidence testEvidence = new Evidence(
+        0,
+        testProject,
+        "Evidence One",
+        "This evidence is the first to be submitted",
+        may4
+    );
 
 
 

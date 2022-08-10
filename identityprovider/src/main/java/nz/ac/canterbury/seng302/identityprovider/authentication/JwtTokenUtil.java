@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.crypto.SecretKey;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -135,14 +136,15 @@ public class JwtTokenUtil implements Serializable {
 		// When assigning multiple roles to a user, encode them as a comma separated list
 		// E.g "student,teacher" or "teacher,courseadministrator,student" (Order doesn't matter)
         claims.put(ROLE_CLAIM_TYPE, profile.getHighestRole().getPlainRole());
-        //claims.put(ROLE_CLAIM_TYPE, "teacher");
+
+		long currentSystemTime = Instant.now().toEpochMilli();
 
 		return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(profile.getUsername())
 				.setIssuer("LOCAL AUTHORITY")
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
+                .setIssuedAt(new Date(currentSystemTime))
+				.setExpiration(new Date(currentSystemTime + JWT_TOKEN_VALIDITY * 1000))
 				.signWith(key).compact();
     }
 
