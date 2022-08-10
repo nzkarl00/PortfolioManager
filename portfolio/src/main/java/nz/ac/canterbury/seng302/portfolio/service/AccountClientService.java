@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

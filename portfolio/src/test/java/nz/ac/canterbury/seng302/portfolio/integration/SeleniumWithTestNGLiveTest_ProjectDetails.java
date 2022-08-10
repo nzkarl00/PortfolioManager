@@ -8,10 +8,8 @@ import org.openqa.selenium.interactions.Actions;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Scanner;
 
 import static nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins.getPassword_ForAdmin_FromTextFile;
 import static nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins.whenPortfolioIsLoaded_thenLoginAdmin_forTests;

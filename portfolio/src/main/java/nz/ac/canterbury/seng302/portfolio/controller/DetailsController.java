@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Controller for the display project details page

@@ -1,21 +1,20 @@
 package nz.ac.canterbury.seng302.portfolio.cucumber;
 
-import com.beust.ah.A;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
+import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import org.junit.jupiter.api.Assertions;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -294,5 +293,67 @@ public class MyStepdefs {
     public void userSelectsTheOptionInTheSkillsDropdown(String arg0) {
         Select category = new Select(seleniumExample.config.getDriver().findElement(By.id("si")));
         category.selectByVisibleText(arg0);
+    }
+
+    @Then("I can see the prefilled date is today's date")
+    public void i_can_see_the_prefilled_date_is_today_s_date() {
+        WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
+        String currentDateExpected = DateParser.dateToStringHtml(new Date());
+        String currentDateActual = date.getAttribute("value");
+        Assertions.assertEquals(currentDateExpected, currentDateActual);
+    }
+
+    @When("I try to update the widget date to a new date that is within the project")
+    public void i_try_to_update_the_widget_date_to_a_new_date_that_is_within_the_project() {
+        WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
+        String minDateStringFormat = date.getAttribute("min");
+        Date minDate = DateParser.stringToDate(minDateStringFormat);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(minDate);
+        cal.add(Calendar.DAY_OF_MONTH, 2);
+        String month = String.valueOf(cal.get(Calendar.MONTH));;
+        if (cal.get(Calendar.MONTH) < 10) {
+            month = "0" + String.valueOf(cal.get(Calendar.MONTH));
+        }
+        String dateToSend = String.format("%d-%s-%d", cal.get(Calendar.YEAR), month, cal.get(Calendar.DATE));
+        date.sendKeys(dateToSend);
+    }
+
+    @Then("I can see the widget date field is set to the updated new date")
+    public void i_can_see_the_widget_date_field_is_set_to_the_updated_new_date() {
+        WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
+        String minDateStringFormat = date.getAttribute("min");
+        Date minDate = DateParser.stringToDate(minDateStringFormat);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(minDate);
+        cal.add(Calendar.DAY_OF_MONTH, 2);
+        String month = String.valueOf(cal.get(Calendar.MONTH));;
+        if (cal.get(Calendar.MONTH) < 10) {
+            month = "0" + String.valueOf(cal.get(Calendar.MONTH));
+        }
+        String expected = String.format("%d-%s-%d", cal.get(Calendar.YEAR), month, cal.get(Calendar.DATE));
+        String actual = date.getAttribute("value");
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Then("Hovering my mouse over the question mark icon beside the date picker will give me information about it")
+    public void hovering_my_mouse_over_the_question_mark_icon_beside_the_date_picker_will_give_me_information_about_it() {
+        WebElement icon = seleniumExample.config.getDriver().findElement(By.id("evidence_date_tool"));
+        WebDriver driver = seleniumExample.config.getDriver();
+        Actions actions = new Actions(driver);
+        actions.moveToElement(icon).perform();
+        String toolTipActual = seleniumExample.config.getDriver().findElement(By.id("info")).getText();
+        String toolTipExpected = "This is the date the evidence occurred, date selection is restricted to the boundaries of the project it is assigned to.";
+        Assertions.assertEquals(toolTipExpected, toolTipActual);
+
+    }
+
+    @Then("I can see that the range of the date widget is filled in with the project date range")
+    public void i_can_see_that_the_range_of_the_date_widget_is_filled_in_with_the_project_date_range() {
+        WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
+        String min = date.getAttribute("min");
+        String max = date.getAttribute("max");
+        Assertions.assertFalse(min.isBlank());
+        Assertions.assertFalse(max.isBlank());
     }
 }
