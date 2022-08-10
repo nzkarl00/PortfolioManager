@@ -156,24 +156,6 @@
 </script>
 <script th:inline="javascript">
 
-  let evidenceSkillRow;
-
-  // Inserts a new skill tag into the form
-  function appendSkillToEvidence(skillText, evidenceId) {
-    let evidenceSkillTag = document.createElement("button");
-    evidenceSkillTag.id = "evidence_skill_" + skillText
-    evidenceSkillTag.className = "table_text evidence_skill_tag"
-    evidenceSkillTag.innerText = skillText.title
-    evidenceSkillTag.value = skillText.title
-    evidenceSkillTag.onclick = function() {window.location.href = "evidence?si=" + skillText.id}
-    evidenceSkillRow.appendChild(evidenceSkillTag);
-    if (evidenceSkillRow.getBoundingClientRect().right < evidenceSkillTag.getBoundingClientRect().right) {
-      evidenceSkillRow.removeChild(evidenceSkillTag);
-      addSkillRowToEvidence(evidenceId)
-      evidenceSkillRow.appendChild(evidenceSkillTag);
-    }
-  }
-
   function addTagToEvidence(value, evidenceId, type) {
     let newItem = document.createElement("button");
     newItem.className = "table_text evidence_" + type + "_tag"
