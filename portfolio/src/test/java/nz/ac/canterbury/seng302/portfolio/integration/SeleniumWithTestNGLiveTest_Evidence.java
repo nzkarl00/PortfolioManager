@@ -5,11 +5,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
-import nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins;
-import java.io.File;
+
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Scanner;
 
 import static nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins.getPassword_ForAdmin_FromTextFile;
 import static nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins.whenPortfolioIsLoaded_thenLoginAdmin_forTests;
