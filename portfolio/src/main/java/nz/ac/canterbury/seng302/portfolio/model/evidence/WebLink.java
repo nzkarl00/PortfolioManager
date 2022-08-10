@@ -76,10 +76,21 @@ public class WebLink {
         this.parentEvidence = parentEvidence;
     }
 
+    /**
+     * Gets the URL of the WebLink,
+     * This URL is clickable, with a protocol, eg. https://www.google.com/
+     * @return url the URL of the link
+     */
     public String getUrl() {
         return this.url.toString();
     }
 
+    /**
+     * Gets a cleaner version of the URL without protocols
+     * This has the HTTP:// and HTTPS:// removed so is not clickable
+     * eg. www.google.com/
+     * @return
+     */
     public String getUrlWithoutProtocol() {
         return this.url.toString().substring(this.url.toString().indexOf("://") + 3);
     }
