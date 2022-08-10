@@ -44,16 +44,21 @@ public class EvidenceService {
      * @return A properly sorted and filtered list of evidence
      * @throws Exception
      */
-    public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, Integer categoryId, Integer skillId) throws Exception {
+    public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
         if (projectId != null){
             Project project = projectService.getProjectById(Integer.valueOf(projectId));
             return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
         } else if (userId != null){
             return evidenceRepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
-        }else if (categoryId != null){
-            return evidenceRepository.findAllByOrderByDateDesc();
-        }else if (skillId != null){
-            List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(Integer.valueOf(skillId));
+        }else if (categoryName != null){
+            List<Category> categoryTag = categoryRepository.findAllByCategoryName(categoryName);
+            List<Evidence> evidenceSkillList = new ArrayList<>();
+            for (Category tag: categoryTag){
+                evidenceSkillList.add(tag.getParentEvidence());
+            }
+            return evidenceSkillList;
+        }else if (skillName != null){
+            List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(skillTagRepository.findByTitle(skillName).getId());
             List<Evidence> evidenceSkillList = new ArrayList<>();
             for (EvidenceTag tag: evidenceTags){
                 evidenceSkillList.add(tag.getParentEvidence());
