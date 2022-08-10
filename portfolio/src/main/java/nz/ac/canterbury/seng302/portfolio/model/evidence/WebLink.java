@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.regex.Pattern;
 
@@ -30,6 +32,7 @@ public class WebLink {
      * Every web link is associated with a parent piece of evidence.
      */
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name="parent_evidence_id", nullable=false)
     protected Evidence parentEvidence;
 
@@ -69,6 +72,14 @@ public class WebLink {
         urlIsValid(url);
         this.url = url;
         this.parentEvidence = parentEvidence;
+    }
+
+    public String getUrl() {
+        return this.url;
+    }
+
+    public String getUrlWithoutProtocol() {
+        return this.url.substring(this.url.indexOf("://") + 3);
     }
 
     /**
