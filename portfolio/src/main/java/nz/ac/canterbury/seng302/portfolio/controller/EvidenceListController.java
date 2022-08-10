@@ -2,12 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.DateParser;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -23,11 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.*;
 
 /**
@@ -73,12 +62,11 @@ public class EvidenceListController {
                                         @RequestParam(required = false , value="si") Integer skillId,
                                         @RequestParam(required = false , value="ci") Integer categoryId,
                                         Model model) throws Exception {
-    logger.info("Fetching evidence details");
+    logger.info("[EVIDENCE] Request to view list of evidence");
 
     setPageTitle(model,"List Of Evidence");
 
     List<SkillTag> skillList = skillRepository.findAll();
-
 
     List<Evidence> evidenceList = evidenceService.getFilteredEvidenceForUserInProject(userId, projectId, categoryId, skillId);
     setTitle(model, userId, projectId, categoryId, skillId);
@@ -150,7 +138,11 @@ public class EvidenceListController {
           @RequestParam(value = "descriptionInput") String description,
           Model model
   ) throws Exception {
-      logger.info("Attempting to add new evidence");
+      logger.info("[EVIDENCE] Attempting to add new evidence");
+      if (!principal.getIsAuthenticated()) {
+          logger.debug("[EVIDENCE] Redirecting, user not authenticated");
+          return "redirect:evidence?pi=" + projectId.toString();
+      }
 
       Integer accountID = AuthStateInformer.getId(principal);
       Project parentProject = projectService.getProjectById(projectId);
@@ -160,6 +152,7 @@ public class EvidenceListController {
           errorMessage = "Project does not exist";
           return "redirect:evidence?pi=" + projectId;
       }
+
       LocalDate evidenceDate = LocalDate.parse(date);
       LocalDate projectStartDate = parentProject.getLocalStartDate();
       LocalDate projectEndDate = parentProject.getLocalEndDate();
@@ -268,7 +261,7 @@ public class EvidenceListController {
 
       return Arrays.asList(stringFromHTML.split(" "));
   }
-  
+
   /**
    * Splits an HTML form input list, into multiple array elements.
    * @param stringFromHTML The skill string posted by the evidence form in format Skill1~Skill2~Skill3
