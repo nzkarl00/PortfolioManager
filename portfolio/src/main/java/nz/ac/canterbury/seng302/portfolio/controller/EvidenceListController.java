@@ -177,7 +177,7 @@ public class EvidenceListController {
       List<String> extractedLinks = null;
       if (links.isPresent()) {
           extractedLinks = extractListFromHTMLString(links.get());
-          Optional<String> possibleError = validateLinks(extractedLinks);
+          Optional<String> possibleError = evidenceService.validateLinks(extractedLinks);
           if (possibleError.isPresent()) {
               errorMessage = possibleError.get();
               return "redirect:evidence?pi=" + projectId;
@@ -201,7 +201,7 @@ public class EvidenceListController {
         }
       }
 
-      addSkillsToRepo(parentProject, evidence, skills);
+      evidenceService.addSkillsToRepo(parentProject, evidence, skills);
 
       // If there's no skills, add the no_skills
       List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
@@ -289,53 +289,27 @@ public class EvidenceListController {
 
       // https://stackoverflow.com/questions/14278170/how-to-check-whether-a-string-contains-at-least-one-alphabet-in-java
       // Checks if there is at least one character in title
-      if(!(title.matches(".*[a-zA-Z]+.*")) || title.length() <= 1) {
-          errorMessage = "Title must more than one character and should not be only made from numbers and symbols";
+      if (!(title.matches(".*[a-zA-Z]+.*")) || title.length() <= 1) {
+          errorMessage =
+              "Title must more than one character and should not be only made from numbers and symbols";
       }
 
       // Checks if there is at least one character in description
-      if(!(description.matches(".*[a-zA-Z]+.*")) || description.length() <= 1) {
-          errorMessage = "Description must more than one character and should not be only made from numbers and symbols";
+      if (!(description.matches(".*[a-zA-Z]+.*")) ||
+          description.length() <= 1) {
+          errorMessage =
+              "Description must more than one character and should not be only made from numbers and symbols";
       }
 
       // Check if the given evidence date is within the project date
-      if (!(evidenceDate.isAfter(projectStartDate) && evidenceDate.isBefore(projectEndDate))
-          && !(evidenceDate.isEqual(projectEndDate) || evidenceDate.isEqual(projectStartDate))) {
+      if (!(evidenceDate.isAfter(projectStartDate) &&
+          evidenceDate.isBefore(projectEndDate))
+          && !(evidenceDate.isEqual(projectEndDate) ||
+          evidenceDate.isEqual(projectStartDate))) {
           errorMessage = "Dates must fall within project dates";
       }
 
       return errorMessage;
-  }
-
-  private void addSkillsToRepo(Project parentProject, Evidence evidence, String skills) {
-      //Create new skill for any skill that doesn't exist, create evidence tag for all skills
-      if (skills.replace(" ", "").length() > 0) {
-          List<String> skillList = extractListFromHTMLStringSkills(skills);
-
-          for (String skillString : skillList) {
-              String validSkillString = skillString.replace(" ", "_");
-              SkillTag skillFromRepo = skillRepository.findByTitleIgnoreCase(validSkillString);
-
-              if (skillFromRepo == null) {
-                  SkillTag newSkill = new SkillTag(parentProject, validSkillString);
-                  skillRepository.save(newSkill);
-                  EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
-                  evidenceTagRepository.save(noSkillEvidence);
-              } else {
-                  EvidenceTag noSkillEvidence = new EvidenceTag(skillFromRepo, evidence);
-                  evidenceTagRepository.save(noSkillEvidence);
-              }
-          }
-      }
-
-      // If there's no skills, add the no_skills
-      List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
-      if (evidenceTagList.size() == 0) {
-          SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
-          EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
-          evidenceTagRepository.save(noSkillEvidence);
-      }
-
   }
 
   /**
