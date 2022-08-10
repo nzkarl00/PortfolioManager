@@ -65,9 +65,6 @@ public class EditDatesControllerTest {
     ProjectService projectService;
 
     @MockBean
-    DeadlineService deadlineService;
-
-    @MockBean
     NavController navController;
 
     @MockBean
