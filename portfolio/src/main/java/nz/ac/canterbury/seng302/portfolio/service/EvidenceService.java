@@ -52,11 +52,11 @@ public class EvidenceService {
             return evidenceRepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
         }else if (categoryName != null){
             List<Category> categoryTag = categoryRepository.findAllByCategoryName(categoryName);
-            List<Evidence> evidenceSkillList = new ArrayList<>();
+            List<Evidence> evidenceCategoryList = new ArrayList<>();
             for (Category tag: categoryTag){
-                evidenceSkillList.add(tag.getParentEvidence());
+                evidenceCategoryList.add(tag.getParentEvidence());
             }
-            return evidenceSkillList;
+            return evidenceCategoryList;
         }else if (skillName != null){
             List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(skillTagRepository.findByTitle(skillName).getId());
             List<Evidence> evidenceSkillList = new ArrayList<>();
