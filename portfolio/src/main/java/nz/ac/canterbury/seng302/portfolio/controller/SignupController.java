@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.slf4j.Logger;

@@ -59,8 +59,8 @@ public class EvidenceListController {
   public String evidenceListController( @AuthenticationPrincipal AuthState principal,
                                         @RequestParam(required = false , value="ui") Integer userId,
                                         @RequestParam(required = false , value="pi") Integer projectId,
-                                        @RequestParam(required = false , value="si") Integer skillId,
-                                        @RequestParam(required = false , value="ci") Integer categoryId,
+                                        @RequestParam(required = false , value="si") String skillName,
+                                        @RequestParam(required = false , value="ci") String categoryName,
                                         Model model) throws Exception {
     logger.info("[EVIDENCE] Request to view list of evidence");
 
@@ -68,8 +68,8 @@ public class EvidenceListController {
 
     List<SkillTag> skillList = skillRepository.findAll();
 
-    List<Evidence> evidenceList = evidenceService.getFilteredEvidenceForUserInProject(userId, projectId, categoryId, skillId);
-    setTitle(model, userId, projectId, categoryId, skillId);
+    List<Evidence> evidenceList = evidenceService.getFilteredEvidenceForUserInProject(userId, projectId, categoryName, skillName);
+    setTitle(model, userId, projectId, categoryName, skillName);
     HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
     HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
     for (Evidence evidence: evidenceList) {
@@ -338,7 +338,7 @@ public class EvidenceListController {
    * @param skillId Id of skill to get evidence from
    * @throws InvalidArgumentException possible exceptions can be raised from project ID not being valid and skillID not being valid
    */
-  private void setTitle(Model model, Integer userId, Integer projectId, Integer categoryId, Integer skillId) throws Exception {
+  private void setTitle(Model model, Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
 
     if (projectId != null){
       Project project = projectService.getProjectById(projectId);
@@ -346,18 +346,10 @@ public class EvidenceListController {
     } else if (userId != null){
       UserResponse userReply = accountClientService.getUserById(userId); // Get the user
       setPageTitle(model, "Evidence from user: " + userReply.getUsername());
-    }else if (categoryId != null){
-        switch (categoryId) {
-            case 0 -> setPageTitle(model, "Evidence from category: Quantitative Skills");
-            case 1 -> setPageTitle(model, "Evidence from category: Qualitative Skills");
-            case 2 -> setPageTitle(model, "Evidence from category: Service");
-        }
-    } else if (skillId != null){
-      Optional<SkillTag> skillTag = skillRepository.findById(skillId);
-      if (!skillTag.isPresent()) {
-        throw new InvalidArgumentException("Skill with corresponding ID does not exist");
-      }
-      setPageTitle(model, "Evidence from skill tag: " + skillTag.get().getTitle().replaceAll("_", " "));
+    }else if (categoryName != null){
+        setPageTitle(model, "Evidence from category: " + categoryName);
+    } else if (skillName != null){
+            setPageTitle(model, "Evidence from skill tag: " + skillName.replaceAll("_", " "));
     }
   }
 
@@ -369,8 +361,8 @@ public class EvidenceListController {
   @GetMapping("/search-evidence")
   public String searchEvidenceParam(@RequestParam(required = false, value = "ui") String userId,
                                     @RequestParam(required = false, value = "pi") String projectId,
-                                    @RequestParam(required = false, value = "si") String skillId,
-                                    @RequestParam(required = false, value = "ci") String categoryId) {
+                                    @RequestParam(required = false, value = "si") String skillName,
+                                    @RequestParam(required = false, value = "ci") String categoryName) {
     String returnString = "redirect:evidence?";
     if (userId != null) {
       returnString += "ui=" + (userId);
@@ -378,11 +370,11 @@ public class EvidenceListController {
     if (projectId != null) {
       returnString += "pi=" + (projectId);
     }
-    if (skillId != null) {
-      returnString += "si=" + (skillId);
+    if (skillName != null) {
+      returnString += "si=" + (skillName);
     }
-    if (categoryId != null) {
-      returnString += "ci=" + (categoryId);
+    if (categoryName != null) {
+      returnString += "ci=" + (categoryName);
     }
 
     return returnString;

@@ -16,6 +16,8 @@ public class EvidenceService {
     @Autowired
     private SkillTagRepository skillTagRepository;
     @Autowired
+    private WebLinkRepository webLinkRepository;
+    @Autowired
     EvidenceRepository evidenceRepository;
     @Autowired
     EvidenceTagRepository evidenceTagRepository;
@@ -44,16 +46,21 @@ public class EvidenceService {
      * @return A properly sorted and filtered list of evidence
      * @throws Exception
      */
-    public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, Integer categoryId, Integer skillId) throws Exception {
+    public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
         if (projectId != null){
             Project project = projectService.getProjectById(Integer.valueOf(projectId));
             return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
         } else if (userId != null){
             return evidenceRepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
-        }else if (categoryId != null){
-            return evidenceRepository.findAllByOrderByDateDesc();
-        }else if (skillId != null){
-            List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(Integer.valueOf(skillId));
+        }else if (categoryName != null){
+            List<Category> categoryTag = categoryRepository.findAllByCategoryName(categoryName);
+            List<Evidence> evidenceCategoryList = new ArrayList<>();
+            for (Category tag: categoryTag){
+                evidenceCategoryList.add(tag.getParentEvidence());
+            }
+            return evidenceCategoryList;
+        }else if (skillName != null){
+            List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(skillTagRepository.findByTitle(skillName).getId());
             List<Evidence> evidenceSkillList = new ArrayList<>();
             for (EvidenceTag tag: evidenceTags){
                 evidenceSkillList.add(tag.getParentEvidence());
@@ -77,11 +84,21 @@ public class EvidenceService {
     /**
      * Takes an evidence ID and returns a list of all skill tags that are associated with it.
      * @param evidenceId The evidence ID to be checked against
-     * @return List of skilltag title strings
+     * @return List of skilltag
      */
     public List<SkillTag> getSkillTagByEvidenceId(int evidenceId) {
         List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidenceId);
         return evidenceTagList.stream().map(evidenceTag -> evidenceTag.getParentSkillTag()).collect(Collectors.toList());
+    }
+
+    /**
+     * Takes an evidence ID and returns a list of all links that are associated with it.
+     * @param parentEvidenceId The evidence ID to be checked against
+     * @return List of links
+     */
+    public List<WebLink> getLinksByEvidenceId(int parentEvidenceId) {
+        List<WebLink> links = webLinkRepository.findByParentEvidence(parentEvidenceId);
+        return links;
     }
 
     /**

@@ -9,5 +9,6 @@ import java.util.List;
 public interface CategoryRepository extends CrudRepository<Category, Integer> {
     Category findById(int id);
     List<Category> findAllByParentEvidenceId(int parentEvidenceId);
+    List<Category> findAllByCategoryName(String name);
     List<Category> findAll();
 }

@@ -2,6 +2,8 @@ package nz.ac.canterbury.seng302.identityprovider.controller;
 
 import nz.ac.canterbury.seng302.identityprovider.model.AccountProfileRepository;
 import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
@@ -17,10 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Controller
 public class ProfilePhotoController {
