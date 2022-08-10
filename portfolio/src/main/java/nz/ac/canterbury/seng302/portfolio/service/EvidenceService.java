@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,18 +43,18 @@ public class EvidenceService {
      * @param categoryId Id of category to get evidence from
      * @param skillId Id of skill to get evidence from
      * @return A properly sorted and filtered list of evidence
-     * @throws Exception
+     * @throws Exception can be raised if the project associated with the project ID is not found
      */
-    public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, Integer categoryId, Integer skillId) throws Exception {
+    public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, Integer categoryId, Integer skillId) throws CustomExceptions.ProjectItemNotFoundException {
         if (projectId != null){
-            Project project = projectService.getProjectById(Integer.valueOf(projectId));
+            Project project = projectService.getProjectById(projectId);
             return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
         } else if (userId != null){
-            return evidenceRepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
+            return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
         }else if (categoryId != null){
             return evidenceRepository.findAllByOrderByDateDesc();
         }else if (skillId != null){
-            List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(Integer.valueOf(skillId));
+            List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(skillId);
             List<Evidence> evidenceSkillList = new ArrayList<>();
             for (EvidenceTag tag: evidenceTags){
                 evidenceSkillList.add(tag.getParentEvidence());
@@ -72,16 +73,6 @@ public class EvidenceService {
     public List<String> getSkillTagStringsByEvidenceId(int evidenceId) {
         List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidenceId);
         return evidenceTagList.stream().map(evidenceTag -> evidenceTag.getParentSkillTag().getTitle()).collect(Collectors.toList());
-    }
-
-    /**
-     * Takes an evidence ID and returns a list of all skill tags that are associated with it.
-     * @param evidenceId The evidence ID to be checked against
-     * @return List of skilltag title strings
-     */
-    public List<SkillTag> getSkillTagByEvidenceId(int evidenceId) {
-        List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidenceId);
-        return evidenceTagList.stream().map(evidenceTag -> evidenceTag.getParentSkillTag()).collect(Collectors.toList());
     }
 
     /**
