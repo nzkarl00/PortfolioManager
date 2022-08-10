@@ -26,7 +26,7 @@
         <form th:action="@{add-evidence}" method="post">
                 <div class="row-1" style="display:flex;">
                         <div class="evidence_form_element col-4">
-                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" th:name="titleInput" oninput="updateTitle(); canSaveCheck()" required>
+                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" minlength="2" th:name="titleInput" oninput="updateTitle(); canSaveCheck()" required>
                             <label class="project_inputAlertBlue" id="titleCharCount">Characters Remaining: 100</label>
                         </div>
                     <div id="date_container" class="evidence_form_element col-3">
@@ -130,7 +130,7 @@
                         <br>
                         <textarea type="text" maxlength="2000" id="evidence_desc" oninput="updateDesc(); canSaveCheck()"
                                   class=" description-input project_edit_data horizontal_field bio setWide"
-                                  th:name="descriptionInput" required
+                                  th:name="descriptionInput" required minlength="2"
                         ></textarea>
                         <label class="project_inputAlertBlue" id="descCharCount">Characters Remaining: 2000</label>
                     </div>
