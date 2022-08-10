@@ -102,11 +102,6 @@ class WebLinkTest {
 
     @Test
     public void setNotFound_throwsIfNotAlreadyFetched() {
-        try {
-            link.setNotFound(true);
-            fail("Should throw an assertion error");
-        } catch(AssertionError e) {
-            assertTrue(true);
-        }
+            assertThrows(AssertionError.class, () -> link.setNotFound(true));
     }
 }

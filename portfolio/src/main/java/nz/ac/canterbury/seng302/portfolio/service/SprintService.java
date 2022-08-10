@@ -21,8 +21,7 @@ public class SprintService {
      * Get list of all sprints
      */
     public List<Sprint> getAllSprints() {
-        List<Sprint> list = (List<Sprint>) repository.findAll();
-        return list;
+        return (List<Sprint>) repository.findAll();
     }
 
     /**
@@ -31,7 +30,7 @@ public class SprintService {
     public Sprint getSprintById(Integer id) throws CustomExceptions.ProjectItemNotFoundException {
 
         Optional<Sprint> sprint = repository.findById(id);
-        if(sprint!=null) {
+        if(sprint.isPresent()) {
             return sprint.get();
         }
         else
