@@ -62,7 +62,7 @@ public class WeblinksStepDefs {
         List<WebElement> links = seleniumExample.config.getDriver().findElements(By.id("evidence_links_text_https://en.wikipedia.org/wiki/Main_Page"));
         for (WebElement element: links) {
             try {
-                https://stackoverflow.com/questions/3401343/scroll-element-into-view-with-selenium
+                // https://stackoverflow.com/questions/3401343/scroll-element-into-view-with-selenium
                 ((JavascriptExecutor) seleniumExample.config.getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
                 Thread.sleep(500);
                 element.click();
