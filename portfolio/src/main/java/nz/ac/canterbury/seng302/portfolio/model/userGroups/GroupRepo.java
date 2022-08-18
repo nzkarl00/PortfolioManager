@@ -1,6 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.model.userGroups;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.LinkedCommit;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * A code repository (gitlab) associated with a specific group record.
@@ -25,6 +31,10 @@ public class GroupRepo {
     private String alias = null;
     @Column(name = "api_key", length = 60)
     private String apiKey = null;
+
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "parentGroupRepo", cascade = CascadeType.ALL)
+    protected List<LinkedCommit> linkedCommit;
 
     /**
      * Creates a group repository.

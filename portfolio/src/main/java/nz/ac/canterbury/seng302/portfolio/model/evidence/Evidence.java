@@ -58,12 +58,22 @@ public class Evidence {
     protected LocalDate date;
 
     /**
-     * The list of links associated with this peice of evidence
+     * The list of links associated with this piece of evidence
      */
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     @JsonBackReference
     protected List<WebLink> links;
+
+    /**
+     * The list of linkCommit associated with this piece of evidence
+     * A linkCommit can be associated with one or more parent piece of evidence.
+     * An evidence can have one or more linkCommit
+     */
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
+    @JsonBackReference // This prevents infinite reference looping between tables
+    protected List<LinkedCommit> linkedCommit;
 
     public Evidence() {}
 
