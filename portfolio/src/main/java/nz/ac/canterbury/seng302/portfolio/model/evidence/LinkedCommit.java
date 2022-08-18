@@ -56,6 +56,7 @@ public class LinkedCommit {
     /**
      * A link commit to a parent evidence
      * @param parentEvidence
+     * @param parentGroupRepo
      * @param hash
      * @param author
      * @param title
@@ -75,6 +76,26 @@ public class LinkedCommit {
         this.author = author;
         this.title = title;
         this.timestamp = timestamp;
+    }
+
+    // TODO: Validating date?
+    // sprint checking abilities?
+    // MAX TITLE CHECKING
+
+    /**
+     * Returns the piece of Evidence to which the linkCommit belongs
+     * @return
+     */
+    public Evidence getParentEvidence() {
+        return parentEvidence;
+    }
+
+    /**
+     * Returns the GroupRepo from which the linkCommit came from
+     * @return
+     */
+    public GroupRepo getParentGroupRepo() {
+        return parentGroupRepo;
     }
 
 }
