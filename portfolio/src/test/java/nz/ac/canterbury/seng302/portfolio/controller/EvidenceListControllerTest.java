@@ -47,7 +47,8 @@ public class EvidenceListControllerTest {
         testProject,
         "Evidence One",
         "This evidence is the first to be submitted",
-        may4
+        may4,
+    0
     );
 
     @Autowired

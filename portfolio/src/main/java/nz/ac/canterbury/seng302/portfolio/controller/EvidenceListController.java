@@ -185,8 +185,8 @@ public class EvidenceListController {
           }
       }
 
-      // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links
-      Evidence evidence = new Evidence(accountID, parentProject, title, description, evidenceDate);
+      // If no error occurs with the mandatory fields then save the evidence to the repo and relavent skills or links
+      Evidence evidence = new Evidence(accountID, parentProject, title, description, evidenceDate, 0);
       logger.info("[EVIDENCE] Saving evidence to repo");
       evidenceRepository.save(evidence);
       logger.info(String.format("[EVIDENCE] Saved evidence to repo, id=<%s>", evidence.getId()));

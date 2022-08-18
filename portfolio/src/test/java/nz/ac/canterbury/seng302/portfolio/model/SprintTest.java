@@ -131,7 +131,7 @@ class SprintTest {
         Date date = calendar.getTime();
         String expectedDate = simpleDateFormat.format(date);
 
-        // call dateToString method in model/sprint
+        // call dateToString method in sprint
 
         String actualFormattedDate = dateToString(date);
 

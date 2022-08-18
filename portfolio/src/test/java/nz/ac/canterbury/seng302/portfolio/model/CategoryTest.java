@@ -16,7 +16,7 @@ public class CategoryTest {
     @BeforeEach
     void beforeEach() {
         // Refresh to a new category
-        testEvidence = new Evidence(1, null, "Title", "Desc", LocalDate.of(2022, 1, 25));
+        testEvidence = new Evidence(1, null, "Title", "Desc", LocalDate.of(2022, 1, 25), 0);
         testCategory = new Category(testEvidence, "Quantitative Skills");
     }
 
