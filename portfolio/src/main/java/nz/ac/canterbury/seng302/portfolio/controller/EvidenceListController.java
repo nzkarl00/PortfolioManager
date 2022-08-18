@@ -328,15 +328,7 @@ public class EvidenceListController {
               String validSkillString = skillString.replace(" ", "_");
               SkillTag skillFromRepo = skillRepository.findByTitleIgnoreCase(validSkillString);
 
-              if (skillFromRepo == null) {
-                  SkillTag newSkill = new SkillTag(parentProject, validSkillString);
-                  skillRepository.save(newSkill);
-                  EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
-                  evidenceTagRepository.save(noSkillEvidence);
-              } else {
-                  EvidenceTag noSkillEvidence = new EvidenceTag(skillFromRepo, evidence);
-                  evidenceTagRepository.save(noSkillEvidence);
-              }
+              EvidenceService.saveSkillsAndEvidenceTags(parentProject, evidence, validSkillString, skillFromRepo, skillRepository, evidenceTagRepository);
           }
       }
 
