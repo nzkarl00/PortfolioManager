@@ -46,6 +46,14 @@ public class Evidence {
     @JoinColumn(name="associated_project_id", nullable=false)
     protected Project associatedProject;
 
+    /**
+     * Creates a relationship with users and evidence, where one user may be associated to many pieces of evidence
+     * And many pieces of evidence may be associated with one user
+     */
+    @ManyToMany
+    @JoinColumn(name="", nullable=false)
+    protected List<EvidenceUser> userOnEvidence;
+
     @OneToMany
     @LazyCollection(LazyCollectionOption.FALSE)
     @JoinColumn(name="evidence_tag_id")

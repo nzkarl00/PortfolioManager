@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.AuthenticatedUser;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
@@ -118,6 +119,7 @@ public class EvidenceListController {
    * @param title evidence title
    * @param date evidence date
    * @param projectId the id of the project that the evidence is linked too
+   * @param otherUsers A list of usernames of other people (not the author) who worked on this evidence
    * @param categories the category the evidence is associated with
    * @param skills the skills the evidence is associated with
    * @param links are an optional list of links associated with this new piece of evidence
@@ -132,6 +134,7 @@ public class EvidenceListController {
           @RequestParam(value = "titleInput") String title,
           @RequestParam(value = "dateInput") String date,
           @RequestParam(value = "projectId") Integer projectId,
+          @RequestParam(value = "otherUsers") Optional <String> otherUsers,
           @RequestParam(value = "categoryInput") String categories,
           @RequestParam(value = "skillInput") String skills,
           @RequestParam(value = "linksInput") Optional <String> links,
@@ -145,6 +148,9 @@ public class EvidenceListController {
       }
 
       Integer accountID = AuthStateInformer.getId(principal);
+      model.addAttribute("authorId", accountID);
+      AuthenticatedUser thisUser = new AuthenticatedUser(principal);
+      model.addAttribute("authorUserName", thisUser.getUsername());
       Project parentProject = projectService.getProjectById(projectId);
       if (parentProject == null) {
           logger.debug("[EVIDENCE] Attempted to add evidence to a project that could not be found");
