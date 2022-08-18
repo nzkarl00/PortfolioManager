@@ -6,18 +6,52 @@ import io.cucumber.java.en.Then;
 import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotInteractableException;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
+import java.util.List;
 import java.util.Set;
 
 public class WeblinksStepDefs {
 
     SeleniumExample seleniumExample = BaseSeleniumStepDefs.seleniumExample;
 
+    /**
+     * https://stackoverflow.com/questions/18510576/find-an-element-by-text-and-get-xpath-selenium-webdriver-junit
+     * get the xpath of aan element
+     * @param childElement the element to get the xpath from
+     * @param current the current xpath to recurse onto
+     * @return the xpath in the form of a string
+     */
+    private String generateXPATH(WebElement childElement, String current) {
+        String childTag = childElement.getTagName();
+        if(childTag.equals("html")) {
+            return "/html[1]"+current;
+        }
+        WebElement parentElement = childElement.findElement(By.xpath(".."));
+        List<WebElement> childrenElements = parentElement.findElements(By.xpath("*"));
+        int count = 0;
+        for(int i=0;i<childrenElements.size(); i++) {
+            WebElement childrenElement = childrenElements.get(i);
+            String childrenElementTag = childrenElement.getTagName();
+            if(childTag.equals(childrenElementTag)) {
+                count++;
+            }
+            if(childElement.equals(childrenElement)) {
+                return generateXPATH(parentElement, "/" + childTag + "[" + count + "]"+current);
+            }
+        }
+        return null;
+    }
+
     @Given("I open the piece of evidence")
     public void openEvidence() throws InterruptedException {
-        // open the first piece of evidence
-        WebElement button = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[1]/div[1]/div[5]/div[2]/div[1]/div[4]/a/i"));
+        // get the xpath of the desired pieve of evidence
+        String xpath = generateXPATH(seleniumExample.config.getDriver().findElement(By.xpath("//*[text()='Test Evidence']")), "");
+        // get the button's xpath based on the title's xpath
+        WebElement button = seleniumExample.config.getDriver().findElement(By.xpath(xpath.substring(0,66) + "div[4]/a"));
         button.click();
         // wait for dropdown
         Thread.sleep(500);
@@ -25,8 +59,17 @@ public class WeblinksStepDefs {
 
     @And("I click the weblink")
     public void iClickTheWeblink() {
-        WebElement link = seleniumExample.config.getDriver().findElement(By.id("evidence_links_text_https://en.wikipedia.org/wiki/Main_Page"));
-        link.click();
+        List<WebElement> links = seleniumExample.config.getDriver().findElements(By.id("evidence_links_text_https://en.wikipedia.org/wiki/Main_Page"));
+        for (WebElement element: links) {
+            try {
+                https://stackoverflow.com/questions/3401343/scroll-element-into-view-with-selenium
+                ((JavascriptExecutor) seleniumExample.config.getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
+                Thread.sleep(500);
+                element.click();
+            } catch (ElementNotInteractableException | InterruptedException e) {
+                continue;
+            }
+        }
     }
 
     @Then("I am taken to wikipedia in a new tab")

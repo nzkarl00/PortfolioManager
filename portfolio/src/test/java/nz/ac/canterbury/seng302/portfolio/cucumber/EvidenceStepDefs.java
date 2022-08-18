@@ -88,6 +88,8 @@ public class EvidenceStepDefs {
                 .findElement(By.id("projectSave"));
             Assertions.assertTrue(saveButton.isEnabled());
             saveButton.submit();
+
+            evidenceAdded = true;
         }
     }
 
@@ -133,7 +135,6 @@ public class EvidenceStepDefs {
         description.sendKeys("This evidence relates to the work done on the evidence page");
 
     }
-
 
     @When("I click the save button")
     public void i_click_the_save_button() {
