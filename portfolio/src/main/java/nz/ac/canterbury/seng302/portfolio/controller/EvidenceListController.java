@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -145,6 +146,7 @@ public class EvidenceListController {
       }
 
       Integer accountID = AuthStateInformer.getId(principal);
+      model.addAttribute("authorId", accountID);
       Project parentProject = projectService.getProjectById(projectId);
       if (parentProject == null) {
           logger.debug("[EVIDENCE] Attempted to add evidence to a project that could not be found");
@@ -217,6 +219,101 @@ public class EvidenceListController {
 
       return "redirect:evidence?pi=" + projectId;
   }
+
+    @PatchMapping("/edit-evidence")
+    public String editEvidence(
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value = "titleInput") String title,
+            @RequestParam(value = "dateInput") String date,
+            @RequestParam(value = "projectId") Integer projectId,
+            @RequestParam(value = "authorId") Integer userId,
+            @RequestParam(value = "categoryInput") String categories,
+            @RequestParam(value = "skillInput") String skills,
+            @RequestParam(value = "linksInput") Optional <String> links,
+            @RequestParam(value = "descriptionInput") String description,
+            Model model
+    ) throws Exception {
+        logger.info("[EVIDENCE] Attempting to edit existing evidence");
+        if (!principal.getIsAuthenticated()) {
+            logger.debug("[EVIDENCE] Redirecting, user not authenticated");
+            return "redirect:evidence?pi=" + projectId.toString();
+        }
+
+        Integer accountID = AuthStateInformer.getId(principal);
+        model.addAttribute("userId", accountID);
+
+        Project parentProject = projectService.getProjectById(projectId);
+        if (parentProject == null) {
+            logger.debug("[EVIDENCE] Attempted to add evidence to a project that could not be found");
+            // In future we can use a 404 here
+            errorMessage = "Project does not exist";
+            return "redirect:evidence";
+        }
+
+        LocalDate evidenceDate = LocalDate.parse(date);
+        LocalDate projectStartDate = parentProject.getLocalStartDate();
+        LocalDate projectEndDate = parentProject.getLocalEndDate();
+
+        // Check if the given evidence date is within the project date
+        if (!(evidenceDate.isAfter(projectStartDate) && evidenceDate.isBefore(projectEndDate))
+                && !(evidenceDate.isEqual(projectEndDate) || evidenceDate.isEqual(projectStartDate))) {
+            errorMessage = "Dates must fall within project dates";
+            return "redirect:evidence?pi=" + projectId;
+        }
+
+        this.errorMessage = validateMandatoryFields(title, description, evidenceDate, projectStartDate, projectEndDate);
+
+        // If error occurs, return early
+        if (!errorMessage.equals("")) {
+            model.addAttribute("errorMessage", errorMessage);
+            return "redirect:evidence?pi=" + projectId;
+        }
+
+        // Extract then validate links
+        List<String> extractedLinks = null;
+        if (links.isPresent()) {
+            extractedLinks = extractListFromHTMLString(links.get());
+            Optional<String> possibleError = validateLinks(extractedLinks);
+            if (possibleError.isPresent()) {
+                errorMessage = possibleError.get();
+                return "redirect:evidence?pi=" + projectId;
+            }
+        }
+
+        // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links
+        Evidence evidence = new Evidence(accountID, parentProject, title, description, evidenceDate);
+        logger.info("[EVIDENCE] Saving evidence to repo");
+        evidenceRepository.save(evidence);
+        logger.info(String.format("[EVIDENCE] Saved evidence to repo, id=<%s>", evidence.getId()));
+        errorMessage = "Evidence has been added";
+        logger.info(categories);
+        //Create all selected categories for the new piece of evidence
+        if (categories.replace(" ", "").length() > 0) {
+            String[] categoryList = categories.split("~");
+            for (String categoryString: categoryList) {
+                Category newCategory = new Category(evidence, categoryString);
+                logger.info(newCategory.toString());
+                categoryRepository.save(newCategory);
+            }
+        }
+
+        addSkillsToRepo(parentProject, evidence, skills);
+
+        // If there's no skills, add the no_skills
+        List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+        if (evidenceTagList.size() == 0) {
+            SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
+            EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
+            evidenceTagRepository.save(noSkillEvidence);
+        }
+
+        if (extractedLinks != null) {
+            logger.debug("[EVIDENCE] Saving web links");
+            webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
+        }
+
+        return "redirect:evidence?pi=" + projectId;
+    }
 
   /**
    * Validate web link strings

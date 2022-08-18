@@ -119,9 +119,16 @@
                 <div class="row-1">
                     <div class="evidence_bot">
                         <br>
-                    </div>
+                        <!-- Edit icon, only displayed to the author of evidence -->
+                        <form class="col-lg-4 col-md-4 col-sm-12" th:action="@{patch-evidence}" method="get" th:style="${userId == authorId} ? 'display' : 'display:none;'>
+                            <input style="display:none;" th:name="id" id="id" th:value="${project.getId}" type="number">
+                            <button class="edit" type="submit">
+                                <i class="fa fa-edit"></i>&nbsp;
+                                Edit Evidence
+                            </button>
+                        </form>
+                        <div class="col-2"></div>
                 </div>
-
             </div>
 
     <div class="col-2">
