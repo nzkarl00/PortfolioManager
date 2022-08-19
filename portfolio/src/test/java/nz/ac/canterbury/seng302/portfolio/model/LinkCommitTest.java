@@ -8,11 +8,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LinkCommitTest {
     LocalDate date;
+    LocalDateTime timestamp;
     static Project exampleProject;
     Evidence evidence;
     Evidence evidence2; // A second evidence to test against
@@ -22,6 +24,7 @@ public class LinkCommitTest {
     @BeforeEach
     void beforeEach() {
         date = LocalDate.of(2022, 1, 25);
+        timestamp = LocalDateTime.of(2017, 2, 13, 15, 56);
         exampleProject = new Project(
             "Name",
             "Desc",
@@ -31,7 +34,7 @@ public class LinkCommitTest {
         evidence = new Evidence(1, null, "Title", "Desc", date);
         evidence2 = new Evidence(1, null, "Title2", "Desc2", date);
         groupRepo = new GroupRepo(1, "hre56", "hre56/cosc368", "m82xFXnuhBAfD9yp_5zd");
-        linkedCommit = new LinkedCommit(evidence, groupRepo, "TODO?GETAREALHASHMAYBE", "Hugo Reeves", "First Commit Title", date);
+        linkedCommit = new LinkedCommit(evidence, groupRepo, "TODO?GETAREALHASHMAYBE", "Hugo Reeves", "First Commit Title", timestamp);
     }
 
     @Test
@@ -61,7 +64,7 @@ public class LinkCommitTest {
      */
     @Test
     public void setLinkedCommitToSecondEvidence_pass() {
-        LinkedCommit linkedCommit2 = new LinkedCommit(evidence2, groupRepo, "TODO?GETAREALHASHMAYBE", "Hugo Reeves", "First Commit Title", date);
+        LinkedCommit linkedCommit2 = new LinkedCommit(evidence2, groupRepo, "TODO?GETAREALHASHMAYBE", "Hugo Reeves", "First Commit Title", timestamp);
         Assertions.assertEquals(evidence, linkedCommit.getParentEvidence());
         Assertions.assertEquals(evidence2, linkedCommit2.getParentEvidence());
     }

@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 
 import javax.persistence.Column;
@@ -10,12 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import java.time.LocalDate;
-
-import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validateEnoughCharacters;
+import java.time.LocalDateTime;
 
 @Entity
 public class LinkedCommit {
@@ -56,7 +51,7 @@ public class LinkedCommit {
     @Column(name="title", length = MAX_TITLE_LENGTH, nullable = false)
     protected String title = "";
     @Column(name="timestamp", nullable = false)
-    protected LocalDate timestamp;
+    protected LocalDateTime timestamp;
 
     public LinkedCommit() {}
 
@@ -67,7 +62,7 @@ public class LinkedCommit {
      * @param hash of the LinkedCommit
      * @param author of the LinkedCommit
      * @param title of the LinkedCommit that must not exceed MAX_TITLE_LENGTH
-     * @param timestamp of the LinkedCommit
+     * @param timestamp both date and time of the LinkedCommit
      */
     public LinkedCommit(
         Evidence parentEvidence,
@@ -75,7 +70,7 @@ public class LinkedCommit {
         String hash,
         String author,
         String title,
-        LocalDate timestamp
+        LocalDateTime timestamp
     ) {
         this.parentEvidence = parentEvidence;
         this.parentGroupRepo = parentGroupRepo;
@@ -83,6 +78,27 @@ public class LinkedCommit {
         this.author = author;
         this.title = title;
         this.timestamp = timestamp;
+    }
+
+    /**
+     * Validate properties before constructing an invalid LinkedCommit item.
+     * @param title of the LinkedCommit
+     * @throws IllegalArgumentException If one argument is invalid, throws an exception
+     */
+    public static void validateProperties(
+        String title
+    ) throws IllegalArgumentException {
+        if (title.length() > MAX_TITLE_LENGTH) {
+            throw new IllegalArgumentException(String.format("Title length must not exceed %d characters", MAX_TITLE_LENGTH));
+        }
+    }
+
+    /**
+     * Get the ID of the piece of LinkedCommit
+     * @return
+     */
+    public int getId() {
+        return id;
     }
 
     /**
@@ -102,17 +118,74 @@ public class LinkedCommit {
     }
 
     /**
-     * Validate properties before constructing an invalid LinkedCommit item.
-     * @param title of the LinkedCommit
-     * @throws IllegalArgumentException If one argument is invalid, throws an exception
+     * Return the hash of the commit
+     * @return
      */
-    public static void validateProperties(
-        String title
-    ) throws IllegalArgumentException {
-        if (title.length() > MAX_TITLE_LENGTH) {
-            throw new IllegalArgumentException(String.format("Title length must not exceed %d characters", MAX_TITLE_LENGTH));
-        }
-        validateEnoughCharacters(title);
+    public String getHash() { return hash; }
+
+    /**
+     * Return the author of the commit
+     * @return
+     */
+    public String getAuthor() { return author; }
+
+    /**
+     * Return the title of the commit
+     * @return
+     */
+    public String getTitle() { return title; }
+
+    /**
+     * Return the timestamp (date and time) of the commit
+     * @return
+     */
+    public LocalDateTime getTimeStamp() { return timestamp; }
+
+    /**
+     * Set the evidence that will be linked to this commit
+     * @param parentEvidence
+     */
+    public void setParentEvidence(Evidence parentEvidence) {
+        this.parentEvidence = parentEvidence;
+    };
+
+    /**
+     * Set the group repo this commit is retrieved from
+     * @param parentGroupRepo
+     */
+    public void setParentGroupRepo(GroupRepo parentGroupRepo) {
+        this.parentGroupRepo = parentGroupRepo;
     }
 
+    /**
+     * Set the hash string of this LinkCommit
+     * @param hash
+     */
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    /**
+     * author
+     * @param author
+     */
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    /**
+     * Set the title string of this LinkCommit
+     * @param title
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * Set the date and time as a timestamp of this LinkCommit
+     * @param timestamp
+     */
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 }
