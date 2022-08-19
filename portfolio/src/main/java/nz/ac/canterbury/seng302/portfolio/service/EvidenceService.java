@@ -75,9 +75,9 @@ public class EvidenceService {
      * @param evidenceId A piece of evidence's ID
      * @return Usernames Retrieve a list of usernames associated with a piece of evidence, excluding the author
      */
-    public List<String> getUsersByEvidenceId(int evidenceId) {
+    /*public List<String> getUsersByEvidenceId(int evidenceId) {
 
-    }
+    }*/
 
     /**
      * Takes an evidence ID and returns a list of all skill tag titles that are associated with it.

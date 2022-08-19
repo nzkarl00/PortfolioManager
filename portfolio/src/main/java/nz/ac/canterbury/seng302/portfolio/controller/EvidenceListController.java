@@ -39,6 +39,8 @@ public class EvidenceListController {
   @Autowired
   private AccountClientService accountClientService;
   @Autowired
+  private AccountServerService accountServerService;
+  @Autowired
   private NavController navController;
   @Autowired
   private EvidenceService evidenceService;
@@ -189,8 +191,22 @@ public class EvidenceListController {
           }
       }
 
+      // Extract then validate usernames
+      List<String> extractedUsernames = null;
+      if (otherUsers.isPresent()) {
+          extractedUsernames = extractListFromHTMLString(otherUsers.get());
+          HashMap<String, Integer> usernameMap = accountClientService.getUsernameMap();
+          for(String username: extractedUsernames) {
+              if (!usernameMap.containsKey(username)) {
+                  errorMessage = "Username " + username + " does not exist in the system";
+                  return "redirect:evidence?pi=" + projectId;
+              }
+          }
+
+      }
+
       // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links
-      Evidence evidence = new Evidence(accountID, parentProject, title, description, evidenceDate);
+      Evidence evidence = new Evidence(accountID, extractedUsernames, parentProject, title, description, evidenceDate);
       logger.info("[EVIDENCE] Saving evidence to repo");
       evidenceRepository.save(evidence);
       logger.info(String.format("[EVIDENCE] Saved evidence to repo, id=<%s>", evidence.getId()));

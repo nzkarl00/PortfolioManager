@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -39,20 +40,21 @@ public class Evidence {
     protected int parentUserId;
 
     /**
+     * A list of all users (except the author) for this piece of evidence
+     * Creates a relationship with evidence and users, where evidence may be associated to many users
+     * We cannot create a direct mapping as they are in different databases so we have to work around
+     */
+    @ManyToMany
+    @JoinColumn(name="evidence_users_id"))
+    protected int evidenceUsersId;
+
+    /**
      * The project the piece of evidence belongs to.
      * Note that the parent user is the identifying property.
      */
     @ManyToOne
     @JoinColumn(name="associated_project_id", nullable=false)
     protected Project associatedProject;
-
-    /**
-     * Creates a relationship with users and evidence, where one user may be associated to many pieces of evidence
-     * And many pieces of evidence may be associated with one user
-     */
-    @ManyToMany
-    @JoinColumn(name="", nullable=false)
-    protected List<EvidenceUser> userOnEvidence;
 
     @OneToMany
     @LazyCollection(LazyCollectionOption.FALSE)

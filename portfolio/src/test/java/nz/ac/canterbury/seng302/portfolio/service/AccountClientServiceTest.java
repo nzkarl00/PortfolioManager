@@ -160,6 +160,11 @@ class AccountClientServiceTest {
         assertNotEquals(expected, actual);
     }
 
+    @Test
+    void getUsernameMapTest() {
+        System.out.println(accountClientService.getUsernameMap());
+    }
+
     /**
      * note this mainly tests the ability to make the request, and send it
      */
