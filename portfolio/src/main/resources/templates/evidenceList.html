@@ -98,11 +98,12 @@
 
                                     <div id="links_container" style="width: 85%; display: block; padding: 0.5rem 2rem">
                                         <div class="trim_text" style="display: flex">
-                                            <i th:if="${link.isSecure}" class="fa fa-lock" id="locked" aria-hidden="true" style="padding-top: 0.35rem"></i>
-                                            <i th:unless="${link.isSecure}" class="fa fa-unlock" id="unlocked" aria-hidden="true" style="padding-top: 0.35rem"></i>
+                                            <i th:if="${link.isSecure}" class="fa fa-lock" th:id="'locked'+${link.getUrl.toString()}" aria-hidden="true" style="padding-top: 0.35rem"></i>
+                                            <i th:unless="${link.isSecure}" class="fa fa-unlock" th:id="'unlocked'+${link.getUrl.toString()}" aria-hidden="true" style="padding-top: 0.35rem"></i>
                                             <a th:id="'evidence_links_text_'+${link.getUrl.toString()}"
                                                th:text="${link.getUrlWithoutProtocol}"
                                                th:href="${link.getUrl.toString()}"
+                                               target="_blank"
                                                class="sprint-description display_data evidence_link trim_text"
                                                style="font-size: 110%;
                                                display: inline-block;">

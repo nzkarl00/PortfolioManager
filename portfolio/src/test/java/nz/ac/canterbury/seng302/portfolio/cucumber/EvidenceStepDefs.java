@@ -11,28 +11,13 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 
-public class MyStepdefs {
+public class EvidenceStepDefs {
 
-    private SeleniumExample seleniumExample;
-
-    private boolean registered = false;
-
-    @Given("User is logged in.")
-    public void userIsLoggedIn() {
-        seleniumExample = new SeleniumExample("");
-        if (!registered) {
-            whenPortfolioIsLoaded_thenRegisterWorks();
-            registered = true;
-        }
-        whenPortfolioIsLoaded_thenLoginWorks();
-    }
+    SeleniumExample seleniumExample = BaseSeleniumStepDefs.seleniumExample;
 
     @When("User navigates to user table.")
     public void userNavigatesToUserTable() {
@@ -58,25 +43,32 @@ public class MyStepdefs {
     public void theTableIsSortedByNameAlphabeticallyFromAZ() {
     }
 
-    String passwordText = "";
-
+    // ensures a piece of evidence with the desired traits
     boolean evidenceAdded = false;
 
     @Given("There is evidence in the table")
     public void thereIsEvidenceInTheTable() throws InterruptedException {
-        if (!evidenceAdded) {
-            seleniumExample.config.getDriver()
+        seleniumExample.config.getDriver()
                 .get(seleniumExample.url + "/evidence?pi=1");
+        evidenceAdded = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(), 'Test Evidence')]")).size() > 0;
+        if (!evidenceAdded) {
+            // open create evidence form
             WebElement button = seleniumExample.config.getDriver()
                 .findElement(By.id("add_button"));
             button.click();
+
+            // add title
             WebElement titleField = seleniumExample.config.getDriver()
                 .findElement(By.id("evidence_title"));
             titleField.sendKeys("Test Evidence");
+
+            // add description
             WebElement description = seleniumExample.config.getDriver()
                 .findElement(By.id("evidence_desc"));
             description.sendKeys(
                 "This is a Description. It is going to be reasonably long but not too long in order to show how text will be potentially cut off.");
+
+            // add skill
             WebElement skillInput = seleniumExample.config.getDriver()
                 .findElement(By.id("add_skill_input"));
             skillInput.sendKeys("skill");
@@ -84,87 +76,30 @@ public class MyStepdefs {
                 .findElement(By.id("add_skill_button"));
             skillButton.click();
 
+            // add secure weblink
+            WebElement linkInput = seleniumExample.config.getDriver()
+                .findElement(By.id("add_link_input"));
+            linkInput.sendKeys("https://en.wikipedia.org/wiki/Main_Page");
+            WebElement linkButton = seleniumExample.config.getDriver()
+                .findElement(By.id("add_link_button"));
+            linkButton.click();
+            Thread.sleep(100);
+
+            // add insecure weblink
+            linkInput.sendKeys("http://info.cern.ch/");
+            linkButton.click();
+            System.out.println("links added");
+
             WebElement saveButton = seleniumExample.config.getDriver()
                 .findElement(By.id("projectSave"));
             Assertions.assertTrue(saveButton.isEnabled());
             saveButton.submit();
+
+            evidenceAdded = true;
         }
+        seleniumExample.config.getDriver()
+                .get(seleniumExample.url + "/evidence?pi=1");
     }
-
-    @And("I am authenticated as a admin")
-    public void iAmAuthenticatedAsAAdmin() throws FileNotFoundException {
-        seleniumExample = new SeleniumExample("");
-        getPassword_ForAdmin_FromTextFile();
-        whenPortfolioIsLoaded_thenLoginAdmin_forTests();
-    }
-
-
-    /**
-     * Gets the password for the pre-generated admin account from the application files
-     * @throws FileNotFoundException
-     */
-    public void getPassword_ForAdmin_FromTextFile() throws FileNotFoundException {
-        String originpath = System.getProperty("user.dir");
-        File passwordFile = new File(originpath.substring(0, originpath.length()-9) + "identityprovider/defaultAdminPassword.txt");
-        Scanner passwordReader = new Scanner(passwordFile);
-        passwordText = passwordReader.nextLine();
-    }
-
-    /**
-     * load up the page to register a new uesr lra63
-     */
-    public void whenPortfolioIsLoaded_thenRegisterWorks() {
-        seleniumExample.config.getDriver().get(seleniumExample.url);
-        WebElement signupButton = seleniumExample.config.getDriver().findElement(By.id("signup-button"));
-        signupButton.click();
-        WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
-        username.sendKeys("lra63");
-        WebElement password = seleniumExample.config.getDriver().findElement(By.id("password"));
-        password.sendKeys("1234567890");
-        WebElement passwordConfirm = seleniumExample.config.getDriver().findElement(By.id("passwordConfirm"));
-        passwordConfirm.sendKeys("1234567890");
-        WebElement firstName = seleniumExample.config.getDriver().findElement(By.id("firstname"));
-        firstName.sendKeys("Lachlan");
-        WebElement lastName = seleniumExample.config.getDriver().findElement(By.id("lastname"));
-        lastName.sendKeys("Alsop");
-        WebElement email = seleniumExample.config.getDriver().findElement(By.id("email"));
-        email.sendKeys("lra63@uclive.ac.nz");
-        WebElement submitButton = seleniumExample.config.getDriver().findElement(By.id("signup-button"));
-        submitButton.click();
-    }
-
-    /**
-     * load up the page then login to the user lra63, with the set password, note if this is not on your machine you will get errors
-     */
-    public void whenPortfolioIsLoaded_thenLoginWorks() {
-        seleniumExample.config.getDriver().get(seleniumExample.url);
-        WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
-        username.sendKeys("lra63");
-        WebElement password = seleniumExample.config.getDriver().findElement(By.id("password"));
-        password.sendKeys("1234567890");
-        WebElement loginButton = seleniumExample.config.getDriver().findElement(By.id("login-button"));
-        loginButton.click();
-        WebElement fullName = seleniumExample.config.getDriver().findElement(By.id("full-name"));
-        Assertions.assertEquals("Lachlan Alsop", fullName.getText());
-    }
-
-    /**
-     * load up the page then login to the admin user
-     */
-    public void whenPortfolioIsLoaded_thenLoginAdmin_forTests() {
-        seleniumExample.config.getDriver().get(seleniumExample.url);
-        WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
-        username.sendKeys("admin");
-        WebElement password = seleniumExample.config.getDriver().findElement(By.id("password"));
-        password.sendKeys(passwordText);
-        WebElement loginButton = seleniumExample.config.getDriver().findElement(By.id("login-button"));
-        loginButton.click();
-
-        WebElement fullName = seleniumExample.config.getDriver().findElement(By.id("full-name"));
-        Assertions.assertEquals("admin admin", fullName.getText());
-        seleniumExample.config.getDriver().get(seleniumExample.url + "/landing");
-    }
-
 
     @When("I go to the evidence page")
     public void iGoToTheEvidencePage() {
@@ -172,23 +107,11 @@ public class MyStepdefs {
     }
 
     @Then("There will be the data for the evidence I created")
-    public void thereWillBeTheDataForTheEvidenceICreated() throws InterruptedException {
-        ((JavascriptExecutor) seleniumExample.config.getDriver())
-            .executeScript("window.scrollTo(0, document.body.scrollHeight)");
-        Thread.sleep(1500);
-        // get the title of the evidence and the button to open the dropdown
-        WebElement title = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[5]/div[2]/div[1]/div[1]/p"));
-        WebElement button = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[5]/div[2]/div[1]/div[3]/a"));
-        button.click();
-        // wait for dropdown
-        Thread.sleep(500);
-        // get the description, title, and date, then validate said data
-        WebElement description = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[5]/div[2]/div[2]/div/div/p"));
-        //Assertions.assertEquals("Test Evidence", title.getText());
-        //Assertions.assertEquals("This is a Description. It is going to be reasonably long but not too long in order to show how text will be potentially cut off.", description.getText());
-
+    public void thereWillBeTheDataForTheEvidenceICreated() {
+        // get the xpath of the desired pieve of evidence
+        WebElement title = seleniumExample.config.getDriver().findElement(By.xpath("//*[contains(text(), 'Evidence One')]"));
+        Assertions.assertEquals("Evidence One", title.getText());
     }
-
 
     @Given("I go to the evidence page with a project id")
     public void i_go_to_the_evidence_page_with_a_project_id() {
@@ -210,14 +133,16 @@ public class MyStepdefs {
 
     }
 
-
     @When("I click the save button")
     public void i_click_the_save_button() {
-        WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
-        Assertions.assertTrue(saveButton.isEnabled());
-        saveButton.submit();
-
-
+        seleniumExample.config.getDriver()
+                .get(seleniumExample.url + "/evidence?pi=1");
+        evidenceAdded = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(), 'Evidence One')]")).size() > 0;
+        if (!evidenceAdded) {
+            WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+            Assertions.assertTrue(saveButton.isEnabled());
+            saveButton.submit();
+        }
     }
 
     @Then("I will see a message that this evidence has saved successfully")
@@ -233,8 +158,6 @@ public class MyStepdefs {
         Assertions.assertFalse(saveButton.isEnabled());
     }
 
-    String skillName;
-
     @When("I click the cancel button")
     public void i_click_the_cancel_button() {
         WebElement cancelButton = seleniumExample.config.getDriver().findElement(By.id("cancelButton"));
@@ -248,48 +171,10 @@ public class MyStepdefs {
         Assertions.assertTrue(addButton.isEnabled());
     }
 
-    @When("User navigates to {string}.")
-    public void userNavigatesTo(String arg0) {
-        seleniumExample.config.getDriver().get(seleniumExample.url + "/" + arg0);
-    }
-
-    @When("User inputs {string} into the skill input textbox.")
-    public void userInputsIntoTheSkillInputTextbox(String arg0) {
-        skillName = arg0;
-        WebElement skillInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
-        skillInput.sendKeys(arg0);
-        WebElement skillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
-        skillButton.click();
-    }
-
-    @Then("There will be a skill displayed.")
-    public void thereWillBeASkillDisplayed() {
-        WebElement skill = seleniumExample.config.getDriver().findElement(By.id("skill_" + skillName));
-        Assertions.assertEquals(skillName + " ✖", skill.getText());
-    }
-
-    @Then("There will not be a skill displayed.")
-    public void thereWillNotBeASkillDisplayed() {
-        List<WebElement> skills = seleniumExample.config.getDriver().findElements(By.id("skill_" + skillName));
-        System.out.println(skills);
-        Assertions.assertTrue(skills.isEmpty());
-    }
-
-    @And("An appropriate error message will be shown.")
-    public void anAppropriateErrorMessageWillBeShown() {
-        WebElement error = seleniumExample.config.getDriver().findElement(By.id("skill_error"));
-        Assertions.assertEquals("Only letters, underscores, hyphens, and numbers are allowed", error.getText());
-    }
-
-    @And("The window is closed.")
-    public void theWindowIsClosed() {
-        seleniumExample.closeWindow();
-    }
-
     @When("User selects the Quantitative skills option in the category dropdown")
     public void userSelectsTheOptionInTheCategoryDropdown() {
         Select category = new Select(seleniumExample.config.getDriver().findElement(By.id("ci")));
-        category.selectByValue("0");
+        category.selectByValue("Quantitative Skills");
     }
 
     @And("User clicks search button")
