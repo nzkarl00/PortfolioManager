@@ -232,11 +232,13 @@ public class EvidenceStepDefs {
     }
 
     @Then("Hovering my mouse over the question mark icon beside the date picker will give me information about it")
-    public void hovering_my_mouse_over_the_question_mark_icon_beside_the_date_picker_will_give_me_information_about_it() {
+    public void hovering_my_mouse_over_the_question_mark_icon_beside_the_date_picker_will_give_me_information_about_it()
+        throws InterruptedException {
         WebElement icon = seleniumExample.config.getDriver().findElement(By.id("evidence_date_tool"));
         WebDriver driver = seleniumExample.config.getDriver();
         Actions actions = new Actions(driver);
         actions.moveToElement(icon).perform();
+        Thread.sleep(100);
         String toolTipActual = seleniumExample.config.getDriver().findElement(By.id("info")).getText();
         String toolTipExpected = "This is the date the evidence occurred, date selection is restricted to the boundaries of the project it is assigned to.";
         Assertions.assertEquals(toolTipExpected, toolTipActual);
