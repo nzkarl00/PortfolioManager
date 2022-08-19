@@ -1,10 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.model.userGroups;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.LinkedCommit;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-
 import javax.persistence.*;
 import java.util.List;
 
