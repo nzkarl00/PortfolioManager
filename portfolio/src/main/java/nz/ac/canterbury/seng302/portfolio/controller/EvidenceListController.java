@@ -74,7 +74,7 @@ public class EvidenceListController {
     HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
     for (Evidence evidence: evidenceList) {
       evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
-      evidenceCategoryMap.put(evidence.getId(), evidenceService.getCategoryStringsByEvidenceId(evidence.getId()));
+      evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
     }
     model.addAttribute("skillMap", evidenceSkillMap);
     model.addAttribute("categoryMap", evidenceCategoryMap);
