@@ -30,8 +30,8 @@ public class LinkCommitTest {
             LocalDate.of(2022, 1, 20),
             LocalDate.of(2022, 1, 27)
         );
-        evidence = new Evidence(1, null, "Title", "Desc", date);
-        evidence2 = new Evidence(1, null, "Title2", "Desc2", date);
+        evidence = new Evidence(1, exampleProject, "Title", "Desc", date, 0);
+        evidence2 = new Evidence(1, exampleProject, "Title2", "Desc2", date, 0);
         groupRepo = new GroupRepo(1, "hre56", "hre56/cosc368", "m82xFXnuhBAfD9yp_5zd");
         linkedCommit = new LinkedCommit(evidence, groupRepo, "TODO?GETAREALHASHMAYBE", "Hugo Reeves", "First Commit Title", timestamp);
     }
