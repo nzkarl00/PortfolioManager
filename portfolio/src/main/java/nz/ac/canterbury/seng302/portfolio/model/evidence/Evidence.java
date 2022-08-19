@@ -42,9 +42,9 @@ public class Evidence {
     /**
      * A list of all users (except the author) for this piece of evidence
      * Creates a relationship with evidence and users, where evidence may be associated to many users
-     * We cannot create a direct mapping as they are in different databases so we have to work around
+     * We cannot create a direct mapping as they are in different databases so there is a work around
      */
-    @ManyToMany
+    @OneToMany
     @JoinColumn(name="evidence_users_id"))
     protected int evidenceUsersId;
 
