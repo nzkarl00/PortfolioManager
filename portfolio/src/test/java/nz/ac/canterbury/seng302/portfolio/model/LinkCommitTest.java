@@ -15,6 +15,7 @@ public class LinkCommitTest {
     LocalDate date;
     static Project exampleProject;
     Evidence evidence;
+    Evidence evidence2; // A second evidence to test against
     GroupRepo groupRepo;
     LinkedCommit linkedCommit;
 
@@ -28,6 +29,7 @@ public class LinkCommitTest {
             LocalDate.of(2022, 1, 27)
         );
         evidence = new Evidence(1, null, "Title", "Desc", date);
+        evidence2 = new Evidence(1, null, "Title2", "Desc2", date);
         groupRepo = new GroupRepo(1, "hre56", "hre56/cosc368", "m82xFXnuhBAfD9yp_5zd");
         linkedCommit = new LinkedCommit(evidence, groupRepo, "TODO?GETAREALHASHMAYBE", "Hugo Reeves", "First Commit Title", date);
     }
@@ -42,18 +44,25 @@ public class LinkCommitTest {
         assertEquals(groupRepo, linkedCommit.getParentGroupRepo());
     }
 
-//    @Test
-//    public void validateProperties_titleTooLong() {
-//        String title = "A".repeat(LinkedCommit.MAX_TITLE_LENGTH + 1);
-//        LocalDate date = LocalDate.of(2022, 1, 25);
-//
-//        String expectedMessage = "Title length must not exceed " + LinkedCommit.MAX_TITLE_LENGTH + " characters";
-//
-//        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-//        //    linkedCommit.validateProperties();
-//        });
-//        //Assertions.assertEquals(expectedMessage, argumentException.getMessage());
-//    }
+    @Test
+    public void validateProperties_titleTooLong() {
+        String title = "A".repeat(LinkedCommit.MAX_TITLE_LENGTH + 1);
 
-    // TODO: test if having a commit associated with two or more difference evidences works
+        String expectedMessage = "Title length must not exceed " + LinkedCommit.MAX_TITLE_LENGTH + " characters";
+
+        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            linkedCommit.validateProperties(title);
+        });
+        Assertions.assertEquals(expectedMessage, argumentException.getMessage());
+    }
+
+    /**
+     * Testing if having a commit associated with two or more difference evidences works
+     */
+    @Test
+    public void setLinkedCommitToSecondEvidence_pass() {
+        LinkedCommit linkedCommit2 = new LinkedCommit(evidence2, groupRepo, "TODO?GETAREALHASHMAYBE", "Hugo Reeves", "First Commit Title", date);
+        Assertions.assertEquals(evidence, linkedCommit.getParentEvidence());
+        Assertions.assertEquals(evidence2, linkedCommit2.getParentEvidence());
+    }
 }

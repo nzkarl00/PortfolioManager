@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 
 import javax.persistence.Column;
@@ -14,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.time.LocalDate;
 
+import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validateEnoughCharacters;
+
 @Entity
 public class LinkedCommit {
 
@@ -23,8 +26,8 @@ public class LinkedCommit {
     private int id;
 
     /**
-     * A linkCommit can be associated with one or more parent piece of evidence.
-     * An evidence can have one or more linkCommit
+     * A LinkedCommit can be associated with one or more parent piece of evidence.
+     * An evidence can have one or more LinkedCommit
      */
     @ManyToOne
     @JsonBackReference // This prevents infinite reference looping between tables
@@ -38,16 +41,20 @@ public class LinkedCommit {
     @JoinColumn(name="group_repo", nullable = false)
     protected GroupRepo parentGroupRepo;
 
+    /**
+     * Searchable attributes of a LinkedCommit are its
+     * - hash
+     * - author
+     * - title
+     * - timestamp
+     */
     @Column(name="commit_hash", nullable = false)
     protected String hash = "";
-
     @Column(name="author", nullable = false)
     protected String author = "";
-
     public static final int MAX_TITLE_LENGTH = 80;
     @Column(name="title", length = MAX_TITLE_LENGTH, nullable = false)
     protected String title = "";
-
     @Column(name="timestamp", nullable = false)
     protected LocalDate timestamp;
 
@@ -55,12 +62,12 @@ public class LinkedCommit {
 
     /**
      * A link commit to a parent evidence
-     * @param parentEvidence
-     * @param parentGroupRepo
-     * @param hash
-     * @param author
-     * @param title
-     * @param timestamp
+     * @param parentEvidence that this LinkedCommit is associated with
+     * @param parentGroupRepo that this LinkedCommit was retrieved from
+     * @param hash of the LinkedCommit
+     * @param author of the LinkedCommit
+     * @param title of the LinkedCommit that must not exceed MAX_TITLE_LENGTH
+     * @param timestamp of the LinkedCommit
      */
     public LinkedCommit(
         Evidence parentEvidence,
@@ -78,12 +85,8 @@ public class LinkedCommit {
         this.timestamp = timestamp;
     }
 
-    // TODO: Validating date?
-    // sprint checking abilities?
-    // MAX TITLE CHECKING
-
     /**
-     * Returns the piece of Evidence to which the linkCommit belongs
+     * Returns the piece of Evidence to which the LinkedCommit belongs to
      * @return
      */
     public Evidence getParentEvidence() {
@@ -91,11 +94,25 @@ public class LinkedCommit {
     }
 
     /**
-     * Returns the GroupRepo from which the linkCommit came from
+     * Returns the GroupRepo from which the LinkedCommit came from
      * @return
      */
     public GroupRepo getParentGroupRepo() {
         return parentGroupRepo;
+    }
+
+    /**
+     * Validate properties before constructing an invalid LinkedCommit item.
+     * @param title of the LinkedCommit
+     * @throws IllegalArgumentException If one argument is invalid, throws an exception
+     */
+    public static void validateProperties(
+        String title
+    ) throws IllegalArgumentException {
+        if (title.length() > MAX_TITLE_LENGTH) {
+            throw new IllegalArgumentException(String.format("Title length must not exceed %d characters", MAX_TITLE_LENGTH));
+        }
+        validateEnoughCharacters(title);
     }
 
 }
