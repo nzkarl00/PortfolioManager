@@ -44,7 +44,7 @@ public class EvidenceListController {
   @Autowired
   private EvidenceService evidenceService;
 
-    private String errorMessage = "";
+  private String errorMessage = "";
 
   Logger logger = LoggerFactory.getLogger(EvidenceListController.class);
 
