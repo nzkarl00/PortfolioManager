@@ -159,13 +159,15 @@ public class EvidenceService {
      * @param stringFromHTML The string containing items delimited by ~
      * @return an array representation of the list
      */
-    private ArrayList<String> extractListFromHTMLStringSkills(String stringFromHTML) {
+    private List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
         if (stringFromHTML.equals("")) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
-        return (ArrayList<String>) Arrays.asList(stringFromHTML.split("~"));
+        return Arrays.asList(stringFromHTML.split("~"));
     }
+
+
 
     /**
      * Validate web link strings
