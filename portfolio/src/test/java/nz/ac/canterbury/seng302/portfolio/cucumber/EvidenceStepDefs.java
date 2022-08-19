@@ -135,19 +135,14 @@ public class EvidenceStepDefs {
 
     @When("I click the save button")
     public void i_click_the_save_button() {
-        seleniumExample.config.getDriver()
-                .get(seleniumExample.url + "/evidence?pi=1");
-        evidenceAdded = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(), 'Evidence One')]")).size() > 0;
-        if (!evidenceAdded) {
-            WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
-            Assertions.assertTrue(saveButton.isEnabled());
-            saveButton.submit();
-        }
+        WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+        Assertions.assertTrue(saveButton.isEnabled());
+        saveButton.submit();
     }
 
     @Then("I will see a message that this evidence has saved successfully")
     public void i_will_see_a_message_that_this_evidence_has_saved_successfully() throws InterruptedException {
-        Thread.sleep(1000);
+        Thread.sleep(100);
         WebElement message = seleniumExample.config.getDriver().findElement(By.id("display_box"));
         Assertions.assertEquals("Evidence has been added", message.getText());
     }

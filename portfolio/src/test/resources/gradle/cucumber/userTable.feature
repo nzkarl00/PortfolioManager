@@ -6,7 +6,6 @@ Feature: U19: As an authenticated user, I can see a list of users in the system.
     When User navigates to user table.
     Then User is shown a table containing all users.
 
-  @Close
   Scenario: AC1: If I am not logged in, I cannot browse to the page containing a list of all users.
     Given User is not logged in.
     When User navigates to user table.

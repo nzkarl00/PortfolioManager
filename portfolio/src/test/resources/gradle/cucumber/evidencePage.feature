@@ -54,7 +54,7 @@ Feature: U25: Piece of evidence creation
     Then I can see the evidence creation page extract and replace by a plus button
 
   @Close
-  Scenario: AC4: Saving and cancelling give expected results. The save button is only enabled once the mandatory fields are filled in.
+  Scenario: AC4: save success message, Saving and cancelling give expected results. The save button is only enabled once the mandatory fields are filled in.
     Given I am authenticated as a admin
     And I go to the evidence page with a project id
     And I click the Add Evidence button
