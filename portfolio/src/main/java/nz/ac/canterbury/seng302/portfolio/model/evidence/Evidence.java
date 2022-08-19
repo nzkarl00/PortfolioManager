@@ -261,7 +261,7 @@ public class Evidence {
         return categoryStrings;
     }
 
-    public int categoryStringToInt(String categories) {
+    public static int categoryStringToInt(String categories) {
         int categoryInt = 0;
         if (categories.contains("Qualitative Skills")) {
             categoryInt += QUALITATIVE_SKILLS;

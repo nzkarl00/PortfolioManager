@@ -21,8 +21,6 @@ public class EvidenceService {
     EvidenceTagRepository evidenceTagRepository;
     @Autowired
     ProjectService projectService;
-    @Autowired
-    private CategoryRepository categoryRepository;
 
     Logger logger = LoggerFactory.getLogger(EvidenceService.class);
 
@@ -52,11 +50,7 @@ public class EvidenceService {
         } else if (userId != null){
             return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
         }else if (categoryName != null){
-            List<Category> categoryTag = categoryRepository.findAllByCategoryName(categoryName);
-            List<Evidence> evidenceCategoryList = new ArrayList<>();
-            for (Category tag: categoryTag){
-                evidenceCategoryList.add(tag.getParentEvidence());
-            }
+            List<Evidence> evidenceCategoryList = evidenceRepository.getEvidenceByCategoryInt(Evidence.categoryStringToInt(categoryName));
             evidenceCategoryList.sort((o1, o2) -> {
                 // compare two instance of `Score` and return `int` as result.
                 return o2.getDate().compareTo(o1.getDate());
@@ -107,16 +101,6 @@ public class EvidenceService {
     public List<String> getSkillTagStringsByEvidenceId(int evidenceId) {
         List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidenceId);
         return evidenceTagList.stream().map(evidenceTag -> evidenceTag.getParentSkillTag().getTitle()).collect(Collectors.toList());
-    }
-
-    /**
-     * Takes an evidence ID and returns the string name of all categories that belong to it
-     * @param evidenceId The ID of evidence being searched for categories
-     * @return List of category names as strings that belong to the evidence of id evidenceId
-     */
-    public List<String> getCategoryStringsByEvidenceId(int evidenceId) {
-        List<Category> categoryList = categoryRepository.findAllByParentEvidenceId(evidenceId);
-        return categoryList.stream().map(Category::getCategoryName).collect(Collectors.toList());
     }
 
     public void addSkillsToRepo(Project parentProject, Evidence evidence, String skills) {
