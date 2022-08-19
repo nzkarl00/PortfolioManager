@@ -77,8 +77,6 @@ public class EvidenceListControllerTest {
     @MockBean
     private EvidenceService evidenceService;
     @MockBean
-    private CategoryRepository categoryRepository;
-    @MockBean
     private WebLinkRepository webLinkRepository;
 
     @Before
