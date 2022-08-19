@@ -22,7 +22,7 @@ class WebLinkTest {
     @BeforeEach
     void beforeEach() throws MalformedURLException {
         // Refresh to a new link
-        evidence = new Evidence(1, null, "Title", "Desc", LocalDate.of(2022, 1, 25));
+        evidence = new Evidence(1, null, "Title", "Desc", LocalDate.of(2022, 1, 25), 0);
         link = new WebLink(testUrl, evidence);
     }
 

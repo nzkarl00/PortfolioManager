@@ -6,6 +6,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validateEnoughCharacters;
@@ -21,7 +22,9 @@ import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validat
 public class Evidence {
     public static final int MAX_TITLE_LENGTH = 100;
     public static final int MAX_DESCRIPTION_LENGTH = 2000;
-
+    public static final int QUALITATIVE_SKILLS = 1; // 2^0
+    public static final int QUANTITATIVE_SKILLS = 2; // 2^1
+    public static final int SERVICE = 4; // 2^2
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="id", unique = true)
@@ -54,6 +57,8 @@ public class Evidence {
     protected String description = "";
     @Column(name="date", nullable = false)
     protected LocalDate date;
+    @Column(name="categories")
+    protected int categories = 0;
 
     /**
      * The list of links associated with this piece of evidence
@@ -90,13 +95,15 @@ public class Evidence {
         Project associatedProject,
         String title,
         String description,
-        LocalDate date
+        LocalDate date,
+        int categories
     ) {
         this.parentUserId = parentUserId;
         this.associatedProject = associatedProject;
         this.title = title;
         this.description = description;
         this.date = date;
+        this.categories = categories;
     }
 
     /**
@@ -243,5 +250,41 @@ public class Evidence {
      */
     public List<WebLink> getLinks() {
         return links;
+    }
+
+    /**
+     * Extracts which categories are present in the bit representation
+     * @return A list of string representations of the categories on a given piece of evidence
+     */
+    public List<String> getCategoryStrings() {
+        List<String> categoryStrings = new ArrayList<>();
+        if ((categories & QUALITATIVE_SKILLS) > 0) { // Checks if category int has a 1 in the first position
+            categoryStrings.add("Qualitative Skills");
+        }
+        if ((categories & QUANTITATIVE_SKILLS) > 0) { // Checks if category int has a 1 in the second position
+            categoryStrings.add("Quantitative Skills");
+        }
+        if ((categories & SERVICE) > 0) { // Checks if category int has a 1 in the third position
+            categoryStrings.add("Service");
+        }
+        return categoryStrings;
+    }
+
+    public static int categoryStringToInt(String categories) {
+        int categoryInt = 0;
+        if (categories.contains("Qualitative Skills")) {
+            categoryInt += QUALITATIVE_SKILLS;
+        }
+        if (categories.contains("Quantitative Skills")) {
+            categoryInt += QUANTITATIVE_SKILLS;
+        }
+        if (categories.contains("Service")) {
+            categoryInt += SERVICE;
+        }
+        return categoryInt;
+    }
+
+    public void setCategories(int categories) {
+        this.categories = categories;
     }
 }

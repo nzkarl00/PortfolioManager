@@ -11,6 +11,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.management.ServiceNotFoundException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -23,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private AuthenticateClientService authenticateClientService;
 
-    private AuthenticateClientService getAuthenticateClientService(HttpServletRequest request) {
+    private AuthenticateClientService getAuthenticateClientService(HttpServletRequest request) throws ServiceNotFoundException {
         if(authenticateClientService == null){
             ServletContext servletContext = request.getServletContext();
             WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
@@ -31,7 +32,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authenticateClientService = webApplicationContext.getBean(AuthenticateClientService.class);
             }
         }
-        return authenticateClientService;
+        if (authenticateClientService != null) {
+            return authenticateClientService;
+        } else {
+            throw new ServiceNotFoundException("Could not get authenticate client service");
+        }
+
     }
 
     @Override
@@ -68,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         AuthState authState;
         try {
             authState = getAuthenticateClientService(request).checkAuthState();
-        } catch (StatusRuntimeException e) {
+        } catch (StatusRuntimeException | ServiceNotFoundException e) {
             // This exception is thrown if the IdP encounters some error, or if the IdP can not be reached
             // Also may be thrown if some error connecting to IdP, either way, return unauthenticated token
             return authToken;

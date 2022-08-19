@@ -27,8 +27,7 @@ class AccountPhotoServiceTest {
     /**
      * The account server service we are testing in this class
      */
-    @Autowired
-    private static AccountPhotoService accountPhotoService = new AccountPhotoService();
+    private static final AccountPhotoService accountPhotoService = new AccountPhotoService();
 
     /**
      * The stub to contact for and mock back grpc responses
