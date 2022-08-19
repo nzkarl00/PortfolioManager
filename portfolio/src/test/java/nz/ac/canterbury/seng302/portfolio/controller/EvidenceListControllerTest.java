@@ -47,7 +47,17 @@ public class EvidenceListControllerTest {
         testProject,
         "Evidence One",
         "This evidence is the first to be submitted",
-        may4
+        may4,
+    Evidence.SERVICE
+    );
+
+    private static final Evidence testEvidenceAllCategories = new Evidence(
+            0,
+            testProject,
+            "Evidence One",
+            "This evidence is the first to be submitted",
+            may4,
+            Evidence.SERVICE + Evidence.QUALITATIVE_SKILLS + Evidence.QUANTITATIVE_SKILLS
     );
 
     @Autowired
@@ -67,8 +77,6 @@ public class EvidenceListControllerTest {
     @MockBean
     private EvidenceService evidenceService;
     @MockBean
-    private CategoryRepository categoryRepository;
-    @MockBean
     private WebLinkRepository webLinkRepository;
 
     @Before
@@ -80,11 +88,11 @@ public class EvidenceListControllerTest {
 
     // setting up and closing the mocked static authStateInformer
     static MockedStatic<AuthStateInformer> utilities;
-    private static MultiValueMap<String, String> validParamsEvidenceRequired = new LinkedMultiValueMap<>();
-    private static MultiValueMap<String, String> validParamsNoSkill = new LinkedMultiValueMap<>();
-    private static MultiValueMap<String, String> validParamsAllCategories = new LinkedMultiValueMap<>();
-    private static MultiValueMap<String, String> InvalidParamsEvidenceRequired = new LinkedMultiValueMap<>();
-    private static MultiValueMap<String, String> InvalidParamsEvidenceDate = new LinkedMultiValueMap<>();
+    private static final MultiValueMap<String, String> validParamsEvidenceRequired = new LinkedMultiValueMap<>();
+    private static final MultiValueMap<String, String> validParamsNoSkill = new LinkedMultiValueMap<>();
+    private static final MultiValueMap<String, String> validParamsAllCategories = new LinkedMultiValueMap<>();
+    private static final MultiValueMap<String, String> InvalidParamsEvidenceRequired = new LinkedMultiValueMap<>();
+    private static final MultiValueMap<String, String> InvalidParamsEvidenceDate = new LinkedMultiValueMap<>();
     @BeforeAll
     public static void open() {
 
@@ -154,7 +162,6 @@ public class EvidenceListControllerTest {
                 .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
         //verify(evidencerepository, times(1)).save(Mockito.any(Evidence.class)); // Verifies evidence was saved
         verify(evidenceRepository).save(refEq(testEvidence));
-        verify(categoryRepository).save(Mockito.any(Category.class));
         verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidence), Mockito.any(String.class));
     }
 
@@ -179,10 +186,9 @@ public class EvidenceListControllerTest {
         mockMvc.perform(post("/add-evidence").params(validParamsAllCategories))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
-        //verify(evidencerepository, times(1)).save(Mockito.any(Evidence.class)); // Verifies evidence was saved
-        verify(evidenceRepository).save(refEq(testEvidence));
-        verify(categoryRepository, times(3)).save(Mockito.any(Category.class));
-        verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidence), Mockito.any(String.class));
+        // Verifies evidence was saved
+        verify(evidenceRepository).save(refEq(testEvidenceAllCategories));
+        verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidenceAllCategories), Mockito.any(String.class));
     }
 
     /**

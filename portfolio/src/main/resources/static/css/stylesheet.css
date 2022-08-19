@@ -651,7 +651,7 @@
     color: #FFFFFF !important;
 
 }
-.button_a: hover {
+.button_a:hover {
 
     color: #FFFFFF !important;
 
@@ -674,7 +674,7 @@
 }
 
 
-.project_a: hover {
+.project_a:hover {
 
     font-color: #056BFA !important;
 
@@ -1411,7 +1411,7 @@ select.form-control {
 }
 
 .evidence_si_tag {
-    background-color:#19DAFF; !important;
+    background-color: rgba(13, 110, 253, 0.75); !important;
     border-radius: 15px !important;
     border-style: none !important;
     color: #ffffff !important;
@@ -1426,9 +1426,9 @@ select.form-control {
 }
 
 .evidence_ci_tag {
-    background-color:#19DAFF; !important;
+    background-color: rgba(115, 5, 250, 0.75); !important;
     border-style: none !important;
-    border-radius: 10px !important;
+    border-radius: 3px !important;
     color: #ffffff !important;
     padding: 0.3rem 1rem;
     display: inline-block !important;

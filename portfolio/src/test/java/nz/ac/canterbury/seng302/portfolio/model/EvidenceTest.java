@@ -8,13 +8,11 @@ import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EvidenceTest {
-    Evidence model;
     static Project exampleProject;
     String testUrl = "https://example.com";
     WebLink link;
@@ -28,7 +26,7 @@ class EvidenceTest {
                 LocalDate.of(2022, 1, 20),
                 LocalDate.of(2022, 1, 27)
         );
-        evidence = new Evidence(1, exampleProject, "Title", "Desc", LocalDate.of(2022, 1, 25));
+        evidence = new Evidence(1, exampleProject, "Title", "Desc", LocalDate.of(2022, 1, 25), 0);
         link = new WebLink(testUrl, evidence);
     }
 
@@ -38,9 +36,7 @@ class EvidenceTest {
         String desc = "Description";
         LocalDate date = LocalDate.of(2022, 1, 25);
 
-        Assertions.assertDoesNotThrow(() -> {
-            model.validateProperties(exampleProject, title, desc, date);
-        });
+        Assertions.assertDoesNotThrow(() -> Evidence.validateProperties(exampleProject, title, desc, date));
     }
 
     @Test
@@ -50,9 +46,7 @@ class EvidenceTest {
         LocalDate date = LocalDate.of(2022, 1, 19);
         String expectedMessage = "Evidence date is before parent project start date";
 
-        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            model.validateProperties(exampleProject, title, desc, date);
-        });
+        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> Evidence.validateProperties(exampleProject, title, desc, date));
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
     }
 
@@ -64,9 +58,7 @@ class EvidenceTest {
 
         String expectedMessage = "Evidence date is after parent project end date";
 
-        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            model.validateProperties(exampleProject, title, desc, date);
-        });
+        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> Evidence.validateProperties(exampleProject, title, desc, date));
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
     }
 
@@ -76,9 +68,7 @@ class EvidenceTest {
         String desc = "Description";
         LocalDate date = LocalDate.of(2022, 1, 20);
 
-        Assertions.assertDoesNotThrow(() -> {
-            model.validateProperties(exampleProject, title, desc, date);
-        });
+        Assertions.assertDoesNotThrow(() -> Evidence.validateProperties(exampleProject, title, desc, date));
     }
 
     @Test
@@ -87,9 +77,7 @@ class EvidenceTest {
         String desc = "Description";
         LocalDate date = LocalDate.of(2022, 1, 27);
 
-        Assertions.assertDoesNotThrow(() -> {
-            model.validateProperties(exampleProject, title, desc, date);
-        });
+        Assertions.assertDoesNotThrow(() -> Evidence.validateProperties(exampleProject, title, desc, date));
     }
 
     @Test
@@ -100,9 +88,7 @@ class EvidenceTest {
 
         String expectedMessage = "Title length must not exceed 100 characters";
 
-        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            model.validateProperties(exampleProject, title, desc, date);
-        });
+        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> Evidence.validateProperties(exampleProject, title, desc, date));
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
     }
 
@@ -114,9 +100,7 @@ class EvidenceTest {
 
         String expectedMessage = "Description length must not exceed 2000 characters";
 
-        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            model.validateProperties(exampleProject, title, desc, date);
-        });
+        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> Evidence.validateProperties(exampleProject, title, desc, date));
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
     }
 
@@ -125,7 +109,7 @@ class EvidenceTest {
         String title = "Evidence Title";
         String desc = "Description";
         LocalDate date = LocalDate.of(2022, 1, 25);
-        Evidence evidence = new Evidence(1, exampleProject, title, desc, date);
+        Evidence evidence = new Evidence(1, exampleProject, title, desc, date, 0);
 
         exampleProject = new Project(
                 "Name",
@@ -134,9 +118,7 @@ class EvidenceTest {
                 LocalDate.of(2022, 1, 26)
         );
 
-        Assertions.assertDoesNotThrow(() -> {
-            evidence.setAssociatedProject(exampleProject);
-        });
+        Assertions.assertDoesNotThrow(() -> evidence.setAssociatedProject(exampleProject));
     }
 
     @Test
@@ -144,7 +126,7 @@ class EvidenceTest {
         String title = "Evidence Title";
         String desc = "Description";
         LocalDate date = LocalDate.of(2022, 1, 25);
-        Evidence evidence = new Evidence(1, exampleProject, title, desc, date);
+        Evidence evidence = new Evidence(1, exampleProject, title, desc, date, 0);
 
         exampleProject = new Project(
                 "Name",
@@ -155,9 +137,7 @@ class EvidenceTest {
 
         String expectedMessage = "New project ends before evidence date";
 
-        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            evidence.setAssociatedProject(exampleProject);
-        });
+        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> evidence.setAssociatedProject(exampleProject));
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
     }
 
@@ -166,7 +146,7 @@ class EvidenceTest {
         String title = "Evidence Title";
         String desc = "Description";
         LocalDate date = LocalDate.of(2022, 1, 25);
-        Evidence evidence = new Evidence(1, exampleProject, title, desc, date);
+        Evidence evidence = new Evidence(1, exampleProject, title, desc, date, 0);
 
         exampleProject = new Project(
                 "Name",
@@ -177,9 +157,7 @@ class EvidenceTest {
 
         String expectedMessage = "New project starts after evidence date";
 
-        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            evidence.setAssociatedProject(exampleProject);
-        });
+        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> evidence.setAssociatedProject(exampleProject));
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
     }
 
@@ -188,13 +166,11 @@ class EvidenceTest {
         String title = "Evidence Title";
         String desc = "Description";
         LocalDate date = LocalDate.of(2022, 1, 25);
-        Evidence evidence = new Evidence(1, exampleProject, title, desc, date);
+        Evidence evidence = new Evidence(1, exampleProject, title, desc, date, 0);
 
         final LocalDate newDate = LocalDate.of(2022, 1, 24);
 
-        Assertions.assertDoesNotThrow(() -> {
-            evidence.setDate(newDate);
-        });
+        Assertions.assertDoesNotThrow(() -> evidence.setDate(newDate));
     }
 
     @Test
@@ -202,15 +178,13 @@ class EvidenceTest {
         String title = "Evidence Title";
         String desc = "Description";
         LocalDate date = LocalDate.of(2022, 1, 25);
-        Evidence evidence = new Evidence(1, exampleProject, title, desc, date);
+        Evidence evidence = new Evidence(1, exampleProject, title, desc, date, 0);
 
         final LocalDate newDate = LocalDate.of(2022, 1, 15);
 
         String expectedMessage = "New evidence date is before parent project start date";
 
-        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            evidence.setDate(newDate);
-        });
+        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> evidence.setDate(newDate));
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
     }
 
@@ -219,15 +193,13 @@ class EvidenceTest {
         String title = "Evidence Title";
         String desc = "Description";
         LocalDate date = LocalDate.of(2022, 1, 25);
-        Evidence evidence = new Evidence(1, exampleProject, title, desc, date);
+        Evidence evidence = new Evidence(1, exampleProject, title, desc, date, 0);
 
         final LocalDate newDate = LocalDate.of(2022, 1, 29);
 
         String expectedMessage = "New evidence date is after parent project end date";
 
-        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            evidence.setDate(newDate);
-        });
+        Exception argumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> evidence.setDate(newDate));
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
     }
 
@@ -236,7 +208,7 @@ class EvidenceTest {
         String title = "Evidence Title";
         String desc = "Description";
         LocalDate date = LocalDate.of(2022, 1, 25);
-        Evidence evidence = new Evidence(1, exampleProject, title, desc, date);
+        Evidence evidence = new Evidence(1, exampleProject, title, desc, date, 0);
 
         assertEquals(1, evidence.getParentUserId());
         assertEquals(title, evidence.getTitle());
@@ -262,5 +234,77 @@ class EvidenceTest {
         assertEquals(title, evidence.getTitle());
         assertEquals(desc, evidence.getDescription());
         assertEquals(date, evidence.getDate());
+    }
+
+    @Test
+    public void getQualitativeSkillsCatFromInt() {
+        evidence.setCategories(1);
+        List<String> categoryString = evidence.getCategoryStrings();
+        assertEquals(List.of("Qualitative Skills"), categoryString);
+    }
+
+    @Test
+    public void getQuantitativeSkillsCatFromInt() {
+        evidence.setCategories(2);
+        List<String> categoryString = evidence.getCategoryStrings();
+        assertEquals(List.of("Quantitative Skills"), categoryString);
+    }
+
+    @Test
+    public void getServiceCatFromInt() {
+        evidence.setCategories(4);
+        List<String> categoryString = evidence.getCategoryStrings();
+        assertEquals(List.of("Service"), categoryString);
+    }
+
+    @Test
+    public void getQualitativeSkillsAndServiceCatsFromInt() {
+        evidence.setCategories(5);
+        List<String> categoryString = evidence.getCategoryStrings();
+        assertEquals(List.of("Qualitative Skills", "Service"), categoryString);
+    }
+
+    @Test
+    public void getQuantitativeSkillsAndServiceCatsFromInt() {
+        evidence.setCategories(6);
+        List<String> categoryString = evidence.getCategoryStrings();
+        assertEquals(List.of("Quantitative Skills", "Service"), categoryString);
+    }
+
+    @Test
+    public void getAllCatsFromInt() {
+        evidence.setCategories(7);
+        List<String> categoryString = evidence.getCategoryStrings();
+        assertEquals(List.of("Qualitative Skills", "Quantitative Skills", "Service"), categoryString);
+    }
+
+    @Test
+    public void quantitativeSkillsCatToInt() {
+        int categoryInt = evidence.categoryStringToInt("Qualitative Skills");
+        assertEquals(1, categoryInt);
+    }
+
+    @Test
+    public void qualitativeSkillsCatToInt() {
+        int categoryInt = evidence.categoryStringToInt("Quantitative Skills");
+        assertEquals(2, categoryInt);
+    }
+
+    @Test
+    public void serviceCatToInt() {
+        int categoryInt = evidence.categoryStringToInt("Service");
+        assertEquals(4, categoryInt);
+    }
+
+    @Test
+    public void qualitativeSkillsAndQuantitativeSkillsCatToInt() {
+        int categoryInt = evidence.categoryStringToInt("Qualitative Skills~Quantitative Skills");
+        assertEquals(3, categoryInt);
+    }
+
+    @Test
+    public void allCatsToInt() {
+        int categoryInt = evidence.categoryStringToInt("Qualitative Skills~Quantitative Skills~Service");
+        assertEquals(7, categoryInt);
     }
 }
