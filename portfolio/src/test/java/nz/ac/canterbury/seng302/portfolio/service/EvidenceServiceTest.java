@@ -18,8 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EvidenceServiceTest {
@@ -30,10 +29,7 @@ public class EvidenceServiceTest {
     @InjectMocks
     EvidenceService evidenceService = new EvidenceService();
 
-    static SkillTag skillTagCSharp;
-    static SkillTag skillTagC;
-    static SkillTag skillTagCPlusPlus;
-    static SkillTag skillTagCSS;
+    static SkillTag skillTagCSharp, skillTagC, skillTagCPlusPlus, skillTagCSS, skillTagReactNative;
 
     static List<SkillTag> testSkillTagList;
 
@@ -49,6 +45,7 @@ public class EvidenceServiceTest {
         skillTagC = new SkillTag(new Project(), "C");
         skillTagCPlusPlus = new SkillTag(new Project(), "C++");
         skillTagCSS = new SkillTag(new Project(), "CSS");
+        skillTagReactNative = new SkillTag(new Project(), "React_Native");
         testSkillTagList = new ArrayList<>();
         testSkillTagList.add(skillTagCSharp);
         testSkillTagList.add(skillTagCSharp);
@@ -56,6 +53,7 @@ public class EvidenceServiceTest {
         testSkillTagList.add(skillTagCPlusPlus);
         testSkillTagList.add(skillTagCSS);
         testSkillTagList.add(skillTagCSS);
+        testSkillTagList.add(skillTagReactNative);
     }
 
     @Test
@@ -69,6 +67,49 @@ public class EvidenceServiceTest {
     void skillListHasNoDuplicates() {
         Mockito.when(skillTagRepository.findAll()).thenReturn(testSkillTagList);
         Set<String> skills = evidenceService.getAllUniqueSkills();
-        assertEquals(4, skills.size());
+        assertEquals(5, skills.size());
     }
+
+    /*
+      When passing a duplicate skill tag the duplicated tag should not be used to save to the repo
+      as tag already exists in the database
+    */
+    @Test
+    void skillListHasDuplicatesCaseInsensitive(){
+        Mockito.when(skillTagRepository.findByTitleIgnoreCase("CsS")).thenReturn(skillTagCSS);
+        SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase("CsS");
+        assertEquals(skillTagCSS, skillFromRepo);
+    }
+
+    /*
+       When passing a duplicate skill tag the duplicated tag should not be used to save to the repo
+       as there is already one but with space/underscore "React_Native"
+    */
+    @Test
+    void skillListHasDuplicateWithUnderScore(){
+        Mockito.when(skillTagRepository.findByTitleIgnoreCase("REACT_native")).thenReturn(skillTagReactNative);
+        SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase("REACT_native");
+        assertEquals(skillTagReactNative, skillFromRepo);
+    }
+
+    /*
+     When passing a unique skill tag with space, check repo if it exists. Returns null as it is unique
+    */
+    @Test
+    void skillListHasNoDuplicateWithUnderScore(){
+        Mockito.when(skillTagRepository.findByTitleIgnoreCase("React_Native-Beta")).thenReturn(null);
+        SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase("React_Native-Beta");
+        assertNull(skillFromRepo);
+    }
+
+    /*
+      When passing a unique skill tag, check repo if it exists. Returns null as it is unique
+    */
+    @Test
+    void skillListHasNoDuplicate(){
+        Mockito.when(skillTagRepository.findByTitleIgnoreCase("React_Native-Beta")).thenReturn(null);
+        SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase("React_Native-Beta");
+        assertNull(skillFromRepo);
+    }
+
 }

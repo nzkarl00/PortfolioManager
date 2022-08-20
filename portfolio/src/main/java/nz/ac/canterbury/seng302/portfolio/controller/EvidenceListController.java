@@ -245,7 +245,16 @@ public class EvidenceListController {
       return Arrays.asList(stringFromHTML.split(" "));
   }
 
-    private String validateMandatoryFields(String title, String description, LocalDate evidenceDate, LocalDate projectStartDate, LocalDate projectEndDate) {
+  /**
+   * Checks for validation, for all the mandatory fields.
+   * @param title the title field
+   * @param description the description field
+   * @param evidenceDate when the evidence occurred
+   * @param projectStartDate when the project began
+   * @param projectEndDate when the project ended
+   * @return A String error message if requirement not met, else return ""
+  */
+  private String validateMandatoryFields(String title, String description, LocalDate evidenceDate, LocalDate projectStartDate, LocalDate projectEndDate) {
       this.errorMessage = "";
 
       // https://stackoverflow.com/questions/14278170/how-to-check-whether-a-string-contains-at-least-one-alphabet-in-java
@@ -268,7 +277,7 @@ public class EvidenceListController {
       }
 
       return errorMessage;
-  }
+}
 
   public boolean containsNoLetter(String sample) {
       for (int i=0; i < sample.length(); ++i) {
