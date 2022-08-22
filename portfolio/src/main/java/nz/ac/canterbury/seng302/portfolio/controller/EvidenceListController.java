@@ -72,6 +72,7 @@ public class EvidenceListController {
     List<SkillTag> skillList = skillRepository.findAll();
 
     List<Evidence> evidenceList = evidenceService.getFilteredEvidenceForUserInProject(userId, projectId, categoryName, skillName);
+    logger.info(evidenceList.get(0).getEvidenceUsersId().get(0).getUsername());
     setTitle(model, userId, projectId, categoryName, skillName);
     HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
     HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();

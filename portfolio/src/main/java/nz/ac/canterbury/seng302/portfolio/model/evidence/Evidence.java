@@ -45,9 +45,9 @@ public class Evidence {
      * Creates a relationship with evidence and users, where evidence may be associated to many users
      * We cannot create a direct mapping as they are in different databases so this is a work around
      */
-    @OneToMany
     @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinColumn(name = "evidence_user_id")
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
+    @JsonBackReference
     protected List<EvidenceUser> evidenceUsersId;
 
     /**
@@ -300,5 +300,9 @@ public class Evidence {
             + description + "\n"
             + categories + "\n"
             + evidenceUsersId + "\n";
+    }
+
+    public List<EvidenceUser> getEvidenceUsersId() {
+        return evidenceUsersId;
     }
 }

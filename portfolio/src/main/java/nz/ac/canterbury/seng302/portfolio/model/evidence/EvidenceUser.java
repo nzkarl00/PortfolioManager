@@ -47,4 +47,8 @@ public class EvidenceUser {
         return userid;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
 }

@@ -85,6 +85,18 @@
                 <div class="row-1">
                     <div class="collapse evidence_data no-gutters" th:id="'collapseExample'+${evidence.getId}">
                         <div>
+                            <p class="bio evidence_head" th:if="${evidence.getEvidenceUsersId().size() > 0}">Contributors </p>
+                            <div th:id="'evidence_contributors_'+${evidence.getId}" th:if="${evidence.getEvidenceUsersId().size() > 0}" style="width: 100%">
+                                <div class="row" th:each="user: ${evidence.getEvidenceUsersId()}">
+
+                                    <div id="contributors_container" style="width: 85%; display: block; padding: 0.5rem 2rem">
+                                        <div class="trim_text" style="display: flex">
+                                            <button th:text="${user.getUsername()}"></button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
 
                             <p id="description" class="sprint-description evidence_text" th:text="${evidence.getDescription}"/>
 
