@@ -1466,3 +1466,13 @@ select.form-control {
 .category_item:hover {
     background-color: #c1c1c1;
 }
+
+.project_selector {
+    background-color: #FFF;
+    border-style: hidden;
+    text-align: center;
+    font-family: NexaBold;
+    font-size: 200%;
+    color: #19DAFF !important;
+    padding-bottom: 5px;
+}

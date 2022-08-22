@@ -76,6 +76,8 @@ public class EvidenceListController {
       evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
       evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
     }
+    List<Project> allProjects = projectService.getAllProjects();
+    model.addAttribute("projectList", allProjects);
     model.addAttribute("skillMap", evidenceSkillMap);
     model.addAttribute("categoryMap", evidenceCategoryMap);
     model.addAttribute("evidenceList", evidenceList);
