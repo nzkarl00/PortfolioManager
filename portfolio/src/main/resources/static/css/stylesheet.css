@@ -1118,28 +1118,35 @@
     font-size: 125% !important;
 }
 
+.commit_search_top {
+    background: #D9F9FF !important;
+    border-radius: 20px 20px 0px 0px;
+    border-color: white;
+    padding: 10px !important;
+    padding-left: 15px !important;
+}
+
+.commit_search_bot {
+    background: #D9F9FF !important;
+    border-color: white;
+    border-radius: 0px 0px 20px 20px;
+}
+
 .evidence_top {
 
     background: #D9F9FF !important;
     border-radius: 20px 20px 0px 0px;
     padding: 10px !important;
     padding-left: 15px !important;
-
-
 }
 
 .evidence_bot {
-
     background: #D9F9FF !important;
     border-radius: 0px 0px 20px 20px;
-
-
 }
 
 
 .evidence_data {
-
-
     font-family: nexa !important;
     color: #000000 !important;
     font-size: 110% !important;
@@ -1156,7 +1163,6 @@
 }
 
 .alignRight {
-
     align: right !important;
 }
 
@@ -1165,13 +1171,12 @@
     font-family: nexaBold !important;
     color: #19DAFF !important;
     font-size: 175% !important;
-
 }
+
 .evidence_date {
     font-family: nexaLight !important;
     color: #19DAFF !important;
     font-size: 175% !important;
-
 }
 
 .evidence_text {
