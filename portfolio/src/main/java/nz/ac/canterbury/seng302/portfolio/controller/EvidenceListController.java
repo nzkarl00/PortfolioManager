@@ -200,7 +200,7 @@ public class EvidenceListController {
       }
 
       //TODO program out once front-end is working as intended
-      if (extractedUsers.size() == 0) {
+      if (extractedUsers.isEmpty()) {
           extractedUsers.add(accountID + ":" + thisUser.getUsername());
       }
 
@@ -218,7 +218,7 @@ public class EvidenceListController {
 
           // If there's no skills, add the no_skills
           List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
-          if (evidenceTagList.size() == 0) {
+          if (evidenceTagList.isEmpty()) {
               SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
               EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
               evidenceTagRepository.save(noSkillEvidence);

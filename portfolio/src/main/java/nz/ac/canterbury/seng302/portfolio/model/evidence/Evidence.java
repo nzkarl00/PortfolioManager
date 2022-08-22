@@ -290,4 +290,15 @@ public class Evidence {
     public void setCategories(int categories) {
         this.categories = categories;
     }
+
+    @Override
+    public String toString() {
+        return title + "\n"
+            + id + "\n"
+            + parentUserId + "\n"
+            + associatedProject + "\n"
+            + description + "\n"
+            + categories + "\n"
+            + evidenceUsersId + "\n";
+    }
 }

@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.testUserTeacher;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateTeacher;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonProjectItems.getValidProject;
 import static org.mockito.Mockito.*;
@@ -45,7 +46,7 @@ public class EvidenceListControllerTest {
     private static final Project testProject = getValidProject();
     private static final LocalDate may4 = LocalDate.parse("2022-05-04");
     private static final Evidence testEvidence = new Evidence(
-        0,
+        123456,
         testProject,
         "Evidence One",
         "This evidence is the first to be submitted",
@@ -54,7 +55,7 @@ public class EvidenceListControllerTest {
     );
 
     private static final Evidence testEvidenceAllCategories = new Evidence(
-            0,
+        123456,
             testProject,
             "Evidence One",
             "This evidence is the first to be submitted",
@@ -171,6 +172,8 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
+        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("0:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
+
 
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsEvidenceRequired))
@@ -197,6 +200,7 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
+        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("0:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 7)).thenReturn(new ArrayList<>(List.of(testEvidenceAllCategories)));
 
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsAllCategories))
@@ -223,6 +227,7 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
+        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("0:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
 
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsNoSkill))
@@ -297,6 +302,8 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
+        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("0:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
+
 
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsNoSkill))
@@ -321,6 +328,7 @@ public class EvidenceListControllerTest {
         List<EvidenceTag> evidenceTagList = new ArrayList<>();
         evidenceTagList.add(testEvidenceTag);
         when(projectService.getProjectById(0)).thenReturn(testProject);
+        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("0:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
 
         when(evidenceTagRepository.findAllByParentEvidenceId(0)).thenReturn(evidenceTagList);
 
