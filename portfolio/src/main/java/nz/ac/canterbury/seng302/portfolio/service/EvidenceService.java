@@ -1,9 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import com.beust.ah.A;
-import nz.ac.canterbury.seng302.portfolio.controller.EvidenceListController;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +16,11 @@ public class EvidenceService {
     @Autowired
     private SkillTagRepository skillTagRepository;
     @Autowired
-    private WebLinkRepository webLinkRepository;
-    @Autowired
     EvidenceRepository evidenceRepository;
     @Autowired
     EvidenceTagRepository evidenceTagRepository;
     @Autowired
     ProjectService projectService;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
 
     Logger logger = LoggerFactory.getLogger(EvidenceService.class);
 
@@ -42,26 +36,22 @@ public class EvidenceService {
 
     /**
      * Takes the parameters and returns the appropriate evidence list based on search priority
-     * @param userId Id of user to get evidence from
-     * @param projectId Id of project to get evidence from
-     * @param categoryId Id of category to get evidence from
-     * @param skillId Id of skill to get evidence from
+     * @param userId ID of user to get evidence from
+     * @param projectId ID of project to get evidence from
+     * @param categoryName name of category to get evidence from
+     * @param skillName name of skill to get evidence from
      * @return A properly sorted and filtered list of evidence
-     * @throws Exception
+     * @throws CustomExceptions.ProjectItemNotFoundException if the project associated with the given projectID does not exist
      */
-    public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
+    public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, String categoryName, String skillName) throws CustomExceptions.ProjectItemNotFoundException {
         if (projectId != null){
-            Project project = projectService.getProjectById(Integer.valueOf(projectId));
+            Project project = projectService.getProjectById(projectId);
             return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
         } else if (userId != null){
-            return evidenceRepository.findAllByParentUserIdOrderByDateDesc(Integer.valueOf(userId));
+            return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
         }else if (categoryName != null){
-            List<Category> categoryTag = categoryRepository.findAllByCategoryName(categoryName);
-            List<Evidence> evidenceCategoryList = new ArrayList<>();
-            for (Category tag: categoryTag){
-                evidenceCategoryList.add(tag.getParentEvidence());
-            }
-            Collections.sort(evidenceCategoryList, (Comparator<Evidence>) (o1, o2) -> {
+            List<Evidence> evidenceCategoryList = evidenceRepository.getEvidenceByCategoryInt(Evidence.categoryStringToInt(categoryName));
+            evidenceCategoryList.sort((o1, o2) -> {
                 // compare two instance of `Score` and return `int` as result.
                 return o2.getDate().compareTo(o1.getDate());
             });
@@ -72,7 +62,7 @@ public class EvidenceService {
             for (EvidenceTag tag: evidenceTags){
                 evidenceSkillList.add(tag.getParentEvidence());
             }
-            Collections.sort(evidenceSkillList, (Comparator<Evidence>) (o1, o2) -> {
+            evidenceSkillList.sort((o1, o2) -> {
                 // compare two instance of `Score` and return `int` as result.
                 return o2.getDate().compareTo(o1.getDate());
             });
@@ -81,7 +71,6 @@ public class EvidenceService {
             return evidenceRepository.findAllByOrderByDateDesc();
         }
     }
-
 
 
     /**
@@ -106,7 +95,7 @@ public class EvidenceService {
     /**
      * Takes an evidence ID and returns a list of all skill tag titles that are associated with it.
      * @param evidenceId The evidence ID to be checked against
-     * @return List of skilltag title strings
+     * @return List of skill tag title strings
      */
     public List<String> getSkillTagStringsByEvidenceId(int evidenceId) {
         List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidenceId);
@@ -114,35 +103,12 @@ public class EvidenceService {
     }
 
     /**
-     * Takes an evidence ID and returns a list of all skill tags that are associated with it.
-     * @param evidenceId The evidence ID to be checked against
-     * @return List of skilltag
+     * This method is called to add skills to the repo. If the skills is already in the repo for skills then use it, if not
+     * make a new skill from the given inputs and save it to the repo.
+     * @param parentProject The project the evidence is linked with
+     * @param evidence Evidence for the skill
+     * @param skills string of skills to be added to the skills repo
      */
-    public List<SkillTag> getSkillTagByEvidenceId(int evidenceId) {
-        List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidenceId);
-        return evidenceTagList.stream().map(evidenceTag -> evidenceTag.getParentSkillTag()).collect(Collectors.toList());
-    }
-
-    /**
-     * Takes an evidence ID and returns a list of all links that are associated with it.
-     * @param parentEvidenceId The evidence ID to be checked against
-     * @return List of links
-     */
-    public List<WebLink> getLinksByEvidenceId(int parentEvidenceId) {
-        List<WebLink> links = webLinkRepository.findByParentEvidence(parentEvidenceId);
-        return links;
-    }
-
-    /**
-     * Takes an evidence ID and returns the string name of all categories that belong to it
-     * @param evidenceId The ID of evidence being searched for categories
-     * @return List of category names as strings that belong to the evidence of id evidenceId
-     */
-    public List<String> getCategoryStringsByEvidenceId(int evidenceId) {
-        List<Category> categoryList = categoryRepository.findAllByParentEvidenceId(evidenceId);
-        return categoryList.stream().map(Category::getCategoryName).collect(Collectors.toList());
-    }
-
     public void addSkillsToRepo(Project parentProject, Evidence evidence, String skills) {
         //Create new skill for any skill that doesn't exist, create evidence tag for all skills
         if (skills.replace(" ", "").length() > 0) {
@@ -150,23 +116,15 @@ public class EvidenceService {
 
             for (String skillString : skillList) {
                 String validSkillString = skillString.replace(" ", "_");
-                SkillTag skillFromRepo = skillTagRepository.findByTitle(validSkillString);
-
-                if (skillFromRepo == null) {
-                    SkillTag newSkill = new SkillTag(parentProject, validSkillString);
-                    skillTagRepository.save(newSkill);
-                    EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
-                    evidenceTagRepository.save(noSkillEvidence);
-                } else {
-                    EvidenceTag noSkillEvidence = new EvidenceTag(skillFromRepo, evidence);
-                    evidenceTagRepository.save(noSkillEvidence);
-                }
+                SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase(validSkillString);
+                saveSkillsAndEvidenceTags(parentProject, evidence, validSkillString, skillFromRepo);
             }
         }
 
         // If there's no skills, add the no_skills
         List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
         if (evidenceTagList.size() == 0) {
+            logger.info("[EVIDENCE_SERVICE] Attempted to create new evidence tag using 'No_Skill' tag and save it to evidenceTagRepository");
             SkillTag noSkillTag = skillTagRepository.findByTitle("No_skills");
             EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
             evidenceTagRepository.save(noSkillEvidence);
@@ -175,22 +133,53 @@ public class EvidenceService {
     }
 
     /**
+     * This method is called to check if a input skill tag is in the repo already or not. If it is it will save the skill tag under that or else make a new
+     * skill tage to save it.
+     * @param parentProject The project the evidence is linked with
+     * @param evidence Evidence for the skill
+     * @param validSkillString input skill to be checked
+     * @param skillFromRepo skill tag from the repo if matches validSkillString (case-insensitive)
+     */
+    public void saveSkillsAndEvidenceTags(Project parentProject, Evidence evidence, String validSkillString, SkillTag skillFromRepo) {
+        if (skillFromRepo == null) {
+            logger.info("[EVIDENCE_SERVICE] Attempted to create new skill tag and save it to skillTagRepository");
+            SkillTag newSkill = new SkillTag(parentProject, validSkillString);
+            skillTagRepository.save(newSkill);
+            EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
+            evidenceTagRepository.save(noSkillEvidence);
+        } else {
+            logger.info("[EVIDENCE_SERVICE] Finding all evidence tag using the evidence id, by using evidenceTagRepository");
+            List<EvidenceTag> allEvidenceTagsForEvidence = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+
+            // Checks to see if the skill tag isn't already in the piece of evidence.
+            boolean isInEvidence = allEvidenceTagsForEvidence.stream()
+                            .anyMatch(eachEvidenceTag -> (skillFromRepo.getId() == eachEvidenceTag.getParentSkillTag().getId()));
+
+            if (!isInEvidence) {
+                logger.info("[EVIDENCE_SERVICE] Attempted to create new evidence tag using existing skill tag and save it to evidenceTagRepository");
+                EvidenceTag noSkillEvidence = new EvidenceTag(skillFromRepo, evidence);
+                evidenceTagRepository.save(noSkillEvidence);
+            }
+
+        }
+    }
+
+    /**
      * Splits an HTML form input list, into multiple array elements.
-     * @param stringFromHTML
-     * @return
+     * @param stringFromHTML The string containing items delimited by ~
+     * @return an array representation of the list
      */
     private List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
         if (stringFromHTML.equals("")) {
-            return new ArrayList();
+            return Collections.emptyList();
         }
 
-        List<String> resultList = Arrays.asList(stringFromHTML.split("~"));
-        return resultList;
+        return Arrays.asList(stringFromHTML.split("~"));
     }
 
     /**
      * Validate web link strings
-     * @param links
+     * @param links Web A list of web links to be checked
      * @return an error message, if something is wrong
      */
     public Optional<String> validateLinks(List<String> links) {
@@ -198,8 +187,9 @@ public class EvidenceService {
             if (!WebLink.urlHasProtocol(link)) {
                 logger.trace("[WEBLINK] Rejecting web link as the link is not valid, link: " + link);
                 return Optional.of("The provided link is not valid, must contain http(s):// protocol: " + link);
-            };
+            }
         }
         return Optional.empty();
     }
+
 }
