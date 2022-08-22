@@ -6,6 +6,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * This class is a global interceptor for all gRPC clients used by this application. What this means, is that
@@ -33,7 +34,7 @@ public class AuthenticationClientInterceptor implements ClientInterceptor {
      */
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         String sessionToken = CookieUtil.getValue(request, "lens-session-token");
 
         // Every time we send a gRPC request, include a copy of our authentication token in the headers

@@ -27,6 +27,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateTeacher;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonProjectItems.getValidProject;
@@ -47,11 +49,23 @@ public class EvidenceListControllerTest {
         testProject,
         "Evidence One",
         "This evidence is the first to be submitted",
-        may4
+        may4,
+    Evidence.SERVICE
     );
 
+    private static final Evidence testEvidenceAllCategories = new Evidence(
+            0,
+            testProject,
+            "Evidence One",
+            "This evidence is the first to be submitted",
+            may4,
+            Evidence.SERVICE + Evidence.QUALITATIVE_SKILLS + Evidence.QUANTITATIVE_SKILLS
+    );
 
-
+    private static final SkillTag testSkillTag = new SkillTag(testProject, "SkillA");
+    private static final SkillTag testSkillTagDuplicate = new SkillTag(testProject, "SKILLA");
+    private static final EvidenceTag testEvidenceTag = new EvidenceTag(testSkillTag, testEvidence);
+    private static final EvidenceTag testEvidenceTagDuplicate = new EvidenceTag(testSkillTagDuplicate, testEvidence);
     @Autowired
     private MockMvc mockMvc;
     @MockBean
@@ -69,8 +83,6 @@ public class EvidenceListControllerTest {
     @MockBean
     private EvidenceService evidenceService;
     @MockBean
-    private CategoryRepository categoryRepository;
-    @MockBean
     private WebLinkRepository webLinkRepository;
 
     @Before
@@ -82,11 +94,12 @@ public class EvidenceListControllerTest {
 
     // setting up and closing the mocked static authStateInformer
     static MockedStatic<AuthStateInformer> utilities;
-    private static MultiValueMap<String, String> validParamsEvidenceRequired = new LinkedMultiValueMap<>();
-    private static MultiValueMap<String, String> validParamsNoSkill = new LinkedMultiValueMap<>();
-    private static MultiValueMap<String, String> validParamsAllCategories = new LinkedMultiValueMap<>();
-    private static MultiValueMap<String, String> InvalidParamsEvidenceRequired = new LinkedMultiValueMap<>();
-    private static MultiValueMap<String, String> InvalidParamsEvidenceDate = new LinkedMultiValueMap<>();
+    private static final MultiValueMap<String, String> validParamsEvidenceRequired = new LinkedMultiValueMap<>();
+    private static final MultiValueMap<String, String> validParamsNoSkill = new LinkedMultiValueMap<>();
+    private static final MultiValueMap<String, String> validParamsMultipleSkills = new LinkedMultiValueMap<>();
+    private static final MultiValueMap<String, String> validParamsAllCategories = new LinkedMultiValueMap<>();
+    private static final MultiValueMap<String, String> InvalidParamsEvidenceRequired = new LinkedMultiValueMap<>();
+    private static final MultiValueMap<String, String> InvalidParamsEvidenceDate = new LinkedMultiValueMap<>();
     @BeforeAll
     public static void open() {
 
@@ -111,6 +124,13 @@ public class EvidenceListControllerTest {
         validParamsNoSkill.add("descriptionInput", "This evidence is the first to be submitted");
         validParamsNoSkill.add("categoryInput", "Service");
         validParamsNoSkill.add("skillInput", "SkillA~SkillB~SkillC");
+
+        validParamsMultipleSkills.add("titleInput","Evidence One" );
+        validParamsMultipleSkills.add("dateInput", "2022-05-04");
+        validParamsMultipleSkills.add("projectId", String.valueOf(testProject.getId()));
+        validParamsMultipleSkills.add("descriptionInput", "This evidence is the first to be submitted");
+        validParamsMultipleSkills.add("categoryInput", "Service");
+        validParamsMultipleSkills.add("skillInput", "SkillA~SKILLA");
 
         InvalidParamsEvidenceRequired.add("titleInput","" );
         InvalidParamsEvidenceRequired.add("dateInput", "2022-05-04");
@@ -156,8 +176,7 @@ public class EvidenceListControllerTest {
                 .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
         //verify(evidencerepository, times(1)).save(Mockito.any(Evidence.class)); // Verifies evidence was saved
         verify(evidenceRepository).save(refEq(testEvidence));
-        verify(categoryRepository).save(Mockito.any(Category.class));
-        verify(skillRepository, times(3)).save(Mockito.any(SkillTag.class));
+        verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidence), Mockito.any(String.class));
     }
 
     /**
@@ -181,10 +200,9 @@ public class EvidenceListControllerTest {
         mockMvc.perform(post("/add-evidence").params(validParamsAllCategories))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
-        //verify(evidencerepository, times(1)).save(Mockito.any(Evidence.class)); // Verifies evidence was saved
-        verify(evidenceRepository).save(refEq(testEvidence));
-        verify(categoryRepository, times(3)).save(Mockito.any(Category.class));
-        verify(skillRepository, times(3)).save(Mockito.any(SkillTag.class));
+        // Verifies evidence was saved
+        verify(evidenceRepository).save(refEq(testEvidenceAllCategories));
+        verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidenceAllCategories), Mockito.any(String.class));
     }
 
     /**
@@ -261,6 +279,56 @@ public class EvidenceListControllerTest {
                 .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
         verify(evidenceRepository, never()).save(Mockito.any(Evidence.class)); // Verifies evidence was not saved
 
+    }
+
+    /**
+     * Tests to I can add multiple skill tags
+     * @throws Exception
+     */
+    @Test
+    public void postValidEvidence_WithSkillTags() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+        when(projectService.getProjectById(0)).thenReturn(testProject);
+
+        // Executing the mocked post request, checking that the page is displayed
+        mockMvc.perform(post("/add-evidence").params(validParamsNoSkill))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+        verify(evidenceTagRepository, times(1)).save(Mockito.any(EvidenceTag.class));
+    }
+
+    /**
+     * Tests to I can add multiple skill tags but not duplicated
+     * @throws Exception
+     */
+    @Test
+    public void postValidEvidence_WithMultipleSkillTags() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+        List<EvidenceTag> evidenceTagList = new ArrayList<>();
+        evidenceTagList.add(testEvidenceTag);
+        when(projectService.getProjectById(0)).thenReturn(testProject);
+
+        when(evidenceTagRepository.findAllByParentEvidenceId(0)).thenReturn(evidenceTagList);
+
+        // Executing the mocked post request, checking that the page is displayed
+        mockMvc.perform(post("/add-evidence").params(validParamsMultipleSkills))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+
+        verify(evidenceTagRepository, atMostOnce()).save(refEq(testEvidenceTag));
+        verify(evidenceTagRepository, never()).save(refEq(testEvidenceTagDuplicate));
     }
 
 }

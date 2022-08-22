@@ -145,7 +145,7 @@ public class AddDatesController {
         Date newStart = DateParser.stringToDate(eventStartDate);
         Date newEnd = DateParser.stringToDate(eventEndDate);
 
-        if (eventName == "") {
+        if (eventName.equals("")) {
             eventName = "Sprint " + (sprints.size() + 1);
         }
         if (!sprintService.areNewSprintDatesValid(newStart, newEnd, projectId) || newStart.before(projStart) || newEnd.after(projEnd)) {

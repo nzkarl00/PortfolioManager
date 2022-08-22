@@ -275,11 +275,7 @@ public class TableController {
                     }
                     // Performs deletion if it passes all checks
                     UserRoleChangeResponse response = accountClientService.addRole(roleAdd, userId);
-                    if (response.getIsSuccess()) {
-                        return "redirect:user-list";
-                    } else {
-                        return "redirect:user-list";
-                    }
+                    return "redirect:user-list";
                 }
 
             }

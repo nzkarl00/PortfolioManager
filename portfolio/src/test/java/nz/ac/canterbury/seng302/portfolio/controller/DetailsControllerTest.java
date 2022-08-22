@@ -51,9 +51,6 @@ public class DetailsControllerTest {
     SprintRepository sprintRepo;
 
     @MockBean
-    DeadlineService deadlineService;
-
-    @MockBean
     ProjectService projectService;
 
     @MockBean
