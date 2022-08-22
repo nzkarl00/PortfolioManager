@@ -2,13 +2,12 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +22,10 @@ public class EvidenceService {
     EvidenceTagRepository evidenceTagRepository;
     @Autowired
     ProjectService projectService;
+    @Autowired
+    EvidenceUserRepository evidenceUserRepository;
+    @Autowired
+    AccountClientService accountClientService;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -72,12 +75,45 @@ public class EvidenceService {
     }
 
     /**
-     * @param evidenceId A piece of evidence's ID
-     * @return Usernames Retrieve a list of usernames associated with a piece of evidence, excluding the author
+     * For every user associated to a piece of evidence, duplicate the evidence and save it for them
+     * And then creating an association between each evidence user and their parent evidence
+     * @param extractedUsernames List of {id}:{username} that a user has said also worked on the piece of evidence they're creating
+     * @param parentProject The parent project that all pieces of evidence will relate to
+     * @param title The title that all pieces of evidence will relate to
+     * @param description The description that all pieces of evidence will relate to
+     * @param evidenceDate The evidenceDate that all pieces of evidence will relate to
+     * @return
      */
-    /*public List<String> getUsersByEvidenceId(int evidenceId) {
+    public List<Evidence> generateEvidenceForUsers(List<String> extractedUsernames, Project parentProject, String title, String description, LocalDate evidenceDate) {
+        // Extract then validate usernames
+        // This is assuming that the list is formatted as {id}:{username}
+        List<Evidence> allEvidence = new ArrayList<>();
+        List<String[]> validUsers = new ArrayList<>();
 
-    }*/
+        // Validate that the username exists in the IDP
+        for(String username: extractedUsernames) {
+            String[] split = username.split(":");
+            int userId = Integer.parseInt(split[0]);
+
+            // Make a call to the IDP and make sure the username and given userId match with what is expected
+            UserResponse response = accountClientService.getUserById(userId);
+            if (response.getUsername().equals(split[1])) {
+                validUsers.add(split);
+            }
+        }
+
+        //Loop through all associated users so we can create their pieces of evidence
+        for(String[] user: validUsers) {
+            Evidence userEvidence = new Evidence(Integer.parseInt(user[0]), parentProject, title, description, evidenceDate);
+            evidenceRepository.save(userEvidence);
+            //Loop through all associated users again so that we can associate them to the evidence we created
+            for(String[] associated: validUsers) {
+                EvidenceUser evidenceUser = new EvidenceUser(Integer.parseInt(associated[0]), associated[1], userEvidence);
+                evidenceUserRepository.save(evidenceUser);
+            }
+        }
+        return allEvidence;
+    }
 
     /**
      * Takes an evidence ID and returns a list of all skill tag titles that are associated with it.

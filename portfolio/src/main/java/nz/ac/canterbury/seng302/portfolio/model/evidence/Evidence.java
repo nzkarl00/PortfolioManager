@@ -40,13 +40,14 @@ public class Evidence {
     protected int parentUserId;
 
     /**
-     * A list of all users (except the author) for this piece of evidence
+     * A list of all users for this piece of evidence
      * Creates a relationship with evidence and users, where evidence may be associated to many users
-     * We cannot create a direct mapping as they are in different databases so there is a work around
+     * We cannot create a direct mapping as they are in different databases so this is a work around
      */
     @OneToMany
-    @JoinColumn(name="evidence_users_id"))
-    protected int evidenceUsersId;
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @JoinColumn(name = "evidence_user_id")
+    protected List<EvidenceUser> evidenceUsersId;
 
     /**
      * The project the piece of evidence belongs to.
@@ -93,6 +94,7 @@ public class Evidence {
         LocalDate date
     ) {
         this.parentUserId = parentUserId;
+        this.evidenceUsersId = evidenceUsersId;
         this.associatedProject = associatedProject;
         this.title = title;
         this.description = description;

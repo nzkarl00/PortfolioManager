@@ -39,7 +39,7 @@ public class EvidenceListController {
   @Autowired
   private AccountClientService accountClientService;
   @Autowired
-  private AccountServerService accountServerService;
+  private EvidenceUserRepository evidenceUserRepository;
   @Autowired
   private NavController navController;
   @Autowired
@@ -191,61 +191,42 @@ public class EvidenceListController {
           }
       }
 
-      // Extract then validate usernames
-      List<String> extractedUsernames = null;
-      if (otherUsers.isPresent()) {
-          extractedUsernames = extractListFromHTMLString(otherUsers.get());
-          HashMap<String, Integer> usernameMap = accountClientService.getUsernameMap();
-          for(String username: extractedUsernames) {
-              if (!usernameMap.containsKey(username)) {
-                  errorMessage = "Username " + username + " does not exist in the system";
-                  return "redirect:evidence?pi=" + projectId;
-              }
-          }
+      List<String> extractedUsers = extractListFromHTMLString(otherUsers.get());
 
-      }
+      List<Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, evidenceDate);
 
       // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links
-      Evidence evidence = new Evidence(accountID, parentProject, title, description, evidenceDate);
       logger.info("[EVIDENCE] Saving evidence to repo");
-      evidenceRepository.save(evidence);
-      logger.info(String.format("[EVIDENCE] Saved evidence to repo, id=<%s>", evidence.getId()));
-      errorMessage = "Evidence has been added";
-      logger.info(categories);
-      //Create all selected categories for the new piece of evidence
-      if (categories.replace(" ", "").length() > 0) {
-        String[] categoryList = categories.split("~");
-        for (String categoryString: categoryList) {
-          Category newCategory = new Category(evidence, categoryString);
-          logger.info(newCategory.toString());
-          categoryRepository.save(newCategory);
-        }
-      }
+      for (Evidence evidence : allUserEvidence) {
+          evidenceRepository.save(evidence);
+          logger.info(String.format("[EVIDENCE] Saved evidence to repo, id=<%s>", evidence.getId()));
+          errorMessage = "Evidence has been added";
+          logger.info(categories);
+          //Create all selected categories for the new piece of evidence
+          if (categories.replace(" ", "").length() > 0) {
+            String[] categoryList = categories.split("~");
+            for (String categoryString: categoryList) {
+              Category newCategory = new Category(evidence, categoryString);
+              logger.info(newCategory.toString());
+              categoryRepository.save(newCategory);
+            }
+          }
 
-      addSkillsToRepo(parentProject, evidence, skills);
+          addSkillsToRepo(parentProject, evidence, skills);
 
-      // If there's no skills, add the no_skills
-      List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
-      if (evidenceTagList.size() == 0) {
-          SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
-          EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
-          evidenceTagRepository.save(noSkillEvidence);
-      }
+          // If there's no skills, add the no_skills
+          List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+          if (evidenceTagList.size() == 0) {
+              SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
+              EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
+              evidenceTagRepository.save(noSkillEvidence);
+          }
 
-      if (extractedLinks != null) {
-          logger.debug("[EVIDENCE] Saving web links");
-          webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
-      }
-
-      if (extractedUsernames != null) {
-          logger.debug("[EVIDENCE] Saving web links");
-          for(String username: extractedUsernames) {
-              if(evidenceUserRepository.findByUsername(username) == None) {
-                  evidenceUserRepository.save(username, usernameMap.get(username));
-              }
+          if (extractedLinks != null) {
+              logger.debug("[EVIDENCE] Saving web links");
+              webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
           }
       }
-
       return "redirect:evidence?pi=" + projectId;
   }
 
