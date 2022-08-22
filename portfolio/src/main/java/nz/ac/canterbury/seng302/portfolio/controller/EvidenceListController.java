@@ -111,6 +111,19 @@ public class EvidenceListController {
     return "evidenceList";
   }
 
+  @PostMapping("evidence-project")
+  public String sendProjectEvidence(@AuthenticationPrincipal AuthState principal,
+                                    @RequestParam(required = false , value="ui") Integer userId,
+                                    @RequestParam(required = false , value="pi") Integer projectId,
+                                    Model model) throws CustomExceptions.ProjectItemNotFoundException {
+      if (userId == null) {
+          userId = AuthStateInformer.getId(principal);
+      }
+      List<Evidence> evidenceList = evidenceService.getEvidenceForUserAndProject(userId, projectId);
+      model.addAttribute("evidenceList", evidenceList);
+      return "fragments/evidenceItems.html :: evidenceItems";
+  }
+
   private void setPageTitle(Model model, String title) {
     model.addAttribute("title", title);
   }

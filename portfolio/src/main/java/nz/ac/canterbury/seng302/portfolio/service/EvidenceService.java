@@ -72,6 +72,10 @@ public class EvidenceService {
         }
     }
 
+    public List<Evidence> getEvidenceForUserAndProject(int userId, int projectId) throws CustomExceptions.ProjectItemNotFoundException {
+        Project project = projectService.getProjectById(projectId);
+        return evidenceRepository.findAllByAssociatedProjectAndParentUserIdOrderByDateDesc(project, userId);
+    }
 
     /**
      * This function loops through the provided evidences from the filtering
