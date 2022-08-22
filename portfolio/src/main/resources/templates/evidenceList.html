@@ -53,91 +53,7 @@
             </div>
         </div>
         <br>
-        <div class="row" th:each="evidence: ${evidenceList}">
-
-            <div class="col-1">
-            </div>
-
-
-            <!-- Evidence Section which includes 1. heading, 2. infom and 3. bottom -->
-            <div class="col-lg-10 col-md-12 col-sm-12">
-
-                <!-- 1. evidence heading  -->
-        <div class="row-1 evidence_top" style="display:flex;">
-
-          <div class="col-4">
-          <p class="bio evidence_head" th:text="${evidence.getTitle}"/>
-          </div>
-          <div class="col-3.5">
-            <p class="bio evidence_date" th:text="${evidence.getDate}"/>
-          </div>
-          <div th:id="'evidence_ci_'+${evidence.getId}" class="col-4" style="padding-top: 0.65rem; padding-left: 1rem">
-          </div>
-          <div class="col-0.5" >
-          <a class="btn float-end" data-toggle="collapse" th:href="'#collapseExample'+${evidence.getId}" role="button" aria-expanded="false" aria-controls="collapseExample">
-            <i class="fa fa-2x fa-arrow-down alignRight" aria-hidden="true"></i>
-          </a>
-            </div>
-
-        </div>
-
-                <!-- 2. evidence information that can be expanded or collapsed  -->
-                <div class="row-1">
-                    <div class="collapse evidence_data no-gutters" th:id="'collapseExample'+${evidence.getId}">
-                        <div>
-
-                            <p id="description" class="sprint-description evidence_text" th:text="${evidence.getDescription}"/>
-
-                            <p class="bio evidence_head">Skills </p>
-                            <div th:id="'evidence_si_'+${evidence.getId}" style="width: 100%">
-                            </div>
-
-                            <p class="bio evidence_head" th:if="${evidence.getLinks().size() > 0}">Links </p>
-                            <div th:id="'evidence_links_'+${evidence.getId}" th:if="${evidence.getLinks().size() > 0}" style="width: 100%">
-                                <div class="row" th:each="link: ${evidence.getLinks()}">
-
-                                    <div id="links_container" style="width: 85%; display: block; padding: 0.5rem 2rem">
-                                        <div class="trim_text" style="display: flex">
-                                            <i class="fa fa-lock" aria-hidden="true" style="padding-top: 0.35rem"></i>
-                                            <a th:id="'evidence_links_text_'+${link.getUrl.toString()}"
-                                               th:text="${link.getUrlWithoutProtocol}"
-                                               th:href="${link.getUrl.toString()}"
-                                               target="_blank"
-                                               class="sprint-description display_data evidence_link trim_text"
-                                               style="font-size: 110%;
-                                               display: inline-block;">
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                        </div>
-                        <br>
-                    </div>
-                </div>
-
-                <!-- 3.. evidence bottom  -->
-                <div class="row-1">
-                    <div class="evidence_bot">
-                        <br>
-                    </div>
-                </div>
-
-            </div>
-
-    <div class="col-2">
-    </div>
-
-    <div class="col-4">
-
-        <br>
-        <br>
-
-        </div>
-
-      </div>
+        <div th:replace="fragments/evidenceItems.html :: evidenceItems"></div>
     </div>
     <div class="col-lg-2 ">
 
@@ -204,7 +120,7 @@
                     const descriptionField = document.getElementById('evidence_desc').value;
                     const titleField = document.getElementById('evidence_title').value;
                     const dateField = document.getElementById('date_input').value;
-                    var saveButton = document.getElementById('projectSave');
+                    const saveButton = document.getElementById('projectSave');
                     if (descriptionField.length > 0 && titleField.length > 0 && dateField.length > 0) {
                         saveButton.disabled = false;
                         saveButton.style.backgroundColor = "#26D20F";
