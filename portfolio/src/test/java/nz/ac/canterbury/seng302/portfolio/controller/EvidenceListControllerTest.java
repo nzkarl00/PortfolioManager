@@ -84,6 +84,8 @@ public class EvidenceListControllerTest {
     private EvidenceService evidenceService;
     @MockBean
     private WebLinkRepository webLinkRepository;
+    @MockBean
+    private EvidenceUserRepository evidenceUserRepository;
 
     @Before
     public void setup() throws Exception {
