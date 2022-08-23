@@ -1,5 +1,6 @@
 Feature: U27: Skills, Adding to evidence
 
+  @Close
   Scenario: AC1: When creating a piece of evidence,
   I can add one or more skills by simply typing a tag (words with no spaces)
   into a textbox specifically for this purpose.
@@ -11,8 +12,8 @@ Feature: U27: Skills, Adding to evidence
     And I click the Add Evidence button
     When User inputs "skill" into the skill input textbox.
     Then There will be a skill displayed.
-    And The window is closed.
 
+  @Close
   Scenario: AC1: When creating a piece of evidence,
   I can add one or more skills by simply typing a tag (words with no spaces)
   into a textbox specifically for this purpose.
@@ -22,11 +23,11 @@ Feature: U27: Skills, Adding to evidence
     Given User is logged in.
     When User navigates to "evidence?pi=1".
     And I click the Add Evidence button
-    When User inputs "skill fails because of spaces" into the skill input textbox.
+    When User inputs "skill fails because of ()*&^*&^$(*^(&^)" into the skill input textbox.
     Then There will not be a skill displayed.
     And An appropriate error message will be shown.
-    And The window is closed.
 
+  @Close
   Scenario: AC7 Clicking on a tag takes me to a page with that tag as a heading
   and all pieces of evidence that contain this tag displayed in reverse chronological order.
   when the tag is converted to a heading, the letter’s case is maintained
@@ -37,8 +38,8 @@ Feature: U27: Skills, Adding to evidence
     When User selects the Quantitative skills option in the category dropdown
     And User clicks search button
     Then user is directed to a page where the heading is "Evidence from category: Quantitative Skills"
-    And The window is closed.
 
+  @Close
   Scenario: AC7 Clicking on a tag takes me to a page with that tag as a heading
   and all pieces of evidence that contain this tag displayed in reverse chronological order.
   when the tag is converted to a heading, the letter’s case is maintained
@@ -49,8 +50,8 @@ Feature: U27: Skills, Adding to evidence
     When User selects the "skill" option in the skills dropdown
     And User clicks search button
     Then user is directed to a page where the heading is "Evidence from skill tag: skill"
-    And The window is closed.
 
+  @Close
   Scenario: AC8 All the tags that are currently on any of my pieces of evidence
   are displayed in a panel on the side of my pages
     Given User is logged in.
@@ -58,4 +59,3 @@ Feature: U27: Skills, Adding to evidence
     When User navigates to "evidence".
     When User selects the "skill" option in the skills side menu
     Then user is directed to a page where the heading is "Evidence from skill tag: skill"
-    And The window is closed.

@@ -49,7 +49,7 @@ public class WeblinksStepDefs {
     @Given("I open the piece of evidence")
     public void openEvidence() throws InterruptedException {
         // get the xpath of the desired pieve of evidence
-        String xpath = generateXPATH(seleniumExample.config.getDriver().findElement(By.xpath("//*[text()='Test Evidence']")), "");
+        String xpath = BaseSeleniumStepDefs.generateXPATH(seleniumExample.config.getDriver().findElement(By.xpath("//*[contains(text(), 'Test Evidence')]")), "");
         // get the button's xpath based on the title's xpath
         WebElement button = seleniumExample.config.getDriver().findElement(By.xpath(xpath.substring(0,66) + "div[4]/a"));
         button.click();
@@ -76,5 +76,17 @@ public class WeblinksStepDefs {
     public void iAmTakenToWikipediaInANewTab() {
         Set<String> tabs = seleniumExample.config.getDriver().getWindowHandles();
         Assertions.assertTrue(tabs.size() > 1);
+    }
+
+    @Then("Wikipedia link has a closed padlock")
+    public void wikipediaLinkHasAClosedPadlock() {
+        List<WebElement> links = seleniumExample.config.getDriver().findElements(By.id("lockedhttps://en.wikipedia.org/wiki/Main_Page"));
+        Assertions.assertTrue(links.size() > 0);
+    }
+
+    @And("Fake Cern link has a open padlock")
+    public void fakeCernLinkHasAOpenPadlock() {
+        List<WebElement> links = seleniumExample.config.getDriver().findElements(By.id("unlockedhttp://info.cern.ch/"));
+        Assertions.assertTrue(links.size() > 0);
     }
 }

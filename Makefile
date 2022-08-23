@@ -4,6 +4,8 @@ help:
 	@echo "	clean-local-data: Remove local database and stored user content"
 	@echo "	show-coverage: Generate coverage reports and provide URLs to open in browser."
 	@echo "	pre-merge: Run tests and lints, do this before attempting a merge."
+	@echo "	kill-servers: Kill any running IDP or Portfolio servers."
+	@echo "	test-selenium: Spin up Portfolio and IDP and run selenium tests."
 
 clean-local-data:
 	@echo "clean-local-data: Remove local database and stored user content"
@@ -26,6 +28,20 @@ test-idp:
 lint-idp:
 	@echo "Identity Provider: running Checkstyle"
 	cd ./identityprovider; ./gradlew check
+
+
+
+PID := $(shell ps aux | grep -E '[g]radlew -classpath .*portfolio' | tr -s ' ' | head -n 1 | cut -d ' ' -f2)
+IID := $(shell ps aux | grep -E '[g]radlew -classpath .*identityprovider' | tr -s ' ' | head -n 1 | cut -d ' ' -f2)
+
+kill-servers:
+	@echo "Killing portfolio and IDP servers if they exist"
+	if [ -n "$(PID)" ]; then kill "$(PID)"; fi
+	if [ -n "$(IID)" ]; then kill "$(IID)"; fi
+
+test-selenium:
+	@echo "test-selenium: Running selenium tests"
+	./run-selenium.sh
 
 
 pre-merge: test-portfolio test-idp lint-portfolio lint-idp
