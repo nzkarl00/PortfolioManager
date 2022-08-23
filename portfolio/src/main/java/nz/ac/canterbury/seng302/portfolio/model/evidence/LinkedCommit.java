@@ -29,11 +29,12 @@ public class LinkedCommit {
     protected Evidence parentEvidence;
 
     /**
-     * Source repo column
+     * Source repo name and owner to identify the commit
      */
-    @ManyToOne
-    @JoinColumn(name="group_repo", nullable = false)
-    protected GroupRepo parentGroupRepo;
+    @Column(name="group_repo_name", nullable = false)
+    protected String groupRepoName;
+    @Column(name="group_repo_owner", nullable = false)
+    protected String groupRepoOwner;
 
     /**
      * Searchable attributes of a LinkedCommit are its
@@ -57,7 +58,8 @@ public class LinkedCommit {
     /**
      * A link commit to a parent evidence
      * @param parentEvidence that this LinkedCommit is associated with
-     * @param parentGroupRepo that this LinkedCommit was retrieved from
+     * @param groupRepoName Repo name used to identify where this LinkedCommit was retrieved from
+     * @param groupRepoOwner Repo owner used to identify where this LinkedCommit was retrieved from
      * @param hash of the LinkedCommit
      * @param author of the LinkedCommit
      * @param title of the LinkedCommit that must not exceed MAX_TITLE_LENGTH
@@ -65,14 +67,16 @@ public class LinkedCommit {
      */
     public LinkedCommit(
         Evidence parentEvidence,
-        GroupRepo parentGroupRepo,
+        String groupRepoName,
+        String groupRepoOwner,
         String hash,
         String author,
         String title,
         LocalDateTime timestamp
     ) {
         this.parentEvidence = parentEvidence;
-        this.parentGroupRepo = parentGroupRepo;
+        this.groupRepoName = groupRepoName;
+        this.groupRepoOwner = groupRepoOwner;
         this.hash = hash;
         this.author = author;
         this.title = title;

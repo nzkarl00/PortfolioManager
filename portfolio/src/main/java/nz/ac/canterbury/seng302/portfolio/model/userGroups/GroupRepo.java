@@ -30,10 +30,6 @@ public class GroupRepo {
     @Column(name = "api_key", length = 60)
     private String apiKey = null;
 
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "parentGroupRepo", cascade = CascadeType.ALL)
-    protected List<LinkedCommit> linkedCommit;
-
     /**
      * Creates a group repository.
      * @param parentGroupId The internal (non-gitlab) group id to register the repo to.

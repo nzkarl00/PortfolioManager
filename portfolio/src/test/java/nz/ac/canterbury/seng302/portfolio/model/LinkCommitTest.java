@@ -23,17 +23,17 @@ public class LinkCommitTest {
     @BeforeEach
     void beforeEach() {
         date = LocalDate.of(2022, 1, 25);
-        timestamp = LocalDateTime.of(2017, 2, 13, 15, 56);
+        timestamp = LocalDateTime.of(2021, 9, 15, 11, 43);
         exampleProject = new Project(
             "Name",
             "Desc",
-            LocalDate.of(2022, 1, 20),
+            LocalDate.of(2021, 1, 20),
             LocalDate.of(2022, 1, 27)
         );
         evidence = new Evidence(1, exampleProject, "Title", "Desc", date, 0);
         evidence2 = new Evidence(1, exampleProject, "Title2", "Desc2", date, 0);
-        groupRepo = new GroupRepo(1, "hre56", "hre56/cosc368", "m82xFXnuhBAfD9yp_5zd");
-        linkedCommit = new LinkedCommit(evidence, groupRepo, "TODO?GETAREALHASHMAYBE", "Hugo Reeves", "First Commit Title", timestamp);
+        groupRepo = new GroupRepo(1, "yyu69", "yyu69/google-map-tutorial", "QqGvNaLjLGCBXYDy4FiF");
+        linkedCommit = new LinkedCommit(evidence, groupRepo, "5b30f44383d8cbbf97beeb63a1b90443b871c95e", "Yiyang (Jessie) Yu", "Initial commit", timestamp);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class LinkCommitTest {
      */
     @Test
     public void setLinkedCommitToSecondEvidence_pass() {
-        LinkedCommit linkedCommit2 = new LinkedCommit(evidence2, groupRepo, "TODO?GETAREALHASHMAYBE", "Hugo Reeves", "First Commit Title", timestamp);
+        LinkedCommit linkedCommit2 = new LinkedCommit(evidence2, groupRepo, "5b30f44383d8cbbf97beeb63a1b90443b871c95e", "Yiyang (Jessie) Yu", "Initial commit", timestamp);
         Assertions.assertEquals(evidence, linkedCommit.getParentEvidence());
         Assertions.assertEquals(evidence2, linkedCommit2.getParentEvidence());
     }
