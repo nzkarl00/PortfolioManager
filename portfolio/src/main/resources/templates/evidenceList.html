@@ -66,7 +66,7 @@
         <div class="row-1 evidence_top" style="display:flex;">
 
           <div class="col-4">
-          <p class="bio evidence_head" th:text="${evidence.getTitle}"/>
+          <p class="bio evidence_head" th:text="${evidence.getTitle}" th:id="${evidence.getId()}"/>
           </div>
           <div class="col-3.5">
             <p class="bio evidence_date" th:text="${evidence.getDate}"/>
@@ -74,7 +74,7 @@
           <div th:id="'evidence_ci_'+${evidence.getId}" class="col-4" style="padding-top: 0.65rem; padding-left: 1rem">
           </div>
           <div class="col-0.5" >
-          <a class="btn float-end" data-toggle="collapse" th:href="'#collapseExample'+${evidence.getId}" role="button" aria-expanded="false" aria-controls="collapseExample">
+          <a class="btn float-end" data-toggle="collapse" th:id="${'ArrowButton' + evidence.getId()}" th:href="'#collapseExample'+${evidence.getId}" role="button" aria-expanded="false" aria-controls="collapseExample">
             <i class="fa fa-2x fa-arrow-down alignRight" aria-hidden="true"></i>
           </a>
             </div>
@@ -110,6 +110,34 @@
                                         </div>
                                     </div>
 
+                                </div>
+                            </div>
+                            <br>
+                            <button
+                                    th:if="${evidence.getParentUserId() == userID}"
+                                    type="button" th:style="${displayDeleteButton}" th:value="${evidence.getId()}"
+                                    th:id="${evidence.getId()}" data-toggle="modal"
+                                    th:data-target="${'#deleteModal'+evidence.getId()}"
+                                    class="fa fa-trash group_delete_button"
+                            />
+                            </div>
+                        <!-- Modal -->
+                        <div class="modal fade" th:id="${'deleteModal'+evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete - ' + evidence.getTitle()+ '?' }"/>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body"
+                                         th:text="${'Are you sure you want to delete this piece of evidence (' + evidence.getTitle()+ ') from your portfolio?'}"
+                                    />
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="CancelButton">Cancel</button>
+                                        <button type="submit" class="btn btn-primary bg-danger" >Delete</button>
+                                    </div>
                                 </div>
                             </div>
 
