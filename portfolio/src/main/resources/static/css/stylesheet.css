@@ -1164,9 +1164,16 @@
 .evidence_head {
     font-family: nexaBold !important;
     color: #19DAFF !important;
-    font-size: 175% !important;
-
+    font-size: 200% !important;
 }
+
+.evidence_title {
+    font-family: nexaBold !important;
+    color: #19DAFF !important;
+    font-size: 125% !important;
+}
+
+
 .evidence_date {
     font-family: nexaLight !important;
     color: #19DAFF !important;
