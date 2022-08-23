@@ -49,6 +49,20 @@ public class SeleniumLogins {
         Assertions.assertEquals("Lachlan Alsop", fullName.getText());
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Gets the password for the pre-generated admin account from the application files
+     * @throws FileNotFoundException
+     */
+    public static void getPassword_ForAdmin_FromTextFile(String passwordText) throws FileNotFoundException {
+        String originpath = System.getProperty("user.dir");
+        File passwordFile = new File(originpath.substring(0, originpath.length()-9) + "identityprovider/defaultAdminPassword.txt");
+        Scanner passwordReader = new Scanner(passwordFile);
+        passwordText = passwordReader.nextLine();
+    }
+
+>>>>>>> dev
     public static String getPassword_ForAdmin_FromTextFile() throws FileNotFoundException {
         String originpath = System.getProperty("user.dir");
         File passwordFile = new File(originpath.substring(0, originpath.length()-9) + "identityprovider/defaultAdminPassword.txt");

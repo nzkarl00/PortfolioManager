@@ -18,6 +18,34 @@ public class WeblinksStepDefs {
 
     SeleniumExample seleniumExample = BaseSeleniumStepDefs.seleniumExample;
 
+    /**
+     * https://stackoverflow.com/questions/18510576/find-an-element-by-text-and-get-xpath-selenium-webdriver-junit
+     * get the xpath of aan element
+     * @param childElement the element to get the xpath from
+     * @param current the current xpath to recurse onto
+     * @return the xpath in the form of a string
+     */
+    private String generateXPATH(WebElement childElement, String current) {
+        String childTag = childElement.getTagName();
+        if(childTag.equals("html")) {
+            return "/html[1]"+current;
+        }
+        WebElement parentElement = childElement.findElement(By.xpath(".."));
+        List<WebElement> childrenElements = parentElement.findElements(By.xpath("*"));
+        int count = 0;
+        for(int i=0;i<childrenElements.size(); i++) {
+            WebElement childrenElement = childrenElements.get(i);
+            String childrenElementTag = childrenElement.getTagName();
+            if(childTag.equals(childrenElementTag)) {
+                count++;
+            }
+            if(childElement.equals(childrenElement)) {
+                return generateXPATH(parentElement, "/" + childTag + "[" + count + "]"+current);
+            }
+        }
+        return null;
+    }
+
     @Given("I open the piece of evidence")
     public void openEvidence() throws InterruptedException {
         // get the xpath of the desired pieve of evidence
