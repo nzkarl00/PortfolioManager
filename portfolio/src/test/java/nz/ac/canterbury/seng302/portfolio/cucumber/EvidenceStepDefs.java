@@ -97,6 +97,7 @@ public class EvidenceStepDefs {
 
             evidenceAdded = true;
         }
+        Thread.sleep(100);
         seleniumExample.config.getDriver()
                 .get(seleniumExample.url + "/evidence?pi=1");
     }
