@@ -167,9 +167,11 @@ public class EvidenceStepDefs {
     }
 
     @When("User selects the Quantitative skills option in the category dropdown")
-    public void userSelectsTheOptionInTheCategoryDropdown() {
+    public void userSelectsTheOptionInTheCategoryDropdown()
+        throws InterruptedException {
         Select category = new Select(seleniumExample.config.getDriver().findElement(By.id("ci")));
         category.selectByValue("Quantitative Skills");
+        Thread.sleep(100);
     }
 
     @And("User clicks search button")
