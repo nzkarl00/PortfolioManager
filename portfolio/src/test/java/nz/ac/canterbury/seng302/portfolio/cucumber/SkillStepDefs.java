@@ -41,7 +41,14 @@ public class SkillStepDefs {
 
     @And("An appropriate error message will be shown.")
     public void anAppropriateErrorMessageWillBeShown() {
-        WebElement error = seleniumExample.config.getDriver().findElement(By.id("skill_error"));
-        Assertions.assertEquals("Only letters, underscores, hyphens, and numbers are allowed", error.getText());
+        boolean check = false;
+        // there are many error message locations, make sure one of them is open and showing the right text
+        List<WebElement> errors = seleniumExample.config.getDriver().findElements(By.id("skill_error"));
+        for (WebElement element : errors) {
+            if (element.getText().equals("Only letters, underscores, hyphens, and numbers are allowed")) {
+                check = true;
+            }
+        }
+        Assertions.assertTrue(check);
     }
 }
