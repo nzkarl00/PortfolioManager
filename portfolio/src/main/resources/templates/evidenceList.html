@@ -56,7 +56,7 @@
             </div>
         </div>
         <br>
-        <div id="evidence_item_list" th:replace="fragments/evidenceItems.html :: evidenceItems"></div>
+        <div id="evidence_item_list"></div>
     </div>
     <div class="col-lg-2 ">
 
@@ -97,103 +97,55 @@
 
   </div>
 </div>
-                <!-- 2. End of evidence information that can be expanded or collapsed  -->
+    <!-- 2. End of evidence information that can be expanded or collapsed  -->
 
-            <!-- End of Evidence Section -->
+<!-- End of Evidence Section -->
 
-            <!-- JS -->
-            <script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
-            <script type="text/javascript" th:inline="javascript">
+<!-- JS -->
+<script type="text/javascript" th:src="@{js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:inline="javascript">
 
-                // Set timeout for display message. From -  https://bobbyhadz.com/blog/javascript-hide-element-after-few-seconds
-                setTimeout(() => {
-                    const box = document.getElementById('display_box');
-                    const displayMessageForNoAddButton = document.getElementById('info_message_no_add_button');
+    // Set timeout for display message. From -  https://bobbyhadz.com/blog/javascript-hide-element-after-few-seconds
+    setTimeout(() => {
+        const box = document.getElementById('display_box');
+        const displayMessageForNoAddButton = document.getElementById('info_message_no_add_button');
 
-                    // removes element from DOM
-                    box.style.display = 'none';
-                    displayMessageForNoAddButton.style.display = 'none';
+        // removes element from DOM
+        box.style.display = 'none';
+        displayMessageForNoAddButton.style.display = 'none';
 
-                    // hides element (still takes up space on page)
-                    // box.style.visibility = 'hidden';
-                }, 10000); // time in milliseconds
+        // hides element (still takes up space on page)
+        // box.style.visibility = 'hidden';
+    }, 10000); // time in milliseconds
 
-                // If required fields are filled in, enable save button
-                function canSaveCheck() {
-                    const descriptionField = document.getElementById('evidence_desc').value;
-                    const titleField = document.getElementById('evidence_title').value;
-                    const dateField = document.getElementById('date_input').value;
-                    const saveButton = document.getElementById('projectSave');
-                    if (descriptionField.length > 0 && titleField.length > 0 && dateField.length > 0) {
-                        saveButton.disabled = false;
-                        saveButton.style.backgroundColor = "#26D20F";
-                        if (!saveButton.classList.contains("save_hover")) {
-                            saveButton.className += " save_hover";
-                        }
-                    } else {
-                        saveButton.disabled = true;
-                        saveButton.style.backgroundColor = "lightgray";
-                        saveButton.classList.remove("save_hover");
-                    }
-                }
-
-            </script>
-            <script th:inline="javascript">
-
-  function addTagToEvidence(value, evidenceId, type) {
-    let newItem = document.createElement("button");
-    newItem.className = "table_text evidence_" + type + "_tag"
-    newItem.innerText = value
-    newItem.value = value
-    newItem.onclick = function() {window.location.href = "evidence?" + type + "=" + value}
-    console.log(newItem)
-    let itemRow = document.getElementById("current_row_" + type)
-    itemRow.appendChild(newItem);
-    if (itemRow.getBoundingClientRect().right < newItem.getBoundingClientRect().right) {
-      itemRow.removeChild(newItem);
-      addTagRowToEvidence(evidenceId, type)
-      itemRow.appendChild(newItem);
+    // If required fields are filled in, enable save button
+    function canSaveCheck() {
+        const descriptionField = document.getElementById('evidence_desc').value;
+        const titleField = document.getElementById('evidence_title').value;
+        const dateField = document.getElementById('date_input').value;
+        const saveButton = document.getElementById('projectSave');
+        if (descriptionField.length > 0 && titleField.length > 0 && dateField.length > 0) {
+            saveButton.disabled = false;
+            saveButton.style.backgroundColor = "#26D20F";
+            if (!saveButton.classList.contains("save_hover")) {
+                saveButton.className += " save_hover";
+            }
+        } else {
+            saveButton.disabled = true;
+            saveButton.style.backgroundColor = "lightgray";
+            saveButton.classList.remove("save_hover");
+        }
     }
-  }
 
-  /* Creates a new row for skill tags to be placed on, for some reason inserting <br> couldn't do this*/
-  function addTagRowToEvidence(evidenceId, type) {
-    if (document.getElementById("current_row_" + type) !== null ) {
-      document.getElementById("current_row_" + type).id = ""
-    }
-    let newRow = document.createElement("div");
-    newRow.id = "current_row_" + type
-    document.getElementById("evidence_" + type + "_" + evidenceId).appendChild(newRow)
-  }
-
-
-
-
-  skillMap = [[${skillMap}]]
-  for (const evidence of [[${evidenceList}]]) {
-    addTagRowToEvidence(evidence.id, "si")
-    for (const evidenceSkill of skillMap[evidence.id]) {
-      addTagToEvidence(evidenceSkill, evidence.id, "si")
-    }
-  }
-
-  categoryMap = [[${categoryMap}]]
-  for (const evidence of [[${evidenceList}]]) {
-    addTagRowToEvidence(evidence.id, "ci")
-    for (const evidenceCategory of categoryMap[evidence.id].sort()) {
-      addTagToEvidence(evidenceCategory, evidence.id, "ci")
-    }
-  }
-
+</script>
+<script th:inline="javascript">
   function updateProject() {
       $.post("evidence-project", {pi: parseInt(document.getElementById("project_selector").value)}).done(function (evidenceItems) {
           $("#evidence_item_list").replaceWith(evidenceItems)
-          let a = [[${evidenceList}]]
-          console.log(a)
+          console.log(evidenceItems)
       })
   }
-  let eviList = [[${evidenceList}]]
-  console.log(eviList)
+  updateProject()
 </script>
 </body>
 </html>

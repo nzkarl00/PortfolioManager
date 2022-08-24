@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-<div th:fragment="evidenceItems">
+<div th:fragment="evidenceItems" id="evidence_item_list">
     <div class="row" th:each="evidence: ${evidenceList}">
 
         <div class="col-1">
@@ -107,6 +107,53 @@
         </div>
 
     </div>
+    <script th:inline="javascript">
+        function addTagToEvidence(value, evidenceId, type) {
+            let newItem = document.createElement("button");
+            newItem.className = "table_text evidence_" + type + "_tag"
+            newItem.innerText = value
+            newItem.value = value
+            newItem.onclick = function() {window.location.href = "evidence?" + type + "=" + value}
+            console.log(newItem)
+            let itemRow = document.getElementById("current_row_" + type)
+            itemRow.appendChild(newItem);
+            if (itemRow.getBoundingClientRect().right < newItem.getBoundingClientRect().right) {
+                itemRow.removeChild(newItem);
+                addTagRowToEvidence(evidenceId, type)
+                itemRow.appendChild(newItem);
+            }
+        }
+
+        /* Creates a new row for skill tags to be placed on, for some reason inserting <br> couldn't do this*/
+        function addTagRowToEvidence(evidenceId, type) {
+            if (document.getElementById("current_row_" + type) !== null ) {
+                document.getElementById("current_row_" + type).id = ""
+            }
+            let newRow = document.createElement("div");
+            newRow.id = "current_row_" + type
+            document.getElementById("evidence_" + type + "_" + evidenceId).appendChild(newRow)
+        }
+
+        skillMap = [[${skillMap}]]
+        for (const evidence of [[${evidenceList}]]) {
+            addTagRowToEvidence(evidence.id, "si")
+            for (const evidenceSkill of skillMap[evidence.id]) {
+                addTagToEvidence(evidenceSkill, evidence.id, "si")
+            }
+        }
+
+        categoryMap = [[${categoryMap}]]
+        for (const evidence of [[${evidenceList}]]) {
+            addTagRowToEvidence(evidence.id, "ci")
+            for (const evidenceCategory of categoryMap[evidence.id].sort()) {
+                addTagToEvidence(evidenceCategory, evidence.id, "ci")
+            }
+        }
+
+        let eviList = [[${evidenceList}]]
+        console.log("A")
+        console.log(eviList)
+    </script>
 </div>
 </body>
 </html>

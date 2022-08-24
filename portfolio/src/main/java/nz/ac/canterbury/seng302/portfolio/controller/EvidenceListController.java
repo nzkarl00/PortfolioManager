@@ -80,7 +80,7 @@ public class EvidenceListController {
     model.addAttribute("projectList", allProjects);
     model.addAttribute("skillMap", evidenceSkillMap);
     model.addAttribute("categoryMap", evidenceCategoryMap);
-    model.addAttribute("evidenceList", evidenceList);
+    model.addAttribute("evidenceLists", evidenceList);
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
     Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
     skillTagListNoSkill.remove("No_skills");
@@ -119,8 +119,17 @@ public class EvidenceListController {
       if (userId == null) {
           userId = AuthStateInformer.getId(principal);
       }
-      List<Evidence> evidenceList = evidenceService.getEvidenceForUserAndProject(userId, projectId);
+      List<Evidence> evidenceList;
+      if (projectId == -1) {
+          evidenceList = evidenceService.getEvidenceForUser(userId);
+      } else {
+          evidenceList = evidenceService.getEvidenceForUserAndProject(userId, projectId);
+      }
       model.addAttribute("evidenceList", evidenceList);
+      for (Evidence evidence: evidenceList) {
+          logger.debug(String.valueOf(evidence.getId()));
+      }
+
       return "fragments/evidenceItems.html :: evidenceItems";
   }
 

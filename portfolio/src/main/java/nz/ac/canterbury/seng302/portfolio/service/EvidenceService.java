@@ -77,6 +77,9 @@ public class EvidenceService {
         return evidenceRepository.findAllByAssociatedProjectAndParentUserIdOrderByDateDesc(project, userId);
     }
 
+    public List<Evidence> getEvidenceForUser(int userId) {
+        return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
+    }
     /**
      * This function loops through the provided evidences from the filtering
      * and retrieves all the skill tags from them to display in the side panel
