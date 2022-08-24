@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,10 +30,10 @@ public class LinkedCommit {
     /**
      * Source repo name and owner to identify the commit
      */
-    @Column(name="group_repo_name", nullable = false)
-    protected String groupRepoName;
-    @Column(name="group_repo_owner", nullable = false)
-    protected String groupRepoOwner;
+    @Column(name="repo_name", nullable = false)
+    protected String repoName;
+    @Column(name="repo_owner", nullable = false)
+    protected String repoOwner;
 
     /**
      * Searchable attributes of a LinkedCommit are its
@@ -58,8 +57,8 @@ public class LinkedCommit {
     /**
      * A link commit to a parent evidence
      * @param parentEvidence that this LinkedCommit is associated with
-     * @param groupRepoName Repo name used to identify where this LinkedCommit was retrieved from
-     * @param groupRepoOwner Repo owner used to identify where this LinkedCommit was retrieved from
+     * @param repoName Repo name used to identify where this LinkedCommit was retrieved from
+     * @param repoOwner Repo owner used to identify where this LinkedCommit was retrieved from
      * @param hash of the LinkedCommit
      * @param author of the LinkedCommit
      * @param title of the LinkedCommit that must not exceed MAX_TITLE_LENGTH
@@ -67,16 +66,16 @@ public class LinkedCommit {
      */
     public LinkedCommit(
         Evidence parentEvidence,
-        String groupRepoName,
-        String groupRepoOwner,
+        String repoName,
+        String repoOwner,
         String hash,
         String author,
         String title,
         LocalDateTime timestamp
     ) {
         this.parentEvidence = parentEvidence;
-        this.groupRepoName = groupRepoName;
-        this.groupRepoOwner = groupRepoOwner;
+        this.repoName = repoName;
+        this.repoOwner = repoOwner;
         this.hash = hash;
         this.author = author;
         this.title = title;
@@ -113,12 +112,16 @@ public class LinkedCommit {
     }
 
     /**
-     * Returns the GroupRepo from which the LinkedCommit came from
+     * Returns the name of the repo from which the LinkedCommit came from
      * @return
      */
-    public GroupRepo getParentGroupRepo() {
-        return parentGroupRepo;
-    }
+    public String getRepoName() { return repoName; }
+
+    /**
+     * Returns the owner of the repo from which the LinkedCommit came from
+     * @return
+     */
+    public String getRepoOwner() { return repoOwner; }
 
     /**
      * Return the hash of the commit
@@ -153,11 +156,19 @@ public class LinkedCommit {
     };
 
     /**
-     * Set the group repo this commit is retrieved from
-     * @param parentGroupRepo
+     * Set the name of the repo this commit is retrieved from
+     * @param repoName
      */
-    public void setParentGroupRepo(GroupRepo parentGroupRepo) {
-        this.parentGroupRepo = parentGroupRepo;
+    public void setRepoName(String repoName) {
+        this.repoName = repoName;
+    }
+
+    /**
+     * Set the owner of the repo this commit is retrieved from
+     * @param repoOwner
+     */
+    public void setRepoOwner(String repoOwner) {
+        this.repoOwner = repoOwner;
     }
 
     /**

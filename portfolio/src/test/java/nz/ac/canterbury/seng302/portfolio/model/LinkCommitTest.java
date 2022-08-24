@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.LinkedCommit;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ public class LinkCommitTest {
     static Project exampleProject;
     Evidence evidence;
     Evidence evidence2; // A second evidence to test against
-    GroupRepo groupRepo;
     LinkedCommit linkedCommit;
 
     @BeforeEach
@@ -32,18 +30,12 @@ public class LinkCommitTest {
         );
         evidence = new Evidence(1, exampleProject, "Title", "Desc", date, 0);
         evidence2 = new Evidence(1, exampleProject, "Title2", "Desc2", date, 0);
-        groupRepo = new GroupRepo(1, "yyu69", "yyu69/google-map-tutorial", "QqGvNaLjLGCBXYDy4FiF");
-        linkedCommit = new LinkedCommit(evidence, groupRepo, "5b30f44383d8cbbf97beeb63a1b90443b871c95e", "Yiyang (Jessie) Yu", "Initial commit", timestamp);
+        linkedCommit = new LinkedCommit(evidence, "yyu69", "yyu69/google-map-tutorial", "5b30f44383d8cbbf97beeb63a1b90443b871c95e", "Yiyang (Jessie) Yu", "Initial commit", timestamp);
     }
 
     @Test
     public void getParentEvidence() {
         assertEquals(evidence, linkedCommit.getParentEvidence());
-    }
-
-    @Test
-    public void getParentGroupRepo() {
-        assertEquals(groupRepo, linkedCommit.getParentGroupRepo());
     }
 
     @Test
@@ -63,7 +55,7 @@ public class LinkCommitTest {
      */
     @Test
     public void setLinkedCommitToSecondEvidence_pass() {
-        LinkedCommit linkedCommit2 = new LinkedCommit(evidence2, groupRepo, "5b30f44383d8cbbf97beeb63a1b90443b871c95e", "Yiyang (Jessie) Yu", "Initial commit", timestamp);
+        LinkedCommit linkedCommit2 = new LinkedCommit(evidence2, "yyu69", "yyu69/google-map-tutorial", "5b30f44383d8cbbf97beeb63a1b90443b871c95e", "Yiyang (Jessie) Yu", "Initial commit", timestamp);
         Assertions.assertEquals(evidence, linkedCommit.getParentEvidence());
         Assertions.assertEquals(evidence2, linkedCommit2.getParentEvidence());
     }

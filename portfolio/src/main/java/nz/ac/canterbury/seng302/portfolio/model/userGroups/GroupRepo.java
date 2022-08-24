@@ -1,10 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.model.userGroups;
 
-import nz.ac.canterbury.seng302.portfolio.model.evidence.LinkedCommit;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * A code repository (gitlab) associated with a specific group record.
