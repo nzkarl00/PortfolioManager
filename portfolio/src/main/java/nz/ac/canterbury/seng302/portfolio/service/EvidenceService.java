@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,17 @@ public class EvidenceService {
     EvidenceTagRepository evidenceTagRepository;
     @Autowired
     ProjectService projectService;
+    @Autowired
+    AccountClientService accountClientService;
 
     Logger logger = LoggerFactory.getLogger(EvidenceService.class);
+
+    // TODO: add in custom exceptions for if there is no group repo found for this user.
+    public List<String> getGroupRepoOptionsForUser(Integer userId) {
+
+//        UserResponse user = accountClientService.getUserById(userId);
+//        List<GroupMembership> findAllByRegisteredGroupUser(AccountProfile profile);
+    }
 
     /**
      * Get a list of all unique skill tag names

@@ -150,7 +150,7 @@ public class EvidenceListController {
       Integer accountID = AuthStateInformer.getId(principal);
 
       // A list of group repos this accountID is apart of, to sent to frontend to display as repo linking options
-      List<String> groupRepoOptions = getGroupRepoOptionsForUser(accountID);
+      List<String> groupRepoOptions = evidenceService.getGroupRepoOptionsForUser(accountID);
       model.addAttribute("groupRepoOptions", groupRepoOptions);
 
       Project parentProject = projectService.getProjectById(projectId);
@@ -221,13 +221,6 @@ public class EvidenceListController {
       }
 
       return "redirect:evidence?pi=" + projectId;
-  }
-
-  // TODO: add in custom exceptions for if there is no group repo found for this user.
-  private List<String> getGroupRepoOptionsForUser(Integer userId) {
-
-      List<Groups>
-
   }
 
     /**
