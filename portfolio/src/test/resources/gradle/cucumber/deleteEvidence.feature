@@ -30,7 +30,7 @@ Feature: U12: deleting your own evidence
   Scenario: AC2: Clicking Icon shows a prompt
     Given User is logged in.
     When User navigates to "evidence?pi=1".
-    And I view that piece of evidence
+    And I view that piece of evidence "Evidence One"
     Then I can see a delete icon
     And I can click the delete Icon
     Then A model appears containing the evidence title

@@ -218,11 +218,11 @@ public class EvidenceListController {
   }
 
     /**
-   * Construct web links, must be validated first.
-   * @param links The link of links which are associated with a given piece of evidence
-   * @param parentEvidence The evidence object which the weblink belongs to
-   * @return An array of weblink objects which contain both the link text and the parent evidence
-   */
+    * Construct web links, must be validated first.
+    * @param links The link of links which are associated with a given piece of evidence
+    * @param parentEvidence The evidence object which the weblink belongs to
+    * @return An array of weblink objects which contain both the link text and the parent evidence
+    */
   private List<WebLink> constructLinks(List<String> links, Evidence parentEvidence) throws MalformedURLException {
     ArrayList<WebLink> resultLinks = new ArrayList<>();
     // Validate all links

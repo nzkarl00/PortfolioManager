@@ -132,7 +132,6 @@ public class EvidenceStepDefs {
         titleField.sendKeys("Evidence One");
         WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
         description.sendKeys("This evidence relates to the work done on the evidence page");
-
     }
 
     @When("I click the save button")
@@ -263,5 +262,31 @@ public class EvidenceStepDefs {
     public void userSelectsTheOptionInTheSkillsSideMenu(String arg0) {
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("skill_button_"+arg0));
         button.click();
+    }
+
+    @When("User enters {string} into the title")
+    public void userEntersIntoTheTitle(String arg0) {
+        WebElement titleInput = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
+        titleInput.clear();
+        titleInput.sendKeys(arg0);
+    }
+
+    @And("User enters {string} into the description")
+    public void userEntersIntoTheDescription(String arg0) {
+        WebElement descInput = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
+        descInput.clear();
+        descInput.sendKeys(arg0);
+    }
+
+    @Then("Save button can be clicked")
+    public void saveButtonCanBeClicked() {
+        WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+        Assertions.assertNull(saveButton.getAttribute("disabled"));
+    }
+
+    @Then("Save button cannot be clicked")
+    public void saveButtonCanNotBeClicked() {
+        WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+        Assertions.assertEquals("true", saveButton.getAttribute("disabled"));
     }
 }
