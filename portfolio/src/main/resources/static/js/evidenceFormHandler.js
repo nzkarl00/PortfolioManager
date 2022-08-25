@@ -53,6 +53,107 @@ document.addEventListener("click", function (e) {
     }
 });
 
+// Start of Users
+//
+//
+//
+
+
+// Event listener to add user when enter is pressed and the user input is selected
+document.querySelector("#add_user_input").addEventListener("keyup", event => {
+    if (event.key !== "Enter" && event.key !== ".") return;
+    addUser()
+})
+
+//Returns the users
+function storeUsers() {
+    let userStore = document.getElementById("userHidden")
+    const userList = Array.from(users).join('~');
+    userStore.value = userList
+}
+
+let users = new Set()
+let userRow = document.getElementById("user_sub_1");
+
+
+// Adds the user to the set and resets the input.
+function addUser() {
+    let newUser = document.getElementById("add_user_input").value
+    if (newUser.slice(-1) === " ") {
+        newUser = newUser.slice(0, -1);
+    }
+
+    if (users.has(newUser)) {
+        document.getElementById("add_user_input").value = "";
+        return;
+    }
+    // check to see if it matches the correct user format
+    const validate = newUser.match(/^[a-zA-Z-_0-9]+$/)
+    if (!validate || !validate.length == 1) {
+        document.getElementById("user_error").style = "color:red;";
+        return
+    }
+    users.add(newUser)
+    allUsers = allUsers.filter(s => s !== newUser)
+    autocomplete(document.getElementById("add_user_input"), allUsers, "user")
+    document.getElementById("add_user_input").value = ""
+    appendUser(newUser)
+}
+
+// Inserts a new user tag into the form
+function appendUser(userText) {
+    let userTag = document.createElement("button");
+    userTag.id = "user_" + userText
+    userTag.className = "table_text user_tag"
+    userTag.innerHTML = '<img class="img-fluid rounded-circle rounded-circle" style="margin-right: 0.5em;" src="https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg" width=35em height=35em alt="">' + userText + " ✖"
+    userTag.value = userText
+    userTag.onclick = removeUser;
+    userRow.appendChild(userTag);
+    console.log(userTag.getBoundingClientRect().right)
+    console.log(userRow.getBoundingClientRect().right)
+    if (userRow.getBoundingClientRect().right <= userTag.getBoundingClientRect().right) {
+        userRow.removeChild(userTag)
+        insertUserRow()
+        userRow.appendChild(userTag);
+    }
+    storeUsers()
+}
+
+/* Creates a new row for user tags to be placed on, for some reason inserting <br> couldn't do this*/
+function insertUserRow() {
+    let newUserRow = document.createElement("div");
+    newUserRow.style.display = "flex"
+    document.getElementById("users_container").appendChild(newUserRow)
+    userRow = newUserRow
+}
+
+// Deletes a user then rebuilds the user list
+function removeUser(event) {
+    users.delete(event.target.value)
+    allUsers.push(event.target.value)
+    autocomplete(document.getElementById("add_user_input"), allUsers, "user")
+    clearUsers()
+    insertUserRow()
+    for (const user of users) {
+        appendUser(user)
+    }
+    return false;
+}
+
+// Removes all user from display
+function clearUsers() {
+    let userContainer = document.getElementById("users_container")
+    while (userContainer.lastChild) {
+        userContainer.removeChild(userContainer.lastChild)
+    }
+}
+
+
+// Start of Skills
+//
+//
+//
+
 // Event listener to add skills when enter is pressed and the skill input is selected
 document.querySelector("#add_skill_input").addEventListener("keyup", event => {
     if (event.key !== "Enter" && event.key !== " ") return;
@@ -69,6 +170,7 @@ function storeSkills() {
 let skills = new Set()
 let skillRow = document.getElementById("skill_sub_1");
 let skillCharLimit = 50;
+
 
 // Adds the skill to the set and resets the input.
 function addSkill() {
@@ -89,7 +191,7 @@ function addSkill() {
     }
     skills.add(newSkill)
     allSkills = allSkills.filter(s => s !== newSkill)
-    autocomplete(document.getElementById("add_skill_input"), allSkills)
+    autocomplete(document.getElementById("add_skill_input"), allSkills, "skill")
     document.getElementById("add_skill_input").value = ""
     appendSkill(newSkill)
 }
@@ -129,7 +231,7 @@ function insertSkillRow() {
 function removeSkill(event) {
     skills.delete(event.target.value)
     allSkills.push(event.target.value)
-    autocomplete(document.getElementById("add_skill_input"), allSkills)
+    autocomplete(document.getElementById("add_skill_input"), allSkills, "skill")
     clearSkills()
     insertSkillRow()
     for (const skill of skills) {
@@ -145,6 +247,7 @@ function clearSkills() {
         skillContainer.removeChild(skillContainer.lastChild)
     }
 }
+
 
 // Event listener to add links when enter is pressed and the link input is selected
 document.querySelector("#add_link_input").addEventListener("keyup", event => {
@@ -241,6 +344,12 @@ function updateDesc() {
     const descCounter = document.getElementById("descCharCount")
     const descInput = document.getElementById("evidence_desc")
     descCounter.innerText = "Characters Remaining: "  + (2000 - descInput.value.length)
+}
+
+function updateUsers() {
+    const userCounter = document.getElementById("userCharCount")
+    const userInput = document.getElementById("add_user_input")
+    userCounter.innerText = "Characters Remaining: "  + (65 - userInput.value.length)
 }
 
 // Enable form and hide add evidence form

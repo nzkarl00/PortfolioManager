@@ -86,8 +86,13 @@ public class DeleteEvidenceStepDefs {
 
     @Then("I cannot see a delete icon")
     public void i_cannot_see_a_delete_icon() {
-        WebElement button = seleniumExample.config.getDriver().findElement(By.className("group_delete_button"));
-        Assertions.assertFalse(button.isEnabled());
+        String getId = getEvidenceId();
+        try {
+            WebElement button = seleniumExample.config.getDriver().findElement(By.className("group_delete_button"));
+            Assertions.assertNotEquals(getId, button.getAttribute("id"));
+        } catch(Exception e) {
+
+        }
     }
 
     @Then("A model appears containing the evidence title")

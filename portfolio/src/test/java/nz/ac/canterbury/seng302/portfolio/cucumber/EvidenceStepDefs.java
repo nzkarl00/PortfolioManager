@@ -9,7 +9,9 @@ import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -134,15 +136,16 @@ public class EvidenceStepDefs {
     }
 
     @When("I click the save button")
-    public void i_click_the_save_button() {
+    public void i_click_the_save_button() throws InterruptedException {
         WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
         Assertions.assertTrue(saveButton.isEnabled());
         saveButton.submit();
+        Thread.sleep(200);
     }
 
     @Then("I will see a message that this evidence has saved successfully")
     public void i_will_see_a_message_that_this_evidence_has_saved_successfully() throws InterruptedException {
-        Thread.sleep(100);
+        Thread.sleep(1000);
         WebElement message = seleniumExample.config.getDriver().findElement(By.id("display_box"));
         Assertions.assertEquals("Evidence has been added", message.getText());
     }
@@ -189,7 +192,7 @@ public class EvidenceStepDefs {
     @When("User selects the {string} option in the skills dropdown")
     public void userSelectsTheOptionInTheSkillsDropdown(String arg0) {
         Select category = new Select(seleniumExample.config.getDriver().findElement(By.id("si")));
-        category.selectByVisibleText(arg0);
+        category.selectByValue(arg0);
     }
 
     @Then("I can see the prefilled date is today's date")

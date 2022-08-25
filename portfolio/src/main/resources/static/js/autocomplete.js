@@ -1,5 +1,6 @@
 /* reference https://www.w3schools.com/howto/howto_js_autocomplete.asp*/
-function autocomplete(inp, arr) {
+function autocomplete(inp, arr, autocompleteType) {
+
 
     let currentItem;
 
@@ -24,9 +25,15 @@ function autocomplete(inp, arr) {
                 optionItem.value = arr[i]
                 optionItem.addEventListener("click", function(e) {
                     inp.value = optionItem.value
-                    addSkill()
-                    updateSkills()
-                    closeAllLists()
+                    if (autocompleteType == "user") {
+                        addUser()
+                        updateUsers()
+                        closeAllLists()
+                    } else {
+                        addSkill()
+                        updateSkills()
+                        closeAllLists()
+                    }
                 });
                 optionContainer.appendChild(optionItem)
             }
