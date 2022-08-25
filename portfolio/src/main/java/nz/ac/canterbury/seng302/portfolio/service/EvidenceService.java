@@ -73,7 +73,6 @@ public class EvidenceService {
     }
 
 
-
     /**
      * This function loops through the provided evidences from the filtering
      * and retrieves all the skill tags from them to display in the side panel
@@ -103,6 +102,13 @@ public class EvidenceService {
         return evidenceTagList.stream().map(evidenceTag -> evidenceTag.getParentSkillTag().getTitle()).collect(Collectors.toList());
     }
 
+    /**
+     * This method is called to add skills to the repo. If the skills is already in the repo for skills then use it, if not
+     * make a new skill from the given inputs and save it to the repo.
+     * @param parentProject The project the evidence is linked with
+     * @param evidence Evidence for the skill
+     * @param skills string of skills to be added to the skills repo
+     */
     public void addSkillsToRepo(Project parentProject, Evidence evidence, String skills) {
         //Create new skill for any skill that doesn't exist, create evidence tag for all skills
         if (skills.replace(" ", "").length() > 0) {
@@ -110,15 +116,15 @@ public class EvidenceService {
 
             for (String skillString : skillList) {
                 String validSkillString = skillString.replace(" ", "_");
-                SkillTag skillFromRepo = skillTagRepository.findByTitle(validSkillString);
-
-                saveSkillsAndEvidenceTags(parentProject, evidence, validSkillString, skillFromRepo, skillTagRepository, evidenceTagRepository);
+                SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase(validSkillString);
+                saveSkillsAndEvidenceTags(parentProject, evidence, validSkillString, skillFromRepo);
             }
         }
 
         // If there's no skills, add the no_skills
         List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
         if (evidenceTagList.size() == 0) {
+            logger.info("[EVIDENCE_SERVICE] Attempted to create new evidence tag using 'No_Skill' tag and save it to evidenceTagRepository");
             SkillTag noSkillTag = skillTagRepository.findByTitle("No_skills");
             EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
             evidenceTagRepository.save(noSkillEvidence);
@@ -126,15 +132,35 @@ public class EvidenceService {
 
     }
 
-    public static void saveSkillsAndEvidenceTags(Project parentProject, Evidence evidence, String validSkillString, SkillTag skillFromRepo, SkillTagRepository skillTagRepository, EvidenceTagRepository evidenceTagRepository) {
+    /**
+     * This method is called to check if a input skill tag is in the repo already or not. If it is it will save the skill tag under that or else make a new
+     * skill tage to save it.
+     * @param parentProject The project the evidence is linked with
+     * @param evidence Evidence for the skill
+     * @param validSkillString input skill to be checked
+     * @param skillFromRepo skill tag from the repo if matches validSkillString (case-insensitive)
+     */
+    public void saveSkillsAndEvidenceTags(Project parentProject, Evidence evidence, String validSkillString, SkillTag skillFromRepo) {
         if (skillFromRepo == null) {
+            logger.info("[EVIDENCE_SERVICE] Attempted to create new skill tag and save it to skillTagRepository");
             SkillTag newSkill = new SkillTag(parentProject, validSkillString);
             skillTagRepository.save(newSkill);
             EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
             evidenceTagRepository.save(noSkillEvidence);
         } else {
-            EvidenceTag noSkillEvidence = new EvidenceTag(skillFromRepo, evidence);
-            evidenceTagRepository.save(noSkillEvidence);
+            logger.info("[EVIDENCE_SERVICE] Finding all evidence tag using the evidence id, by using evidenceTagRepository");
+            List<EvidenceTag> allEvidenceTagsForEvidence = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+
+            // Checks to see if the skill tag isn't already in the piece of evidence.
+            boolean isInEvidence = allEvidenceTagsForEvidence.stream()
+                            .anyMatch(eachEvidenceTag -> (skillFromRepo.getId() == eachEvidenceTag.getParentSkillTag().getId()));
+
+            if (!isInEvidence) {
+                logger.info("[EVIDENCE_SERVICE] Attempted to create new evidence tag using existing skill tag and save it to evidenceTagRepository");
+                EvidenceTag noSkillEvidence = new EvidenceTag(skillFromRepo, evidence);
+                evidenceTagRepository.save(noSkillEvidence);
+            }
+
         }
     }
 
@@ -151,8 +177,6 @@ public class EvidenceService {
         return Arrays.asList(stringFromHTML.split("~"));
     }
 
-
-
     /**
      * Validate web link strings
      * @param links Web A list of web links to be checked
@@ -167,4 +191,5 @@ public class EvidenceService {
         }
         return Optional.empty();
     }
+
 }
