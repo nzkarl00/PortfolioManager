@@ -138,51 +138,23 @@
                 <!-- End of link section of the form -->
             </div>
 
-            <!-- Commit Section Row -->
+             <!-- Start of commit section of the form, which includes the 1. current commits, 2. add commits -->
             <div class="row-1" style="display:flex;">
 
-                <!-- Title Column -->
-                <div class="evidence_form_element col-4">
-                    <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" minlength="2" th:name="titleInput" oninput="updateTitle(); canSaveCheck()" required>
-                    <label class="project_inputAlertBlue" id="titleCharCount">Characters Remaining: 100</label>
+                <!-- 1. Current Commit -->
+                <div class="evidence_form_element col-6">
+                    <b class="evidence_head setWide">Current Commit:</b><br>
                 </div>
 
-                <!-- Date Column -->
-                <div id="date_container" class="evidence_form_element col-3">
-                    <div style="display: flex">
-                        <b class="evidence_head">Date*:</b> <br>
-                        <i id="evidence_date_tool" class="fa fa-question-circle-o" style="padding-left: 0.2em; font-size: 200%"></i>
-                    </div>
-                    <input type="date" th:name="dateInput" th:value="${date}"
-                           th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}"
-                           class="project_edit_data" id="date_input"
-                           oninput="canSaveCheck()" required
-                    >
+                <!-- 2. Add Commit -->
+                <div class="evidence_form_element align-content-center col-6">
+                    <b class="evidence_head setWide">Add Commit:</b><br>
+<!--                    <select id="gi" th:name="si" onclick="resetElement('ci')" class="project_edit_data setWide">-->
+                    <select id="group_id" onclick="resetElement('ci')" class="project_edit_data setWide">
+                        <option value="" selected disabled> Select a group with a linked repository </option>
+<!--                        <div th:each="skill: ${skillList}"><option th:value="${skill.getTitle}" th:text="${skill.getTitle}"> </option><div>-->
+                    </select>
                 </div>
-
-                <!-- Category Column -->
-                <div class="evidence_form_element align-content-center col-5">
-                    <b class="evidence_head setWide">Category:</b><br>
-                    <div id="evidence_category" class="project_edit_data" onclick="showCategories()">
-                        Select Categories
-                    </div>
-                    <div id="category_multiselect_items" class="category_box" style="display: none">
-                        <label for="category_quantitative" class="category_item" style="display: block">
-                            <input type="checkbox" autocomplete="off" class="category_item" value="Quantitative Skills" id="category_quantitative" onchange="updateCategories(this)" />
-                            Quantitative Skills
-                        </label>
-                        <label for="category_qualitative" class="category_item" style="display: block">
-                            <input type="checkbox" autocomplete="off" class="category_item" value="Qualitative Skills" id="category_qualitative" onchange="updateCategories(this)" />
-                            Qualitative Skills
-                        </label>
-                        <label for="category_service" class="category_item" style="display: block">
-                            <input type="checkbox" autocomplete="off" class="category_item" value="Service" id="category_service" onchange="updateCategories(this)" />
-                            Service
-                        </label>
-                    </div>
-                </div>
-
-                <input type="hidden" id="category_hidden" th:name="categoryInput">
             </div>
             <br>
             <br>
