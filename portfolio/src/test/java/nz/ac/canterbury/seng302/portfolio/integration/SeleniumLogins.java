@@ -59,14 +59,17 @@ public class SeleniumLogins {
     /**
      * load up the page then login to the admin user
      */
-    public static void whenPortfolioIsLoaded_thenLoginAdmin_forTests(SeleniumExample seleniumExample, String passwordText) {
+    public static void whenPortfolioIsLoaded_thenLoginAdmin_forTests(SeleniumExample seleniumExample, String passwordText) throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url);
         WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
         username.sendKeys("admin");
         WebElement password = seleniumExample.config.getDriver().findElement(By.id("password"));
+        password.click();
+        Thread.sleep(500);
         password.sendKeys(passwordText);
         WebElement loginButton = seleniumExample.config.getDriver().findElement(By.id("login-button"));
         loginButton.click();
+        Thread.sleep(500);
 
         WebElement fullName = seleniumExample.config.getDriver().findElement(By.id("full-name"));
         Assertions.assertEquals("admin admin", fullName.getText());

@@ -62,7 +62,7 @@ public class BaseSeleniumStepDefs {
     }
 
     @And("I am authenticated as a admin")
-    public void iAmAuthenticatedAsAAdmin() throws FileNotFoundException {
+    public void iAmAuthenticatedAsAAdmin() throws FileNotFoundException, InterruptedException {
         seleniumExample = new SeleniumExample("");
         passwordText = SeleniumLogins.getPassword_ForAdmin_FromTextFile();
         SeleniumLogins.whenPortfolioIsLoaded_thenLoginAdmin_forTests(seleniumExample, passwordText);

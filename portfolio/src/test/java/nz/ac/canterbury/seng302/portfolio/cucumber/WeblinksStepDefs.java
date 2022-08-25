@@ -51,7 +51,11 @@ public class WeblinksStepDefs {
         // get the xpath of the desired pieve of evidence
         String xpath = BaseSeleniumStepDefs.generateXPATH(seleniumExample.config.getDriver().findElement(By.xpath("//*[contains(text(), 'Test Evidence')]")), "");
         // get the button's xpath based on the title's xpath
-        WebElement button = seleniumExample.config.getDriver().findElement(By.xpath(xpath.substring(0,66) + "div[4]/a"));
+
+        WebElement button = seleniumExample.config.getDriver().findElement(By.xpath(xpath.substring(0,66) + "/div[4]/a"));
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("arguments[0].scrollIntoView(true);", button);
+        Thread.sleep(100);
         button.click();
         // wait for dropdown
         Thread.sleep(500);
