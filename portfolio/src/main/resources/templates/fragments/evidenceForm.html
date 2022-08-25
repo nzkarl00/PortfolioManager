@@ -125,11 +125,9 @@
                     </div>
                     <!-- End of link section of the form -->
 
-                    <div>
-                        <div id="commit_section" th:replace="fragments/evidenceCommit.html :: evidenceCommit"></div>
-                    </div>
+                    <div class="row-1 portion_body_tall" style="display:flex;" id="commit_section" th:replace="fragments/evidenceCommit.html :: evidenceCommit"></div>
 
-                    <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
+                    <div id="submit_and_cancel" class="row-1 col-12">
                         <button class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button">CANCEL</button>
                         <button class="save_evidence" id="projectSave" style="background: lightgray" type="submit" disabled>SAVE</button>
                     </div>
