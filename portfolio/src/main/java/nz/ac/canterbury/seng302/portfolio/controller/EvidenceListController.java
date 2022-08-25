@@ -146,7 +146,13 @@ public class EvidenceListController {
           return "redirect:evidence?pi=" + projectId.toString();
       }
 
+      // TODO: update this to accountId instead of ID
       Integer accountID = AuthStateInformer.getId(principal);
+
+      // A list of group repos this accountID is apart of, to sent to frontend to display as repo linking options
+      List<String> groupRepoOptions = getGroupRepoOptionsForUser(accountID);
+      model.addAttribute("groupRepoOptions", groupRepoOptions);
+
       Project parentProject = projectService.getProjectById(projectId);
       if (parentProject == null) {
           logger.debug("[EVIDENCE] Attempted to add evidence to a project that could not be found");
@@ -215,6 +221,13 @@ public class EvidenceListController {
       }
 
       return "redirect:evidence?pi=" + projectId;
+  }
+
+  // TODO: add in custom exceptions for if there is no group repo found for this user.
+  private List<String> getGroupRepoOptionsForUser(Integer userId) {
+
+      List<Groups>
+
   }
 
     /**
