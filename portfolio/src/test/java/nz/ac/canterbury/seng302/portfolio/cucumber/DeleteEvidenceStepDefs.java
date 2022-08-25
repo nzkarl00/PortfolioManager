@@ -17,7 +17,7 @@ import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.NoSuchElementException;
 
 public class DeleteEvidenceStepDefs {
 
@@ -62,7 +62,7 @@ public class DeleteEvidenceStepDefs {
 
     @When("I view that piece of evidence")
     public void i_view_that_piece_of_evidence() {
-       viewFullPieceOfEvidence();
+        viewFullPieceOfEvidence();
     }
 
     @Then("I can see a delete icon")
@@ -113,4 +113,22 @@ public class DeleteEvidenceStepDefs {
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("CancelButton"));
         button.click();
     }
+
+
+    @Then("I fill out all mandatory fields")
+    public void i_fill_out_all_mandatory_fields() {
+        WebElement titleField = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
+        titleField.sendKeys("Added AC Testing For Delete Icon");
+        WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
+        description.sendKeys("This evidence relates to the work done on the evidence page");
+        WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
+        String dateToSend = date.getAttribute("min");
+        date.sendKeys(dateToSend);
+    }
+
+    @Then("I close the window")
+    public void i_close_the_window() {
+        seleniumExample.closeWindow();
+    }
+
 }
