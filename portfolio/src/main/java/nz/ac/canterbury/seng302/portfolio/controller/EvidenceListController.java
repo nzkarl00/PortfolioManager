@@ -76,6 +76,8 @@ public class EvidenceListController {
       evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
       evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
     }
+    int id = AuthStateInformer.getId(principal);
+
     model.addAttribute("skillMap", evidenceSkillMap);
     model.addAttribute("categoryMap", evidenceCategoryMap);
     model.addAttribute("evidenceList", evidenceList);
@@ -86,8 +88,7 @@ public class EvidenceListController {
     model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("skillList", skillList);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
-
-    int id = AuthStateInformer.getId(principal);
+    model.addAttribute("userID", id);
 
     // Attributes For header
     UserResponse userReply;

@@ -78,6 +78,8 @@
             <br>
 
             <div class="row-1">
+
+                <!-- Description Column -->
                 <div>
                     <b class="evidence_head setWide">Description*:</b>
                     <br>
@@ -87,9 +89,12 @@
                     ></textarea>
                     <label class="project_inputAlertBlue" id="descCharCount">Characters Remaining: 2000</label>
                 </div>
+
                 <input type="number" th:name="projectId" th:value="${project.getId}" style="display: none" >
+
                 <!-- When enter is pressed, default form action is to submit the first button. As our form contains buttons, this empty button exists to consume the default action. -->
                 <button onclick="return false;" style="display: none"></button>
+
                 <div class="row-1">
                     <b class="evidence_head setWide" id="skills_input">Skills:</b>
                     <p style="display:none;" id="skill_error">Only letters, underscores, hyphens, and numbers are allowed</p>
