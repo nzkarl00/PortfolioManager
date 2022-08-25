@@ -103,6 +103,7 @@
                     <div id="skills_container" style="width: 100%">
                         <div id="skill_sub_1" style="display: flex; width: 100%"></div>
                     </div>
+
                     <!-- Start of link section of the form, which includes the 1. "Links" title, 2. input, and 3. list of inputted links -->
                     <div class="col-12">
                         <!-- 1. "Links" title-->
@@ -116,21 +117,21 @@
                             </input>
                         </div><br>
 
-
-                        <div id="links_and_submit" style="display: flex">
-
-                            <!-- 3. List of all the links the user added from the input field -->
-                            <div id="links_container" style="width: 85%; display: block">
-                                <input type="hidden" id="linksInput" th:name="linksInput">
-                            </div>
-
-                            <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
-                                <button class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button">CANCEL</button>
-                                <button class="save_evidence" id="projectSave" style="background: lightgray" type="submit" disabled>SAVE</button>
-                            </div>
+                        <!-- 3. List of all the links the user added from the input field -->
+                        <div id="links_container" style="width: 85%; display: block">
+                            <input type="hidden" id="linksInput" th:name="linksInput">
                         </div>
 
-                        <div th:replace="fragments/commitSearch.html :: commitSearch"></div>
+                    </div>
+                    <!-- End of link section of the form -->
+
+                    <div>
+                        <div id="commit_section" th:replace="fragments/evidenceCommit.html :: evidenceCommit"></div>
+                    </div>
+
+                    <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
+                        <button class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button">CANCEL</button>
+                        <button class="save_evidence" id="projectSave" style="background: lightgray" type="submit" disabled>SAVE</button>
                     </div>
                 </div>
         </form>
