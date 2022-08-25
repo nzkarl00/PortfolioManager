@@ -28,7 +28,7 @@
         <form th:action="@{add-evidence}" method="post">
                 <div class="row-1" style="display:flex;">
                         <div class="evidence_form_element col-4">
-                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" minlength="2" th:name="titleInput" oninput="updateTitle(); canSaveCheck()" required>
+                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" th:name="titleInput" oninput="updateTitle();">
                             <label class="project_inputAlertBlue" id="titleCharCount">Characters Remaining: 100</label>
                         </div>
                     <div id="date_container" class="evidence_form_element col-3">
@@ -74,9 +74,9 @@
                     <div>
                         <b class="evidence_head setWide">Description*:</b>
                         <br>
-                        <textarea type="text" maxlength="2000" id="evidence_desc" oninput="updateDesc(); canSaveCheck()"
+                        <textarea type="text" maxlength="2000" id="evidence_desc" oninput="updateDesc();"
                                   class=" description-input project_edit_data horizontal_field bio setWide"
-                                  th:name="descriptionInput" required minlength="2"
+                                  th:name="descriptionInput"
                         ></textarea>
                         <label class="project_inputAlertBlue" id="descCharCount">Characters Remaining: 2000</label>
                     </div>
@@ -114,11 +114,11 @@
                     <div class="col-12" id="skills_div" style="display: flex; justify-content: center; align-items: center;">
                         <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
                         <div class="evidence_form_element_wide">
-                            <div class="autocomplete evidence_form_element_wide">
-                                <input type="hidden" id="skillHidden" th:name="skillInput">
-                                <input type="text" autocomplete="off" id="add_skill_input" maxlength=100 oninput="updateSkills()"  class="evidence_form_element_wide project_edit_data">
-                                </input>
-                            </div>
+                        <div class="autocomplete evidence_form_element_wide">
+                            <input type="hidden" id="skillHidden" th:name="skillInput">
+                        <input type="text" autocomplete="off" id="add_skill_input" maxlength=100 oninput="updateSkills()" class="evidence_form_element_wide project_edit_data">
+                        </input>
+                        </div>
                         </div>
                         <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill(); return false;"></button>
                     </div>
@@ -151,7 +151,7 @@
 
                             <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
                                 <button class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button">CANCEL</button>
-                                <button class="save_evidence" id="projectSave" style="background: lightgray" type="submit" disabled>SAVE</button>
+                                <button class="save_evidence" id="projectSave" type="submit">SAVE</button>
                             </div>
                         </div>
                     </div>

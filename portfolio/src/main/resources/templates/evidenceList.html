@@ -226,26 +226,7 @@
 
                     // hides element (still takes up space on page)
                     // box.style.visibility = 'hidden';
-                }, 10000); // time in milliseconds
-
-                // If required fields are filled in, enable save button
-                function canSaveCheck() {
-                    const descriptionField = document.getElementById('evidence_desc').value;
-                    const titleField = document.getElementById('evidence_title').value;
-                    const dateField = document.getElementById('date_input').value;
-                    var saveButton = document.getElementById('projectSave');
-                    if (descriptionField.length > 0 && titleField.length > 0 && dateField.length > 0) {
-                        saveButton.disabled = false;
-                        saveButton.style.backgroundColor = "#26D20F";
-                        if (!saveButton.classList.contains("save_hover")) {
-                            saveButton.className += " save_hover";
-                        }
-                    } else {
-                        saveButton.disabled = true;
-                        saveButton.style.backgroundColor = "lightgray";
-                        saveButton.classList.remove("save_hover");
-                    }
-                }
+                }, 10000); // time in millisecondss
 
             </script>
             <script th:inline="javascript">
@@ -256,7 +237,6 @@
     newItem.innerText = value
     newItem.value = value
     newItem.onclick = function() {window.location.href = "evidence?" + type + "=" + value}
-    console.log(newItem)
     let itemRow = document.getElementById("current_row_" + type)
     itemRow.appendChild(newItem);
     if (itemRow.getBoundingClientRect().right < newItem.getBoundingClientRect().right) {

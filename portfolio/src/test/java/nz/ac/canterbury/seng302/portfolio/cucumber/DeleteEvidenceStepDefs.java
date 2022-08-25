@@ -28,10 +28,9 @@ public class DeleteEvidenceStepDefs {
      *Gets the evidence id for the users evidence
      * @return evidence id - type String
      **/
-    public String getEvidenceId() {
-        List<WebElement> elementsList = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(),'Evidence One')]"));
-        String getId = elementsList.get(0).getAttribute("id");
-        return getId;
+    public String getEvidenceId(String title) {
+        List<WebElement> elementsList = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(),'" + title + "')]"));
+        return elementsList.get(0).getAttribute("id");
     }
 
     /**
@@ -48,14 +47,18 @@ public class DeleteEvidenceStepDefs {
      *Opens a piece of evidence
      **/
     public void viewFullPieceOfEvidence() {
-        String getId = getEvidenceId();
+        String getId = getEvidenceId("Evidence One");
         new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+getId)));
         WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
+        //scrollWindowToElement(arrowButton);
         seleniumExample.config.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         arrowButton.click();
     }
 
-
+    @And("I view that piece of evidence {string}")
+    public void iViewThatPieceOfEvidence(String arg0) {
+        viewFullPieceOfEvidence();
+    }
 
     @When("I view that piece of evidence")
     public void i_view_that_piece_of_evidence() {
@@ -64,14 +67,14 @@ public class DeleteEvidenceStepDefs {
 
     @Then("I can see a delete icon")
     public void i_can_see_a_delete_icon() {
-        String getId = getEvidenceId();
+        String getId = getEvidenceId("Evidence One");
         WebElement element = driver.findElement(By.id(getId));
         scrollWindowToElement(element);
     }
 
     @Then("I can click the delete Icon")
     public void i_can_click_the_delete_icon() {
-        String getId = getEvidenceId();
+        String getId = getEvidenceId("Evidence One");
         WebElement element = driver.findElement(By.id(getId));
         scrollWindowToElement(element);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
@@ -86,7 +89,7 @@ public class DeleteEvidenceStepDefs {
 
     @Then("I cannot see a delete icon")
     public void i_cannot_see_a_delete_icon() {
-        String getId = getEvidenceId();
+        String getId = getEvidenceId("Evidence One");
         try {
             WebElement button = seleniumExample.config.getDriver().findElement(By.className("group_delete_button"));
             Assertions.assertNotEquals(getId, button.getAttribute("id"));
@@ -110,6 +113,4 @@ public class DeleteEvidenceStepDefs {
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("CancelButton"));
         button.click();
     }
-
-
 }

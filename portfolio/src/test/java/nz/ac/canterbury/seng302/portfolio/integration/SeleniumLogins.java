@@ -48,7 +48,12 @@ public class SeleniumLogins {
         WebElement fullName = seleniumExample.config.getDriver().findElement(By.id("full-name"));
         Assertions.assertEquals("Lachlan Alsop", fullName.getText());
     }
-    
+
+    /**
+     * get the password from the password file for admin
+     * @return the password from the file
+     * @throws FileNotFoundException if we can't find the file
+     */
     public static String getPassword_ForAdmin_FromTextFile() throws FileNotFoundException {
         String originpath = System.getProperty("user.dir");
         File passwordFile = new File(originpath.substring(0, originpath.length()-9) + "identityprovider/defaultAdminPassword.txt");
