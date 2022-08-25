@@ -1,5 +1,5 @@
 
-let dateTooltip = '<span id="info" class="tooltip_body_evidence">This is the date the evidence occurred, date selection is restricted to the boundaries of the project it is assigned to.</span>'
+dateTooltip = '<span id="info" class="tooltip_body_evidence">This is the date the evidence occurred, date selection is restricted to the boundaries of the project it is assigned to.</span>'
 
 $("#evidence_date_tool").tooltip({
     title: dateTooltip,
@@ -9,8 +9,8 @@ $("#evidence_date_tool").tooltip({
     html: true
 });
 
-let categoryOptionsShown = true;
-let selectedCategories = new Set()
+categoryOptionsShown = true;
+selectedCategories = new Set()
 
 function storeCategories() {
     let categoryStore = document.getElementById("category_hidden")
@@ -66,8 +66,8 @@ function storeSkills() {
     skillStore.value = skillList
 }
 
-let skills = new Set()
-let skillRow = document.getElementById("skill_sub_1");
+skills = new Set()
+skillRow = document.getElementById("skill_sub_1");
 
 // Adds the skill to the set and resets the input.
 function addSkill() {
@@ -145,9 +145,9 @@ document.querySelector("#add_link_input").addEventListener("keyup", event => {
     addLink()
 })
 
-let links = new Set();
-let linksContainer = document.getElementById("links_container")
-let linkCounter = 0;
+links = new Set();
+linksContainer = document.getElementById("links_container")
+linkCounter = 0;
 
 // Adds the link to the set and resets the input.
 function addLink() {

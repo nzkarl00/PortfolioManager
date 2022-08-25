@@ -114,7 +114,6 @@
             newItem.innerText = value
             newItem.value = value
             newItem.onclick = function() {window.location.href = "evidence?" + type + "=" + value}
-            console.log(newItem)
             let itemRow = document.getElementById("current_row_" + type)
             itemRow.appendChild(newItem);
             if (itemRow.getBoundingClientRect().right < newItem.getBoundingClientRect().right) {
@@ -136,6 +135,7 @@
 
         skillMap = [[${skillMap}]]
         for (const evidence of [[${evidenceList}]]) {
+            console.log(evidence)
             addTagRowToEvidence(evidence.id, "si")
             for (const evidenceSkill of skillMap[evidence.id]) {
                 addTagToEvidence(evidenceSkill, evidence.id, "si")
@@ -149,10 +149,6 @@
                 addTagToEvidence(evidenceCategory, evidence.id, "ci")
             }
         }
-
-        let eviList = [[${evidenceList}]]
-        console.log("A")
-        console.log(eviList)
     </script>
 </div>
 </body>

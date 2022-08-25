@@ -23,7 +23,7 @@
 
 <body>
 
-<div th:fragment="evidenceForm">
+<div th:fragment="evidenceForm" id="evidence_form_container">
         <div class="portion_body"  style="display: none" id="evidence_form">
         <form th:action="@{add-evidence}" method="post">
                 <div class="row-1" style="display:flex;">
@@ -141,7 +141,7 @@
     </div>
     <script type="text/javascript" th:src="@{js/autocomplete.js}"></script>
     <script th:inline="javascript">
-        let allSkills = [[${autoSkills}]];
+        allSkills = [[${autoSkills}]];
         autocomplete(document.getElementById("add_skill_input"), allSkills);
     </script>
     <script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>

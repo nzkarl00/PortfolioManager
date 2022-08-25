@@ -72,10 +72,6 @@ public class EvidenceListController {
     setTitle(model, userId, projectId, categoryName, skillName);
     HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
     HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
-    for (Evidence evidence: evidenceList) {
-      evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
-      evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
-    }
     List<Project> allProjects = projectService.getAllProjects();
     model.addAttribute("projectList", allProjects);
     model.addAttribute("skillMap", evidenceSkillMap);
@@ -126,12 +122,31 @@ public class EvidenceListController {
           evidenceList = evidenceService.getEvidenceForUserAndProject(userId, projectId);
       }
       model.addAttribute("evidenceList", evidenceList);
+      HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
+      HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
+      for (Evidence evidence: evidenceList) {
+          evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
+          evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
+      }
+      model.addAttribute("skillMap", evidenceSkillMap);
+      model.addAttribute("categoryMap", evidenceCategoryMap);
       for (Evidence evidence: evidenceList) {
           logger.debug(String.valueOf(evidence.getId()));
       }
 
       return "fragments/evidenceItems.html :: evidenceItems";
   }
+
+  @GetMapping("evidence-form")
+  public String sendEvidenceForm(@RequestParam(required = false , value="pi") Integer projectId,
+                                 Model model) throws CustomExceptions.ProjectItemNotFoundException {
+      model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
+      Project project = projectService.getProjectById(projectId);
+      model.addAttribute("project", project);
+      return "fragments/evidenceForm.html :: evidenceForm";
+  }
+
+
 
   private void setPageTitle(Model model, String title) {
     model.addAttribute("title", title);
