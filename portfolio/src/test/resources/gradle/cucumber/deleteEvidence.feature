@@ -2,12 +2,13 @@ Feature: U12: deleting your own evidence
 
   @Close
   Scenario: AC1: Clickable Icon on My Own Evidence
+
     Given User is logged in.
     When User navigates to "evidence?pi=1".
     And I click the Add Evidence button
-    When I have filled out all mandatory title, description, and date fields to an evidence
+    Then I fill out all mandatory fields
     And I click the save button
-    And I go to the evidence page with a project id
+    When User navigates to "evidence?pi=1".
     When I view that piece of evidence
     Then I can see a delete icon
 
@@ -46,3 +47,9 @@ Feature: U12: deleting your own evidence
     When I click cancel
     Then I view that piece of evidence
 
+  @Close
+  Scenario: AC6 I cannot delete pieces of evidence that do not belong to me.
+    Given I am authenticated as a admin
+    When User navigates to "evidence?pi=1".
+    And I view that piece of evidence that is not mine
+    Then I cannot see a delete icon
