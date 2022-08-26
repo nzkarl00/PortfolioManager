@@ -3,6 +3,7 @@ syntax = "proto3";
 package nz.ac.canterbury.seng302;
 import "identityprovider/user_accounts.proto";
 import "util/validation_error.proto";
+import "util/pagination.proto";
 import "google/protobuf/empty.proto";
 
 option java_multiple_files = true;
@@ -73,6 +74,11 @@ message GroupDetailsResponse {
     repeated UserResponse Members = 4;
 }
 
+message GetPaginatedGroupsForUserRequest {
+    int32 UserId = 1;
+    PaginationRequestOptions PaginationRequestOptions = 2;
+}
+
 message GetPaginatedGroupsRequest {
     int32 Offset = 1;
     int32 Limit = 2;
@@ -93,6 +99,7 @@ service GroupsService {
     rpc DeleteGroup (DeleteGroupRequest) returns (DeleteGroupResponse);
     rpc GetGroupDetails (GetGroupDetailsRequest) returns (GroupDetailsResponse);
     rpc GetPaginatedGroups (GetPaginatedGroupsRequest) returns (PaginatedGroupsResponse);
+    rpc GetPaginatedGroupsForUser (GetPaginatedGroupsForUserRequest) returns (PaginatedGroupsResponse);
     // Calls for special groups
     rpc GetTeachingStaffGroup (google.protobuf.Empty) returns (GroupDetailsResponse);
     rpc GetMembersWithoutAGroup (google.protobuf.Empty) returns (GroupDetailsResponse);
