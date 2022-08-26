@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
@@ -84,6 +85,8 @@ public class EvidenceListControllerTest {
     private EvidenceService evidenceService;
     @MockBean
     private WebLinkRepository webLinkRepository;
+    @MockBean
+    private GroupsClientService groupsClientService;
 
     @Before
     public void setup() throws Exception {

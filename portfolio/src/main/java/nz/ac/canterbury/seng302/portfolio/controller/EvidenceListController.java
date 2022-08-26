@@ -42,6 +42,8 @@ public class EvidenceListController {
   @Autowired
   private NavController navController;
   @Autowired
+  private GroupsClientService groupsClientService;
+  @Autowired
   private EvidenceService evidenceService;
 
   private String errorMessage = "";
@@ -77,6 +79,10 @@ public class EvidenceListController {
       evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
     }
     int id = AuthStateInformer.getId(principal);
+
+    //TODO get rid of once this is actually used
+    logger.info("[EVIDENCE] getting all the groups for user");
+    logger.info(groupsClientService.getAllGroupsForUser(id).toString());
 
     model.addAttribute("skillMap", evidenceSkillMap);
     model.addAttribute("categoryMap", evidenceCategoryMap);
