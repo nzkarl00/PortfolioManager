@@ -49,7 +49,7 @@ public class WeblinksStepDefs {
     @Given("I open the piece of evidence")
     public void openEvidence() throws InterruptedException {
         // get the xpath of the desired pieve of evidence
-        String xpath = BaseSeleniumStepDefs.generateXPATH(seleniumExample.config.getDriver().findElement(By.xpath("//*[contains(text(), 'Test Evidence')]")), "");
+        String xpath = BaseSeleniumStepDefs.generateXPATH(seleniumExample.config.getDriver().findElement(By.xpath("//*[contains(text(), 'Evidence One')]")), "");
         // get the button's xpath based on the title's xpath
 
         WebElement button = seleniumExample.config.getDriver().findElement(By.xpath(xpath.substring(0,66) + "/div[4]/a"));

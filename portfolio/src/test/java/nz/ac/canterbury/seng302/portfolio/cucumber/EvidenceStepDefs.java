@@ -52,7 +52,7 @@ public class EvidenceStepDefs {
     public void thereIsEvidenceInTheTable() throws InterruptedException {
         seleniumExample.config.getDriver()
                 .get(seleniumExample.url + "/evidence?pi=1");
-        evidenceAdded = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(), 'Test Evidence')]")).size() > 0;
+        evidenceAdded = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(), 'Evidence One')]")).size() > 0;
         if (!evidenceAdded) {
             // open create evidence form
             WebElement button = seleniumExample.config.getDriver()
@@ -62,13 +62,13 @@ public class EvidenceStepDefs {
             // add title
             WebElement titleField = seleniumExample.config.getDriver()
                 .findElement(By.id("evidence_title"));
-            titleField.sendKeys("Test Evidence");
+            titleField.sendKeys("Evidence One");
 
             // add description
             WebElement description = seleniumExample.config.getDriver()
                 .findElement(By.id("evidence_desc"));
             description.sendKeys(
-                "This is a Description. It is going to be reasonably long but not too long in order to show how text will be potentially cut off.");
+                "This evidence relates to the work done on the evidence page");
 
             // add skill
             WebElement skillInput = seleniumExample.config.getDriver()

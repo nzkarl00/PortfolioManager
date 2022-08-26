@@ -54,10 +54,21 @@ public class DeleteEvidenceStepDefs {
         seleniumExample.config.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         arrowButton.click();
     }
+    /**
+     *Opens a piece of evidence
+     **/
+    public void viewFullPieceOfEvidence(String arg0) {
+        String getId = getEvidenceId(arg0);
+        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+getId)));
+        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
+        //scrollWindowToElement(arrowButton);
+        seleniumExample.config.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        arrowButton.click();
+    }
 
     @And("I view that piece of evidence {string}")
     public void iViewThatPieceOfEvidence(String arg0) {
-        viewFullPieceOfEvidence();
+        viewFullPieceOfEvidence(arg0);
     }
 
     @When("I view that piece of evidence")
@@ -118,7 +129,7 @@ public class DeleteEvidenceStepDefs {
     @Then("I fill out all mandatory fields")
     public void i_fill_out_all_mandatory_fields() {
         WebElement titleField = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
-        titleField.sendKeys("Added AC Testing For Delete Icon");
+        titleField.sendKeys("Evidence One");
         WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
         description.sendKeys("This evidence relates to the work done on the evidence page");
         WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
