@@ -191,8 +191,8 @@
         <a id="category_button_service" class="table_text evidence_ci_tag" th:href="@{evidence(ci='Service')}" style="padding: 0.5rem !important;">
         Service</a>
         <h3 class="project_subhead" style="padding-left: 0.5rem !important;">Skills</h3>
-        <div th:each="skill: ${filterSkills}">
-          <a th:id="'skill_button_' + ${skill.getTitle()}" class="table_text evidence_si_tag" th:href="@{evidence(si=${skill.getTitle()})}" th:text="${skill.getTitle()}">
+        <div th:each="skill: ${userSkills}">
+          <a th:id="'skill_button_' + ${skill.getTitle()}" class="table_text evidence_si_tag" th:href="@{evidence(si=${skill.getTitle()})}" th:text="${skill.getTitleSpaced()}">
           </a>
         </div>
       </div>

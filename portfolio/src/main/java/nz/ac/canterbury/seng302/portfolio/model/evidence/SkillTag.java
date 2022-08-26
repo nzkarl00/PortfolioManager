@@ -61,6 +61,11 @@ public class SkillTag {
         return title;
     }
 
+    public String getTitleSpaced() {
+        String title_with_spaces = title.replace("_", " ");
+        return title_with_spaces;
+    }
+
     public String getDescription() {
         return description;
     }
