@@ -49,7 +49,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Autowired
     GroupRepository groupRepo;
 
-    Logger logger = LoggerFactory.getLogger(AccountServerService.class)
+    Logger logger = LoggerFactory.getLogger(AccountServerService.class);
     /**
      * The chance limiting the number of users we add by default into our database
      * 0.98 means 1/50 of the possible users will be added
