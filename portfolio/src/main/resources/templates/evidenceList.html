@@ -140,11 +140,33 @@
 </script>
 <script th:inline="javascript">
   function updateProject() {
-      $.post("evidence-project", {pi: parseInt(document.getElementById("project_selector").value)}).done(function (evidenceItems) {
+      let projectId = -1
+      let userId = null
+      let categoryId = null
+      let skillId = null
+      let paramList = window.location.search.split("&")
+      paramList[0] = paramList[0].slice(1)
+      for (const param of paramList) {
+          switch (param.slice(0, 2)) {
+              case "ui":
+                  userId = parseInt(param.split("=")[1])
+                  break;
+              case "ci":
+                  categoryId = param.split("=")[1]
+                  break;
+              case "si":
+                  skillId = param.split("=")[1]
+                  break;
+              default:
+                  break;
+          }
+      }
+      projectId = parseInt(document.getElementById("project_selector").value)
+      $.post("evidence-project", {pi: projectId, ui: userId}).done(function (evidenceItems) {
           $("#evidence_item_list").replaceWith(evidenceItems)
-          if (document.getElementById("project_selector").value !== "-1") {
+          if (projectId !== -1) {
               const url = new URL(window.location)
-              url.searchParams.set('pi', document.getElementById("project_selector").value)
+              url.searchParams.set('pi', projectId.toString())
               window.history.pushState(null, '', url.toString())
               $("#evidence_form_container").load("evidence-form" + window.location.search)
           } else {

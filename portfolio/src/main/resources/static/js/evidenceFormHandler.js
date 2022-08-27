@@ -47,7 +47,7 @@ function updateCategories(event) {
 
 document.addEventListener("click", function (e) {
     let categoryOptions = document.getElementById("category_multiselect_items")
-    if (e.target != document.getElementById("evidence_category") && e.target.className != "category_item") {
+    if (e.target != document.getElementById("evidence_category") && e.target.className != "category_item" && categoryOptions != null) {
         categoryOptions.style.display = "none"
         categoryOptionsShown = true
     }
