@@ -77,10 +77,11 @@ public class EvidenceListController {
     model.addAttribute("skillMap", evidenceSkillMap);
     model.addAttribute("categoryMap", evidenceCategoryMap);
     model.addAttribute("evidenceLists", evidenceList);
-    Set<String> skillTagList = evidenceService.getAllUniqueSkills();
+
     Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
     skillTagListNoSkill.remove("No_skills");
-    model.addAttribute("allSkills", skillTagList);
+      Set<String> skillTagList = evidenceService.getAllUniqueSkills();
+      model.addAttribute("allSkills", skillTagList);
     model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("skillList", skillList);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
@@ -130,10 +131,6 @@ public class EvidenceListController {
       }
       model.addAttribute("skillMap", evidenceSkillMap);
       model.addAttribute("categoryMap", evidenceCategoryMap);
-      for (Evidence evidence: evidenceList) {
-          logger.debug(String.valueOf(evidence.getId()));
-      }
-
       return "fragments/evidenceItems.html :: evidenceItems";
   }
 

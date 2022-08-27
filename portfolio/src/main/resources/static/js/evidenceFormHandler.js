@@ -87,8 +87,10 @@ function addSkill() {
         return
     }
     skills.add(newSkill)
-    allSkills = allSkills.filter(s => s !== newSkill)
-    autocomplete(document.getElementById("add_skill_input"), allSkills)
+    if (allSkills !== null) {
+        allSkills = allSkills.filter(s => s !== newSkill)
+        autocomplete(document.getElementById("add_skill_input"), allSkills)
+    }
     document.getElementById("add_skill_input").value = ""
     appendSkill(newSkill)
 }
