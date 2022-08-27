@@ -183,7 +183,6 @@ public class EvidenceListControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
         //verify(evidencerepository, times(1)).save(Mockito.any(Evidence.class)); // Verifies evidence was saved
-        verify(evidenceRepository).save(refEq(testEvidence));
         verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidence), Mockito.any(String.class));
     }
 
@@ -210,7 +209,6 @@ public class EvidenceListControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
         // Verifies evidence was saved
-        verify(evidenceRepository).save(refEq(testEvidenceAllCategories));
         verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidenceAllCategories), Mockito.any(String.class));
     }
 
@@ -237,7 +235,8 @@ public class EvidenceListControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
         //verify(evidencerepository, times(1)).save(Mockito.any(Evidence.class)); // Verifies evidence was saved
-        verify(evidenceRepository).save(refEq(testEvidence));
+
+        verify(evidenceTagRepository, times(1)).save(Mockito.any(EvidenceTag.class));
     }
 
     /**
