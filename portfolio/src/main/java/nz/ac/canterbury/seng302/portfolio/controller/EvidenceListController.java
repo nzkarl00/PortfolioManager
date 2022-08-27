@@ -169,18 +169,13 @@ public class EvidenceListController {
           return "redirect:evidence";
       }
 
-      LocalDate evidenceDate = LocalDate.parse(date);
-      LocalDate projectStartDate = parentProject.getLocalStartDate();
-      LocalDate projectEndDate = parentProject.getLocalEndDate();
+      // Extract then validate links
+      List<String> extractedLinks = extractListFromHTMLString(links.orElse(""));
+      Optional<String> possibleError = evidenceService.validateLinks(extractedLinks);
+      // prioritise mandatory fields first, then link errors
+      this.errorMessage = possibleError.orElse(errorMessage);
 
-      // Check if the given evidence date is within the project date
-      if (!(evidenceDate.isAfter(projectStartDate) && evidenceDate.isBefore(projectEndDate))
-              && !(evidenceDate.isEqual(projectEndDate) || evidenceDate.isEqual(projectStartDate))) {
-          errorMessage = "Dates must fall within project dates";
-          return "redirect:evidence?pi=" + projectId;
-      }
-
-      this.errorMessage = validateMandatoryFields(title, description, evidenceDate, projectStartDate, projectEndDate);
+      this.errorMessage = validateMandatoryFields(title, description, date, parentProject);
 
       // If error occurs, return early
       if (!errorMessage.equals("")) {
@@ -188,49 +183,28 @@ public class EvidenceListController {
           return "redirect:evidence?pi=" + projectId;
       }
 
-      // Extract then validate links
-      List<String> extractedLinks = null;
-      if (links.isPresent()) {
-          extractedLinks = extractListFromHTMLString(links.get());
-          Optional<String> possibleError = evidenceService.validateLinks(extractedLinks);
-          if (possibleError.isPresent()) {
-              errorMessage = possibleError.get();
-              return "redirect:evidence?pi=" + projectId;
-          }
-      }
-
       int categoriesInt = Evidence.categoryStringToInt(categories);
 
-      List<String> extractedUsers = new ArrayList<>();
-      if (otherUsers.isPresent()) {
-          extractedUsers = extractListFromHTMLString(otherUsers.get());
-      }
+      List<String> extractedUsers = extractListFromHTMLString(otherUsers.orElse(""));
 
       //TODO program out once front-end is working as intended
       if (extractedUsers.isEmpty()) {
           extractedUsers.add(accountID + ":" + thisUser.getUsername());
       }
 
-      List<Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, evidenceDate, categoriesInt);
+      List<Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, LocalDate.parse(date), categoriesInt);
 
       // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links
       logger.info("[EVIDENCE] Saving evidence to repo");
       for (Evidence evidence : allUserEvidence) {
-          evidenceRepository.save(evidence);
           logger.info(String.format("[EVIDENCE] Saved evidence to repo, id=<%s>", evidence.getId()));
           errorMessage = "Evidence has been added";
-          logger.info(categories);
 
           evidenceService.addSkillsToRepo(parentProject, evidence, skills);
 
-          // If there's no skills, add the no_skills
-          List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
-          if (evidenceTagList.isEmpty()) {
-              SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
-              EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
-              evidenceTagRepository.save(noSkillEvidence);
-          }
-          if (extractedLinks != null) {
+          noSkillsCheck(evidence);
+
+          if (extractedLinks.isEmpty()) {
               logger.debug("[EVIDENCE] Saving web links");
               try {
                   webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
@@ -272,17 +246,37 @@ public class EvidenceListController {
       return Arrays.asList(stringFromHTML.split(" "));
   }
 
+  private void noSkillsCheck(Evidence evidence) {
+      // If there's no skills, add the no_skills
+      List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+      if (evidenceTagList.isEmpty()) {
+          SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
+          EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
+          evidenceTagRepository.save(noSkillEvidence);
+      }
+  }
+
   /**
    * Checks for validation, for all the mandatory fields.
    * @param title the title field
    * @param description the description field
-   * @param evidenceDate when the evidence occurred
-   * @param projectStartDate when the project began
-   * @param projectEndDate when the project ended
+   * @param date the string representation of the date for the piece of evidence
+   * @param parentProject the Project the piece of evidence 'belongs' to
    * @return A String error message if requirement not met, else return ""
   */
-  private String validateMandatoryFields(String title, String description, LocalDate evidenceDate, LocalDate projectStartDate, LocalDate projectEndDate) {
+  private String validateMandatoryFields(String title, String description, String date, Project parentProject) {
       this.errorMessage = "";
+
+      LocalDate evidenceDate = LocalDate.parse(date);
+      LocalDate projectStartDate = parentProject.getLocalStartDate();
+      LocalDate projectEndDate = parentProject.getLocalEndDate();
+
+      // Check if the given evidence date is within the project date
+      if (!(evidenceDate.isAfter(projectStartDate) && evidenceDate.isBefore(projectEndDate))
+          && !(evidenceDate.isEqual(projectEndDate) || evidenceDate.isEqual(projectStartDate))) {
+          // Give this error priority
+          return "Dates must fall within project dates";
+      }
 
       // https://stackoverflow.com/questions/14278170/how-to-check-whether-a-string-contains-at-least-one-alphabet-in-java
       // Checks if there is at least one character in title
