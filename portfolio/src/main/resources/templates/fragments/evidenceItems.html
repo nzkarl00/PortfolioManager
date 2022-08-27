@@ -135,7 +135,6 @@
 
         skillMap = [[${skillMap}]]
         for (const evidence of [[${evidenceList}]]) {
-            console.log(evidence)
             addTagRowToEvidence(evidence.id, "si")
             for (const evidenceSkill of skillMap[evidence.id]) {
                 addTagToEvidence(evidenceSkill, evidence.id, "si")

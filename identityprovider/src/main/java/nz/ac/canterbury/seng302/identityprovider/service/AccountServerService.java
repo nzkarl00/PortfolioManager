@@ -9,6 +9,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
@@ -47,7 +49,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Autowired
     GroupRepository groupRepo;
 
-
+    Logger logger = LoggerFactory.getLogger(AccountServerService.class)
     /**
      * The chance limiting the number of users we add by default into our database
      * 0.98 means 1/50 of the possible users will be added
@@ -82,8 +84,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
             // if a malicious user gets into this server
             // an admin privileged user shouldn't aid them in their attacks
 
-            // System.outs here are fine in my books currently as this will only be run once
-            // feel free to disagree though
             try {
                 File admin = new File(System.getProperty("user.dir") + "/defaultAdminPassword.txt");
                 // make sure new file can be made
@@ -91,17 +91,17 @@ public class AccountServerService extends UserAccountServiceImplBase{
                     admin.delete();
                 }
                 if (admin.createNewFile()) {
-                    System.out.println("default admin file created: " + admin.getName());
-                    System.out.println(generatedString);
+                   logger.debug("default admin file created: " + admin.getName());
+                    logger.debug(generatedString);
                     FileWriter myWriter = new FileWriter(System.getProperty("user.dir") + "/defaultAdminPassword.txt");
                     myWriter.write(generatedString);
                     myWriter.close();
                     createNewUsers(hashedPassword);
                 } else {
-                    System.out.println("default admin file already exists.");
+                    logger.warn("default admin file already exists.");
                 }
             } catch (IOException e) {
-                System.out.println("An error occurred in creating the default admin file.");
+                logger.error("An error occurred in creating the default admin file.");
                 e.printStackTrace();
             }
         }
@@ -147,7 +147,7 @@ public class AccountServerService extends UserAccountServiceImplBase{
             }
             firstNamesReader.close();
         } catch (FileNotFoundException e) {
-            System.out.println("File could not be found");
+           logger.error("File could not be found");
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
