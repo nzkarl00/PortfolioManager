@@ -7,7 +7,7 @@ Feature: U26: Web link in evidence
     Given User is logged in.
     Given There is evidence in the table
     When User navigates to "evidence?pi=1".
-    And I open the piece of evidence
+    And I view that piece of evidence "Evidence One"
     And I click the weblink
     Then I am taken to wikipedia in a new tab
 
@@ -19,6 +19,6 @@ Feature: U26: Web link in evidence
     Given User is logged in.
     Given There is evidence in the table
     When User navigates to "evidence?pi=1".
-    And I open the piece of evidence
+    And I view that piece of evidence "Evidence One"
     Then Wikipedia link has a closed padlock
     And Fake Cern link has a open padlock

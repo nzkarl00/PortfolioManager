@@ -26,7 +26,7 @@ public class SeleniumWithTestNGLiveTest {
         String passwordText = "";
 
         @BeforeSuite
-        public void setUp() throws FileNotFoundException {
+        public void setUp() throws FileNotFoundException, InterruptedException {
 
                 seleniumExample = new SeleniumExample("");
                 whenPortfolioIsLoaded_thenRegisterWorks();

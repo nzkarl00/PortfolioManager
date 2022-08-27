@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.PaginationRequestOptions;
 
 import java.util.ArrayList;
 
@@ -119,5 +120,25 @@ public class GroupsClientService extends GroupsServiceGrpc.GroupsServiceImplBase
         }
 
         return groupServiceStub.removeGroupMembers(request.build());
+    }
+
+    /**
+     * get all groups associated with a user
+     * @param userId the userId to get groups for
+     * @return A list of all the groups that the user is a part of
+     */
+    public PaginatedGroupsResponse getAllGroupsForUser(int userId) {
+        // set the user id
+        GetPaginatedGroupsForUserRequest.Builder request = GetPaginatedGroupsForUserRequest.newBuilder();
+        request.setUserId(userId);
+
+        // set the pagination options, -1 means all groups
+        PaginationRequestOptions.Builder options = PaginationRequestOptions.newBuilder();
+        options.setLimit(-1);
+        options.setOffset(0);
+        request.setPaginationRequestOptions(options.build());
+
+        // send the request
+        return groupServiceStub.getPaginatedGroupsForUser(request.build());
     }
 }

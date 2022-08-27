@@ -9,7 +9,9 @@ import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -50,7 +52,7 @@ public class EvidenceStepDefs {
     public void thereIsEvidenceInTheTable() throws InterruptedException {
         seleniumExample.config.getDriver()
                 .get(seleniumExample.url + "/evidence?pi=1");
-        evidenceAdded = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(), 'Test Evidence')]")).size() > 0;
+        evidenceAdded = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(), 'Evidence One')]")).size() > 0;
         if (!evidenceAdded) {
             // open create evidence form
             WebElement button = seleniumExample.config.getDriver()
@@ -60,13 +62,13 @@ public class EvidenceStepDefs {
             // add title
             WebElement titleField = seleniumExample.config.getDriver()
                 .findElement(By.id("evidence_title"));
-            titleField.sendKeys("Test Evidence");
+            titleField.sendKeys("Evidence One");
 
             // add description
             WebElement description = seleniumExample.config.getDriver()
                 .findElement(By.id("evidence_desc"));
             description.sendKeys(
-                "This is a Description. It is going to be reasonably long but not too long in order to show how text will be potentially cut off.");
+                "This evidence relates to the work done on the evidence page");
 
             // add skill
             WebElement skillInput = seleniumExample.config.getDriver()
@@ -131,14 +133,14 @@ public class EvidenceStepDefs {
         titleField.sendKeys("Evidence One");
         WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
         description.sendKeys("This evidence relates to the work done on the evidence page");
-
     }
 
     @When("I click the save button")
-    public void i_click_the_save_button() {
+    public void i_click_the_save_button() throws InterruptedException {
         WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
         Assertions.assertTrue(saveButton.isEnabled());
         saveButton.submit();
+        Thread.sleep(200);
     }
 
     @Then("I will see a message that this evidence has saved successfully")
@@ -190,7 +192,7 @@ public class EvidenceStepDefs {
     @When("User selects the {string} option in the skills dropdown")
     public void userSelectsTheOptionInTheSkillsDropdown(String arg0) {
         Select category = new Select(seleniumExample.config.getDriver().findElement(By.id("si")));
-        category.selectByVisibleText(arg0);
+        category.selectByValue(arg0);
     }
 
     @Then("I can see the prefilled date is today's date")
@@ -261,5 +263,31 @@ public class EvidenceStepDefs {
     public void userSelectsTheOptionInTheSkillsSideMenu(String arg0) {
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("skill_button_"+arg0));
         button.click();
+    }
+
+    @When("User enters {string} into the title")
+    public void userEntersIntoTheTitle(String arg0) {
+        WebElement titleInput = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
+        titleInput.clear();
+        titleInput.sendKeys(arg0);
+    }
+
+    @And("User enters {string} into the description")
+    public void userEntersIntoTheDescription(String arg0) {
+        WebElement descInput = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
+        descInput.clear();
+        descInput.sendKeys(arg0);
+    }
+
+    @Then("Save button can be clicked")
+    public void saveButtonCanBeClicked() {
+        WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+        Assertions.assertNull(saveButton.getAttribute("disabled"));
+    }
+
+    @Then("Save button cannot be clicked")
+    public void saveButtonCanNotBeClicked() {
+        WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+        Assertions.assertEquals("true", saveButton.getAttribute("disabled"));
     }
 }

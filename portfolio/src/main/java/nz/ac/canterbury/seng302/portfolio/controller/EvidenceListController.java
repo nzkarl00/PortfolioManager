@@ -45,6 +45,8 @@ public class EvidenceListController {
   @Autowired
   private NavController navController;
   @Autowired
+  private GroupsClientService groupsClientService;
+  @Autowired
   private EvidenceService evidenceService;
 
   private String errorMessage = "";
@@ -79,18 +81,23 @@ public class EvidenceListController {
       evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
       evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
     }
+    int id = AuthStateInformer.getId(principal);
+
+    //TODO get rid of once this is actually used
+    logger.info("[EVIDENCE] getting all the groups for user");
+    logger.info(groupsClientService.getAllGroupsForUser(id).toString());
+
     model.addAttribute("skillMap", evidenceSkillMap);
     model.addAttribute("categoryMap", evidenceCategoryMap);
     model.addAttribute("evidenceList", evidenceList);
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
-    Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
+      Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
     skillTagListNoSkill.remove("No_skills");
     model.addAttribute("allSkills", skillTagList);
-    model.addAttribute("autoSkills", skillTagListNoSkill);
+      model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("skillList", skillList);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
-
-    int id = AuthStateInformer.getId(principal);
+    model.addAttribute("userID", id);
 
     // Attributes For header
     UserResponse userReply;
@@ -237,11 +244,11 @@ public class EvidenceListController {
   }
 
     /**
-   * Construct web links, must be validated first.
-   * @param links The link of links which are associated with a given piece of evidence
-   * @param parentEvidence The evidence object which the weblink belongs to
-   * @return An array of weblink objects which contain both the link text and the parent evidence
-   */
+    * Construct web links, must be validated first.
+    * @param links The link of links which are associated with a given piece of evidence
+    * @param parentEvidence The evidence object which the weblink belongs to
+    * @return An array of weblink objects which contain both the link text and the parent evidence
+    */
   private List<WebLink> constructLinks(List<String> links, Evidence parentEvidence) throws MalformedURLException {
     ArrayList<WebLink> resultLinks = new ArrayList<>();
     // Validate all links

@@ -48,7 +48,12 @@ public class SeleniumLogins {
         WebElement fullName = seleniumExample.config.getDriver().findElement(By.id("full-name"));
         Assertions.assertEquals("Lachlan Alsop", fullName.getText());
     }
-    
+
+    /**
+     * get the password from the password file for admin
+     * @return the password from the file
+     * @throws FileNotFoundException if we can't find the file
+     */
     public static String getPassword_ForAdmin_FromTextFile() throws FileNotFoundException {
         String originpath = System.getProperty("user.dir");
         File passwordFile = new File(originpath.substring(0, originpath.length()-9) + "identityprovider/defaultAdminPassword.txt");
@@ -59,14 +64,17 @@ public class SeleniumLogins {
     /**
      * load up the page then login to the admin user
      */
-    public static void whenPortfolioIsLoaded_thenLoginAdmin_forTests(SeleniumExample seleniumExample, String passwordText) {
+    public static void whenPortfolioIsLoaded_thenLoginAdmin_forTests(SeleniumExample seleniumExample, String passwordText) throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url);
         WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
         username.sendKeys("admin");
         WebElement password = seleniumExample.config.getDriver().findElement(By.id("password"));
+        password.click();
+        Thread.sleep(500);
         password.sendKeys(passwordText);
         WebElement loginButton = seleniumExample.config.getDriver().findElement(By.id("login-button"));
         loginButton.click();
+        Thread.sleep(500);
 
         WebElement fullName = seleniumExample.config.getDriver().findElement(By.id("full-name"));
         Assertions.assertEquals("admin admin", fullName.getText());
