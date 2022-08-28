@@ -1461,6 +1461,7 @@ select.form-control {
 }
 
 .author_tag{
+    text-decoration: underline;
     background-color: #333344; !important;
     border-style: none !important;
     border-radius: 8px !important;
@@ -1473,6 +1474,7 @@ select.form-control {
 }
 
 .contributor_tag{
+    text-decoration: underline;
     background-color: #666688; !important;
     border-style: none !important;
     border-radius: 8px !important;

@@ -86,7 +86,7 @@
                     <div class="collapse evidence_data no-gutters" th:id="'collapseExample'+${evidence.getId}">
                         <div>
                             <p class="bio evidence_title" th:if="${evidence.getEvidenceUsersId().size() > 0}">Contributors </p>
-                            <div class="d-flex flex-row" th:id="'evidence_contributors_'+${evidence.getId}" th:if="${evidence.getEvidenceUsersId().size() > 0}" style="width: 100%">
+                            <div class="d-flex flex-row flex-wrap" th:id="'evidence_contributors_'+${evidence.getId}" th:if="${evidence.getEvidenceUsersId().size() > 0}" style="width: 100%">
                                 <div class="p-2" th:each="user: ${evidence.getEvidenceUsersId()}">
 
                                     <div id="contributors_container" style="width: 85%; display: block;">
