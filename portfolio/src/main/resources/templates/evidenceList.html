@@ -86,14 +86,12 @@
                     <div class="collapse evidence_data no-gutters" th:id="'collapseExample'+${evidence.getId}">
                         <div>
                             <p class="bio evidence_title" th:if="${evidence.getEvidenceUsersId().size() > 0}">Contributors </p>
-                            <div th:id="'evidence_contributors_'+${evidence.getId}" th:if="${evidence.getEvidenceUsersId().size() > 0}" style="width: 100%">
-                                <div class="row" th:each="user: ${evidence.getEvidenceUsersId()}">
+                            <div class="d-flex flex-row" th:id="'evidence_contributors_'+${evidence.getId}" th:if="${evidence.getEvidenceUsersId().size() > 0}" style="width: 100%">
+                                <div class="p-2" th:each="user: ${evidence.getEvidenceUsersId()}">
 
-                                    <div id="contributors_container" style="width: 85%; display: block; padding: 0.5rem 2rem">
-                                        <div class="trim_text" style="display: flex">
-                                            <button th:id="${'contributor_' + user.getUsername()}" class="table_text evidence_ci_tag" th:if="${username == user.getUsername()}" th:text="${user.getUsername()}"></button>
-                                            <button th:id="${'contributor_' + user.getUsername()}" class="table_text evidence_si_tag" th:if="${username != user.getUsername()}" th:text="${user.getUsername()}"></button>
-                                        </div>
+                                    <div id="contributors_container" style="width: 85%; display: block;">
+                                            <button th:id="${'contributor_' + user.getUsername()}" class="table_text author_tag" th:if="${username == user.getUsername()}" th:text="${user.getUsername()}"></button>
+                                            <button th:id="${'contributor_' + user.getUsername()}" class="table_text contributor_tag" th:if="${username != user.getUsername()}" th:text="${user.getUsername()}"></button>
                                     </div>
 
                                 </div>
@@ -107,8 +105,8 @@
                             </div>
 
                             <p class="bio evidence_title" th:if="${evidence.getLinks().size() > 0}">Links </p>
-                            <div th:id="'evidence_links_'+${evidence.getId}" th:if="${evidence.getLinks().size() > 0}" style="width: 100%">
-                                <div class="row" th:each="link: ${evidence.getLinks()}">
+                            <div class="row" th:id="'evidence_links_'+${evidence.getId}" th:if="${evidence.getLinks().size() > 0}" style="width: 100%">
+                                <div th:each="link: ${evidence.getLinks()}">
 
                                     <div id="links_container" style="width: 85%; display: block; padding: 0.5rem 2rem">
                                         <div class="trim_text" style="display: flex">

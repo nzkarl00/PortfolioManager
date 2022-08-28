@@ -133,6 +133,7 @@ public class EvidenceService {
         for(String[] user: validUsers) {
             Evidence userEvidence = new Evidence(Integer.parseInt(user[0]), parentProject, title, description, evidenceDate, categories);
             evidenceRepository.save(userEvidence);
+            allEvidence.add(userEvidence);
             //Loop through all associated users again so that we can associate them to the evidence we created
             for(String[] associated: validUsers) {
                 EvidenceUser evidenceUser = new EvidenceUser(Integer.parseInt(associated[0]), associated[1], userEvidence);
@@ -163,6 +164,8 @@ public class EvidenceService {
         //Create new skill for any skill that doesn't exist, create evidence tag for all skills
         if (skills.replace(" ", "").length() > 0) {
             List<String> skillList = extractListFromHTMLStringSkills(skills);
+
+            logger.debug(skillList.toString());
 
             for (String skillString : skillList) {
                 String validSkillString = skillString.replace(" ", "_");
