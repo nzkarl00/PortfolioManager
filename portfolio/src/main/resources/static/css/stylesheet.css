@@ -1464,7 +1464,7 @@ select.form-control {
     text-decoration: underline;
     background-color: #333344; !important;
     border-style: none !important;
-    border-radius: 8px !important;
+    border-radius: 3px !important;
     color: #ffffff !important;
     padding: 0.3rem 1rem;
     display: inline-block !important;
@@ -1477,7 +1477,7 @@ select.form-control {
     text-decoration: underline;
     background-color: #666688; !important;
     border-style: none !important;
-    border-radius: 8px !important;
+    border-radius: 3px !important;
     color: #ffffff !important;
     padding: 0.3rem 1rem;
     display: inline-block !important;
