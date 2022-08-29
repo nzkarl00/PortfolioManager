@@ -28,7 +28,7 @@
         <form th:action="@{add-evidence}" method="post">
                 <div class="row-1" style="display:flex;">
                         <div class="evidence_form_element col-4">
-                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" minlength="2" th:name="titleInput" oninput="updateTitle(); canSaveCheck()" required>
+                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" th:name="titleInput" oninput="updateTitle();">
                             <label class="project_inputAlertBlue" id="titleCharCount">Characters Remaining: 100</label>
                         </div>
                     <div id="date_container" class="evidence_form_element col-3">
@@ -74,35 +74,60 @@
                     <div>
                         <b class="evidence_head setWide">Description*:</b>
                         <br>
-                        <textarea type="text" maxlength="2000" id="evidence_desc" oninput="updateDesc(); canSaveCheck()"
+                        <textarea type="text" maxlength="2000" id="evidence_desc" oninput="updateDesc();"
                                   class=" description-input project_edit_data horizontal_field bio setWide"
-                                  th:name="descriptionInput" required minlength="2"
+                                  th:name="descriptionInput"
                         ></textarea>
                         <label class="project_inputAlertBlue" id="descCharCount">Characters Remaining: 2000</label>
                     </div>
                     <input type="number" th:name="projectId" th:value="${project.getId}" style="display: none" >
                     <!-- When enter is pressed, default form action is to submit the first button. As our form contains buttons, this empty button exists to consume the default action. -->
                     <button onclick="return false;" style="display: none"></button>
+
+                    <!-- Start of users section of the form-->
+                    <div class="row-1">
+                        <b class="evidence_head setWide" id="users_input">Users:</b>
+                        <p style="display:none;" id="user_error">You must select a currently registered User</p>
+                    </div>
+                    <div class="col-12" id="users_div" style="display: flex; justify-content: center; align-items: center;">
+                        <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
+                        <div class="evidence_form_element_wide">
+                            <div class="autocomplete evidence_form_element_wide">
+                                <input type="hidden" id="userHidden" th:name="userInput">
+                                <input type="text" autocomplete="off" id="add_user_input" maxlength=65 oninput="updateUsers()"  class="evidence_form_element_wide project_edit_data">
+                                </input>
+                            </div>
+                        </div>
+                        <button id="add_user_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addUser(); return false;"></button>
+                    </div>
+                    <label class="project_inputAlertBlue" id="userCharCount" style="padding-left: 5px">Characters Remaining: 65</label>
+                    <br>
+                    <div id="users_container" style="width: 100%">
+                        <div id="user_sub_1" style="display: flex; width: 100%"></div>
+                    </div>
+
+                    <!-- Start of skills section of the form-->
                     <div class="row-1">
                         <b class="evidence_head setWide" id="skills_input">Skills:</b>
-                        <p style="display:none;" id="skill_error">Only letters, underscores, hyphens, and numbers are allowed</p>
+                        <p style="display:none;" id="skill_error">Only letters, underscores, hyphens, and numbers are allowed. No more than 50 characters.</p>
                     </div>
                     <div class="col-12" id="skills_div" style="display: flex; justify-content: center; align-items: center;">
-                            <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
+                        <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
                         <div class="evidence_form_element_wide">
                         <div class="autocomplete evidence_form_element_wide">
                             <input type="hidden" id="skillHidden" th:name="skillInput">
-                        <input type="text" autocomplete="off" id="add_skill_input" maxlength=100 oninput="updateSkills()"  class="evidence_form_element_wide project_edit_data">
+                        <input type="text" autocomplete="off" id="add_skill_input" maxlength=100 oninput="updateSkills()" class="evidence_form_element_wide project_edit_data">
                         </input>
                         </div>
                         </div>
-                       <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill(); return false;"></button>
+                        <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill(); return false;"></button>
                     </div>
-                    <label class="project_inputAlertBlue" id="skillCharCount" style="padding-left: 5px">Characters Remaining: 100</label>
+                    <label class="project_inputAlertBlue" id="skillCharCount" style="padding-left: 5px">Characters Remaining: 50</label>
                     <br>
                     <div id="skills_container" style="width: 100%">
                         <div id="skill_sub_1" style="display: flex; width: 100%"></div>
                     </div>
+
                     <!-- Start of link section of the form, which includes the 1. "Links" title, 2. input, and 3. list of inputted links -->
                     <div class="col-12">
                         <!-- 1. "Links" title-->
@@ -126,7 +151,7 @@
 
                             <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
                                 <button class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button">CANCEL</button>
-                                <button class="save_evidence" id="projectSave" style="background: lightgray" type="submit" disabled>SAVE</button>
+                                <button class="save_evidence" id="projectSave" type="submit">SAVE</button>
                             </div>
                         </div>
                     </div>
@@ -141,10 +166,13 @@
     </div>
     <script type="text/javascript" th:src="@{js/autocomplete.js}"></script>
     <script th:inline="javascript">
-        allSkills = [[${autoSkills}]];
-        console.log(allSkills)
+        let allSkills = [[${autoSkills}]];
+        let allUsers = [[${autoSkills}]];
         if (allSkills !== null) {
-            autocomplete(document.getElementById("add_skill_input"), allSkills);
+            autocomplete(document.getElementById("add_skill_input"), allSkills, "skill");
+        }
+        if (allUsers !== null) {
+            autocomplete(document.getElementById("add_user_input"), allUsers, "user");
         }
     </script>
     <script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.AuthenticatedUser;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
@@ -40,7 +41,11 @@ public class EvidenceListController {
   @Autowired
   private AccountClientService accountClientService;
   @Autowired
+  private EvidenceUserRepository evidenceUserRepository;
+  @Autowired
   private NavController navController;
+  @Autowired
+  private GroupsClientService groupsClientService;
   @Autowired
   private EvidenceService evidenceService;
 
@@ -72,6 +77,16 @@ public class EvidenceListController {
     setTitle(model, userId, projectId, categoryName, skillName);
     HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
     HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
+    for (Evidence evidence: evidenceList) {
+      evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
+      evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
+    }
+    int id = AuthStateInformer.getId(principal);
+
+    //TODO get rid of once this is actually used
+    logger.info("[EVIDENCE] getting all the groups for user");
+    logger.info(groupsClientService.getAllGroupsForUser(id).toString());
+
     List<Project> allProjects = projectService.getAllProjects();
     model.addAttribute("projectList", allProjects);
     model.addAttribute("skillMap", evidenceSkillMap);
@@ -79,14 +94,18 @@ public class EvidenceListController {
     model.addAttribute("evidenceLists", evidenceList);
 
     Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
+    model.addAttribute("evidenceList", evidenceList);
+    Set<String> skillTagList = evidenceService.getAllUniqueSkills();
+      Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
     skillTagListNoSkill.remove("No_skills");
       Set<String> skillTagList = evidenceService.getAllUniqueSkills();
       model.addAttribute("allSkills", skillTagList);
     model.addAttribute("autoSkills", skillTagListNoSkill);
+    model.addAttribute("allSkills", skillTagList);
+      model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("skillList", skillList);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
-
-    int id = AuthStateInformer.getId(principal);
+    model.addAttribute("userID", id);
 
     // Attributes For header
     UserResponse userReply;
@@ -155,6 +174,7 @@ public class EvidenceListController {
    * @param title evidence title
    * @param date evidence date
    * @param projectId the id of the project that the evidence is linked too
+   * @param otherUsers A list of usernames of other people (not the author) who worked on this evidence
    * @param categories the category the evidence is associated with
    * @param skills the skills the evidence is associated with
    * @param links are an optional list of links associated with this new piece of evidence
@@ -169,6 +189,7 @@ public class EvidenceListController {
           @RequestParam(value = "titleInput") String title,
           @RequestParam(value = "dateInput") String date,
           @RequestParam(value = "projectId") Integer projectId,
+          @RequestParam(value = "otherUsers") Optional <String> otherUsers,
           @RequestParam(value = "categoryInput") String categories,
           @RequestParam(value = "skillInput") String skills,
           @RequestParam(value = "linksInput") Optional <String> links,
@@ -182,6 +203,9 @@ public class EvidenceListController {
       }
 
       Integer accountID = AuthStateInformer.getId(principal);
+      model.addAttribute("authorId", accountID);
+      AuthenticatedUser thisUser = new AuthenticatedUser(principal);
+      model.addAttribute("authorUserName", thisUser.getUsername());
       Project parentProject = projectService.getProjectById(projectId);
       if (parentProject == null) {
           logger.debug("[EVIDENCE] Attempted to add evidence to a project that could not be found");
@@ -190,18 +214,13 @@ public class EvidenceListController {
           return "redirect:evidence";
       }
 
-      LocalDate evidenceDate = LocalDate.parse(date);
-      LocalDate projectStartDate = parentProject.getLocalStartDate();
-      LocalDate projectEndDate = parentProject.getLocalEndDate();
+      // Extract then validate links
+      List<String> extractedLinks = extractListFromHTMLString(links.orElse(""));
+      Optional<String> possibleError = evidenceService.validateLinks(extractedLinks);
+      // prioritise mandatory fields first, then link errors
+      this.errorMessage = possibleError.orElse(errorMessage);
 
-      // Check if the given evidence date is within the project date
-      if (!(evidenceDate.isAfter(projectStartDate) && evidenceDate.isBefore(projectEndDate))
-              && !(evidenceDate.isEqual(projectEndDate) || evidenceDate.isEqual(projectStartDate))) {
-          errorMessage = "Dates must fall within project dates";
-          return "redirect:evidence?pi=" + projectId;
-      }
-
-      this.errorMessage = validateMandatoryFields(title, description, evidenceDate, projectStartDate, projectEndDate);
+      this.errorMessage = validateMandatoryFields(title, description, date, parentProject);
 
       // If error occurs, return early
       if (!errorMessage.equals("")) {
@@ -209,55 +228,46 @@ public class EvidenceListController {
           return "redirect:evidence?pi=" + projectId;
       }
 
-      // Extract then validate links
-      List<String> extractedLinks = null;
-      if (links.isPresent()) {
-          extractedLinks = extractListFromHTMLString(links.get());
-          Optional<String> possibleError = evidenceService.validateLinks(extractedLinks);
-          if (possibleError.isPresent()) {
-              errorMessage = possibleError.get();
-              return "redirect:evidence?pi=" + projectId;
-          }
+      int categoriesInt = Evidence.categoryStringToInt(categories);
+
+      List<String> extractedUsers = extractListFromHTMLString(otherUsers.orElse(""));
+
+      //TODO program out once front-end is working as intended
+      if (extractedUsers.isEmpty()) {
+          extractedUsers.add(accountID + ":" + thisUser.getUsername());
       }
-      // If no error occurs with the mandatory fields then save the evidence to the repo and relevant skills or links
-      Evidence evidence = new Evidence(accountID, parentProject, title, description, evidenceDate, 0);
-      evidence.setCategories(evidence.categoryStringToInt(categories));
+
+      List<Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, LocalDate.parse(date), categoriesInt);
+
+      // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links
       logger.info("[EVIDENCE] Saving evidence to repo");
-      evidenceRepository.save(evidence);
-      logger.info(String.format("[EVIDENCE] Saved evidence to repo, id=<%s>", evidence.getId()));
-      errorMessage = "Evidence has been added";
-      logger.info(categories);
+      for (Evidence evidence : allUserEvidence) {
+          logger.info(String.format("[EVIDENCE] Saved evidence to repo, id=<%s>", evidence.getId()));
+          errorMessage = "Evidence has been added";
 
-      evidenceService.addSkillsToRepo(parentProject, evidence, skills);
+          evidenceService.addSkillsToRepo(parentProject, evidence, skills);
 
-      // If there's no skills, add the no_skills
-      List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
-      if (evidenceTagList.size() == 0) {
-          SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
-          EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
-          evidenceTagRepository.save(noSkillEvidence);
-      }
+          noSkillsCheck(evidence);
 
-      if (extractedLinks != null) {
-          logger.debug("[EVIDENCE] Saving web links");
-          try {
-              webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
-          } catch (MalformedURLException e) {
-              logger.error("[EVIDENCE] Somehow links were attempted for construction with malformed URL", e);
-              logger.error("[EVIDENCE] Links not saved");
+          if (extractedLinks.isEmpty()) {
+              logger.debug("[EVIDENCE] Saving web links");
+              try {
+                  webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
+              } catch (MalformedURLException e) {
+                  logger.error("[EVIDENCE] Somehow links were attempted for construction with malformed URL", e);
+                  logger.error("[EVIDENCE] Links not saved");
+              }
           }
-
       }
-
       return "redirect:evidence?pi=" + projectId;
   }
 
     /**
-   * Construct web links, must be validated first.
-   * @param links The link of links which are associated with a given piece of evidence
-   * @param parentEvidence The evidence object which the weblink belongs to
-   * @return An array of weblink objects which contain both the link text and the parent evidence
-   */
+    * Construct web links, must be validated first.
+    * @param links The link of links which are associated with a given piece of evidence
+    * @param parentEvidence The evidence object which the weblink belongs to
+    * @return An array of weblink objects which contain both the link text and the parent evidence
+    */
   private List<WebLink> constructLinks(List<String> links, Evidence parentEvidence) throws MalformedURLException {
     ArrayList<WebLink> resultLinks = new ArrayList<>();
     // Validate all links
@@ -281,17 +291,37 @@ public class EvidenceListController {
       return Arrays.asList(stringFromHTML.split(" "));
   }
 
+  private void noSkillsCheck(Evidence evidence) {
+      // If there's no skills, add the no_skills
+      List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+      if (evidenceTagList.isEmpty()) {
+          SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
+          EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
+          evidenceTagRepository.save(noSkillEvidence);
+      }
+  }
+
   /**
    * Checks for validation, for all the mandatory fields.
    * @param title the title field
    * @param description the description field
-   * @param evidenceDate when the evidence occurred
-   * @param projectStartDate when the project began
-   * @param projectEndDate when the project ended
+   * @param date the string representation of the date for the piece of evidence
+   * @param parentProject the Project the piece of evidence 'belongs' to
    * @return A String error message if requirement not met, else return ""
   */
-  private String validateMandatoryFields(String title, String description, LocalDate evidenceDate, LocalDate projectStartDate, LocalDate projectEndDate) {
+  private String validateMandatoryFields(String title, String description, String date, Project parentProject) {
       this.errorMessage = "";
+
+      LocalDate evidenceDate = LocalDate.parse(date);
+      LocalDate projectStartDate = parentProject.getLocalStartDate();
+      LocalDate projectEndDate = parentProject.getLocalEndDate();
+
+      // Check if the given evidence date is within the project date
+      if (!(evidenceDate.isAfter(projectStartDate) && evidenceDate.isBefore(projectEndDate))
+          && !(evidenceDate.isEqual(projectEndDate) || evidenceDate.isEqual(projectStartDate))) {
+          // Give this error priority
+          return "Dates must fall within project dates";
+      }
 
       // https://stackoverflow.com/questions/14278170/how-to-check-whether-a-string-contains-at-least-one-alphabet-in-java
       // Checks if there is at least one character in title
