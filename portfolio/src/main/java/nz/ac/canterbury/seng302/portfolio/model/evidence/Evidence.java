@@ -2,9 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,6 +40,16 @@ public class Evidence {
     protected int parentUserId;
 
     /**
+     * A list of all users for this piece of evidence
+     * Creates a relationship with evidence and users, where evidence may be associated to many users
+     * We cannot create a direct mapping as they are in different databases so this is a work around
+     */
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
+    @JsonBackReference
+    protected List<EvidenceUser> evidenceUsersId;
+
+    /**
      * The project the piece of evidence belongs to.
      * Note that the parent user is the identifying property.
      */
@@ -62,12 +72,22 @@ public class Evidence {
     protected int categories = 0;
 
     /**
-     * The list of links associated with this peice of evidence
+     * The list of links associated with this piece of evidence
      */
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     @JsonBackReference
     protected List<WebLink> links;
+
+    /**
+     * The list of linkCommit associated with this piece of evidence
+     * A linkCommit can be associated with one or more parent piece of evidence.
+     * An evidence can have one or more linkCommit
+     */
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
+    @JsonBackReference // This prevents infinite reference looping between tables
+    protected List<LinkedCommit> linkedCommit;
 
     public Evidence() {}
 
@@ -90,6 +110,7 @@ public class Evidence {
         int categories
     ) {
         this.parentUserId = parentUserId;
+        this.evidenceUsersId = evidenceUsersId;
         this.associatedProject = associatedProject;
         this.title = title;
         this.description = description;
@@ -277,5 +298,20 @@ public class Evidence {
 
     public void setCategories(int categories) {
         this.categories = categories;
+    }
+
+    @Override
+    public String toString() {
+        return title + "\n"
+            + id + "\n"
+            + parentUserId + "\n"
+            + associatedProject + "\n"
+            + description + "\n"
+            + categories + "\n"
+            + evidenceUsersId + "\n";
+    }
+
+    public List<EvidenceUser> getEvidenceUsersId() {
+        return evidenceUsersId;
     }
 }

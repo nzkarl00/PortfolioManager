@@ -4,6 +4,10 @@ import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,10 @@ public class EvidenceService {
     EvidenceTagRepository evidenceTagRepository;
     @Autowired
     ProjectService projectService;
+    @Autowired
+    AccountClientService accountClientService;
+    @Autowired
+    EvidenceUserRepository evidenceUserRepository;
     @Autowired
     AccountClientService accountClientService;
 
@@ -103,6 +111,48 @@ public class EvidenceService {
     }
 
     /**
+     * For every user associated to a piece of evidence, duplicate the evidence and save it for them
+     * And then creating an association between each evidence user and their parent evidence
+     * @param extractedUsernames List of {id}:{username} that a user has said also worked on the piece of evidence they're creating
+     * @param parentProject The parent project that all pieces of evidence will relate to
+     * @param title The title that all pieces of evidence will relate to
+     * @param description The description that all pieces of evidence will relate to
+     * @param evidenceDate The evidenceDate that all pieces of evidence will relate to
+     * @return
+     */
+    public List<Evidence> generateEvidenceForUsers(List<String> extractedUsernames, Project parentProject, String title, String description, LocalDate evidenceDate, int categories) {
+        // Extract then validate usernames
+        // This is assuming that the list is formatted as {id}:{username}
+        List<Evidence> allEvidence = new ArrayList<>();
+        List<String[]> validUsers = new ArrayList<>();
+
+        // Validate that the username exists in the IDP
+        for(String username: extractedUsernames) {
+            String[] split = username.split(":");
+            int userId = Integer.parseInt(split[0]);
+
+            // Make a call to the IDP and make sure the username and given userId match with what is expected
+            UserResponse response = accountClientService.getUserById(userId);
+            if (response.getUsername().equals(split[1])) {
+                validUsers.add(split);
+            }
+        }
+
+        //Loop through all associated users so we can create their pieces of evidence
+        for(String[] user: validUsers) {
+            Evidence userEvidence = new Evidence(Integer.parseInt(user[0]), parentProject, title, description, evidenceDate, categories);
+            evidenceRepository.save(userEvidence);
+            allEvidence.add(userEvidence);
+            //Loop through all associated users again so that we can associate them to the evidence we created
+            for(String[] associated: validUsers) {
+                EvidenceUser evidenceUser = new EvidenceUser(Integer.parseInt(associated[0]), associated[1], userEvidence);
+                evidenceUserRepository.save(evidenceUser);
+            }
+        }
+        return allEvidence;
+    }
+
+    /**
      * Takes an evidence ID and returns a list of all skill tag titles that are associated with it.
      * @param evidenceId The evidence ID to be checked against
      * @return List of skill tag title strings
@@ -123,6 +173,8 @@ public class EvidenceService {
         //Create new skill for any skill that doesn't exist, create evidence tag for all skills
         if (skills.replace(" ", "").length() > 0) {
             List<String> skillList = extractListFromHTMLStringSkills(skills);
+
+            logger.debug(skillList.toString());
 
             for (String skillString : skillList) {
                 String validSkillString = skillString.replace(" ", "_");

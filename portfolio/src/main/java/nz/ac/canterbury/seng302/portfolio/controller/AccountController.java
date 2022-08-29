@@ -10,6 +10,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Optional;
 
 /**
  * Responsible for the account details page
@@ -32,13 +35,22 @@ public class AccountController {
     @GetMapping("/account")
     public String account(
         @AuthenticationPrincipal AuthState principal,
+        @RequestParam(value = "id") Optional<Integer> userId,
         Model model
     ) {
-        Integer id = AuthStateInformer.getId(principal);
+        int id = userId.orElse(AuthStateInformer.getId(principal));
 
         // Attributes For header
         UserResponse userReply;
-        userReply = accountClientService.getUserById(id); // Get the user
+        try {
+            userReply = accountClientService.getUserById(id); // Get the user
+        } catch(Exception e) {
+            userReply = accountClientService.getUserById(AuthStateInformer.getId(principal)); // Get the user
+            id = AuthStateInformer.getId(principal);
+        }
+
+
+        model.addAttribute("isSelf",id == AuthStateInformer.getId(principal));
 
         // Put the users details into the page
         String roles = "";
