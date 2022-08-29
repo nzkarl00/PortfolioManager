@@ -24,60 +24,50 @@
 <body>
 
 
-<div th:fragment="evidenceCommit">
+<div th:fragment="evidenceCommit" style="display:flex;">
 
     <!-- Start of commit section of the form, which includes the 1. current commits, 2. add commits -->
-    <div class="row-1 portion_body_tall" style="display:flex;">
         <!-- 1. Current Commit -->
-        <div id="current_commits" class="evidence_form_element col-5">
-            <div class="slight_pad">
-                <b class="evidence_head setWide">Current Commit:</b><br>
-            </div>
-            [TO BE IMPLEMENTED] LIST OF THE CURRENT COMMITS LINKED TO THIS EVIDENCE FROM THE ADD COMMIT SEARCH.
-            Format is:
-            1. "commit title" by User @time [Hash] //delete button X
-            1. "commit title2" by User @time [Hash] //delete button X
+        <div class="col-6">
+            <b class="evidence_head setWide">Current Commits:</b>
         </div>
 
         <!-- 2. Add Commit -->
-        <div class="evidence_form_element col-6">
-            <div class="slight_pad">
-                <b class="evidence_head setWide">Add Commit:</b><br>
-            </div>
+        <div class="col-6">
+            <b class="evidence_head setWide">Add Commits:</b>
 
-            <!-- Commit Search Section which includes 1. heading, 2. expanding information and 3. bottom -->
-            <div class="col-lg-10 col-md-12 col-sm-12">
-
-                <!-- 1. commit search heading that will always show to select a group from dropdown -->
-                <div class="row-1 commit_search_top" style="display:flex;">
-                    <div class="col-4">
-                        <p class="bio evidence_head"> Link Group: </p>
-                    </div>
-                    <div class="col-3.5">
-                        <select class="project_edit_data horizontal_field">
-                            <option value="They/Them">They/Them</option>
-                        </select>
-                        <!--                <select class="project_edit_data horizontal_field"-->
-                        <!--                        id="user_group_dropdown" th:name="user_group_dropdown" th:value="*{user_group_dropdown}">-->
-                        <!--                    <option value="They/Them">They/Them</option>-->
-                        <!--                </select>-->
-                    </div>
+            <div>
+                <div class="row-1 commit_top" style="display:flex;">
+                    <a class="btn commit_text float-end" data-toggle="collapse" th:id="${'ArrowButtonCommit'}" th:href="'#collapseCommit'" role="button" aria-expanded="false" aria-controls="collapseExample">
+                        <b class="commit_head">Linked Group:</b>
+                    </a>
+                    <select class="commit_edit_data"  id="commit_group" th:name="commit_group" >
+                    <option value=" "> </option>
+                    <option value="ExampleGroupA">ExampleGroupA</option>
+                    <option value="ExampleGroupB">ExampleGroupB</option>
+                    <option value="ExampleGroupC">ExampleGroupC</option>
+                    </select>
                 </div>
 
-                <!-- 2. commit search information that can be expanded or collapsed depending on if there's a repo -->
+                <!-- 2. evidence information that can be expanded or collapsed  -->
                 <div class="row-1">
-                </div>
-
-                <!-- 3.. commit search bottom that will display information if there is NOT a repo -->
-                <div class="row-1">
-                    <div class="commit_search_bot">
+                    <div class="collapse commit_data no-gutters" th:id="'collapseCommit'">
+                        <div>
+                            Test Text To Show Stuff Off
+                        </div>
                         <br>
                     </div>
                 </div>
 
+                <!-- 3.. evidence bottom  -->
+                <div class="row-1">
+                    <div class="commit_bot">
+                        <br>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+
 
 </div>
 

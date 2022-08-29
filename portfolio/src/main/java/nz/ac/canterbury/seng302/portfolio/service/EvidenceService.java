@@ -30,8 +30,6 @@ public class EvidenceService {
     AccountClientService accountClientService;
     @Autowired
     EvidenceUserRepository evidenceUserRepository;
-    @Autowired
-    AccountClientService accountClientService;
 
     Logger logger = LoggerFactory.getLogger(EvidenceService.class);
 
@@ -40,6 +38,8 @@ public class EvidenceService {
 
 //        UserResponse user = accountClientService.getUserById(userId);
 //        List<GroupMembership> findAllByRegisteredGroupUser(AccountProfile profile);
+        List<String> testList = new ArrayList<>();
+        return testList;
     }
 
     /**

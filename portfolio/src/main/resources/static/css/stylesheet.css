@@ -1119,20 +1119,6 @@
 }
 
 
-.commit_search_top {
-    background: #D9F9FF !important;
-    border-radius: 20px 20px 0px 0px;
-    border-color: white;
-    padding: 10px !important;
-    padding-left: 15px !important;
-}
-
-.commit_search_bot {
-    background: #D9F9FF !important;
-    border-color: white;
-    border-radius: 0px 0px 20px 20px;
-}
-
 .evidence_top {
 
     background: #D9F9FF !important;
@@ -1157,6 +1143,55 @@
     margin-bottom:  0px !important;
     padding-left: 20px !important;
     padding-right: 20px !important;
+}
+
+.commit_top {
+
+    background: #19DAFF !important;
+    border-radius: 20px 20px 0px 0px;
+    padding: 10px !important;
+    padding-left: 15px !important;
+}
+
+.commit_bot {
+    background: #19DAFF !important;
+    border-radius: 0px 0px 20px 20px;
+}
+
+
+.commit_data {
+    font-family: nexa !important;
+    color: #000000 !important;
+    font-size: 110% !important;
+    background-color: #19DAFF !important;
+    overflow-wrap: break-word;
+    border-radius: 0px 0px 0px 0px !important;
+    margin-bottom:  0px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
+
+.commit_edit_data {
+  font-family: nexa !important;
+  color: #000000 !important;
+  font-size: 100% !important;
+  background-color: #F7FEFF !important;
+  border-style: solid !important;
+  border-color: #056BFA !important;
+  border-width: 10px !important;
+  border-radius: 10px 20px 20px 20px !important;
+}
+
+
+.commit_head {
+    font-family: nexaBold !important;
+    color: #056BFA !important;
+    font-size: 175% !important;
+}
+
+.commit_text {
+    margin-left: -0.5em !important;
 }
 
 .fa-arrow-down {
@@ -1339,6 +1374,8 @@ select.form-control {
     font-size: 100% !important;
     padding: 0.5rem !important;
     margin: 1rem !important;
+    margin-left: 6rem !important;
+    margin-top: 0rem !important;
     font-family: nexaLight !important;
 
 }
@@ -1355,6 +1392,8 @@ select.form-control {
     font-colour: #FFFFFF !important;
     padding: 0.5rem !important;
     margin: 1rem !important;
+    margin-left: 6rem !important;
+    margin-top: 0rem !important;
     font-family: nexaLight !important;
 
 }

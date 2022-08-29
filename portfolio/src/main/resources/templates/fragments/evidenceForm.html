@@ -149,12 +149,27 @@
                                 <input type="hidden" id="linksInput" th:name="linksInput">
                             </div>
 
-                            <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
-                                <button class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button">CANCEL</button>
-                                <button class="save_evidence" id="projectSave" type="submit">SAVE</button>
-                            </div>
                         </div>
                     </div>
+                </div>
+
+
+                <div class="row-1">
+
+                    <div class="col-12">
+                    <div th:replace="fragments/evidenceCommit.html :: evidenceCommit"></div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row-1" style="display:flex;" >
+                        <div class="col-9">
+                        </div>
+                        <div class="col-2" id="submit_and_cancel" >
+                            <button class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button">CANCEL</button>
+                            <button class="save_evidence" id="projectSave" type="submit">SAVE</button>
+                        </div>
                 </div>
         </form>
         </div>
