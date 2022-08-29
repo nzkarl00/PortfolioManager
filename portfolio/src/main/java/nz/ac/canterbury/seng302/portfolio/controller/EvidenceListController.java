@@ -96,13 +96,9 @@ public class EvidenceListController {
     Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
     model.addAttribute("evidenceList", evidenceList);
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
-      Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
     skillTagListNoSkill.remove("No_skills");
-      Set<String> skillTagList = evidenceService.getAllUniqueSkills();
-      model.addAttribute("allSkills", skillTagList);
     model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("allSkills", skillTagList);
-      model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("skillList", skillList);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
     model.addAttribute("userID", id);

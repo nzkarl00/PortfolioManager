@@ -112,8 +112,9 @@
 
         // removes element from DOM
         box.style.display = 'none';
-        displayMessageForNoAddButton.style.display = 'none';
-
+        if (displayMessageForNoAddButton !== null) {
+            displayMessageForNoAddButton.style.display = 'none';
+        }
         // hides element (still takes up space on page)
         // box.style.visibility = 'hidden';
     }, 10000); // time in milliseconds
@@ -175,6 +176,10 @@
               $("#evidence_form_container").replaceWith("<div id='evidence_form_container'></div>")
           }
       })
+  }
+  let existingProjectId = window.location.search.split("&").filter(q => q.includes('pi')) // Gets the query from the address, only includes those which include "pi" as a substring
+  if (existingProjectId.length > 0) {
+      document.getElementById("project_selector").value = existingProjectId[0].split("=")[1] // Sets the value of the project selector to the value in the query if there is one
   }
   updateProject()
 </script>

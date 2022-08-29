@@ -194,8 +194,10 @@ function addSkill() {
     }
 
     skills.add(newSkill)
-    allSkills = allSkills.filter(s => s !== newSkill)
-    autocomplete(document.getElementById("add_skill_input"), allSkills, "skill")
+    if (allSkills !== null) {
+        allSkills = allSkills.filter(s => s !== newSkill)
+        autocomplete(document.getElementById("add_skill_input"), allSkills, "skill")
+    }
     document.getElementById("add_skill_input").value = ""
     appendSkill(newSkill)
 }
