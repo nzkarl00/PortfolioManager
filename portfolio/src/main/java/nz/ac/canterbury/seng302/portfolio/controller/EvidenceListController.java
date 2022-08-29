@@ -40,7 +40,7 @@ public class EvidenceListController {
   private ProjectService projectService;
   @Autowired
   private AccountClientService accountClientService;
-    @Autowired
+  @Autowired
   private NavController navController;
   @Autowired
   private GroupsClientService groupsClientService;
@@ -220,6 +220,10 @@ public class EvidenceListController {
                                @RequestParam(value = "evidenceId") String evidenceId,
                                @AuthenticationPrincipal AuthState principal) {
       Evidence targetEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
+      if (targetEvidence == null) {
+          logger.debug("[EVIDENCE] Redirecting, evidence id " + evidenceId + " does not exist");
+          return "redirect:evidence?pi=" + projectId;
+      }
       Integer accountID = AuthStateInformer.getId(principal);
       if (!principal.getIsAuthenticated() || accountID != targetEvidence.getParentUserId()) {
           logger.debug("[EVIDENCE] Redirecting, user does not have permissions to delete evidence " + evidenceId);
