@@ -88,12 +88,10 @@
                             <p class="bio evidence_title" th:if="${evidence.getEvidenceUsersId().size() > 0}">Contributors </p>
                             <div class="d-flex flex-row flex-wrap" th:id="'evidence_contributors_'+${evidence.getId}" th:if="${evidence.getEvidenceUsersId().size() > 0}" style="width: 100%">
                                 <div class="p-2" th:each="user: ${evidence.getEvidenceUsersId()}">
-
                                     <div id="contributors_container" style="width: 85%; display: block;">
-                                            <button th:id="${'contributor_' + user.getUsername()}" class="table_text author_tag" th:if="${username == user.getUsername()}" th:text="${user.getUsername()}"></button>
-                                            <button th:id="${'contributor_' + user.getUsername()}" class="table_text contributor_tag" th:if="${username != user.getUsername()}" th:text="${user.getUsername()}"></button>
+                                        <a th:id="${'contributor_' + user.getUsername()}" class="table_text author_tag" th:if="${username == user.getUsername()}" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}" ></a>
+                                        <a th:id="${'contributor_' + user.getUsername()}" class="table_text contributor_tag" th:if="${username != user.getUsername()}" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}"></a>
                                     </div>
-
                                 </div>
                             </div>
 
