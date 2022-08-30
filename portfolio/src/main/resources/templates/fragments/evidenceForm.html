@@ -25,10 +25,10 @@
 
 <div th:fragment="evidenceForm">
         <div class="portion_body"  style="display: none" id="evidence_form">
-        <form th:action="@{add-evidence}" method="post">
+        <form th:action="@{add-evidence}" method="post" id="evidenceCreateForm" >
                 <div class="row-1" style="display:flex;">
                         <div class="evidence_form_element col-4">
-                            <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" class="project_edit_data" th:name="titleInput" oninput="updateTitle();">
+                            <b class="evidence_head setWide">Title*:</b><br> <input form="evidenceCreateForm" type="text" id="evidence_title" maxlength="100" class="project_edit_data" th:name="titleInput" oninput="updateTitle();">
                             <label class="project_inputAlertBlue" id="titleCharCount">Characters Remaining: 100</label>
                         </div>
                     <div id="date_container" class="evidence_form_element col-3">
@@ -38,7 +38,7 @@
 
 
                         </div>
-                            <input type="date" th:name="dateInput" th:value="${date}"
+                            <input form="evidenceCreateForm" type="date" th:name="dateInput" th:value="${date}"
                                    th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}"
                                    class="project_edit_data" id="date_input"
                                    oninput="canSaveCheck()" required
@@ -51,20 +51,20 @@
                                 </div>
                             <div id="category_multiselect_items" class="category_box" style="display: none">
                                 <label for="category_quantitative" class="category_item" style="display: block">
-                                    <input type="checkbox" autocomplete="off" class="category_item" value="Quantitative Skills" id="category_quantitative" onchange="updateCategories(this)" />
+                                    <input form="evidenceCreateForm" type="checkbox" autocomplete="off" class="category_item" value="Quantitative Skills" id="category_quantitative" onchange="updateCategories(this)" />
                                     Quantitative Skills
                                 </label>
                                 <label for="category_qualitative" class="category_item" style="display: block">
-                                    <input type="checkbox" autocomplete="off" class="category_item" value="Qualitative Skills" id="category_qualitative" onchange="updateCategories(this)" />
+                                    <input form="evidenceCreateForm" type="checkbox" autocomplete="off" class="category_item" value="Qualitative Skills" id="category_qualitative" onchange="updateCategories(this)" />
                                     Qualitative Skills
                                 </label>
                                 <label for="category_service" class="category_item" style="display: block">
-                                    <input type="checkbox" autocomplete="off" class="category_item" value="Service" id="category_service" onchange="updateCategories(this)" />
+                                    <input form="evidenceCreateForm" type="checkbox" autocomplete="off" class="category_item" value="Service" id="category_service" onchange="updateCategories(this)" />
                                     Service
                                 </label>
                             </div>
                         </div>
-                    <input type="hidden" id="category_hidden" th:name="categoryInput">
+                    <input type="hidden" form="evidenceCreateForm" id="category_hidden" th:name="categoryInput">
                 </div>
                     <br>
                     <br>
@@ -74,13 +74,13 @@
                     <div>
                         <b class="evidence_head setWide">Description*:</b>
                         <br>
-                        <textarea type="text" maxlength="2000" id="evidence_desc" oninput="updateDesc();"
+                        <textarea form="evidenceCreateForm" type="text" maxlength="2000" id="evidence_desc" oninput="updateDesc();"
                                   class=" description-input project_edit_data horizontal_field bio setWide"
                                   th:name="descriptionInput"
                         ></textarea>
                         <label class="project_inputAlertBlue" id="descCharCount">Characters Remaining: 2000</label>
                     </div>
-                    <input type="number" th:name="projectId" th:value="${project.getId}" style="display: none" >
+                    <input form="evidenceCreateForm" type="number" th:name="projectId" th:value="${project.getId}" style="display: none" >
                     <!-- When enter is pressed, default form action is to submit the first button. As our form contains buttons, this empty button exists to consume the default action. -->
                     <button onclick="return false;" style="display: none"></button>
 
@@ -93,8 +93,8 @@
                         <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
                         <div class="evidence_form_element_wide">
                             <div class="autocomplete evidence_form_element_wide">
-                                <input type="hidden" id="userHidden" th:name="userInput">
-                                <input type="text" autocomplete="off" id="add_user_input" maxlength=65 oninput="updateUsers()"  class="evidence_form_element_wide project_edit_data">
+                                <input form="evidenceCreateForm" type="hidden" id="userHidden" th:name="userInput">
+                                <input form="evidenceCreateForm" type="text" autocomplete="off" id="add_user_input" maxlength=65 oninput="updateUsers()"  class="evidence_form_element_wide project_edit_data">
                                 </input>
                             </div>
                         </div>
@@ -115,8 +115,8 @@
                         <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
                         <div class="evidence_form_element_wide">
                         <div class="autocomplete evidence_form_element_wide">
-                            <input type="hidden" id="skillHidden" th:name="skillInput">
-                        <input type="text" autocomplete="off" id="add_skill_input" maxlength=100 oninput="updateSkills()" class="evidence_form_element_wide project_edit_data">
+                            <input form="evidenceCreateForm" type="hidden" id="skillHidden" th:name="skillInput">
+                        <input form="evidenceCreateForm" type="text" autocomplete="off" id="add_skill_input" maxlength=100 oninput="updateSkills()" class="evidence_form_element_wide project_edit_data">
                         </input>
                         </div>
                         </div>
@@ -136,7 +136,7 @@
                         <!-- 2. Input field where user can add links -->
                         <div class="col-12" id="links_div" style="display: flex; justify-content: center; align-items: center;">
                             <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
-                            <input type="text" id="add_link_input" class="evidence_form_element_wide project_edit_data">
+                            <input form="evidenceCreateForm" type="text" id="add_link_input" class="evidence_form_element_wide project_edit_data">
                             <button id="add_link_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addLink(); return false;"></button>
                             </input>
                         </div><br>
@@ -146,7 +146,7 @@
 
                             <!-- 3. List of all the links the user added from the input field -->
                             <div id="links_container" style="width: 85%; display: block">
-                                <input type="hidden" id="linksInput" th:name="linksInput">
+                                <input form="evidenceCreateForm" type="hidden" id="linksInput" th:name="linksInput">
                             </div>
 
                         </div>
@@ -167,8 +167,8 @@
                         <div class="col-9">
                         </div>
                         <div class="col-2" id="submit_and_cancel" >
-                            <button class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button">CANCEL</button>
-                            <button class="save_evidence" id="projectSave" type="submit">SAVE</button>
+                            <button form="evidenceCreateForm" class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button">CANCEL</button>
+                            <button form="evidenceCreateForm" class="save_evidence" id="projectSave" type="submit">SAVE</button>
                         </div>
                 </div>
         </form>

@@ -1182,6 +1182,42 @@
   border-width: 10px !important;
   border-radius: 10px 20px 20px 20px !important;
 }
+.commit_edit_data_small {
+  font-family: nexa !important;
+  color: #000000 !important;
+  font-size: 100% !important;
+  background-color: #F7FEFF !important;
+  border-style: solid !important;
+  border-color: #056BFA !important;
+  border-width: 10px !important;
+  width: 100% !important;
+  border-radius: 10px 20px 20px 20px !important;
+}
+.commit_edit_data_smaller {
+  font-family: nexa !important;
+  color: #000000 !important;
+  font-size: 100% !important;
+  background-color: #F7FEFF !important;
+  border-style: solid !important;
+  border-color: #056BFA !important;
+  border-width: 10px !important;
+  width: 95% !important;
+  border-radius: 10px 20px 20px 20px !important;
+}
+
+.commit_search_result_body {
+  background-color: #D9F9FF !important;
+  border-radius: 20px 20px 20px 20px !important;
+  font-size: 100% !important;
+}
+
+
+.commit_head_small {
+    font-family: nexaBold !important;
+    color: #056BFA !important;
+    font-size: 150% !important;
+
+}
 
 
 .commit_head {
@@ -1488,6 +1524,26 @@ select.form-control {
 .search:hover {
 
     background: #056BFA !important;
+    color: #ffffff !important;
+
+}
+
+.searchCommit {
+
+    background-color: #056BFA !important;
+    border-radius: 20px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 250% !important;
+    font-colour: #FFFFFF !important;
+    font-family: nexaLight !important;
+
+}
+.searchCommit:hover {
+
+    background: #0046C9 !important;
     color: #ffffff !important;
 
 }

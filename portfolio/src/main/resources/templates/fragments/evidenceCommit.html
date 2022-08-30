@@ -30,16 +30,25 @@
         <!-- 1. Current Commit -->
         <div class="col-6">
             <b class="evidence_head setWide">Current Commits:</b>
+
+            <div style="display: flex">
+
+                <!-- 3. List of all the links the user added from the input field -->
+                <div id="commit_container" style="width: 85%; display: block">
+                    <input type="hidden" id="commitInput" th:name="commitInput">
+                </div>
+
+            </div>
         </div>
 
         <!-- 2. Add Commit -->
         <div class="col-6">
             <b class="evidence_head setWide">Add Commits:</b>
-
+            <form id="commitSearchForm" method="post">
             <div>
                 <div class="row-1 commit_top" style="display:flex;">
                     <a class="btn commit_text float-end" data-toggle="collapse" th:id="${'ArrowButtonCommit'}" th:href="'#collapseCommit'" role="button" aria-expanded="false" aria-controls="collapseExample">
-                        <b class="commit_head">Linked Group:</b>
+                        <b class="commit_head">Link Group:</b>
                     </a>
                     <select class="commit_edit_data"  id="commit_group" th:name="commit_group" >
                     <option value=" "> </option>
@@ -51,9 +60,67 @@
 
                 <!-- 2. evidence information that can be expanded or collapsed  -->
                 <div class="row-1">
+
                     <div class="collapse commit_data no-gutters" th:id="'collapseCommit'">
                         <div>
-                            Test Text To Show Stuff Off
+                            <div class="row-1" style="display:flex;">
+                                <div class="col-6" >
+                                    <b class="commit_head_small setWide">User:</b><br>
+                                    <input form="commitSearchForm" type="text" id="userCommitInput" maxlength="100" class="commit_edit_data_smaller" th:name="userCommitInput" >
+                                </div>
+                                <div class="col-6" >
+                                    <b class="commit_head_small setWide">Hash:</b><br>
+                                    <input form="commitSearchForm" type="text" id="hashCommitInput" maxlength="100" class="commit_edit_data_small" th:name="hashCommitInput" >
+                                </div>
+                            </div>
+                            <div class="row-1">
+                                <div class="align-content-center col-12">
+                                    <b class="commit_head_small">Sprint:</b><br>
+                                    <select form="commitSearchForm"  id="commit_sprint_multiselect_items" class="commit_edit_data_small">
+                                        <option value="" selected disabled> Select A Sprint</option>
+                                        <option value="Quantitative Skills">&nbsp;&nbsp;Quantitative skills</option>
+                                        <option value="Qualitative Skills">&nbsp;&nbsp;Qualitative skills</option>
+                                        <option value="Service">&nbsp;&nbsp;Service</option>
+                                    </select>
+                                </div>
+                                <input type="hidden" form="commitSearchForm" id="commit_sprint_hidden" th:name="commit_sprint_hidden">
+                            </div>
+                            <div class="row-1">
+                                <div id="date_container" class="col-12" >
+                                    <b class="commit_head_small">Date:</b> <br>
+                                    <div style="display:flex;">
+                                        <input form="commitSearchForm" type="date" th:name="dateInput" th:value="${date}"
+                                               th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}"
+                                               class="commit_edit_data" id="commit_date_start_input"
+                                        >
+                                        <b class="commit_head"> - </b> <br>
+                                        <input form="commitSearchForm" type="date" th:name="dateInput" th:value="${date}"
+                                               th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}"
+                                               class="commit_edit_data" id="commit_date_end_input"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br>
+
+                            <div class="row-1" >
+                                <div class="evidence_form_element align-content-center col-12">
+                                    <button id="searchCommit" data-toggle="collapse" th:href="'#collapseCommitSearch'" form="commitSearchForm" class="searchCommit" type="submit"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                            <br><br>
+                            <div class="row-1">
+                                <div class="collapse commit_data no-gutters commit_search_result_body" th:id="'collapseCommitSearch'">
+                                    <br>
+                                    <div id="commit_search_result_box">
+                                    Example Text To Show Commits
+                                    </div>
+                                    <br>
+                                </div>
+                            </div>
+
+
                         </div>
                         <br>
                     </div>
@@ -66,6 +133,7 @@
                     </div>
                 </div>
             </div>
+            </form>
         </div>
 
 
