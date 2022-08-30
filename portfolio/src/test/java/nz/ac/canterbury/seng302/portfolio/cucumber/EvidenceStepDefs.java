@@ -149,7 +149,7 @@ public class EvidenceStepDefs {
         Assertions.assertEquals("Evidence has been added", message.getText());
     }
 
-    @When("The all mandatory fields to an evidence are empty, I cannot click the save button")
+    @When("I cannot click the save button")
     public void the_all_mandatory_fields_to_an_evidence_are_empty_i_cannot_click_the_save_button() {
         WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
         Assertions.assertFalse(saveButton.isEnabled());

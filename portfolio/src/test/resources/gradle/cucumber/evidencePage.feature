@@ -43,7 +43,7 @@ Feature: U25: Piece of evidence creation
     Given I am authenticated as a admin
     And I go to the evidence page with a project id
     And I click the Add Evidence button
-    When The all mandatory fields to an evidence are empty, I cannot click the save button
+    When I cannot click the save button
 
   @Close
   Scenario: AC4: Saving and cancelling give expected results. The save button is only enabled once the mandatory fields are filled in.
