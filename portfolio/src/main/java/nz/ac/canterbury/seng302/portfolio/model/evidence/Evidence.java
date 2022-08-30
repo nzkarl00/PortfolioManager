@@ -57,9 +57,8 @@ public class Evidence {
     @JoinColumn(name="associated_project_id", nullable=false)
     protected Project associatedProject;
 
-    @OneToMany
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinColumn(name="evidence_tag_id")
     protected List<EvidenceTag> evidenceTags;
 
     @Column(name="title", length = MAX_TITLE_LENGTH, nullable = false)
