@@ -7,8 +7,7 @@ import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import java.util.List;
+import java.util.*;
 
 public class SkillStepDefs {
 
@@ -17,11 +16,11 @@ public class SkillStepDefs {
     String skillName;
 
     @When("User inputs {string} into the skill input textbox.")
-    public void userInputsIntoTheSkillInputTextbox(String arg0) {
-        skillName = arg0;
+    public void userInputsIntoTheSkillInputTextbox(String inputSkill) {
+        skillName = inputSkill;
         WebElement
             skillInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
-        skillInput.sendKeys(arg0);
+        skillInput.sendKeys(inputSkill);
         WebElement skillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
         skillButton.click();
     }
@@ -39,6 +38,12 @@ public class SkillStepDefs {
         Assertions.assertTrue(skills.isEmpty());
     }
 
+    @When("User selects the {string} option in the skills side menu")
+    public void userSelectsTheOptionInTheSkillsSideMenu(String inputSkill) {
+        WebElement button = seleniumExample.config.getDriver().findElement(By.id("skill_button_"+inputSkill));
+        button.click();
+    }
+
     @And("An appropriate error message will be shown.")
     public void anAppropriateErrorMessageWillBeShown() {
         boolean check = false;
@@ -53,8 +58,23 @@ public class SkillStepDefs {
     }
 
     @Then("The skill {string} will be displayed.")
-    public void theSkillWillBeDisplayed(String arg0) {
-        WebElement skill = seleniumExample.config.getDriver().findElement(By.id("skill_" + arg0));
-        Assertions.assertEquals(arg0 + " ✖", skill.getText());
+    public void theSkillWillBeDisplayed(String inputSkill) {
+        WebElement skill = seleniumExample.config.getDriver().findElement(By.id("skill_" + inputSkill));
+        Assertions.assertEquals(inputSkill + " ✖", skill.getText());
+    }
+
+    @Then("The {string} skill only appears once")
+    public void thereAreNoDuplicatesInTheSkillMenu(String inputSkill) {
+        List<WebElement> skillMenu = seleniumExample.config.getDriver().findElements(By.id("skills_menu"));
+        List<String> skillList = new ArrayList<String>();
+        Set<String> skillSet = Collections.emptySet();
+        for (WebElement eachSkill: skillMenu) {
+            skillList.add(eachSkill.getText());
+            skillSet.add(eachSkill.getText());
+        }
+        for (String eachSkillString: skillList) {
+            Assertions.assertTrue(skillSet.contains(eachSkillString));
+        }
+        Assertions.assertEquals(skillList.size(), skillSet.size());
     }
 }

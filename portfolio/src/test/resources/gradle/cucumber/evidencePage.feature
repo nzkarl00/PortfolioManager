@@ -43,7 +43,7 @@ Feature: U25: Piece of evidence creation
     Given I am authenticated as a admin
     And I go to the evidence page with a project id
     And I click the Add Evidence button
-    When I cannot click the save button
+    Then I cannot click the save button
 
   @Close
   Scenario: AC4: Saving and cancelling give expected results. The save button is only enabled once the mandatory fields are filled in.
@@ -88,7 +88,7 @@ Feature: U25: Piece of evidence creation
 
     When User enters <title> into the title
     And User enters <desc> into the description
-    Then Save button cannot be clicked
+    Then I cannot click the save button
 
     Examples:
       | title | desc |
