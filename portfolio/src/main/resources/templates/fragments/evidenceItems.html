@@ -38,12 +38,10 @@
                         <p class="bio evidence_title" th:if="${evidence.getEvidenceUsersId().size() > 0}">Contributors </p>
                         <div class="d-flex flex-row flex-wrap" th:id="'evidence_contributors_'+${evidence.getId}" th:if="${evidence.getEvidenceUsersId().size() > 0}" style="width: 100%">
                             <div class="p-2" th:each="user: ${evidence.getEvidenceUsersId()}">
-
                                 <div id="contributors_container" style="width: 85%; display: block;">
-                                    <button th:id="${'contributor_' + user.getUsername()}" class="table_text author_tag" th:if="${username == user.getUsername()}" th:text="${user.getUsername()}"></button>
-                                    <button th:id="${'contributor_' + user.getUsername()}" class="table_text contributor_tag" th:if="${username != user.getUsername()}" th:text="${user.getUsername()}"></button>
+                                    <a th:id="${'contributor_' + user.getUsername()}" class="table_text author_tag" th:if="${username == user.getUsername()}" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}" ></a>
+                                    <a th:id="${'contributor_' + user.getUsername()}" class="table_text contributor_tag" th:if="${username != user.getUsername()}" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}"></a>
                                 </div>
-
                             </div>
                         </div>
 
@@ -81,24 +79,26 @@
                                 type="button" th:style="${displayDeleteButton}" th:value="${evidence.getId()}"
                                 th:id="${evidence.getId()}" data-toggle="modal"
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
-                                class="fa fa-trash group_delete_button"></button>
+                                class="fa fa-trash group_delete_button"
+                        />
                     </div>
                     <!-- Modal -->
                     <div class="modal fade" th:id="${'deleteModal'+evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete - ' + evidence.getTitle()+ '?' }"></h5>
+                                    <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete - ' + evidence.getTitle()+ '?' }"/>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body"
-                                     th:text="${'Are you sure you want to delete this piece of evidence (' + evidence.getTitle()+ ') from your portfolio?'}"></div>
+                                     th:text="${'Are you sure you want to delete this piece of evidence (' + evidence.getTitle()+ ') from your portfolio?'}"
+                                />
                                 <form method="post" th:action="@{/delete-evidence}">
                                     <div class="modal-footer">
                                         <input type="number" th:name="evidenceId" th:value="${evidence.getId()}" style="display: none">
-                                        <input type="number" th:name="projectId" th:value="${project.getId()}" style="display: none">
+                                        <input type="number" th:name="projectId" th:value="${evidence.getAssociatedProject().getId()}" style="display: none">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="CancelButton">Cancel</button>
                                         <button type="submit" class="btn btn-primary bg-danger" >Delete</button>
                                     </div>
@@ -119,7 +119,6 @@
             </div>
 
         </div>
-    </div>
 
         <div class="col-2">
         </div>
