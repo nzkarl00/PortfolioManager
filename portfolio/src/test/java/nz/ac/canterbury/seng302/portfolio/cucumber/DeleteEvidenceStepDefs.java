@@ -57,17 +57,21 @@ public class DeleteEvidenceStepDefs {
     /**
      *Opens a piece of evidence
      **/
-    public void viewFullPieceOfEvidence(String arg0) {
+    public void viewFullPieceOfEvidence(String arg0) throws InterruptedException {
         String getId = getEvidenceId(arg0);
-        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+getId)));
+
+
+
         WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
         //scrollWindowToElement(arrowButton);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", arrowButton);
+        Thread.sleep(500);
         seleniumExample.config.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         arrowButton.click();
     }
 
     @And("I view that piece of evidence {string}")
-    public void iViewThatPieceOfEvidence(String arg0) {
+    public void iViewThatPieceOfEvidence(String arg0) throws InterruptedException {
         viewFullPieceOfEvidence(arg0);
     }
 

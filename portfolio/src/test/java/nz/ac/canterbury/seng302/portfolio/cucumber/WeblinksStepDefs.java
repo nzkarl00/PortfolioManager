@@ -46,6 +46,57 @@ public class WeblinksStepDefs {
         return null;
     }
 
+    @Given("There is linked evidence in the table")
+    public void thereIsLinkedEvidenceInTheTable() throws InterruptedException {
+        seleniumExample.config.getDriver()
+                .get(seleniumExample.url + "/evidence?pi=1");
+            // open create evidence form
+            WebElement button = seleniumExample.config.getDriver()
+                    .findElement(By.id("add_button"));
+            button.click();
+
+            // add title
+            WebElement titleField = seleniumExample.config.getDriver()
+                    .findElement(By.id("evidence_title"));
+            titleField.sendKeys("Evidence Link");
+
+            // add description
+            WebElement description = seleniumExample.config.getDriver()
+                    .findElement(By.id("evidence_desc"));
+            description.sendKeys(
+                    "This evidence relates to a link test");
+
+            // add skill
+            WebElement skillInput = seleniumExample.config.getDriver()
+                    .findElement(By.id("add_skill_input"));
+            skillInput.sendKeys("skill");
+            WebElement skillButton = seleniumExample.config.getDriver()
+                    .findElement(By.id("add_skill_button"));
+            skillButton.click();
+
+            // add secure weblink
+            WebElement linkInput = seleniumExample.config.getDriver()
+                    .findElement(By.id("add_link_input"));
+            linkInput.sendKeys("https://en.wikipedia.org/wiki/Main_Page");
+            WebElement linkButton = seleniumExample.config.getDriver()
+                    .findElement(By.id("add_link_button"));
+            linkButton.click();
+            Thread.sleep(100);
+
+            // add insecure weblink
+            linkInput.sendKeys("http://info.cern.ch/");
+            linkButton.click();
+            System.out.println("links added");
+
+            WebElement saveButton = seleniumExample.config.getDriver()
+                    .findElement(By.id("projectSave"));
+            Assertions.assertTrue(saveButton.isEnabled());
+            saveButton.submit();
+
+        seleniumExample.config.getDriver()
+                .get(seleniumExample.url + "/evidence?pi=1");
+    }
+
     @Given("I open the piece of evidence")
     public void openEvidence() throws InterruptedException {
         // get the xpath of the desired pieve of evidence
