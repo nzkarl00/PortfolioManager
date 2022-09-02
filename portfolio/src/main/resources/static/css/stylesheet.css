@@ -1371,11 +1371,33 @@ select.form-control {
     white-space: nowrap;
 }
 
-.each_link {
+.each_link_delete {
     border: none;
     padding: 1px 10px;
     text-decoration: none !important;
     background: #FF202E  !important;
+    margin-left: 10px;
+    margin-bottom: 2px;
+    border-radius: 10px;
+    color: white;
+}
+
+.each_link_edit {
+    border: none;
+    padding: 1px 10px;
+    text-decoration: none !important;
+    background: #FF48CF  !important;
+    margin-left: 10px;
+    margin-bottom: 2px;
+    border-radius: 10px;
+    color: white;
+}
+
+.each_link_save {
+    border: none;
+    padding: 1px 10px;
+    text-decoration: none !important;
+    background: #26D20F  !important;
     margin-left: 10px;
     margin-bottom: 2px;
     border-radius: 10px;
