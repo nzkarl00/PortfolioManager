@@ -103,7 +103,7 @@
                             </div>
 
                             <p class="bio evidence_title" th:if="${evidence.getLinks().size() > 0}">Links </p>
-                            <div class="row" th:id="'evidence_links_'+${evidence.getId}" th:if="${evidence.getLinks().size() > 0}" style="width: 100%">
+                            <div class="row" th:id="'evidence_links_'+${evidence.getId}" th:if="${evidence.getLinks().size() > 0}"  style="width: 100%">
                                 <div th:each="link: ${evidence.getLinks()}">
 
                                     <div id="links_container" style="width: 85%; display: block; padding: 0.5rem 2rem">
@@ -148,7 +148,7 @@
                                     <form method="post" th:action="@{/delete-evidence}">
                                     <div class="modal-footer">
                                         <input type="number" th:name="evidenceId" th:value="${evidence.getId()}" style="display: none">
-                                        <input type="number" th:name="projectId" th:value="${project.getId()}" style="display: none">
+                                        <input type="number" th:name="projectId" th:value="${projectId}" style="display: none">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="CancelButton">Cancel</button>
                                         <button type="submit" class="btn btn-primary bg-danger" >Delete</button>
                                     </div>
