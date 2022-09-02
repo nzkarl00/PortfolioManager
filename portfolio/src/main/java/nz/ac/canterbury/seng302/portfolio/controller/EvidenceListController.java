@@ -73,7 +73,7 @@ public class EvidenceListController {
     setTitle(model, userId, projectId, categoryName, skillName);
     int id = AuthStateInformer.getId(principal);
     if (userId == null) {
-        userId = -1;
+        userId = id;
     }
     //TODO get rid of once this is actually used
     logger.info("[EVIDENCE] getting all the groups for user");
@@ -126,7 +126,6 @@ public class EvidenceListController {
           model.addAttribute("project", project);
       }
       model.addAttribute("evidenceList", evidenceList);
-      logger.debug(String.valueOf(evidenceList));
       HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
       HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
       for (Evidence evidence: evidenceList) {
