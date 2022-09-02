@@ -302,7 +302,7 @@ function appendLink(linkText) {
     newLink.innerText = linkCounter + ".  " + linkText
     newLink.href = linkText
     let linkDelete = document.createElement("button");
-    linkDelete.className = "fa fa-trash each_link"
+    linkDelete.className = "fa fa-trash each_link_delete"
     linkDelete.value = linkText
     linkDelete.onclick = removeLink;
     linkBox.appendChild(newLink)
