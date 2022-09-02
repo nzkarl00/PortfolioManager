@@ -70,32 +70,25 @@ public class EvidenceListController {
     setPageTitle(model,"List Of Evidence");
 
     List<SkillTag> skillList = skillRepository.findAll();
-
-    List<Evidence> evidenceList = evidenceService.getFilteredEvidenceForUserInProject(userId, projectId, categoryName, skillName);
     setTitle(model, userId, projectId, categoryName, skillName);
-    HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
-    HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
-    for (Evidence evidence: evidenceList) {
-      evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
-      evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
-    }
     int id = AuthStateInformer.getId(principal);
-
+    if (userId == null) {
+        userId = -1;
+    }
     //TODO get rid of once this is actually used
     logger.info("[EVIDENCE] getting all the groups for user");
     logger.info(groupsClientService.getAllGroupsForUser(id).toString());
 
-    model.addAttribute("skillMap", evidenceSkillMap);
-    model.addAttribute("categoryMap", evidenceCategoryMap);
-    model.addAttribute("evidenceList", evidenceList);
+    List<Evidence> evidenceList = evidenceService.getEvidenceForUser(userId);
+    List<Project> allProjects = projectService.getAllProjects();
+    model.addAttribute("projectList", allProjects);
+    Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
-      Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
     skillTagListNoSkill.remove("No_skills");
+    model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("allSkills", skillTagList);
-      model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("skillList", skillList);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
-    model.addAttribute("userID", id);
 
     // Attributes For header
     UserResponse userReply;
@@ -106,10 +99,7 @@ public class EvidenceListController {
     boolean showForm = false;
     if (projectId != null) {
       showForm = true;
-      model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
-      Project project = projectService.getProjectById(projectId);
-      model.addAttribute("project", project);
-      model.addAttribute("projectId", project.getId());
+
     }
     model.addAttribute("showForm", showForm);
     model.addAttribute("errorMessage", errorMessage);
@@ -117,6 +107,48 @@ public class EvidenceListController {
 
     return "evidenceList";
   }
+
+  @PostMapping("evidence-project")
+  public String sendProjectEvidence(@AuthenticationPrincipal AuthState principal,
+                                    @RequestParam(required = false , value="ui") Integer userId,
+                                    @RequestParam(required = false , value="pi") Integer projectId,
+                                    Model model) throws CustomExceptions.ProjectItemNotFoundException {
+      if (userId == null) {
+          userId = AuthStateInformer.getId(principal);
+      }
+      List<Evidence> evidenceList;
+      if (projectId == -1) {
+          evidenceList = evidenceService.getEvidenceForUser(userId);
+      } else {
+          evidenceList = evidenceService.getEvidenceForUserAndProject(userId, projectId);
+          model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
+          Project project = projectService.getProjectById(projectId);
+          model.addAttribute("project", project);
+      }
+      model.addAttribute("evidenceList", evidenceList);
+      logger.debug(String.valueOf(evidenceList));
+      HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
+      HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
+      for (Evidence evidence: evidenceList) {
+          evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
+          evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
+      }
+      model.addAttribute("skillMap", evidenceSkillMap);
+      model.addAttribute("categoryMap", evidenceCategoryMap);
+      model.addAttribute("userID", AuthStateInformer.getId(principal));
+      return "fragments/evidenceItems.html :: evidenceItems";
+  }
+
+  @GetMapping("evidence-form")
+  public String sendEvidenceForm(@RequestParam(required = false , value="pi") Integer projectId,
+                                 Model model) throws CustomExceptions.ProjectItemNotFoundException {
+      model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
+      Project project = projectService.getProjectById(projectId);
+      model.addAttribute("project", project);
+      return "fragments/evidenceForm.html :: evidenceForm";
+  }
+
+
 
   private void setPageTitle(Model model, String title) {
     model.addAttribute("title", title);

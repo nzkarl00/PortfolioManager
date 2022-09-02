@@ -35,7 +35,6 @@ public class SkillStepDefs {
     @Then("There will not be a skill displayed.")
     public void thereWillNotBeASkillDisplayed() {
         List<WebElement> skills = seleniumExample.config.getDriver().findElements(By.id("skill_" + skillName));
-        System.out.println(skills);
         Assertions.assertTrue(skills.isEmpty());
     }
 

@@ -17,7 +17,7 @@ public class UserEvidenceStepDefs {
             By.id("contributor_lra63"));
         Assertions.assertEquals("lra63", userButton.getText());
         // check that this tag is formatted to be the author
-        Assertions.assertTrue(userButton.getAttribute("class").contains("evidence_ci_tag"));
+        Assertions.assertTrue(userButton.getAttribute("class").contains("contributor_tag"));
     }
 
     @And("I click on the author")
