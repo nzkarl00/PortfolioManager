@@ -193,7 +193,7 @@ public class EvidenceService {
     }
 
     /**
-     * A set of every skill that a user has registered in their pieces of evidence
+     * Returns a set of every skill that is used in a piece of evidence a given user is the parent of.
      * @param id the id of the user being skill checked
      * @return a set of skill objects
      */
@@ -203,27 +203,27 @@ public class EvidenceService {
         for (Evidence evidence: user_evidence) {
             List<EvidenceTag> user_evidenceTag = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
             for (EvidenceTag evidenceTag: user_evidenceTag){
-                Boolean alreadyContains = false;
-                for(SkillTag eachTag : user_skillTags) {
-                    // Grab only unique skills
-                    if(eachTag.getTitle().equals(evidenceTag.getParentSkillTag().getTitle())) {
-                        alreadyContains = true;
+                Boolean isIn = false;
+                for(SkillTag o : user_skillTags) {
+                    if(o.getTitle().equals(evidenceTag.getParentSkillTag().getTitle())) {
+                        isIn = true;
                     }
                 }
-                if (alreadyContains == false){
+                if (isIn == false){
                     user_skillTags.add(evidenceTag.getParentSkillTag());
                 }
             }
         }
-        Boolean alreadyContains = false;
-        for(SkillTag eachTag : user_skillTags) {
-            if(eachTag.getTitle().equals("No_skills")) {
-                alreadyContains = true;
+        Boolean isIn = false;
+        for(SkillTag o : user_skillTags) {
+            if(o.getTitle().equals("No_skills")) {
+                isIn = true;
             }
         }
-        if (alreadyContains == false){
+        if (isIn == false){
             user_skillTags.add(skillTagRepository.findByTitle("No_skills"));
         }
         return user_skillTags;
     }
+
 }
