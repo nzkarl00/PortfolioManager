@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,6 +29,13 @@ class EvidenceTest {
         );
         evidence = new Evidence(1, exampleProject, "Title", "Desc", LocalDate.of(2022, 1, 25), 0);
         link = new WebLink(testUrl, evidence);
+    }
+
+    @Test
+    public void getLinks_valid() {
+        List<WebLink> linkList = new ArrayList<>();
+        linkList.add(link);
+        Assertions.assertEquals(linkList, evidence.getLinks());
     }
 
     @Test
