@@ -76,18 +76,14 @@ Feature: U27: Skills, Adding to evidence
   @Close
   Scenario: AC8 All the tags that are currently on any of my pieces of evidence
   are displayed in a panel on the side of my pages.
-  There should never be any duplicates of tags.
-  There should also be a way of getting to a list of evidences that have no tag
-  (e.g., a special/system tag called “No_skills”); clicking on this tag takes me
-  to a page with pieces of evidence that have no tags on them.
-  If a special/system tag is used, the user should not be able to create this tag separately.
-  # There are no duplicates of tags
+  Scenario: There should never be any duplicates of tags.
     Given User is logged in.
-    When User navigates to "evidence".
+    When User navigates to "evidence?pi=1".
     And I click the Add Evidence button
     When I have filled out all mandatory title, description, and date fields to an evidence
     When User inputs "Programming" into the skill input textbox.
     When I click the save button
+    When User navigates to "evidence?pi=1".
     And I click the Add Evidence button
     When I have filled out all mandatory title, description, and date fields to an evidence
     When User inputs "Programming" into the skill input textbox.
@@ -95,7 +91,9 @@ Feature: U27: Skills, Adding to evidence
   #Then There are no duplicates in the skill menu
 
 
-
+  Scenario: There should also be a way of getting to a list of evidences that have no tag
+  (e.g., a special/system tag called “No_skills”); clicking on this tag takes me
+  to a page with pieces of evidence that have no tags on them.
   # Navigating to No_skills
     Given User is logged in.
     Given There is evidence in the table
@@ -103,11 +101,11 @@ Feature: U27: Skills, Adding to evidence
     When User selects the "skill" option in the skills side menu
     Then user is directed to a page where the heading is "Evidence from skill tag: skill"
     When User selects the "No_skills" option in the skills side menu
-    Then user is directed to a page where the heading is "Evidence from skill tag: No_skills"
+    Then user is directed to a page where the heading is "Evidence from skill tag: No skills"
 
-  # Unable to make the tag No_skills
+  Scenario: If a special/system tag is used, the user should not be able to create this tag separately.
     Given User is logged in.
-    When User navigates to "evidence".
+    When User navigates to "evidence?pi=1".
     And I click the Add Evidence button
     When User inputs "No_skills" into the skill input textbox.
     Then There will not be a skill displayed.
