@@ -204,29 +204,28 @@ public class EvidenceService {
      */
     public Set<SkillTag> getUserSkills(Integer id) {
         List<Evidence> user_evidence = evidenceRepository.findAllByParentUserIdOrderByDateDesc(id);
-        Set<SkillTag> user_skillTags = new HashSet<>();
+        Set<SkillTag> user_skillTags = Collections.emptySet();
         for (Evidence evidence: user_evidence) {
             List<EvidenceTag> user_evidenceTag = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
             for (EvidenceTag evidenceTag: user_evidenceTag){
-                Boolean alreadyContains = false;
-                for(SkillTag eachTag : user_skillTags) {
-                    // Grab only unique skills
-                    if(eachTag.getTitle().equals(evidenceTag.getParentSkillTag().getTitle())) {
-                        alreadyContains = true;
+                Boolean alreadyInSkillTags = false;
+                for(SkillTag tag : user_skillTags) {
+                    if(tag.getTitle().equals(evidenceTag.getParentSkillTag().getTitle())) {
+                        alreadyInSkillTags = true;
                     }
                 }
-                if (alreadyContains == false){
+                if (alreadyInSkillTags == false){
                     user_skillTags.add(evidenceTag.getParentSkillTag());
                 }
             }
         }
-        Boolean alreadyContains = false;
-        for(SkillTag eachTag : user_skillTags) {
-            if(eachTag.getTitle().equals("No_skills")) {
-                alreadyContains = true;
+        Boolean alreadyInSkillTags = false;
+        for(SkillTag tag : user_skillTags) {
+            if(tag.getTitle().equals("No_skills")) {
+                alreadyInSkillTags = true;
             }
         }
-        if (alreadyContains == false){
+        if (alreadyInSkillTags == false){
             user_skillTags.add(skillTagRepository.findByTitle("No_skills"));
         }
         return user_skillTags;

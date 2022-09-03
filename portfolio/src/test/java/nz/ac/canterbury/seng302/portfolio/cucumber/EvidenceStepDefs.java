@@ -277,10 +277,4 @@ public class EvidenceStepDefs {
         WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
         Assertions.assertNull(saveButton.getAttribute("disabled"));
     }
-
-    @Then("Save button cannot be clicked")
-    public void saveButtonCanNotBeClicked() {
-        WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
-        Assertions.assertEquals("true", saveButton.getAttribute("disabled"));
-    }
 }
