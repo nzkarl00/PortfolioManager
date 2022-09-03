@@ -1223,6 +1223,7 @@
 .commit_head {
     font-family: nexaBold !important;
     color: #056BFA !important;
+    font-color: #056BFA !important;
     font-size: 175% !important;
 }
 
@@ -1541,7 +1542,7 @@ select.form-control {
     font-family: nexaLight !important;
 
 }
-.searchCommit:hover {
+.searchCommit:hover:not([disabled]) {
 
     background: #0046C9 !important;
     color: #ffffff !important;
