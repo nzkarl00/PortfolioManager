@@ -193,41 +193,37 @@ public class EvidenceService {
     }
 
     /**
-     * A set of every skill that a user has registered in their pieces of evidence
-     * @param id the id of the user being skill checked
-     * @return a set of skill objects
-     */
-    /**
-     * A set of every skill that a user has registered in their pieces of evidence
+     * Returns a set of every skill that is used in a piece of evidence a given user is the parent of.
      * @param id the id of the user being skill checked
      * @return a set of skill objects
      */
     public Set<SkillTag> getUserSkills(Integer id) {
         List<Evidence> user_evidence = evidenceRepository.findAllByParentUserIdOrderByDateDesc(id);
-        Set<SkillTag> user_skillTags = Collections.emptySet();
+        Set<SkillTag> user_skillTags = new HashSet<>();
         for (Evidence evidence: user_evidence) {
             List<EvidenceTag> user_evidenceTag = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
             for (EvidenceTag evidenceTag: user_evidenceTag){
-                Boolean alreadyInSkillTags = false;
-                for(SkillTag tag : user_skillTags) {
-                    if(tag.getTitle().equals(evidenceTag.getParentSkillTag().getTitle())) {
-                        alreadyInSkillTags = true;
+                Boolean isIn = false;
+                for(SkillTag o : user_skillTags) {
+                    if(o.getTitle().equals(evidenceTag.getParentSkillTag().getTitle())) {
+                        isIn = true;
                     }
                 }
-                if (alreadyInSkillTags == false){
+                if (isIn == false){
                     user_skillTags.add(evidenceTag.getParentSkillTag());
                 }
             }
         }
-        Boolean alreadyInSkillTags = false;
-        for(SkillTag tag : user_skillTags) {
-            if(tag.getTitle().equals("No_skills")) {
-                alreadyInSkillTags = true;
+        Boolean isIn = false;
+        for(SkillTag o : user_skillTags) {
+            if(o.getTitle().equals("No_skills")) {
+                isIn = true;
             }
         }
-        if (alreadyInSkillTags == false){
+        if (isIn == false){
             user_skillTags.add(skillTagRepository.findByTitle("No_skills"));
         }
         return user_skillTags;
     }
+
 }
