@@ -88,7 +88,7 @@ Feature: U27: Skills, Adding to evidence
     When I have filled out all mandatory title, description, and date fields to an evidence
     When User inputs "Programming" into the skill input textbox.
     When I click the save button
-  #Then There are no duplicates in the skill menu
+    Then There are no duplicates in the skill menu
 
 
   Scenario: There should also be a way of getting to a list of evidences that have no tag
