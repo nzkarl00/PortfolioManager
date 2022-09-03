@@ -20,7 +20,6 @@ public class GitlabClient {
 
     public GitlabClient(final String url, final String apiKey) {
         this.gitlabInstanceURL = url;
-        System.out.println(gitlabInstanceURL);
         this.client = new GitLabApi(url, apiKey);
     }
 

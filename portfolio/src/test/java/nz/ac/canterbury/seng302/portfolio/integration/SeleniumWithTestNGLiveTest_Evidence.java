@@ -3,10 +3,13 @@ package nz.ac.canterbury.seng302.portfolio.integration;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
 import java.io.FileNotFoundException;
+import java.time.Duration;
 import java.util.List;
 
 import static nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins.getPassword_ForAdmin_FromTextFile;
@@ -20,6 +23,7 @@ public class SeleniumWithTestNGLiveTest_Evidence {
     String evidenceUrl = "/evidence";
     WebElement skillsInput;
     WebElement addSkillButton;
+    WebDriverWait wait = new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3));
 
     @BeforeSuite
     public void setUp() throws FileNotFoundException, InterruptedException {
@@ -41,8 +45,10 @@ public class SeleniumWithTestNGLiveTest_Evidence {
      */
     public void whenLoggedInAsAdmin_AddSkill_ForTest() {
         seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add_button")));
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
         button.click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add_skill_input")));
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
         skillsInput.sendKeys("new_skill");
@@ -57,8 +63,10 @@ public class SeleniumWithTestNGLiveTest_Evidence {
      */
     public void whenLoggedInAsAdmin_AddTwoSkills_ForTest() {
         seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add_button")));
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
         button.click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add_skill_input")));
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
         skillsInput.sendKeys("new_skill");
@@ -75,8 +83,10 @@ public class SeleniumWithTestNGLiveTest_Evidence {
      */
     public void whenLoggedInAsAdmin_AddTwoSkills_ThenRemoveFirstSkill_ForTest() {
         seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add_button")));
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
         button.click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add_skill_input")));
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
         skillsInput.sendKeys("new_skill");

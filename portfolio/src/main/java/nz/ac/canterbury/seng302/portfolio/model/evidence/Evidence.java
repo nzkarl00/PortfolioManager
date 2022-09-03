@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import javax.persistence.*;
@@ -39,6 +40,16 @@ public class Evidence {
     protected int parentUserId;
 
     /**
+     * A list of all users for this piece of evidence
+     * Creates a relationship with evidence and users, where evidence may be associated to many users
+     * We cannot create a direct mapping as they are in different databases so this is a work around
+     */
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
+    @JsonBackReference
+    protected List<EvidenceUser> evidenceUsersId;
+
+    /**
      * The project the piece of evidence belongs to.
      * Note that the parent user is the identifying property.
      */
@@ -46,9 +57,8 @@ public class Evidence {
     @JoinColumn(name="associated_project_id", nullable=false)
     protected Project associatedProject;
 
-    @OneToMany
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinColumn(name="evidence_tag_id")
     protected List<EvidenceTag> evidenceTags;
 
     @Column(name="title", length = MAX_TITLE_LENGTH, nullable = false)
@@ -99,6 +109,7 @@ public class Evidence {
         int categories
     ) {
         this.parentUserId = parentUserId;
+        this.evidenceUsersId = evidenceUsersId;
         this.associatedProject = associatedProject;
         this.title = title;
         this.description = description;
@@ -286,5 +297,20 @@ public class Evidence {
 
     public void setCategories(int categories) {
         this.categories = categories;
+    }
+
+    @Override
+    public String toString() {
+        return title + "\n"
+            + id + "\n"
+            + parentUserId + "\n"
+            + associatedProject + "\n"
+            + description + "\n"
+            + categories + "\n"
+            + evidenceUsersId + "\n";
+    }
+
+    public List<EvidenceUser> getEvidenceUsersId() {
+        return evidenceUsersId;
     }
 }

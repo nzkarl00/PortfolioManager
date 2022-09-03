@@ -1164,9 +1164,16 @@
 .evidence_head {
     font-family: nexaBold !important;
     color: #19DAFF !important;
-    font-size: 175% !important;
-
+    font-size: 200% !important;
 }
+
+.evidence_title {
+    font-family: nexaBold !important;
+    color: #19DAFF !important;
+    font-size: 125% !important;
+}
+
+
 .evidence_date {
     font-family: nexaLight !important;
     color: #19DAFF !important;
@@ -1364,11 +1371,33 @@ select.form-control {
     white-space: nowrap;
 }
 
-.each_link {
+.each_link_delete {
     border: none;
     padding: 1px 10px;
     text-decoration: none !important;
     background: #FF202E  !important;
+    margin-left: 10px;
+    margin-bottom: 2px;
+    border-radius: 10px;
+    color: white;
+}
+
+.each_link_edit {
+    border: none;
+    padding: 1px 10px;
+    text-decoration: none !important;
+    background: #FF48CF  !important;
+    margin-left: 10px;
+    margin-bottom: 2px;
+    border-radius: 10px;
+    color: white;
+}
+
+.each_link_save {
+    border: none;
+    padding: 1px 10px;
+    text-decoration: none !important;
+    background: #26D20F  !important;
     margin-left: 10px;
     margin-bottom: 2px;
     border-radius: 10px;
@@ -1453,6 +1482,32 @@ select.form-control {
     background-color: #26D20F !important;
 }
 
+.author_tag{
+    text-decoration: underline;
+    background-color: #333344; !important;
+    border-style: none !important;
+    border-radius: 3px !important;
+    color: #ffffff !important;
+    padding: 0.3rem 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+    font-size: 80% !important;
+}
+
+.contributor_tag{
+    text-decoration: underline;
+    background-color: #666688; !important;
+    border-style: none !important;
+    border-radius: 3px !important;
+    color: #ffffff !important;
+    padding: 0.3rem 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+    font-size: 80% !important;
+}
+
 .evidence_ci_tag {
     background-color: rgba(115, 5, 250, 0.75); !important;
     border-style: none !important;
@@ -1462,7 +1517,7 @@ select.form-control {
     display: inline-block !important;
     margin-bottom: 0.3rem;
     margin-left: 0.3rem;
-    font-size: 80% !important;;
+    font-size: 80% !important;
 }
 
 .evidence_ci_tag:hover {
@@ -1493,4 +1548,14 @@ select.form-control {
 
 .category_item:hover {
     background-color: #c1c1c1;
+}
+
+.project_selector {
+    background-color: #FFF;
+    border-style: hidden;
+    text-align: center;
+    font-family: NexaBold;
+    font-size: 200%;
+    color: #19DAFF !important;
+    padding-bottom: 5px;
 }

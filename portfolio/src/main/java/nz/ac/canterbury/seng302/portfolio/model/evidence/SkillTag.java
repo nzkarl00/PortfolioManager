@@ -29,7 +29,7 @@ public class SkillTag {
      */
     @OneToMany
     @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinColumn(name="evidence_id")
+    @JoinColumn(name="parent_skill_tag_id")
     protected List<EvidenceTag> evidenceTags;
 
     @Column(name="title", unique = true, length = MAX_TITLE_LENGTH, nullable = false)

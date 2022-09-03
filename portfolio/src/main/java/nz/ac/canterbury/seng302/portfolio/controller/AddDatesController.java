@@ -188,7 +188,6 @@ public class AddDatesController {
 
         Deadline deadline = new Deadline(project, eventName, eventDescription, endDate);
         deadlineRepository.save(deadline);
-        System.out.println(deadline);
         dateSocketService.sendDeadlineCalendarChange(project);
         return "redirect:details?id=";
     }
