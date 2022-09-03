@@ -1,9 +1,15 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * The GRPC client side service class
@@ -126,6 +132,26 @@ public class AccountClientService
                 .setOffset(offset)
                 .setOrderBy(order);
         return accountServiceStub.getPaginatedUsers(request.build());
+    }
+
+    /**
+     * @return A hashmap of every user in the system, from their ID to their username
+     */
+    public HashMap<String, Integer> getUsernameMap() {
+        HashMap<String, Integer> usernameMap = new HashMap<String, Integer>();
+        //Keeps track of how many users have been retrieved from the database
+        int retrievedMembers = 0;
+        //Keeps track of how many users request to the database
+        int expectedMembers = 0;
+        //Stop the loop when no more members can be retrieved
+        PaginatedUsersResponse response = getPaginatedUsers(10, 0, "username", 1);
+        for(int page = 0; page < response.getResultSetSize(); page++) {
+            for (UserResponse userResponse : response.getUsersList()) {
+                usernameMap.put(userResponse.getUsername(), userResponse.getId());
+            }
+            response = getPaginatedUsers(10, page * 10, "username", 1);
+        }
+        return usernameMap;
     }
 
     /**

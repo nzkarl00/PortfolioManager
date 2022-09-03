@@ -1164,9 +1164,16 @@
 .evidence_head {
     font-family: nexaBold !important;
     color: #19DAFF !important;
-    font-size: 175% !important;
-
+    font-size: 200% !important;
 }
+
+.evidence_title {
+    font-family: nexaBold !important;
+    color: #19DAFF !important;
+    font-size: 125% !important;
+}
+
+
 .evidence_date {
     font-family: nexaLight !important;
     color: #19DAFF !important;
@@ -1453,6 +1460,32 @@ select.form-control {
     background-color: #26D20F !important;
 }
 
+.author_tag{
+    text-decoration: underline;
+    background-color: #333344; !important;
+    border-style: none !important;
+    border-radius: 3px !important;
+    color: #ffffff !important;
+    padding: 0.3rem 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+    font-size: 80% !important;
+}
+
+.contributor_tag{
+    text-decoration: underline;
+    background-color: #666688; !important;
+    border-style: none !important;
+    border-radius: 3px !important;
+    color: #ffffff !important;
+    padding: 0.3rem 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+    font-size: 80% !important;
+}
+
 .evidence_ci_tag {
     background-color: rgba(115, 5, 250, 0.75); !important;
     border-style: none !important;
@@ -1462,7 +1495,7 @@ select.form-control {
     display: inline-block !important;
     margin-bottom: 0.3rem;
     margin-left: 0.3rem;
-    font-size: 80% !important;;
+    font-size: 80% !important;
 }
 
 .evidence_ci_tag:hover {

@@ -99,6 +99,7 @@ public class EvidenceStepDefs {
 
             evidenceAdded = true;
         }
+        Thread.sleep(100);
         seleniumExample.config.getDriver()
                 .get(seleniumExample.url + "/evidence?pi=1");
     }
@@ -144,7 +145,7 @@ public class EvidenceStepDefs {
 
     @Then("I will see a message that this evidence has saved successfully")
     public void i_will_see_a_message_that_this_evidence_has_saved_successfully() throws InterruptedException {
-        Thread.sleep(1000);
+        Thread.sleep(100);
         WebElement message = seleniumExample.config.getDriver().findElement(By.id("display_box"));
         Assertions.assertEquals("Evidence has been added", message.getText());
     }
