@@ -197,6 +197,11 @@ public class EvidenceService {
      * @param id the id of the user being skill checked
      * @return a set of skill objects
      */
+    /**
+     * A set of every skill that a user has registered in their pieces of evidence
+     * @param id the id of the user being skill checked
+     * @return a set of skill objects
+     */
     public Set<SkillTag> getUserSkills(Integer id) {
         List<Evidence> user_evidence = evidenceRepository.findAllByParentUserIdOrderByDateDesc(id);
         Set<SkillTag> user_skillTags = new HashSet<>();

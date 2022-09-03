@@ -92,9 +92,7 @@ Feature: U27: Skills, Adding to evidence
     When I have filled out all mandatory title, description, and date fields to an evidence
     When User inputs "Programming" into the skill input textbox.
     When I click the save button
-  #Then There are no duplicates in the skill menu
-
-
+    Then The "Programming" skill only appears once
 
   # Navigating to No_skills
     Given User is logged in.

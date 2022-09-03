@@ -149,8 +149,8 @@ public class EvidenceStepDefs {
         Assertions.assertEquals("Evidence has been added", message.getText());
     }
 
-    @When("I cannot click the save button")
-    public void the_all_mandatory_fields_to_an_evidence_are_empty_i_cannot_click_the_save_button() {
+    @Then("I cannot click the save button")
+    public void i_cannot_click_the_save_button() {
         WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
         Assertions.assertFalse(saveButton.isEnabled());
     }
@@ -256,12 +256,6 @@ public class EvidenceStepDefs {
         String max = date.getAttribute("max");
         Assertions.assertFalse(min.isBlank());
         Assertions.assertFalse(max.isBlank());
-    }
-
-    @When("User selects the {string} option in the skills side menu")
-    public void userSelectsTheOptionInTheSkillsSideMenu(String arg0) {
-        WebElement button = seleniumExample.config.getDriver().findElement(By.id("skill_button_"+arg0));
-        button.click();
     }
 
     @When("User enters {string} into the title")
