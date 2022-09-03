@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head.html :: head('Edit Evidence')"></head>
+<body>
+
+<!-- Navigation Bar -->
+<div th:replace="fragments/validUser.html :: navbar"></div>
+
+<div class="container">
+    <p class="body_title_large" id="title" th:text="${title}"></p>
+    <div class="portion_body" id="evidence_form">
+        <form th:action="@{edit-evidence}" method="post">
+            <div class="row-1" style="display:flex;">
+                <div class="evidence_form_element col-4">
+                    <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" th:value="${evidence.getTitle}" class="project_edit_data" th:name="titleInput">
+                    <label class="project_inputAlertBlue" id="titleCharCount">Characters Remaining: 100</label>
+                </div>
+                <div id="date_container" class="evidence_form_element col-3">
+                    <div style="display: flex">
+                        <b class="evidence_head">Date*:</b> <br>
+                        <i id="evidence_date_tool" class="fa fa-question-circle-o" style="padding-left: 0.2em; font-size: 200%"></i>
+
+
+                    </div>
+                    <input type="date" th:value="${evidence.getDate}" th:name="dateInput"
+                           class="project_edit_data" id="date_input"
+                           oninput="canSaveCheck()" required
+                    >
+                </div>
+                <div class="evidence_form_element align-content-center col-5">
+                    <b class="evidence_head setWide">Category:</b><br>
+                    <div id="evidence_category" class="project_edit_data" onclick="showCategories()">
+                        Select Categories
+                    </div>
+                    <div id="category_multiselect_items" class="category_box" style="display: none">
+                        <label for="category_quantitative" class="category_item" style="display: block">
+                            <input type="checkbox" autocomplete="off" class="category_item" value="Quantitative Skills" id="category_quantitative" onchange="updateCategories(this)"/>
+                            Quantitative Skills
+                        </label>
+                        <label for="category_qualitative" class="category_item" style="display: block">
+                            <input type="checkbox" autocomplete="off" class="category_item" value="Qualitative Skills" id="category_qualitative" onchange="updateCategories(this)"/>
+                            Qualitative Skills
+                        </label>
+                        <label for="category_service" class="category_item" style="display: block">
+                            <input type="checkbox" autocomplete="off" class="category_item" value="Service" id="category_service" onchange="updateCategories(this)"/>
+                            Service
+                        </label>
+                    </div>
+                </div>
+                <input type="hidden" id="category_hidden" th:name="categoryInput">
+            </div>
+            <br>
+            <br>
+            <br>
+
+            <div class="row-1">
+                <div>
+                    <b class="evidence_head setWide">Description*:</b>
+                    <br>
+                    <textarea type="text" maxlength="2000" id="evidence_desc" th:text="${evidence.getDescription}"
+                              class=" description-input project_edit_data horizontal_field bio setWide"
+                              th:name="descriptionInput"
+                    ></textarea>
+                    <label class="project_inputAlertBlue" id="descCharCount">Characters Remaining: 2000</label>
+                </div>
+                <!-- When enter is pressed, default form action is to submit the first button. As our form contains buttons, this empty button exists to consume the default action. -->
+                <button onclick="return false;" style="display: none"></button>
+
+                <!-- Start of users section of the form-->
+                <div class="row-1">
+                    <b class="evidence_head setWide" id="users_input">Users:</b>
+                    <p style="display:none;" id="user_error">You must select a currently registered User</p>
+                </div>
+                <div class="col-12" id="users_div" style="display: flex; justify-content: center; align-items: center;">
+                    <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
+                    <div class="evidence_form_element_wide">
+                        <div class="autocomplete evidence_form_element_wide">
+                            <input type="hidden" id="userHidden" th:name="userInput">
+                            <input type="text" autocomplete="off" id="add_user_input" maxlength=65 class="evidence_form_element_wide project_edit_data">
+                            </input>
+                        </div>
+                    </div>
+                    <button id="add_user_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add"></button>
+                </div>
+                <label class="project_inputAlertBlue" id="userCharCount" style="padding-left: 5px">Characters Remaining: 65</label>
+                <br>
+                <div id="users_container" style="width: 100%">
+                    <div id="user_sub_1" style="display: flex; width: 100%"></div>
+                </div>
+
+                <!-- Start of skills section of the form-->
+                <div class="row-1">
+                    <b class="evidence_head setWide" id="skills_input">Skills:</b>
+                    <p style="display:none;" id="skill_error">Only letters, underscores, hyphens, and numbers are allowed. No more than 50 characters.</p>
+                </div>
+                <div class="col-12" id="skills_div" style="display: flex; justify-content: center; align-items: center;">
+                    <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
+                    <div class="evidence_form_element_wide">
+                        <div class="autocomplete evidence_form_element_wide">
+                            <input type="hidden" id="skillHidden" th:name="skillInput">
+                            <input type="text" autocomplete="off" id="add_skill_input" maxlength=100 class="evidence_form_element_wide project_edit_data">
+                            </input>
+                        </div>
+                    </div>
+                    <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add"></button>
+                </div>
+                <label class="project_inputAlertBlue" id="skillCharCount" style="padding-left: 5px">Characters Remaining: 50</label>
+                <br>
+                <div id="skills_container" style="width: 100%">
+                    <div id="skill_sub_1" style="display: flex; width: 100%"></div>
+                </div>
+
+                <!-- Start of link section of the form, which includes the 1. "Links" title, 2. input, and 3. list of inputted links -->
+                <div class="col-12">
+                    <!-- 1. "Links" title-->
+                    <b class="evidence_head setWide" id="links_input">Links:</b><br>
+
+                    <!-- 2. Input field where user can add links -->
+                    <div class="col-12" id="links_div" style="display: flex; justify-content: center; align-items: center;">
+                        <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
+                        <input type="text" id="add_link_input" class="evidence_form_element_wide project_edit_data">
+                        <button id="add_link_button" type="button" style="margin-left: 1em" class="table_text user_role_table" onclick="addLink(); return false;" th:text="Add"></button>
+                        </input>
+                    </div><br>
+
+                    <input type="hidden" id="evidenceId" th:name="evidenceId" th:value="${evidence.getId}">
+                    <input type="hidden" id="projectId" th:name="projectId" th:value="${evidence.getAssociatedProject.getId}">
+                    <input type="hidden" id="linksInput" th:name="linksInput">
+
+                    <div id="links_and_submit" style="display: flex">
+
+                        <!-- 3. List of all the links the user added from the input field -->
+                        <div id="links_container" style="width: 85%; display: block">
+                        </div>
+
+                        <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
+                            <button class="cancel_evidence"><a th:href="@{evidence}" id="cancelButton" type="button" style="text-align: center; color: #FFFFFF;">CANCEL</a></button>
+                            <button class="save_evidence" id="projectSave" type="submit">SAVE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>
+
+        <script th:inline="javascript">
+
+        function editLink(event) {
+            link = document.getElementById("link_" + event.target.value)
+            editingLink = document.createElement("input")
+            editingLink.id = "link_edit_" + event.target.value
+            editingLink.className = "evidence_form_element_wide project_edit_data"
+            editingLink.type = "text"
+            editingLink.value = event.target.value
+            link.parentNode.replaceChild(editingLink, link)
+
+            saveButton = document.createElement("button");
+            saveButton.className = "fa fa-check each_link_save"
+            saveButton.id = "save_" + event.target.value
+            saveButton.value = event.target.value
+            saveButton.onclick = saveLink;
+
+            event.target.parentNode.replaceChild(saveButton, event.target)
+            return false;
+        }
+
+        // use the data from the edit input to save a new link
+        function saveLink(event) {
+            editedLink = document.getElementById("link_edit_" + event.target.value)
+
+            let newLink = document.createElement("a");
+            newLink.id = "link_" + editedLink.value
+            newLink.className = "sprint-description display_data text_button trim_text"
+            newLink.style.fontSize = "110%"
+            newLink.width = "90% !important"
+            newLink.style.display = "inline-block"
+            newLink.target = "_blank"
+            newLink.innerText = editedLink.value
+            newLink.href = editedLink.value
+
+            let linkDelete = document.createElement("button");
+            linkDelete.className = "fa fa-trash each_link_delete"
+            linkDelete.value = editedLink.value
+            linkDelete.onclick = removeLink;
+            linkDelete.id = "delete_" + editedLink.value
+
+            oldDelete = document.getElementById("delete_" + event.target.value)
+
+            let editButton = document.createElement("button");
+            editButton.className = "fa fa-edit each_link_edit"
+            editButton.value = editedLink.value
+            editButton.id = "edit_" + editedLink.value
+            editButton.onclick = editLink;
+
+            oldSave = document.getElementById("save_" + event.target.value)
+
+            if (!validateLink(editedLink.value)) {
+                alert('Link is not valid, please ensure link includes http(s):// protocol');
+                return false;
+            }
+
+            oldDelete.parentNode.replaceChild(linkDelete, oldDelete)
+            oldSave.parentNode.replaceChild(editButton, oldSave)
+            editedLink.parentNode.replaceChild(newLink, editedLink)
+
+            links.delete(event.target.value)
+            links.add(editedLink.value)
+
+            storeLinks()
+
+            return false;
+        }
+
+        // Override the append link to add the edit button
+        function appendLink(linkText) {
+            let linkBox = document.createElement("div");
+            linksContainer.appendChild(linkBox)
+            linkBox.className = "trim_text"
+            linkBox.style.display = "flex"
+            let newLink = document.createElement("a");
+            newLink.id = "link_" + linkText
+            newLink.className = "sprint-description display_data text_button trim_text"
+            newLink.style.fontSize = "110%"
+            newLink.width = "90% !important"
+            newLink.style.display = "inline-block"
+            newLink.target = "_blank"
+            newLink.innerText = linkText
+            newLink.href = linkText
+            let linkDelete = document.createElement("button");
+            linkDelete.className = "fa fa-trash each_link_delete"
+            linkDelete.value = linkText
+            linkDelete.onclick = removeLink;
+            linkDelete.id = "delete_" + linkText
+            let linkEdit = document.createElement("button");
+            linkEdit.className = "fa fa-edit each_link_edit"
+            linkEdit.value = linkText
+            linkEdit.id = "edit_" + linkText
+            linkEdit.onclick = editLink;
+            linkBox.appendChild(newLink)
+            linkBox.appendChild(linkEdit)
+            linkBox.appendChild(linkDelete)
+            storeLinks()
+        }
+
+            // set the checkboxes to have the categories from the evidence
+            for (const category of [[${evidence.getCategoryStrings()}]]) {
+                for (const checkbox of document.getElementById('category_multiselect_items').getElementsByTagName('input')) {
+                    if (checkbox.value == category) {
+                        checkbox.checked = true;
+                        updateCategories(checkbox)
+                    }
+                }
+            }
+
+            for (const link of [[${links}]]) {
+                links.add(link)
+                appendLink(link)
+            }
+        </script>
+
+    </div>
+</div>
+</body>
+</html>

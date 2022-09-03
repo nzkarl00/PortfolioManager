@@ -8,6 +8,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.ProfilePhotoUploadMetada
 import nz.ac.canterbury.seng302.shared.identityprovider.UploadUserProfilePhotoRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,6 +20,8 @@ public class AccountPhotoService extends UserAccountServiceGrpc.UserAccountServi
 
     @GrpcClient("identity-provider-grpc-server")
     UserAccountServiceGrpc.UserAccountServiceStub accountStub;
+
+    Logger logger = LoggerFactory.getLogger(AccountPhotoService.class);
 
     public ProfilePhotoUploadMetadata createPhotoMetaData(int id, String fileType) {
         return ProfilePhotoUploadMetadata.newBuilder()
@@ -55,17 +59,17 @@ public class AccountPhotoService extends UserAccountServiceGrpc.UserAccountServi
     public class PhotoUploadObserver implements StreamObserver<FileUploadStatusResponse> {
         @Override
         public void onNext(FileUploadStatusResponse uploadStatusResponse){
-//            System.out.println("Uploading photo section "+uploadStatusResponse.getMessage()+" "+uploadStatusResponse.getSerializedSize());
+            logger.info("Uploading photo section "+uploadStatusResponse.getMessage()+" "+uploadStatusResponse.getSerializedSize());
         }
 
         @Override
         public void onError(Throwable t){
-            System.out.println("Upload failed, ERROR: "+Status.fromThrowable(t));
+            logger.error("Upload failed, ERROR: "+Status.fromThrowable(t));
         }
 
         @Override
         public void onCompleted(){
-//            System.out.println("Upload complete");
+            logger.info("Upload complete");
         }
     }
 }

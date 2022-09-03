@@ -115,7 +115,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=" + 0));
+                .andExpect(view().name("redirect:evidence?pi=0"));
         verify(evidenceRepository).delete(refEq(testEvidence));
     }
 
@@ -136,7 +136,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=" + 0));
+                .andExpect(view().name("redirect:evidence?pi=0"));
         verify(evidenceRepository, never()).delete(refEq(testEvidence));
     }
 
@@ -157,8 +157,8 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=" + 0));
-        verify(evidenceRepository, never()).delete(any(Evidence.class));;
+                .andExpect(view().name("redirect:evidence?pi=0"));
+        verify(evidenceRepository, never()).delete(any(Evidence.class));
     }
 
     /**
@@ -178,7 +178,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=" + 0));
+                .andExpect(view().name("redirect:evidence?pi=0"));
         verify(evidenceRepository, never()).delete(refEq(testEvidence));
     }
 }
