@@ -251,17 +251,13 @@ public class Evidence {
         return date;
     };
 
-    public List<EvidenceTag> getEvidenceTags() {
-        return evidenceTags;
-    }
+    public List<EvidenceTag> getEvidenceTags() { return evidenceTags; }
 
     /**
      * Gets a list of all the links associated with this evidence
      * @return links
      */
-    public List<WebLink> getLinks() {
-        return links;
-    }
+    public List<WebLink> getLinks() { return links; }
 
     /**
      * Extracts which categories are present in the bit representation

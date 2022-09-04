@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
 import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,9 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EvidenceTest {
     static Project exampleProject;
+    Evidence evidence;
     String testUrl = "https://example.com";
     WebLink link;
-    Evidence evidence;
+    SkillTag skillTag;
+    EvidenceTag evidenceTag;
 
     @BeforeEach
     void beforeEach() throws MalformedURLException {
@@ -28,11 +32,17 @@ class EvidenceTest {
                 LocalDate.of(2022, 1, 20),
                 LocalDate.of(2022, 1, 27)
         );
-        evidence = new Evidence(1, exampleProject, "Title", "Desc", LocalDate.of(2022, 1, 25), 0);
-        link = new WebLink(testUrl, evidence);
 
+        evidence = new Evidence(1, exampleProject, "Title", "Desc", LocalDate.of(2022, 1, 25), 0);
+
+        link = new WebLink(testUrl, evidence);
         ReflectionTestUtils.setField(evidence, "links",
             new ArrayList(List.of(link)));
+
+        skillTag = new SkillTag(exampleProject, "SkillA");
+        evidenceTag = new EvidenceTag(skillTag, evidence);
+        ReflectionTestUtils.setField(evidence, "evidenceTags",
+            new ArrayList(List.of(evidenceTag)));
     }
 
     @Test
@@ -40,6 +50,13 @@ class EvidenceTest {
         List<WebLink> linkList = new ArrayList<>();
         linkList.add(link);
         assertEquals(linkList, evidence.getLinks());
+    }
+
+    @Test
+    public void getEvidenceTags_valid() {
+        List<EvidenceTag> evidenceTagList = new ArrayList<>();
+        evidenceTagList.add(evidenceTag);
+        assertEquals(evidenceTagList, evidence.getEvidenceTags());
     }
 
     @Test
