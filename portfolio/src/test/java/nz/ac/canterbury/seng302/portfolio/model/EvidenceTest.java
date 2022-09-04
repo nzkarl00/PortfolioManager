@@ -32,10 +32,11 @@ class EvidenceTest {
     }
 
     @Test
-    public void getLinks_valid() {
+    public void getLinks_valid() throws MalformedURLException {
+        evidence.addLinksTestingOnly(link);
         List<WebLink> linkList = new ArrayList<>();
         linkList.add(link);
-        Assertions.assertEquals(linkList, evidence.getLinks());
+        assertEquals(linkList, evidence.getLinks());
     }
 
     @Test
