@@ -28,7 +28,8 @@ public class UserEvidenceStepDefs {
 
     @Then("I am taken to author's page")
     public void iAmTakenToAuthorSPage() {
-        WebElement title = seleniumExample.config.getDriver().findElement(By.id("title"));
-        Assertions.assertEquals("Evidence from user: lra63", title.getText());
+        Assertions.assertEquals("Account", seleniumExample.config.getDriver().getTitle());
+        WebElement username = seleniumExample.config.getDriver().findElement(By.id("username"));
+        Assertions.assertEquals("lra63", username.getText());
     }
 }
