@@ -165,7 +165,9 @@
           }
       }
       projectId = parseInt(document.getElementById("project_selector").value)
-      $.post("evidence-project", {pi: projectId, ui: userId}).done(function (evidenceItems) {
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      $.post("evidence-project", {pi: projectId, ui: userId, si: urlParams.get('si'), ci: urlParams.get('ci')}).done(function (evidenceItems) {
           $("#evidence_item_list").replaceWith(evidenceItems)
           if (projectId !== -1) {
               const url = new URL(window.location)

@@ -89,6 +89,44 @@ public class EvidenceService {
     public List<Evidence> getEvidenceForUser(int userId) {
         return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
     }
+
+    public List<Evidence> filterBySkill(List<Evidence> evidenceList, String skillName) {
+        List<Evidence> unfilteredEvidence = evidenceList;
+        List<Evidence> filteredEvidence = new ArrayList<>();
+        for (Evidence evidence: unfilteredEvidence) {
+            Boolean isValid = false;
+            List<EvidenceTag> tagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+            for (EvidenceTag tag: tagList) {
+                if (tag.getParentSkillTag().getTitle().equals(skillName)) {
+                    isValid = true;
+                }
+            }
+            if (isValid) {
+                filteredEvidence.add(evidence);
+            }
+        }
+        return filteredEvidence;
+    }
+
+    public List<Evidence> filterByCategory(List<Evidence> evidenceList, String categoryName) {
+        List<Evidence> unfilteredEvidence = evidenceList;
+        List<Evidence> filteredEvidence = new ArrayList<>();
+        for (Evidence evidence: unfilteredEvidence) {
+            Boolean isValid = false;
+
+            List<String> evidenceCats = evidence.getCategoryStrings();
+            for (String catString: evidenceCats) {
+                if (catString.equals(categoryName)) {
+                    isValid = true;
+                }
+            }
+
+            if (isValid) {
+                filteredEvidence.add(evidence);
+            }
+        }
+        return filteredEvidence;
+    }
     /**
      * This function loops through the provided evidences from the filtering
      * and retrieves all the skill tags from them to display in the side panel
