@@ -161,15 +161,13 @@
           }
       }
       projectId = parseInt(document.getElementById("project_selector").value)
-      $.post("evidence-project", {pi: projectId, ui: userId}).done(function (evidenceItems) {
+      const url = constructUrl(projectId, userId, categoryId, skillId)
+      $.post("evidence-project", {pi: projectId, ui: userId, ci: categoryId, si: skillId}).done(function (evidenceItems) {
           $("#evidence_item_list").replaceWith(evidenceItems)
           if (projectId !== -1) {
-              const url = new URL(window.location)
-              url.searchParams.set('pi', projectId.toString())
               window.history.pushState(null, '', url.toString())
               $("#evidence_form_container").load("evidence-form" + window.location.search)
           } else {
-              const url = location.href.split("&")[0];
               window.history.pushState(null, '', url.toString())
               $("#evidence_form_container").replaceWith("<div id='evidence_form_container'><br><div class='row'><div class=\"col-1\"></div>" +
                   "<button class='add_evidence col-10' disabled='true' style='background-color: rgb(170, 170, 170)' id='placeholder_button'> A project must be selected to add evidence </button>" +
@@ -177,6 +175,24 @@
           }
       })
   }
+
+  function constructUrl(projectId, userId, categoryId, skillId) {
+      let url = new URL(window.location.href.split("?")[0])
+      if (userId != null) {
+          url.searchParams.set('ui', userId.toString())
+      }
+      if (projectId !== -1 || null) {
+          url.searchParams.set('pi', projectId.toString())
+      }
+      if (categoryId != null) {
+          url.searchParams.set('ci', categoryId.toString())
+      }
+      if (skillId != null) {
+          url.searchParams.set('si', skillId.toString())
+      }
+      return url
+  }
+
   let existingProjectId = window.location.search.split("&").filter(q => q.includes('pi')) // Gets the query from the address, only includes those which include "pi" as a substring
   if (existingProjectId.length > 0) {
       document.getElementById("project_selector").value = existingProjectId[0].split("=")[1] // Sets the value of the project selector to the value in the query if there is one

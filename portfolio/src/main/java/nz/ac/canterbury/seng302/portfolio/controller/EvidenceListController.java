@@ -112,15 +112,15 @@ public class EvidenceListController {
   public String sendProjectEvidence(@AuthenticationPrincipal AuthState principal,
                                     @RequestParam(required = false , value="ui") Integer userId,
                                     @RequestParam(required = false , value="pi") Integer projectId,
+                                    @RequestParam(required = false, value="ci") String categoryName,
+                                    @RequestParam(required = false, value="si") String skillName,
                                     Model model) throws CustomExceptions.ProjectItemNotFoundException {
       if (userId == null) {
           userId = AuthStateInformer.getId(principal);
       }
-      List<Evidence> evidenceList;
+      List<Evidence> evidenceList = evidenceService.getEvidenceList(userId, projectId, categoryName, skillName);
       if (projectId == -1) {
-          evidenceList = evidenceService.getEvidenceForUser(userId);
       } else {
-          evidenceList = evidenceService.getEvidenceForUserAndProject(userId, projectId);
           model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
           Project project = projectService.getProjectById(projectId);
           model.addAttribute("project", project);
@@ -370,15 +370,15 @@ public class EvidenceListController {
    * @throws InvalidArgumentException possible exceptions can be raised from project ID not being valid and skillID not being valid
    */
   private void setTitle(Model model, Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
-
-    if (userId != null || projectId != null) {
-      UserResponse userReply = accountClientService.getUserById(userId); // Get the user
-      setPageTitle(model, "Evidence from user: " + userReply.getUsername());
-    }else if (categoryName != null){
-        setPageTitle(model, "Evidence from category: " + categoryName);
-    } else if (skillName != null){
+        if (categoryName != null){
+            setPageTitle(model, "Evidence from category: " + categoryName);
+        } else if (skillName != null){
             setPageTitle(model, "Evidence from skill tag: " + skillName.replaceAll("_", " "));
-    }
+        } else if (userId != null || projectId != null) {
+            UserResponse userReply = accountClientService.getUserById(userId); // Get the user
+            setPageTitle(model, "Evidence from user: " + userReply.getUsername());
+        }
+
   }
 
 
