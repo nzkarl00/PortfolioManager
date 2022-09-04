@@ -92,11 +92,6 @@ Feature: U27: Skills, Adding to evidence
 
   Scenario: There should also be a way of getting to a list of evidences that have no tag
   (e.g., a special/system tag called “No_skills”); clicking on this tag takes me
-    And I have filled out all mandatory title, description, and date fields to an evidence
-    And User inputs "Programming" into the skill input textbox.
-    And I click the save button
-    Then The "Programming" skill only appears once
-
   to a page with pieces of evidence that have no tags on them.
     Given User is logged in.
     And There is evidence in the table

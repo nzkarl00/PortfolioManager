@@ -62,11 +62,11 @@ public class SkillStepDefs {
         Assertions.assertEquals(inputSkill + " ✖", skill.getText());
     }
 
-    @Then("The {string} skill only appears once")
-    public void thereAreNoDuplicatesInTheSkillMenu(String inputSkill) {
+    @Then("There are no duplicates in the skill menu")
+    public void thereAreNoDuplicatesInTheSkillMenu() {
         List<WebElement> skillMenu = seleniumExample.config.getDriver().findElements(By.id("skills_menu"));
         List<String> skillList = new ArrayList<String>();
-        Set<String> skillSet = Collections.emptySet();
+        Set<String> skillSet = new HashSet<>();
         for (WebElement eachSkill: skillMenu) {
             skillList.add(eachSkill.getText());
             skillSet.add(eachSkill.getText());

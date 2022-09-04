@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head.html :: head('Evidence')">
 <body>
 <div th:fragment="evidenceItems" id="evidence_item_list">
@@ -125,6 +126,7 @@
 
         <div class="col-4">
         </div>
+    </div>
     <script th:inline="javascript">
         function addTagToEvidence(value, evidenceId, type) {
             let newItem = document.createElement("button");
@@ -155,6 +157,7 @@
         for (const evidence of [[${evidenceList}]]) {
             addTagRowToEvidence(evidence.id, "si")
             for (const evidenceSkill of skillMap[evidence.id]) {
+                console.log(evidenceSkill, evidence.id)
                 addTagToEvidence(evidenceSkill, evidence.id, "si")
             }
         }

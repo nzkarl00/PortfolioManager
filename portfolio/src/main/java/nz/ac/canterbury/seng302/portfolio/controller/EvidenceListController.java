@@ -88,8 +88,8 @@ public class EvidenceListController {
     model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("allSkills", skillTagList);
     model.addAttribute("skillList", skillList);
-      model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
-      model.addAttribute("userSkills", evidenceService.getUserSkills(AuthStateInformer.getId(principal)));
+    model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
+    model.addAttribute("userSkills", evidenceService.getUserSkills(AuthStateInformer.getId(principal)));
     model.addAttribute("userID", id);
 
     // Attributes For header
