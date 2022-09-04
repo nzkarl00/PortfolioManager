@@ -4,8 +4,10 @@ import nz.ac.canterbury.seng302.portfolio.model.AuthenticatedUser;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.openqa.selenium.InvalidArgumentException;
 import org.slf4j.Logger;
@@ -139,11 +141,29 @@ public class EvidenceListController {
   }
 
   @GetMapping("evidence-form")
-  public String sendEvidenceForm(@RequestParam(required = false , value="pi") Integer projectId,
+  public String sendEvidenceForm(@AuthenticationPrincipal AuthState principal,
+                                 @RequestParam(required = false , value="pi") Integer projectId,
                                  Model model) throws CustomExceptions.ProjectItemNotFoundException {
-      model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
+      model.addAttribute("date", LocalDate.now());
       Project project = projectService.getProjectById(projectId);
       model.addAttribute("project", project);
+
+      PaginatedUsersResponse response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
+      List<String> users = new ArrayList<>();
+      for (UserResponse user: response.getUsersList()) {
+          User temp = new User(user);
+          users.add(temp.id + ":" + temp.username);
+      }
+      model.addAttribute("allUsers", users);
+
+      Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
+      skillTagListNoSkill.remove("No_skills");
+      model.addAttribute("autoSkills", skillTagListNoSkill);
+      int userId = AuthStateInformer.getId(principal);
+      model.addAttribute("userId", userId);
+
+      navController.updateModelForNav(principal, model, accountClientService.getUserById(userId), userId);
+
       return "fragments/evidenceForm.html :: evidenceForm";
   }
 
