@@ -263,11 +263,6 @@ public class Evidence {
         return links;
     }
 
-    public void addLinksTestingOnly(WebLink webLink) {
-        links = new ArrayList<>(); // note this is just for testing
-        links.add(webLink);
-    }
-
     /**
      * Extracts which categories are present in the bit representation
      * @return A list of string representations of the categories on a given piece of evidence

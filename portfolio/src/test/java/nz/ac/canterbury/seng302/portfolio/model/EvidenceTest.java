@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.MalformedURLException;
 import java.time.LocalDate;
@@ -29,11 +30,13 @@ class EvidenceTest {
         );
         evidence = new Evidence(1, exampleProject, "Title", "Desc", LocalDate.of(2022, 1, 25), 0);
         link = new WebLink(testUrl, evidence);
+
+        ReflectionTestUtils.setField(evidence, "links",
+            new ArrayList(List.of(link)));
     }
 
     @Test
-    public void getLinks_valid() throws MalformedURLException {
-        evidence.addLinksTestingOnly(link);
+    public void getLinks_valid() {
         List<WebLink> linkList = new ArrayList<>();
         linkList.add(link);
         assertEquals(linkList, evidence.getLinks());
