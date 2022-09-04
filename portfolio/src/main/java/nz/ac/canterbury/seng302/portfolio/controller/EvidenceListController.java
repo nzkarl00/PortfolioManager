@@ -68,13 +68,13 @@ public class EvidenceListController {
     logger.info("[EVIDENCE] Request to view list of evidence");
 
     setPageTitle(model,"List Of Evidence");
-
+      int id = AuthStateInformer.getId(principal);
+      if (userId == null) {
+          userId = id;
+      }
     List<SkillTag> skillList = skillRepository.findAll();
     setTitle(model, userId, projectId, categoryName, skillName);
-    int id = AuthStateInformer.getId(principal);
-    if (userId == null) {
-        userId = id;
-    }
+
     //TODO get rid of once this is actually used
     logger.info("[EVIDENCE] getting all the groups for user");
     logger.info(groupsClientService.getAllGroupsForUser(id).toString());
@@ -371,10 +371,7 @@ public class EvidenceListController {
    */
   private void setTitle(Model model, Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
 
-    if (projectId != null){
-      Project project = projectService.getProjectById(projectId);
-      setPageTitle(model, "Evidence from project: " + project.getName());
-    } else if (userId != null){
+    if (userId != null || projectId != null) {
       UserResponse userReply = accountClientService.getUserById(userId); // Get the user
       setPageTitle(model, "Evidence from user: " + userReply.getUsername());
     }else if (categoryName != null){

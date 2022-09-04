@@ -18,9 +18,7 @@
             <br><br><br>
             <div class="alert-info editAlert display_data" role="alert" id="display_box"
                  th:utext="${errorMessage}"></div>
-            <p class="alert-info editAlert display_data" role="alert" id="info_message_no_add_button"
-               th:if="${!showForm}">
-                New evidence can be added through the project details page (this is a view only page)
+            <p class="alert-info editAlert display_data" role="alert" id="info_message_no_add_button">
             </p>
 
         </div>
@@ -173,13 +171,18 @@
           } else {
               const url = location.href.split("&")[0];
               window.history.pushState(null, '', url.toString())
-              $("#evidence_form_container").replaceWith("<div id='evidence_form_container'></div>")
+              $("#evidence_form_container").replaceWith("<div id='evidence_form_container'><br><div class='row'><div class=\"col-1\"></div>" +
+                  "<button class='add_evidence col-10' disabled='true' style='background-color: rgb(170, 170, 170)' id='placeholder_button'> A project must be selected to add evidence </button>" +
+                  "<div class=\"col-1\"></div></div></div>")
           }
       })
   }
   let existingProjectId = window.location.search.split("&").filter(q => q.includes('pi')) // Gets the query from the address, only includes those which include "pi" as a substring
   if (existingProjectId.length > 0) {
       document.getElementById("project_selector").value = existingProjectId[0].split("=")[1] // Sets the value of the project selector to the value in the query if there is one
+  }
+  if ([[${projectList}]].length == 1) {
+      document.getElementById("project_selector").selectedIndex = 1
   }
   updateProject()
 </script>
