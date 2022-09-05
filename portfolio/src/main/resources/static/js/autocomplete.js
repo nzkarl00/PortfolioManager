@@ -18,10 +18,13 @@ function autocomplete(inp, arr, autocompleteType) {
 
         // Add possible autocomplete options to the container
         for (let i = 0; i < arr.length; i++) {
-            if (arr[i].substr(0, value.length).toUpperCase() == value.toUpperCase()) {
+            if (arr[i].toLowerCase().includes(value.toLowerCase())) {
                 let optionItem = document.createElement("div")
-                optionItem.innerHTML = "<strong>" + arr[i].substr(0, value.length) + "</strong>"
-                optionItem.innerHTML += arr[i].substr(value.length)
+                if (autocompleteType == "user") {
+                    optionItem.innerHTML = arr[i].split(":")[1]
+                } else {
+                    optionItem.innerHTML = arr[i]
+                }
                 optionItem.value = arr[i]
                 optionItem.addEventListener("click", function(e) {
                     inp.value = optionItem.value

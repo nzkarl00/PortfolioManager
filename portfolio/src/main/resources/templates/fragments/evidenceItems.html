@@ -36,11 +36,17 @@
             <div class="row-1">
                 <div class="collapse evidence_data no-gutters" th:id="'collapseExample'+${evidence.getId}">
                     <div>
+
                         <p class="bio evidence_title" th:if="${evidence.getEvidenceUsersId().size() > 0}">Contributors </p>
                         <div class="d-flex flex-row flex-wrap" th:id="'evidence_contributors_'+${evidence.getId}" th:if="${evidence.getEvidenceUsersId().size() > 0}" style="width: 100%">
-                            <div class="p-2" th:each="user: ${evidence.getEvidenceUsersId()}">
-                                <div id="contributors_container" style="width: 85%; display: block;">
+                            <!-- These are doubled up to show the author first, then the contributors after  -->
+                            <div class="p-2" th:each="user: ${evidence.getEvidenceUsersId()}" th:if="${evidence.getParentUserId == user.getUserid()}">
+                                <div id="authors_container" style="width: 85%; display: block;">
                                     <a th:id="${'contributor_' + user.getUsername()}" class="table_text author_tag" th:if="${username == user.getUsername()}" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}" ></a>
+                                </div>
+                            </div>
+                            <div class="p-2" th:each="user: ${evidence.getEvidenceUsersId()}" th:if="${evidence.getParentUserId != user.getUserid()}">
+                                <div id="contributors_container" style="width: 85%; display: block;">
                                     <a th:id="${'contributor_' + user.getUsername()}" class="table_text contributor_tag" th:if="${username != user.getUsername()}" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}"></a>
                                 </div>
                             </div>
@@ -76,7 +82,7 @@
                         </div>
                         <br>
                         <button
-                                th:if="${evidence.getParentUserId() == userID}"
+                                th:if="${evidence.getParentUserId() == userId}"
                                 type="button" th:style="${displayDeleteButton}" th:value="${evidence.getId()}"
                                 th:id="${evidence.getId()}" data-toggle="modal"
                                 th:data-target="${'#deleteModal'+evidence.getId()}"

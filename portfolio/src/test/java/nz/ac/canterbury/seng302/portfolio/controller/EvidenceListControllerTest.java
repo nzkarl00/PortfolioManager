@@ -116,6 +116,7 @@ public class EvidenceListControllerTest {
         validParamsEvidenceRequired.add("descriptionInput", "This evidence is the first to be submitted");
         validParamsEvidenceRequired.add("categoryInput", "Service");
         validParamsEvidenceRequired.add("skillInput", "SkillA~SkillB~SkillC");
+        validParamsEvidenceRequired.add("userInput", "123456:Timmy Little");
 
         validParamsAllCategories.add("titleInput","Evidence One" );
         validParamsAllCategories.add("dateInput", "2022-05-04");
@@ -123,6 +124,7 @@ public class EvidenceListControllerTest {
         validParamsAllCategories.add("descriptionInput", "This evidence is the first to be submitted");
         validParamsAllCategories.add("categoryInput", "Service~Quantitative Skills~Qualitative Skills");
         validParamsAllCategories.add("skillInput", "SkillA~SkillB~SkillC");
+        validParamsAllCategories.add("userInput", "123456:Timmy Little");
 
         validParamsNoSkill.add("titleInput","Evidence One" );
         validParamsNoSkill.add("dateInput", "2022-05-04");
@@ -130,6 +132,7 @@ public class EvidenceListControllerTest {
         validParamsNoSkill.add("descriptionInput", "This evidence is the first to be submitted");
         validParamsNoSkill.add("categoryInput", "Service");
         validParamsNoSkill.add("skillInput", "SkillA~SkillB~SkillC");
+        validParamsNoSkill.add("userInput", "123456:Timmy Little");
 
         validParamsMultipleSkills.add("titleInput","Evidence One" );
         validParamsMultipleSkills.add("dateInput", "2022-05-04");
@@ -137,6 +140,7 @@ public class EvidenceListControllerTest {
         validParamsMultipleSkills.add("descriptionInput", "This evidence is the first to be submitted");
         validParamsMultipleSkills.add("categoryInput", "Service");
         validParamsMultipleSkills.add("skillInput", "SkillA~SKILLA");
+        validParamsMultipleSkills.add("userInput", "123456:Timmy Little");
 
         InvalidParamsEvidenceRequired.add("titleInput","" );
         InvalidParamsEvidenceRequired.add("dateInput", "2022-05-04");
@@ -144,6 +148,7 @@ public class EvidenceListControllerTest {
         InvalidParamsEvidenceRequired.add("descriptionInput", "This evidence is the first to be submitted");
         InvalidParamsEvidenceRequired.add("categoryInput", "Service");
         InvalidParamsEvidenceRequired.add("skillInput", "SkillA~SkillB~SkillC");
+        InvalidParamsEvidenceRequired.add("userInput", "123456:Timmy Little");
 
         InvalidParamsEvidenceDate.add("titleInput","" );
         InvalidParamsEvidenceDate.add("dateInput", "2000-10-22");
@@ -151,6 +156,7 @@ public class EvidenceListControllerTest {
         InvalidParamsEvidenceDate.add("descriptionInput", "This evidence is the first to be submitted");
         InvalidParamsEvidenceDate.add("categoryInput", "Service");
         InvalidParamsEvidenceDate.add("skillInput", "SkillA~SkillB~SkillC");
+        InvalidParamsEvidenceDate.add("userInput", "123456:Timmy Little");
     }
 
     @AfterAll
@@ -175,7 +181,8 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("0:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
+        when(evidenceService.extractListFromHTMLStringSkills("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
+        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
 
 
         // Executing the mocked post request, checking that the page is displayed
@@ -202,7 +209,8 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("0:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 7)).thenReturn(new ArrayList<>(List.of(testEvidenceAllCategories)));
+        when(evidenceService.extractListFromHTMLStringSkills("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
+        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 7)).thenReturn(new ArrayList<>(List.of(testEvidenceAllCategories)));
 
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsAllCategories))
@@ -228,7 +236,8 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("0:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
+        when(evidenceService.extractListFromHTMLStringSkills("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
+        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
 
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsNoSkill))
@@ -304,7 +313,8 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("0:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
+        when(evidenceService.extractListFromHTMLStringSkills("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
+        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
 
 
         // Executing the mocked post request, checking that the page is displayed
@@ -330,7 +340,7 @@ public class EvidenceListControllerTest {
         List<EvidenceTag> evidenceTagList = new ArrayList<>();
         evidenceTagList.add(testEvidenceTag);
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("0:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
+        when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
 
         when(evidenceTagRepository.findAllByParentEvidenceId(0)).thenReturn(evidenceTagList);
 

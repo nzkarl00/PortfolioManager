@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.openqa.selenium.InvalidArgumentException;
@@ -84,10 +85,7 @@ public class EvidenceListController {
     List<Evidence> evidenceList = evidenceService.getEvidenceForUser(userId);
     List<Project> allProjects = projectService.getAllProjects();
     model.addAttribute("projectList", allProjects);
-    Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
-    skillTagListNoSkill.remove("No_skills");
-    model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("allSkills", skillTagList);
     model.addAttribute("skillList", skillList);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
@@ -101,7 +99,6 @@ public class EvidenceListController {
     boolean showForm = false;
     if (projectId != null) {
       showForm = true;
-
     }
     model.addAttribute("showForm", showForm);
     model.addAttribute("errorMessage", errorMessage);
@@ -136,7 +133,8 @@ public class EvidenceListController {
       }
       model.addAttribute("skillMap", evidenceSkillMap);
       model.addAttribute("categoryMap", evidenceCategoryMap);
-      model.addAttribute("userID", AuthStateInformer.getId(principal));
+      model.addAttribute("username", AuthStateInformer.getUsername(principal));
+      model.addAttribute("userId", AuthStateInformer.getId(principal));
       return "fragments/evidenceItems.html :: evidenceItems";
   }
 
@@ -179,7 +177,7 @@ public class EvidenceListController {
    * @param title evidence title
    * @param date evidence date
    * @param projectId the id of the project that the evidence is linked too
-   * @param otherUsers A list of usernames of other people (not the author) who worked on this evidence
+   * @param users A list of usernames of other people (not the author) who worked on this evidence
    * @param categories the category the evidence is associated with
    * @param skills the skills the evidence is associated with
    * @param links are an optional list of links associated with this new piece of evidence
@@ -194,9 +192,9 @@ public class EvidenceListController {
           @RequestParam(value = "titleInput") String title,
           @RequestParam(value = "dateInput") String date,
           @RequestParam(value = "projectId") Integer projectId,
-          @RequestParam(value = "otherUsers") Optional <String> otherUsers,
           @RequestParam(value = "categoryInput") String categories,
           @RequestParam(value = "skillInput") String skills,
+          @RequestParam(value = "userInput") Optional <String> users,
           @RequestParam(value = "linksInput") Optional <String> links,
           @RequestParam(value = "descriptionInput") String description,
           Model model
@@ -235,15 +233,9 @@ public class EvidenceListController {
 
       int categoriesInt = Evidence.categoryStringToInt(categories);
 
-      List<String> extractedUsers = extractListFromHTMLString(otherUsers.orElse(""));
-
-      //TODO program out once front-end is working as intended
-      if (extractedUsers.isEmpty()) {
-          extractedUsers.add(accountID + ":" + thisUser.getUsername());
-      }
+      List<String> extractedUsers = evidenceService.extractListFromHTMLStringSkills(users.orElse(""));
 
       List<Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, LocalDate.parse(date), categoriesInt);
-
       // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links
       logger.info("[EVIDENCE] Saving evidence to repo");
       for (Evidence evidence : allUserEvidence) {
