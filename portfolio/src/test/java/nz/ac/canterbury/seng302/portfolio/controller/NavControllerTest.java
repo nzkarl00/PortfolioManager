@@ -32,7 +32,7 @@ class NavControllerTest {
     }
 
     @Test
-    public void updateModelForNavTest() {
+    void updateModelForNavTest() {
         Model model = mock(Model.class);
         AuthState principal = mock(AuthState.class);
 
@@ -46,7 +46,7 @@ class NavControllerTest {
         verify(model).addAttribute("photo", "null/image/1"); // @value hasn't been mocked so it just imports null
         // mocking said value would more be an exercise in mocking than testing the value auto-wiring
         verify(model).addAttribute("username", "timmy");
-        verify(model).addAttribute("date", " 28 April 2022 (1 Month)");
+        verify(model).addAttribute("dateSince", " 28 April 2022 (1 Month)");
     }
 
 }

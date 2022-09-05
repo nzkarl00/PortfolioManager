@@ -47,9 +47,9 @@ public class DeleteEvidenceStepDefs {
      *Opens a piece of evidence
      **/
     public void viewFullPieceOfEvidence() {
-        String getId = getEvidenceId("Evidence One");
-        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+getId)));
-        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
+        String evidenceId = getEvidenceId("Evidence Delete");
+        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton" + evidenceId)));
+        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
         //scrollWindowToElement(arrowButton);
         seleniumExample.config.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         arrowButton.click();
@@ -57,12 +57,10 @@ public class DeleteEvidenceStepDefs {
     /**
      *Opens a piece of evidence
      **/
-    public void viewFullPieceOfEvidence(String arg0) throws InterruptedException {
-        String getId = getEvidenceId(arg0);
-
-
-
-        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
+    public void viewFullPieceOfEvidence(String arg0) {
+        String evidenceId = getEvidenceId(arg0);
+        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton" + evidenceId)));
+        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
         //scrollWindowToElement(arrowButton);
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", arrowButton);
         Thread.sleep(500);
@@ -71,59 +69,61 @@ public class DeleteEvidenceStepDefs {
     }
 
     @And("I view that piece of evidence {string}")
-    public void iViewThatPieceOfEvidence(String arg0) throws InterruptedException {
+    public void iViewThatPieceOfEvidence(String arg0)  {
         viewFullPieceOfEvidence(arg0);
     }
 
     @When("I view that piece of evidence")
-    public void i_view_that_piece_of_evidence() {
+    public void iViewThatPieceOfEvidence() {
         viewFullPieceOfEvidence();
     }
 
     @Then("I can see a delete icon")
-    public void i_can_see_a_delete_icon() {
-        String getId = getEvidenceId("Evidence One");
-        WebElement element = driver.findElement(By.id(getId));
+    public void iCanSeeADeleteIcon() {
+        String evidenceId = getEvidenceId("Evidence Delete");
+        WebElement element = driver.findElement(By.id(evidenceId));
         scrollWindowToElement(element);
     }
 
     @Then("I can click the delete Icon")
-    public void i_can_click_the_delete_icon() {
-        String getId = getEvidenceId("Evidence One");
-        WebElement element = driver.findElement(By.id(getId));
+    public void iCanClickTheDeleteIcon() throws InterruptedException {
+        String evidenceId = getEvidenceId("Evidence Delete");
+        WebElement element = driver.findElement(By.id(evidenceId));
         scrollWindowToElement(element);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
         WebElement button = seleniumExample.config.getDriver().findElement(By.className("group_delete_button"));
+        scrollWindowToElement(button);
+        Thread.sleep(200);
         button.click();
     }
 
     @When("I view that piece of evidence that is not mine")
-    public void i_view_that_piece_of_evidence_that_is_not_mine() {
+    public void iViewThatPieceOfEvidenceThatIsNotMine() {
         viewFullPieceOfEvidence();
     }
 
     @Then("I cannot see a delete icon")
-    public void i_cannot_see_a_delete_icon() {
-        String getId = getEvidenceId("Evidence One");
+    public void iCannotSeeADeleteIcon() {
+        String evidenceId = getEvidenceId("Evidence Delete");
         try {
             WebElement button = seleniumExample.config.getDriver().findElement(By.className("group_delete_button"));
-            Assertions.assertNotEquals(getId, button.getAttribute("id"));
+            Assertions.assertNotEquals(evidenceId, button.getAttribute("id"));
         } catch(Exception e) {
 
         }
     }
 
     @Then("A model appears containing the evidence title")
-    public void a_model_appears_containing_the_evidence_title() {
+    public void aModelAppearsContainingTheEvidenceTitle() {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
         WebElement modelTitle = seleniumExample.config.getDriver().findElement(By.id("exampleModalLongTitle"));
-        String expected = "Delete - Evidence One?";
+        String expected = "Delete - Evidence Delete?";
         Assertions.assertEquals(expected, modelTitle.getText());
 
     }
 
     @When("I click cancel")
-    public void i_click_cancel() {
+    public void iClickCancel() {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("CancelButton"));
         button.click();
@@ -131,18 +131,19 @@ public class DeleteEvidenceStepDefs {
 
 
     @Then("I fill out all mandatory fields")
-    public void i_fill_out_all_mandatory_fields() {
+    public void iFillOutAllMandatoryFields() throws InterruptedException {
         WebElement titleField = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
-        titleField.sendKeys("Evidence One");
+        titleField.sendKeys("Evidence Delete");
         WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
         description.sendKeys("This evidence relates to the work done on the evidence page");
         WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
         String dateToSend = date.getAttribute("min");
         date.sendKeys(dateToSend);
+        Thread.sleep(1000);
     }
 
     @Then("I close the window")
-    public void i_close_the_window() {
+    public void iCloseTheWindow() {
         seleniumExample.closeWindow();
     }
 

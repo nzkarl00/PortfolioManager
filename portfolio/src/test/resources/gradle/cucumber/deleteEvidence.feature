@@ -21,13 +21,6 @@ Feature: U12: deleting your own evidence
     Then I can click the delete Icon
 
   @Close
-  Scenario: AC1: Clickable Icon on My Own Evidence
-    Given I am authenticated as a admin
-    And I go to the evidence page with a project id
-    When I view that piece of evidence that is not mine
-    Then I cannot see a delete icon
-
-  @Close
   Scenario: AC2: Clicking Icon shows a prompt
     Given User is logged in.
     When User navigates to "evidence?pi=1".
@@ -46,10 +39,3 @@ Feature: U12: deleting your own evidence
     Then A model appears containing the evidence title
     When I click cancel
     Then I view that piece of evidence
-
-  @Close
-  Scenario: AC6 I cannot delete pieces of evidence that do not belong to me.
-    Given I am authenticated as a admin
-    When User navigates to "evidence?pi=1".
-    And I view that piece of evidence that is not mine
-    Then I cannot see a delete icon

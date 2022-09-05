@@ -117,18 +117,18 @@ public class EvidenceStepDefs {
     }
 
     @Given("I go to the evidence page with a project id")
-    public void i_go_to_the_evidence_page_with_a_project_id() {
+    public void iGoToTheEevidencePageWithAProjectId() {
         seleniumExample.config.getDriver().get(seleniumExample.url + "/evidence?pi=1");
     }
 
     @Given("I click the Add Evidence button")
-    public void i_click_the_add_evidence_button() {
+    public void iClickTheAddEvidenceButton() {
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
         button.click();
     }
 
     @When("I have filled out all mandatory title, description, and date fields to an evidence")
-    public void i_have_filled_out_all_mandatory_title_description_and_date_fields_to_an_evidence(){
+    public void iHaveFilledOutAllMandatoryTitleDescriptionAndDateFieldsToAnEvidence(){
         WebElement titleField = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
         titleField.sendKeys("Evidence One");
         WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
@@ -136,35 +136,41 @@ public class EvidenceStepDefs {
     }
 
     @When("I click the save button")
-    public void i_click_the_save_button() throws InterruptedException {
+    public void iClickTheSaveButton() throws InterruptedException {
         WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+        scrollIntoView(saveButton);
         Assertions.assertTrue(saveButton.isEnabled());
         saveButton.submit();
         Thread.sleep(200);
     }
 
+    public void scrollIntoView(WebElement element) throws InterruptedException {
+        ((JavascriptExecutor) seleniumExample.config.getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
+        Thread.sleep(500);
+    }
+
     @Then("I will see a message that this evidence has saved successfully")
-    public void i_will_see_a_message_that_this_evidence_has_saved_successfully() throws InterruptedException {
+    public void iWillSeeAMessageThatThisEvidenceHasSavedSuccessfully() throws InterruptedException {
         Thread.sleep(100);
         WebElement message = seleniumExample.config.getDriver().findElement(By.id("display_box"));
         Assertions.assertEquals("Evidence has been added", message.getText());
     }
 
-    @Then("I cannot click the save button")
-    public void i_cannot_click_the_save_button() {
+    @When("The all mandatory fields to an evidence are empty, I cannot click the save button")
+    public void theAllMandatoryFieldsToAnEvidenceAreEmptyICannotClickTheSaveButton() {
         WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
         Assertions.assertFalse(saveButton.isEnabled());
     }
 
     @When("I click the cancel button")
-    public void i_click_the_cancel_button() {
+    public void iClickTheCancelButton() {
         WebElement cancelButton = seleniumExample.config.getDriver().findElement(By.id("cancelButton"));
         cancelButton.sendKeys(Keys.ENTER);
 
     }
 
     @Then("I can see the evidence creation page extract and replace by a plus button")
-    public void i_can_see_the_evidence_creation_page_extract_and_replace_by_a_plus_button() {
+    public void iCanSeeTheEvidenceCreationPageExtractAndReplaceByAPlusButton() {
         WebElement addButton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
         Assertions.assertTrue(addButton.isEnabled());
     }
@@ -196,7 +202,7 @@ public class EvidenceStepDefs {
     }
 
     @Then("I can see the prefilled date is today's date")
-    public void i_can_see_the_prefilled_date_is_today_s_date() {
+    public void iCanSeeThePrefilledDateIsTodaysDate() {
         WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
         String currentDateExpected = DateParser.dateToStringHtml(new Date());
         String currentDateActual = date.getAttribute("value");
@@ -204,40 +210,49 @@ public class EvidenceStepDefs {
     }
 
     @When("I try to update the widget date to a new date that is within the project")
-    public void i_try_to_update_the_widget_date_to_a_new_date_that_is_within_the_project() {
+    public void iTryToUpdateTheWidgetDateToANewDateThatIsWithinTheProject()
+        throws InterruptedException {
         WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
         String minDateStringFormat = date.getAttribute("min");
         Date minDate = DateParser.stringToDate(minDateStringFormat);
         Calendar cal = Calendar.getInstance();
         cal.setTime(minDate);
         cal.add(Calendar.DAY_OF_MONTH, 2);
-        String month = String.valueOf(cal.get(Calendar.MONTH));;
+        String month = String.valueOf(cal.get(Calendar.MONTH));
+        String day = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
         if (cal.get(Calendar.MONTH) < 10) {
             month = "0" + String.valueOf(cal.get(Calendar.MONTH));
         }
-        String dateToSend = String.format("%d-%s-%d", cal.get(Calendar.YEAR), month, cal.get(Calendar.DATE));
+        if (cal.get(Calendar.DAY_OF_MONTH) < 10) {
+            day = "0" + cal.get(Calendar.DAY_OF_MONTH);
+        }
+        String dateToSend = String.format("%d-%s-%s", cal.get(Calendar.YEAR), month, day);
         date.sendKeys(dateToSend);
     }
 
     @Then("I can see the widget date field is set to the updated new date")
-    public void i_can_see_the_widget_date_field_is_set_to_the_updated_new_date() {
+    public void iCanSeeTheWidgetDateFieldIsSetToTheUpdatedNewDate() {
         WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
         String minDateStringFormat = date.getAttribute("min");
         Date minDate = DateParser.stringToDate(minDateStringFormat);
         Calendar cal = Calendar.getInstance();
         cal.setTime(minDate);
         cal.add(Calendar.DAY_OF_MONTH, 2);
-        String month = String.valueOf(cal.get(Calendar.MONTH));;
+        String month = String.valueOf(cal.get(Calendar.MONTH));
+        String day = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
         if (cal.get(Calendar.MONTH) < 10) {
             month = "0" + String.valueOf(cal.get(Calendar.MONTH));
         }
-        String expected = String.format("%d-%s-%d", cal.get(Calendar.YEAR), month, cal.get(Calendar.DATE));
+        if (cal.get(Calendar.DAY_OF_MONTH) < 10) {
+            day = "0" + cal.get(Calendar.DAY_OF_MONTH);
+        }
+        String expected = String.format("%d-%s-%s", cal.get(Calendar.YEAR), month, day);
         String actual = date.getAttribute("value");
         Assertions.assertEquals(expected, actual);
     }
 
     @Then("Hovering my mouse over the question mark icon beside the date picker will give me information about it")
-    public void hovering_my_mouse_over_the_question_mark_icon_beside_the_date_picker_will_give_me_information_about_it()
+    public void hoveringMyMouseOverTheQuestionMarkIconBesideTheDatePickerWillGiveMeInformationAbout_It()
         throws InterruptedException {
         WebElement icon = seleniumExample.config.getDriver().findElement(By.id("evidence_date_tool"));
         WebDriver driver = seleniumExample.config.getDriver();
@@ -251,12 +266,18 @@ public class EvidenceStepDefs {
     }
 
     @Then("I can see that the range of the date widget is filled in with the project date range")
-    public void i_can_see_that_the_range_of_the_date_widget_is_filled_in_with_the_project_date_range() {
+    public void iCanSeeThatTheRangeOfTheDateWidgetIsFilledInWithTheProjectDateRange() {
         WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
         String min = date.getAttribute("min");
         String max = date.getAttribute("max");
         Assertions.assertFalse(min.isBlank());
         Assertions.assertFalse(max.isBlank());
+    }
+
+    @When("User selects the {string} option in the skills side menu")
+    public void userSelectsTheOptionInTheSkillsSideMenu(String arg0) {
+        WebElement button = seleniumExample.config.getDriver().findElement(By.id("skill_button_"+arg0));
+        button.click();
     }
 
     @When("User enters {string} into the title")
@@ -277,5 +298,11 @@ public class EvidenceStepDefs {
     public void saveButtonCanBeClicked() {
         WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
         Assertions.assertNull(saveButton.getAttribute("disabled"));
+    }
+
+    @Then("Save button cannot be clicked")
+    public void saveButtonCanNotBeClicked() {
+        WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+        Assertions.assertEquals("true", saveButton.getAttribute("disabled"));
     }
 }

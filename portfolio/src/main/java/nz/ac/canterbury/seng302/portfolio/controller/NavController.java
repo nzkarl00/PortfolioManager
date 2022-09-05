@@ -27,6 +27,6 @@ public class NavController {
         String request = idpLocation + "/image/" + id;
         model.addAttribute("photo", request);
         model.addAttribute("username", userReply.getUsername());
-        model.addAttribute("date", DateParser.displayDate(userReply, new Date()));
+        model.addAttribute("dateSince", DateParser.displayDate(userReply, new Date()));
     }
 }
