@@ -1,10 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceUser;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceUserRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
@@ -24,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.transaction.Transactional;
+import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +42,8 @@ public class EditEvidenceController {
     private EvidenceRepository evidenceRepository;
     @Autowired
     private EvidenceUserRepository evidenceUserRepository;
+    @Autowired
+    private WebLinkRepository webLinkRepository;
 
     Logger logger = LoggerFactory.getLogger(EditEvidenceController.class);
 
@@ -132,13 +131,14 @@ public class EditEvidenceController {
         @RequestParam(value = "descriptionInput") String description,
         @RequestParam(value = "evidenceId") Integer id,
         @RequestParam(value = "userInput") String users,
-        Model model) {
+        Model model) throws MalformedURLException {
 
         Evidence evidence = evidenceRepository.findById((int) id);
         evidence.setCategories(Evidence.categoryStringToInt(categories));
         evidence.setDate(LocalDate.parse(date));
         evidence.setDescription(description);
         evidence.setTitle(title);
+
         logger.debug(users);
         // delete all users for evidence
         evidenceUserRepository.deleteAllByEvidence(evidence);
@@ -146,6 +146,8 @@ public class EditEvidenceController {
         evidenceService.addUserToEvidence(evidenceService.extractListFromHTMLStringSkills(users), evidence);
 
         logger.debug(links);
+        webLinkRepository.deleteAllByEvidence(evidence);
+        evidenceService.addLinksToEvidence(evidenceService.extractListFromHTMLString(links), evidence);
 
         evidenceRepository.save(evidence);
 

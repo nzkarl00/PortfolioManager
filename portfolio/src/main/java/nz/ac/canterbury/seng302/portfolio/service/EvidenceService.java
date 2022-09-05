@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.MalformedURLException;
 import java.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,8 @@ public class EvidenceService {
     ProjectService projectService;
     @Autowired
     EvidenceUserRepository evidenceUserRepository;
+    @Autowired
+    WebLinkRepository webLinkRepository;
     @Autowired
     AccountClientService accountClientService;
 
@@ -247,6 +250,7 @@ public class EvidenceService {
      * Splits an HTML form input list, into multiple array elements.
      * @param stringFromHTML The string containing items delimited by ~
      * @return an array representation of the list
+     * TODO: change these function names to cover more of its correct usages
      */
     public List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
         if (stringFromHTML.equals("")) {
@@ -254,6 +258,19 @@ public class EvidenceService {
         }
 
         return Arrays.asList(stringFromHTML.split("~"));
+    }
+
+    /**
+     * Splits an HTML form input list, into multiple array elements.
+     * @param stringFromHTML The string of values posted by the evidence form in format Item1~Item2~Item3
+     * @return An array of the individual values present in the string
+     */
+    public List<String> extractListFromHTMLString(String stringFromHTML) {
+        if (stringFromHTML.equals("")) {
+            return new ArrayList<>();
+        }
+
+        return Arrays.asList(stringFromHTML.split(" "));
     }
 
     /**
@@ -269,6 +286,34 @@ public class EvidenceService {
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * Construct web links, must be validated first.
+     * @param links The link of links which are associated with a given piece of evidence
+     * @param parentEvidence The evidence object which the weblink belongs to
+     * @return An array of weblink objects which contain both the link text and the parent evidence
+     */
+    public List<WebLink> constructLinks(List<String> links, Evidence parentEvidence) throws MalformedURLException {
+        ArrayList<WebLink> resultLinks = new ArrayList<>();
+        // Validate all links
+        for (String link : links) {
+            // Web links are valid, so construct them all
+            resultLinks.add(new WebLink(link, parentEvidence));
+        }
+        return resultLinks;
+    }
+
+    public void addLinksToEvidence(List<String> links, Evidence evidence) throws MalformedURLException {
+        Optional<String> possibleError = validateLinks(links);
+        if (possibleError.equals("")) {
+            try {
+                webLinkRepository.saveAll(constructLinks(links, evidence));
+            } catch (MalformedURLException e) {
+                logger.error("[EVIDENCE] Somehow links were attempted for construction with malformed URL", e);
+                logger.error("[EVIDENCE] Links not saved");
+            }
+        }
     }
 
     /**
