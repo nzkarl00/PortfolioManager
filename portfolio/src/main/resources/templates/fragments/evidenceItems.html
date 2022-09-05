@@ -124,7 +124,7 @@
                     <br>
                 </div>
             </div>
-
+            <br>
         </div>
 
         <div class="col-2">
@@ -164,7 +164,6 @@
         for (const evidence of [[${evidenceList}]]) {
             addTagRowToEvidence(evidence.id, "si")
             for (const evidenceSkill of skillMap[evidence.id]) {
-                console.log(evidenceSkill, evidence.id)
                 addTagToEvidence(evidenceSkill, evidence.id, "si")
             }
         }

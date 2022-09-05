@@ -314,6 +314,23 @@ public class Evidence {
         return evidenceUsersId;
     }
 
+    @Override
+    public boolean equals(Object e) {
+        if (e == this) {
+            return true;
+        }
+        if (!(e instanceof Evidence)) {
+            return false;
+        }
+        Evidence toComp = (Evidence) e;
+        return toComp.id == this.id;
+    }
+
+    @Override
+    public final int hashCode() {
+        return this.id;
+    }
+
     public void setEvidenceTags(List<EvidenceTag> evidenceTags) {
         this.evidenceTags = evidenceTags;
     }
