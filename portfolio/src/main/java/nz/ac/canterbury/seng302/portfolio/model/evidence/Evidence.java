@@ -313,4 +313,8 @@ public class Evidence {
     public List<EvidenceUser> getEvidenceUsersId() {
         return evidenceUsersId;
     }
+
+    public void setEvidenceTags(List<EvidenceTag> evidenceTags) {
+        this.evidenceTags = evidenceTags;
+    }
 }
