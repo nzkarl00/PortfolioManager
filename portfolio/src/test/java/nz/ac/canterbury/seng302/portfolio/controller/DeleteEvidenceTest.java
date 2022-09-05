@@ -116,7 +116,7 @@ public class DeleteEvidenceTest {
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
                 .andExpect(view().name("redirect:evidence?pi=0"));
-        verify(evidenceRepository).delete(refEq(testEvidence));
+        verify(evidenceService).deleteEvidence(refEq(testEvidence));
     }
 
     /**
@@ -137,13 +137,13 @@ public class DeleteEvidenceTest {
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
                 .andExpect(view().name("redirect:evidence?pi=0"));
-        verify(evidenceRepository, never()).delete(refEq(testEvidence));
+        verifyNoInteractions(evidenceService);
     }
 
-    /**
-     * Test for the case where a user attempts to delete a piece of evidence that doesn't exist
-     * @throws Exception in the case where the mock mvc fails or project is not found
-     */
+        /**
+         * Test for the case where a user attempts to delete a piece of evidence that doesn't exist
+         * @throws Exception in the case where the mock mvc fails or project is not found
+         */
     @Test
     public void deleteInvalidEvidence() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
@@ -158,13 +158,13 @@ public class DeleteEvidenceTest {
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
                 .andExpect(view().name("redirect:evidence?pi=0"));
-        verify(evidenceRepository, never()).delete(any(Evidence.class));
+        verifyNoInteractions(evidenceService);
     }
 
-    /**
-     * Test for the case where a user attempts to delete a piece of evidence they do not own
-     * @throws Exception in the case where the mock mvc fails or project is not found
-     */
+        /**
+         * Test for the case where a user attempts to delete a piece of evidence they do not own
+         * @throws Exception in the case where the mock mvc fails or project is not found
+         */
     @Test
     public void deleteValidEvidence_WithInvalidPermissions() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
@@ -179,6 +179,6 @@ public class DeleteEvidenceTest {
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
                 .andExpect(view().name("redirect:evidence?pi=0"));
-        verify(evidenceRepository, never()).delete(refEq(testEvidence));
+        verifyNoInteractions(evidenceService);
     }
 }

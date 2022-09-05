@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -252,4 +253,20 @@ public class EvidenceService {
         return Optional.empty();
     }
 
+    /**
+     * Deletes evidence from the repository and removes any orphaned skill tags.
+     * @param evidence The evidence to be deleted
+     */
+    public void deleteEvidence(Evidence evidence) {
+        List<EvidenceTag> evidenceTags = evidence.getEvidenceTags();
+        List<SkillTag> skillTags = evidenceTags.stream().map(EvidenceTag::getParentSkillTag).filter(skillTag -> skillTag.getTitle() != "No_skills").toList(); // All skill tags associated with deleted evidence
+        evidenceRepository.delete(evidence);
+        for (SkillTag skillTag: skillTags) {
+            if (evidenceTags.containsAll(skillTag.getEvidenceTags())) { // If every evidence tag associated with a skill tag also belongs to deleted evidence
+                skillTag.clearEvidenceTags();
+                skillTagRepository.delete(skillTag);
+            }
+        }
+
+    }
 }

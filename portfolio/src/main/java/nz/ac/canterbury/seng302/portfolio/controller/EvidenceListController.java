@@ -247,23 +247,23 @@ public class EvidenceListController {
       return "redirect:evidence?pi=" + projectId;
   }
 
-    @PostMapping("/delete-evidence")
-    public String deleteEvidence(@RequestParam(required = false, value = "projectId") String projectId,
-                                @RequestParam(value = "evidenceId") String evidenceId,
-                                @AuthenticationPrincipal AuthState principal) {
-        Evidence targetEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
-        if (targetEvidence == null) {
-            logger.debug("[EVIDENCE] Redirecting, evidence id " + evidenceId + " does not exist");
-            return "redirect:evidence?pi=" + projectId;
-        }
-        Integer accountID = AuthStateInformer.getId(principal);
-        if (!principal.getIsAuthenticated() || accountID != targetEvidence.getParentUserId()) {
-            logger.debug("[EVIDENCE] Redirecting, user does not have permissions to delete evidence " + evidenceId);
-            return "redirect:evidence?pi=" + projectId;
-        }
-        evidenceRepository.delete(targetEvidence);
-        return "redirect:evidence?pi=" + projectId;
-    }
+  @PostMapping("/delete-evidence")
+  public String deleteEvidence(@RequestParam(required = false, value = "projectId") String projectId,
+                               @RequestParam(value = "evidenceId") String evidenceId,
+                               @AuthenticationPrincipal AuthState principal) {
+      Evidence targetEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
+      if (targetEvidence == null) {
+          logger.debug("[EVIDENCE] Redirecting, evidence id " + evidenceId + " does not exist");
+          return "redirect:evidence?pi=" + projectId;
+      }
+      Integer accountID = AuthStateInformer.getId(principal);
+      if (!principal.getIsAuthenticated() || accountID != targetEvidence.getParentUserId()) {
+          logger.debug("[EVIDENCE] Redirecting, user does not have permissions to delete evidence " + evidenceId);
+          return "redirect:evidence?pi=" + projectId;
+      }
+      evidenceService.deleteEvidence(targetEvidence);
+      return "redirect:evidence?pi=" + projectId;
+  }
 
 
 
