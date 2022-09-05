@@ -2,12 +2,10 @@ const MAX_WIDTH = 520;
 const MAX_HEIGHT = 520;
 const MIME_TYPE = "image/jpeg";
 const QUALITY = 0.8;
-console.log("here");
 
 // https://labs.madisoft.it/javascript-image-compression-and-resizing/
 
 function compress() {
-    console.log("started");
     const input = document.getElementById("photo")
     const file = input.files[0];
     // Use the file
@@ -17,14 +15,12 @@ function compress() {
     img.onerror = function () {
         URL.revokeObjectURL(this.src);
         // Handle the failure properly
-        console.log("Cannot load image");
     };
     img.onload = function (ev) {
         window.URL.revokeObjectURL(blobURL); // release memory
         const [newWidth, newHeight] = calculateSize(img, MAX_WIDTH, MAX_HEIGHT);
         const preview = document.getElementById('preview');
         if (preview.lastElementChild) {
-            console.log("deleting");
             preview.removeChild(preview.lastElementChild);
         }
 
@@ -35,7 +31,6 @@ function compress() {
             size = img.width;
         }
 
-        console.log("new");
         const canvas = document.createElement('canvas');
         preview.appendChild(canvas);
         canvas.width = newWidth;
@@ -49,7 +44,6 @@ function compress() {
 }
 
 function onChange(event) {
-  console.log("started");
 }
 
 /**

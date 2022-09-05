@@ -81,7 +81,7 @@ public class SeleniumWithTestNGLiveTest_EvidenceManualFilter {
      */
     public void goTo_evidencePage() {
         seleniumExample.config.getDriver().get(seleniumExample.url+"/evidence");
-        WebElement pageTitle = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[2]/div/p"));
+        WebElement pageTitle = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[1]/div[1]/div[2]/div/p"));
         Assertions.assertEquals("List Of Evidence", pageTitle.getText());
     }
 
@@ -90,7 +90,7 @@ public class SeleniumWithTestNGLiveTest_EvidenceManualFilter {
      */
     public void clickTo_Category() {
         Select category = new Select(seleniumExample.config.getDriver().findElement(By.id("ci")));
-        category.selectByValue("1");
+        category.selectByValue("Qualitative Skills");
         WebElement option = category.getFirstSelectedOption();
         String defaultItem = option.getText();
         Assertions.assertEquals("  Qualitative skills", defaultItem);
@@ -100,7 +100,7 @@ public class SeleniumWithTestNGLiveTest_EvidenceManualFilter {
     public void swapTo_Skill() {
         Select categoryCI = new Select(seleniumExample.config.getDriver().findElement(By.id("ci")));
         Select categorySI = new Select(seleniumExample.config.getDriver().findElement(By.id("si")));
-        categorySI.selectByValue("2");
+        categorySI.selectByValue("No_skills");
         WebElement option = categoryCI.getFirstSelectedOption();
         String defaultItem = option.getText();
         Assertions.assertEquals("Choose here", defaultItem);
@@ -109,7 +109,7 @@ public class SeleniumWithTestNGLiveTest_EvidenceManualFilter {
     public void swapTo_Category() {
         Select categoryCI = new Select(seleniumExample.config.getDriver().findElement(By.id("ci")));
         Select categorySI = new Select(seleniumExample.config.getDriver().findElement(By.id("si")));
-        categoryCI.selectByValue("1");
+        categoryCI.selectByValue("Qualitative Skills");
         WebElement option = categorySI.getFirstSelectedOption();
         String defaultItem = option.getText();
         Assertions.assertEquals("Choose here", defaultItem);

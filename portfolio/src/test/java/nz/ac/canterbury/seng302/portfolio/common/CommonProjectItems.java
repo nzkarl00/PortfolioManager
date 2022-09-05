@@ -21,7 +21,7 @@ public final class CommonProjectItems {
     public static Evidence getValidEvidence() {
         Project testProject = getValidProject();
         LocalDate may4 = LocalDate.parse("2022-05-04");
-        Evidence evidence = new Evidence(0, testProject, "Evidence One", "This evidence is the first to be submitted", may4);
+        Evidence evidence = new Evidence(0, testProject, "Evidence One", "This evidence is the first to be submitted", may4, 0);
 
         return evidence;
     }

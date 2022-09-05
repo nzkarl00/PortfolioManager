@@ -145,7 +145,7 @@ public class AddDatesController {
         Date newStart = DateParser.stringToDate(eventStartDate);
         Date newEnd = DateParser.stringToDate(eventEndDate);
 
-        if (eventName == "") {
+        if (eventName.equals("")) {
             eventName = "Sprint " + (sprints.size() + 1);
         }
         if (!sprintService.areNewSprintDatesValid(newStart, newEnd, projectId) || newStart.before(projStart) || newEnd.after(projEnd)) {
@@ -188,7 +188,6 @@ public class AddDatesController {
 
         Deadline deadline = new Deadline(project, eventName, eventDescription, endDate);
         deadlineRepository.save(deadline);
-        System.out.println(deadline);
         dateSocketService.sendDeadlineCalendarChange(project);
         return "redirect:details?id=";
     }
