@@ -109,24 +109,23 @@ public class EvidenceService {
         return returning;
     }
 
-    /**
-     * For every user associated to a piece of evidence, duplicate the evidence and save it for them
-     * And then creating an association between each evidence user and their parent evidence
-     * @param extractedUsernames List of {id}:{username} that a user has said also worked on the piece of evidence they're creating
-     * @param parentProject The parent project that all pieces of evidence will relate to
-     * @param title The title that all pieces of evidence will relate to
-     * @param description The description that all pieces of evidence will relate to
-     * @param evidenceDate The evidenceDate that all pieces of evidence will relate to
-     * @return
-     */
-    public List<Evidence> generateEvidenceForUsers(List<String> extractedUsernames, Project parentProject, String title, String description, LocalDate evidenceDate, int categories) {
-        // Extract then validate usernames
-        // This is assuming that the list is formatted as {id}:{username}
-        List<Evidence> allEvidence = new ArrayList<>();
-        List<String[]> validUsers = new ArrayList<>();
+    public void addUserToEvidence(List<String> userStrings, Evidence evidence) {
 
         // Validate that the username exists in the IDP
-        for(String username: extractedUsernames) {
+        List<String[]> validUsers = validateUserIdPair(userStrings);
+
+        //Loop through all associated users again so that we can associate them to the evidence we created
+        for(String[] associated: validUsers) {
+            EvidenceUser evidenceUser = new EvidenceUser(Integer.parseInt(associated[0]), associated[1], evidence);
+            evidenceUserRepository.save(evidenceUser);
+        }
+    }
+
+    public List<String[]> validateUserIdPair(List<String> userStrings) {
+
+        List<String[]> validUsers = new ArrayList<>();
+
+        for(String username: userStrings) {
             String[] split = username.split(":");
             int userId = Integer.parseInt(split[0]);
 
@@ -137,11 +136,32 @@ public class EvidenceService {
             }
         }
 
+        return validUsers;
+    }
+
+    /**
+     * For every user associated to a piece of evidence, duplicate the evidence and save it for them
+     * And then creating an association between each evidence user and their parent evidence
+     * @param userStrings List of {id}:{username} that a user has said also worked on the piece of evidence they're creating
+     * @param parentProject The parent project that all pieces of evidence will relate to
+     * @param title The title that all pieces of evidence will relate to
+     * @param description The description that all pieces of evidence will relate to
+     * @param evidenceDate The evidenceDate that all pieces of evidence will relate to
+     * @return
+     */
+    public List<Evidence> generateEvidenceForUsers(List<String> userStrings, Project parentProject, String title, String description, LocalDate evidenceDate, int categories) {
+        // Extract then validate usernames
+        // This is assuming that the list is formatted as {id}:{username}
+        List<Evidence> allEvidence = new ArrayList<>();
+
+        // Validate that the username exists in the IDP
+        List<String[]> validUsers = validateUserIdPair(userStrings);
+
         //Loop through all associated users so we can create their pieces of evidence
         for(String[] user: validUsers) {
             Evidence userEvidence = new Evidence(Integer.parseInt(user[0]), parentProject, title, description, evidenceDate, categories);
             evidenceRepository.save(userEvidence);
-            allEvidence.add(userEvidence);
+
             //Loop through all associated users again so that we can associate them to the evidence we created
             for(String[] associated: validUsers) {
                 EvidenceUser evidenceUser = new EvidenceUser(Integer.parseInt(associated[0]), associated[1], userEvidence);

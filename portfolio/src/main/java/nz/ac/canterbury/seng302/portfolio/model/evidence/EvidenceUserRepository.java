@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface EvidenceUserRepository extends CrudRepository<EvidenceUser, Integer> {
 
     @Modifying
-    @Query("delete from GroupMembership m where m.groupMembershipId = ?1")
+    @Query("delete from EvidenceUser e where e.parentEvidence = ?1")
     void deleteAllByEvidence(Evidence evidence);
 }

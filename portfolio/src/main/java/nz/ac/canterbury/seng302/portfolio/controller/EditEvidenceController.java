@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,8 @@ public class EditEvidenceController {
     private NavController navController;
     @Autowired
     private AccountClientService accountClientService;
+    @Autowired
+    private EvidenceService evidenceService;
     @Autowired
     private EvidenceRepository evidenceRepository;
     @Autowired
@@ -115,6 +119,7 @@ public class EditEvidenceController {
      * @param model The model to be used by the application for web integration
      * @return redirect to the evidence page once the edit is complete
      */
+    @Transactional
     @PostMapping("/edit-evidence")
     public String addEvidence(
         @AuthenticationPrincipal AuthState principal,
@@ -138,7 +143,7 @@ public class EditEvidenceController {
         // delete all users for evidence
         evidenceUserRepository.deleteAllByEvidence(evidence);
         // add all users for evidence
-
+        evidenceService.addUserToEvidence(evidenceService.extractListFromHTMLStringSkills(users), evidence);
 
         logger.debug(links);
 
