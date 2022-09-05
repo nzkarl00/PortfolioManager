@@ -1,8 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import com.google.protobuf.Any;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,13 +18,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static nz.ac.canterbury.seng302.portfolio.common.CommonProjectItems.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EvidenceServiceTest {
 
     @Mock
     SkillTagRepository skillTagRepository;
+
+    @Mock
+    EvidenceRepository evidenceRepository;
 
     @InjectMocks
     EvidenceService evidenceService = new EvidenceService();
@@ -112,4 +118,38 @@ public class EvidenceServiceTest {
         assertNull(skillFromRepo);
     }
 
+    @Test
+    void deleteEvidenceWithNoSkills() {
+        Evidence testEvidence = getValidEvidence();
+        testEvidence.setEvidenceTags(List.of(getNoSkillsEvidenceTag(testEvidence)));
+        evidenceService.deleteEvidence(testEvidence);
+        Mockito.verifyNoInteractions(skillTagRepository);
+    }
+
+    @Test
+    void deleteEvidenceWithOneSkill() {
+        Evidence testEvidence = getValidEvidence();
+        testEvidence.setEvidenceTags(List.of(getEvidenceTagA(testEvidence)));
+        evidenceService.deleteEvidence(testEvidence);
+        verify(skillTagRepository, times(1)).delete(testEvidence.getEvidenceTags().get(0).getParentSkillTag());
+    }
+
+    @Test
+    void deleteEvidenceWithMultipleSkills() {
+        Evidence testEvidence = getValidEvidence();
+        testEvidence.setEvidenceTags(List.of(getEvidenceTagA(testEvidence), getEvidenceTagB(testEvidence), getEvidenceTagC(testEvidence)));
+        evidenceService.deleteEvidence(testEvidence);
+        for (EvidenceTag evidenceTag: testEvidence.getEvidenceTags()) {
+            verify(skillTagRepository, times(1)).delete(evidenceTag.getParentSkillTag());
+        }
+        verifyNoMoreInteractions(skillTagRepository);
+    }
+
+    @Test
+    void deleteEvidenceWithOneSkillNotUnique() {
+        Evidence testEvidence = getValidEvidence();
+        testEvidence.setEvidenceTags(List.of(getEvidenceTagANotUnique(testEvidence)));
+        evidenceService.deleteEvidence(testEvidence);
+        verifyNoInteractions(skillTagRepository);
+    }
 }

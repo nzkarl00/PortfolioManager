@@ -330,4 +330,8 @@ public class Evidence {
     public final int hashCode() {
         return this.id;
     }
+
+    public void setEvidenceTags(List<EvidenceTag> evidenceTags) {
+        this.evidenceTags = evidenceTags;
+    }
 }

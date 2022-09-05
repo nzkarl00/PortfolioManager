@@ -79,6 +79,7 @@ userRow = document.getElementById("user_sub_1");
 // Adds the user to the set and resets the input.
 function addUser() {
     let newUser = document.getElementById("add_user_input").value
+    console.log(newUser)
     if (newUser.slice(-1) === " ") {
         newUser = newUser.slice(0, -1);
     }
@@ -87,27 +88,65 @@ function addUser() {
         document.getElementById("add_user_input").value = "";
         return;
     }
-    // check to see if it matches the correct user format
-    const validate = newUser.match(/^[a-zA-Z-_0-9]+$/)
-    if (!validate || !validate.length == 1) {
-        document.getElementById("user_error").style = "color:red;";
-        return
+
+    if (newUser == "") {
+        document.getElementById("user_error").style = "display:none;";
+        return;
     }
-    users.add(newUser)
-    allUsers = allUsers.filter(s => s !== newUser)
-    autocomplete(document.getElementById("add_user_input"), allUsers, "user")
+
+    // check to see if it matches the correct user format
+    const userInAllUsers = allUsers.includes(newUser);
+    if (!userInAllUsers) {
+        UsernameOrId = false;
+        // try matching for sole id or username
+        for (const user of allUsers) {
+            username = user.split(":")[1]
+            console.log(username)
+            console.log(newUser.toLowerCase() == username.toLowerCase())
+            console.log(newUser)
+            id = user.split(":")[0]
+            if (newUser.toLowerCase() == username.toLowerCase() || newUser == id) {
+                newUser = user
+                UsernameOrId = true
+                break
+            }
+        }
+        if (!UsernameOrId) {
+            document.getElementById("user_error").style = "color:red;";
+            return
+        }
+    } else {
+        document.getElementById("user_error").style = "display:none;";
+    }
     document.getElementById("add_user_input").value = ""
-    appendUser(newUser)
+    appendUser(newUser, false)
 }
 
+author = "";
+
 // Inserts a new user tag into the form
-function appendUser(userText) {
-    let userTag = document.createElement("button");
+function appendUser(userText, isAuthor) {
+
+    users.add(userText)
+    allUsers = allUsers.filter(s => s !== userText)
+    autocomplete(document.getElementById("add_user_input"), allUsers, "user")
+
+    username = userText.split(":")[1]
+    id = userText.split(":")[0]
+    let userTag;
+    if (isAuthor) {
+        author = userText;
+        userTag = document.createElement("p");
+        userTag.className = "table_text author_tag"
+        userTag.innerHTML = '<img class="img-fluid rounded-circle rounded-circle" style="margin-right: 0.5em;" src="' + imagePrefix + id + '" width=35em height=35em alt="">' + username
+    } else {
+        userTag = document.createElement("button");
+        userTag.className = "table_text contributor_tag"
+        userTag.onclick = removeUser;
+        userTag.innerHTML = '<img class="img-fluid rounded-circle rounded-circle" style="margin-right: 0.5em;" src="' + imagePrefix + id + '" width=35em height=35em alt="">' + username + " ✖"
+    }
     userTag.id = "user_" + userText
-    userTag.className = "table_text user_tag"
-    userTag.innerHTML = '<img class="img-fluid rounded-circle rounded-circle" style="margin-right: 0.5em;" src="https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg" width=35em height=35em alt="">' + userText + " ✖"
     userTag.value = userText
-    userTag.onclick = removeUser;
     userRow.appendChild(userTag);
     if (userRow.getBoundingClientRect().right <= userTag.getBoundingClientRect().right) {
         userRow.removeChild(userTag)
@@ -133,7 +172,11 @@ function removeUser(event) {
     clearUsers()
     insertUserRow()
     for (const user of users) {
-        appendUser(user)
+        if (user == author) {
+            appendUser(user, true)
+        } else {
+            appendUser(user, false)
+        }
     }
     return false;
 }
@@ -385,6 +428,7 @@ function updateUsers() {
     const userCounter = document.getElementById("userCharCount")
     const userInput = document.getElementById("add_user_input")
     userCounter.innerText = "Characters Remaining: "  + (65 - userInput.value.length)
+
 }
 
 // Enable form and hide add evidence form

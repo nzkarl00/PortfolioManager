@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -157,6 +158,7 @@ public class EvidenceService {
                 EvidenceUser evidenceUser = new EvidenceUser(Integer.parseInt(associated[0]), associated[1], userEvidence);
                 evidenceUserRepository.save(evidenceUser);
             }
+            allEvidence.add(userEvidence);
         }
         return allEvidence;
     }
@@ -182,9 +184,6 @@ public class EvidenceService {
         //Create new skill for any skill that doesn't exist, create evidence tag for all skills
         if (skills.replace(" ", "").length() > 0) {
             List<String> skillList = extractListFromHTMLStringSkills(skills);
-
-            logger.debug(skillList.toString());
-
             for (String skillString : skillList) {
                 String validSkillString = skillString.replace(" ", "_");
                 SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase(validSkillString);
@@ -240,7 +239,7 @@ public class EvidenceService {
      * @param stringFromHTML The string containing items delimited by ~
      * @return an array representation of the list
      */
-    private List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
+    public List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
         if (stringFromHTML.equals("")) {
             return Collections.emptyList();
         }
@@ -263,4 +262,20 @@ public class EvidenceService {
         return Optional.empty();
     }
 
+    /**
+     * Deletes evidence from the repository and removes any orphaned skill tags.
+     * @param evidence The evidence to be deleted
+     */
+    public void deleteEvidence(Evidence evidence) {
+        List<EvidenceTag> evidenceTags = evidence.getEvidenceTags();
+        List<SkillTag> skillTags = evidenceTags.stream().map(EvidenceTag::getParentSkillTag).filter(skillTag -> skillTag.getTitle() != "No_skills").toList(); // All skill tags associated with deleted evidence
+        evidenceRepository.delete(evidence);
+        for (SkillTag skillTag: skillTags) {
+            if (evidenceTags.containsAll(skillTag.getEvidenceTags())) { // If every evidence tag associated with a skill tag also belongs to deleted evidence
+                skillTag.clearEvidenceTags();
+                skillTagRepository.delete(skillTag);
+            }
+        }
+
+    }
 }

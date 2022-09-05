@@ -94,7 +94,7 @@
                         <div class="evidence_form_element_wide">
                             <div class="autocomplete evidence_form_element_wide">
                                 <input type="hidden" id="userHidden" th:name="userInput">
-                                <input type="text" autocomplete="off" id="add_user_input" maxlength=65 oninput="updateUsers()"  class="evidence_form_element_wide project_edit_data">
+                                <input type="text" autocomplete="off" id="add_user_input" maxlength=65 oninput="updateUsers()" class="evidence_form_element_wide project_edit_data">
                                 </input>
                             </div>
                         </div>
@@ -166,8 +166,9 @@
     </div>
     <script type="text/javascript" th:src="@{js/autocomplete.js}"></script>
     <script th:inline="javascript">
-        allSkills = [[${autoSkills}]];
-        allUsers = [[${autoSkills}]];
+        let imagePrefix = [[${photoPrefix}]];
+        let allSkills = [[${autoSkills}]];
+        let allUsers = [[${allUsers}]];
         if (allSkills !== null) {
             autocomplete(document.getElementById("add_skill_input"), allSkills, "skill");
         }
@@ -176,6 +177,9 @@
         }
     </script>
     <script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>
+    <script th:inline="javascript">
+        appendUser([[${userId + ":" + username}]], true);
+    </script>
 </div>
 </body>
 </html>

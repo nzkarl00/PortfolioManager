@@ -100,8 +100,6 @@ public class EvidenceStepDefs {
             evidenceAdded = true;
         }
         Thread.sleep(100);
-        seleniumExample.config.getDriver()
-                .get(seleniumExample.url + "/evidence?pi=1");
     }
 
     @When("I go to the evidence page")
@@ -122,9 +120,10 @@ public class EvidenceStepDefs {
     }
 
     @Given("I click the Add Evidence button")
-    public void iClickTheAddEvidenceButton() {
+    public void iClickTheAddEvidenceButton() throws InterruptedException {
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
         button.click();
+        Thread.sleep(500);
     }
 
     @When("I have filled out all mandatory title, description, and date fields to an evidence")
