@@ -5,6 +5,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -73,6 +74,12 @@ public class SkillTag {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public void setEvidenceTags(List<EvidenceTag> evidenceTags) {
+        this.evidenceTags = evidenceTags;
+    }
+
+    public void clearEvidenceTags() { this.evidenceTags = new ArrayList<>(); }
 
     public void setDescription(String description) {
         this.description = description;

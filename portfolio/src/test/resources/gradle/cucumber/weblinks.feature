@@ -5,9 +5,9 @@ Feature: U26: Web link in evidence
   The web address is turned into a link.
   Clicking on this link opens that address in a new page/tab.
     Given User is logged in.
-    Given There is linked evidence in the table
+    Given There is "linked" evidence in the table
     When User navigates to "evidence?pi=1".
-    And I view that piece of evidence "Evidence Link"
+    And I view that piece of evidence "linked"
     And I click the weblink
     Then I am taken to wikipedia in a new tab
 
@@ -17,8 +17,8 @@ Feature: U26: Web link in evidence
   Instead, a small open/closed padlock should be displayed (similar to browsers).
   The padlocks can be optionally appropriately coloured to distinguish between them.
     Given User is logged in.
-    Given There is linked evidence in the table
+    Given There is "linked" evidence in the table
     When User navigates to "evidence?pi=1".
-    And I view that piece of evidence "Evidence Link"
+    And I view that piece of evidence "linked"
     Then Wikipedia link has a closed padlock
     And Fake Cern link has a open padlock

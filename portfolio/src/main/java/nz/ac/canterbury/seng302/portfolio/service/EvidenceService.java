@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,48 +43,58 @@ public class EvidenceService {
     }
 
     /**
-     * Takes the parameters and returns the appropriate evidence list based on search priority
-     * @param userId ID of user to get evidence from
-     * @param projectId ID of project to get evidence from
-     * @param categoryName name of category to get evidence from
-     * @param skillName name of skill to get evidence from
-     * @return A properly sorted and filtered list of evidence
-     * @throws CustomExceptions.ProjectItemNotFoundException if the project associated with the given projectID does not exist
+     * Gets a list of evidence that matches all the provided parameters
+     * @param userId ID of the user that evidence must match
+     * @param projectId ID of the project that must be associated
+     * @param categoryName Name of the category that must be associated
+     * @param skillName Name of the skill that must be associated
+     * @return List of evidence matching all the given criteria
+     * @throws CustomExceptions.ProjectItemNotFoundException If the project with this ID does not exist, throws an exception
      */
-    public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, String categoryName, String skillName) throws CustomExceptions.ProjectItemNotFoundException {
-        if (projectId != null){
+    public List<Evidence> getEvidenceList(Integer userId, Integer projectId, String categoryName, String skillName) throws CustomExceptions.ProjectItemNotFoundException {
+        List<Evidence> evidenceList = new ArrayList<>();
+        if (projectId > 0) { // -1 is the ID provided when project is not specified
             Project project = projectService.getProjectById(projectId);
-            return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
-        } else if (userId != null){
-            return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
-        }else if (categoryName != null){
-            List<Evidence> evidenceCategoryList = evidenceRepository.getEvidenceByCategoryInt(Evidence.categoryStringToInt(categoryName));
-            evidenceCategoryList.sort((o1, o2) -> {
-                // compare two instance of `Score` and return `int` as result.
-                return o2.getDate().compareTo(o1.getDate());
-            });
-            return evidenceCategoryList;
-        }else if (skillName != null){
-            List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(skillTagRepository.findByTitle(skillName).getId());
-            List<Evidence> evidenceSkillList = new ArrayList<>();
-            for (EvidenceTag tag: evidenceTags){
-                evidenceSkillList.add(tag.getParentEvidence());
-            }
-            evidenceSkillList.sort((o1, o2) -> {
-                // compare two instance of `Score` and return `int` as result.
-                return o2.getDate().compareTo(o1.getDate());
-            });
-            return evidenceSkillList;
-        }else{
-            return evidenceRepository.findAllByOrderByDateDesc();
+            evidenceList = evidenceRepository.findAllByAssociatedProject(project);
+
         }
+        if (userId != null) {
+            if (!evidenceList.isEmpty()) {
+                evidenceRepository.findAllByParentUserId(userId).forEach(e -> logger.debug(e.getTitle()));
+                // Intersection of current list and query
+                evidenceList = evidenceList.stream().filter(evidenceRepository.findAllByParentUserId(userId)::contains).toList();
+            } else {
+                evidenceList = evidenceRepository.findAllByParentUserId(userId);
+            }
+        }
+        if (!Objects.equals(categoryName, "")) {
+            if (!evidenceList.isEmpty()) {
+                // Intersection of current list and query
+                evidenceList = evidenceList.stream().filter(evidenceRepository.getEvidenceByCategoryInt(Evidence.categoryStringToInt(categoryName))::contains).toList();
+            } else {
+                evidenceList = evidenceRepository.getEvidenceByCategoryInt(Evidence.categoryStringToInt(categoryName));
+            }
+        }
+        if (!Objects.equals(skillName, "")) {
+            List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentSkillTagId(skillTagRepository.findByTitle(skillName).getId());
+            if (!evidenceList.isEmpty()) {
+                // Intersection of current list and query
+                evidenceList = evidenceList.stream().filter(evidenceTags.stream().map(EvidenceTag::getParentEvidence).toList()::contains).toList();
+            } else {
+                evidenceList = evidenceTags.stream().map(EvidenceTag::getParentEvidence).toList();
+            }
+
+        }
+        evidenceList = new ArrayList<>(evidenceList); // Casts list back to mutable form to be sorted
+        evidenceList.sort((o1, o2) -> o2.getDate().compareTo(o1.getDate())); // Puts evidence in the correct date order
+        return evidenceList;
     }
 
-    public List<Evidence> getEvidenceForUserAndProject(int userId, int projectId) throws CustomExceptions.ProjectItemNotFoundException {
-        Project project = projectService.getProjectById(projectId);
-        return evidenceRepository.findAllByAssociatedProjectAndParentUserIdOrderByDateDesc(project, userId);
-    }
-
+    /**
+     * Gets all the evidence associated with a single user.
+     * @param userId User to get evidence from
+     * @return List of evidence that belongs to the user
+     */
     public List<Evidence> getEvidenceForUser(int userId) {
         return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
     }
@@ -125,6 +136,7 @@ public class EvidenceService {
         }
         return filteredEvidence;
     }
+
     /**
      * This function loops through the provided evidences from the filtering
      * and retrieves all the skill tags from them to display in the side panel
@@ -182,6 +194,7 @@ public class EvidenceService {
                 EvidenceUser evidenceUser = new EvidenceUser(Integer.parseInt(associated[0]), associated[1], userEvidence);
                 evidenceUserRepository.save(evidenceUser);
             }
+            allEvidence.add(userEvidence);
         }
         return allEvidence;
     }
@@ -207,9 +220,6 @@ public class EvidenceService {
         //Create new skill for any skill that doesn't exist, create evidence tag for all skills
         if (skills.replace(" ", "").length() > 0) {
             List<String> skillList = extractListFromHTMLStringSkills(skills);
-
-            logger.debug(skillList.toString());
-
             for (String skillString : skillList) {
                 String validSkillString = skillString.replace(" ", "_");
                 SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase(validSkillString);
@@ -265,7 +275,7 @@ public class EvidenceService {
      * @param stringFromHTML The string containing items delimited by ~
      * @return an array representation of the list
      */
-    private List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
+    public List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
         if (stringFromHTML.equals("")) {
             return Collections.emptyList();
         }
@@ -288,6 +298,22 @@ public class EvidenceService {
         return Optional.empty();
     }
 
+    /**
+     * Deletes evidence from the repository and removes any orphaned skill tags.
+     * @param evidence The evidence to be deleted
+     */
+    public void deleteEvidence(Evidence evidence) {
+        List<EvidenceTag> evidenceTags = evidence.getEvidenceTags();
+        List<SkillTag> skillTags = evidenceTags.stream().map(EvidenceTag::getParentSkillTag).filter(skillTag -> skillTag.getTitle() != "No_skills").toList(); // All skill tags associated with deleted evidence
+        evidenceRepository.delete(evidence);
+        for (SkillTag skillTag: skillTags) {
+            if (evidenceTags.containsAll(skillTag.getEvidenceTags())) { // If every evidence tag associated with a skill tag also belongs to deleted evidence
+                skillTag.clearEvidenceTags();
+                skillTagRepository.delete(skillTag);
+            }
+        }
+
+    }
     /**
      * Returns a set of every skill that is used in a piece of evidence a given user is the parent of.
      * @param id the id of the user being skill checked

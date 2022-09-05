@@ -26,6 +26,7 @@ public class NavController {
     public void updateModelForNav(AuthState principal, Model model, UserResponse userReply, int id) {
         String request = idpLocation + "/image/" + id;
         model.addAttribute("photo", request);
+        model.addAttribute("photoPrefix", idpLocation + "/image/");
         model.addAttribute("username", userReply.getUsername());
         model.addAttribute("dateSince", DateParser.displayDate(userReply, new Date()));
     }

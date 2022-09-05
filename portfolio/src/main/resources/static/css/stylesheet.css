@@ -1292,34 +1292,6 @@ select.form-control {
     margin-left: 0.3rem;
 }
 
-.user_tag {
-    background-color:#19DAFF; !important;
-    border-radius: 12px !important;
-    border-style: none !important;
-    color: #ffffff !important;
-    font-size: 115% !important;
-    padding: 1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    display: inline-block !important;
-    margin-bottom: 0.3rem;
-    margin-left: 0.3rem;
-}
-
-.user_tag:hover {
-    background-color:#FF202E; !important;
-    border-radius: 12px !important;
-    border-style: none !important;
-    color: #ffffff !important;
-    font-size: 115% !important;
-    padding: 1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    display: inline-block !important;
-    margin-bottom: 0.3rem;
-    margin-left: 0.3rem;
-}
-
 .cancel_evidence {
 
     background-color: #FF202E !important;
@@ -1498,6 +1470,21 @@ select.form-control {
 .contributor_tag{
     text-decoration: underline;
     background-color: #666688; !important;
+    border-style: none !important;
+    border-radius: 3px !important;
+    color: #ffffff !important;
+    padding: 0.3rem 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+    font-size: 80% !important;
+}
+
+
+
+.contributor_tag:hover {
+    text-decoration: underline;
+    background-color: #FF202E; !important;
     border-style: none !important;
     border-radius: 3px !important;
     color: #ffffff !important;

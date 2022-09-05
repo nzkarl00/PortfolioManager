@@ -330,7 +330,19 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         Boolean isSorted = false;
 
-        if (request.getOrderBy().equals("roles_asc")) {
+        // if there is a negative limit assume the request wants all the users
+        if (request.getLimit() < 0) {
+            usersSorted = repo.findAll();
+            //build the response
+            for (AccountProfile user : usersSorted) {
+                reply.addUsers(accountService.buildUserResponse(user));
+            }
+            // send the response and exit the function
+            responseObserver.onNext(reply.build());
+            responseObserver.onCompleted();
+            return;
+
+        } else if (request.getOrderBy().equals("roles_asc")) {
             updateUsersSorted(sortUsers(request), usersSorted, true);
 
         } else if (request.getOrderBy().equals("roles_desc")) {
