@@ -123,6 +123,7 @@ public class EditEvidenceController {
         @RequestParam(value = "linksInput") String links,
         @RequestParam(value = "descriptionInput") String description,
         @RequestParam(value = "evidenceId") Integer id,
+        @RequestParam(value = "userInput") String users,
         Model model) {
 
         Evidence evidence = evidenceRepository.findById((int) id);
@@ -130,6 +131,7 @@ public class EditEvidenceController {
         evidence.setDate(LocalDate.parse(date));
         evidence.setDescription(description);
         evidence.setTitle(title);
+        logger.debug(users);
         logger.debug(links);
 
         evidenceRepository.save(evidence);
