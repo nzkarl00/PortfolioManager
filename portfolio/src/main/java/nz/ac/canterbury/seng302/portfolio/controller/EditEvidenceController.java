@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceUser;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceUserRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
@@ -38,6 +39,8 @@ public class EditEvidenceController {
     private AccountClientService accountClientService;
     @Autowired
     private EvidenceRepository evidenceRepository;
+    @Autowired
+    private EvidenceUserRepository evidenceUserRepository;
 
     Logger logger = LoggerFactory.getLogger(EditEvidenceController.class);
 
@@ -132,6 +135,11 @@ public class EditEvidenceController {
         evidence.setDescription(description);
         evidence.setTitle(title);
         logger.debug(users);
+        // delete all users for evidence
+        evidenceUserRepository.deleteAllByEvidence(evidence);
+        // add all users for evidence
+
+
         logger.debug(links);
 
         evidenceRepository.save(evidence);
