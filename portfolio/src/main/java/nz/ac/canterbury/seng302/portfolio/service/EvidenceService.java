@@ -53,9 +53,9 @@ public class EvidenceService {
     public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, String categoryName, String skillName) throws CustomExceptions.ProjectItemNotFoundException {
         if (projectId != null){
             Project project = projectService.getProjectById(projectId);
-            return evidenceRepository.findAllByAssociatedProjectOrderByDateAsc(project);
+            return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
         } else if (userId != null){
-            return evidenceRepository.findAllByParentUserIdOrderByDateAsc(userId);
+            return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
         }else if (categoryName != null){
             List<Evidence> evidenceCategoryList = evidenceRepository.getEvidenceByCategoryInt(Evidence.categoryStringToInt(categoryName));
             evidenceCategoryList.sort((o1, o2) -> {
@@ -75,17 +75,17 @@ public class EvidenceService {
             });
             return evidenceSkillList;
         }else{
-            return evidenceRepository.findAllByOrderByDateAsc();
+            return evidenceRepository.findAllByOrderByDateDesc();
         }
     }
 
     public List<Evidence> getEvidenceForUserAndProject(int userId, int projectId) throws CustomExceptions.ProjectItemNotFoundException {
         Project project = projectService.getProjectById(projectId);
-        return evidenceRepository.findAllByAssociatedProjectAndParentUserIdOrderByDateAsc(project, userId);
+        return evidenceRepository.findAllByAssociatedProjectAndParentUserIdOrderByDateDesc(project, userId);
     }
 
     public List<Evidence> getEvidenceForUser(int userId) {
-        return evidenceRepository.findAllByParentUserIdOrderByDateAsc(userId);
+        return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
     }
 
     public List<Evidence> filterBySkill(List<Evidence> evidenceList, String skillName) {
@@ -294,7 +294,7 @@ public class EvidenceService {
      * @return a set of skill objects
      */
     public Set<SkillTag> getUserSkills(Integer id) {
-        List<Evidence> user_evidence = evidenceRepository.findAllByParentUserIdOrderByDateAsc(id);
+        List<Evidence> user_evidence = evidenceRepository.findAllByParentUserIdOrderByDateDesc(id);
         Set<SkillTag> user_skillTags = new HashSet<>();
         for (Evidence evidence: user_evidence) {
             List<EvidenceTag> user_evidenceTag = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
