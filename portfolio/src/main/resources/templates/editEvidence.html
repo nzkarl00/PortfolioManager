@@ -144,104 +144,110 @@
 
         <script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>
 
+        <script type="text/javascript" th:src="@{js/autocomplete.js}"></script>
+
         <script th:inline="javascript">
 
-        function editLink(event) {
-            link = document.getElementById("link_" + event.target.value)
-            editingLink = document.createElement("input")
-            editingLink.id = "link_edit_" + event.target.value
-            editingLink.className = "evidence_form_element_wide project_edit_data"
-            editingLink.type = "text"
-            editingLink.value = event.target.value
-            link.parentNode.replaceChild(editingLink, link)
+            function editLink(event) {
+                link = document.getElementById("link_" + event.target.value)
+                editingLink = document.createElement("input")
+                editingLink.id = "link_edit_" + event.target.value
+                editingLink.className = "evidence_form_element_wide project_edit_data"
+                editingLink.type = "text"
+                editingLink.value = event.target.value
+                link.parentNode.replaceChild(editingLink, link)
 
-            saveButton = document.createElement("button");
-            saveButton.className = "fa fa-check each_link_save"
-            saveButton.id = "save_" + event.target.value
-            saveButton.value = event.target.value
-            saveButton.onclick = saveLink;
+                saveButton = document.createElement("button");
+                saveButton.className = "fa fa-check each_link_save"
+                saveButton.id = "save_" + event.target.value
+                saveButton.value = event.target.value
+                saveButton.onclick = saveLink;
 
-            event.target.parentNode.replaceChild(saveButton, event.target)
-            return false;
-        }
-
-        // use the data from the edit input to save a new link
-        function saveLink(event) {
-            editedLink = document.getElementById("link_edit_" + event.target.value)
-
-            let newLink = document.createElement("a");
-            newLink.id = "link_" + editedLink.value
-            newLink.className = "sprint-description display_data text_button trim_text"
-            newLink.style.fontSize = "110%"
-            newLink.width = "90% !important"
-            newLink.style.display = "inline-block"
-            newLink.target = "_blank"
-            newLink.innerText = editedLink.value
-            newLink.href = editedLink.value
-
-            let linkDelete = document.createElement("button");
-            linkDelete.className = "fa fa-trash each_link_delete"
-            linkDelete.value = editedLink.value
-            linkDelete.onclick = removeLink;
-            linkDelete.id = "delete_" + editedLink.value
-
-            oldDelete = document.getElementById("delete_" + event.target.value)
-
-            let editButton = document.createElement("button");
-            editButton.className = "fa fa-edit each_link_edit"
-            editButton.value = editedLink.value
-            editButton.id = "edit_" + editedLink.value
-            editButton.onclick = editLink;
-
-            oldSave = document.getElementById("save_" + event.target.value)
-
-            if (!validateLink(editedLink.value)) {
-                alert('Link is not valid, please ensure link includes http(s):// protocol');
+                event.target.parentNode.replaceChild(saveButton, event.target)
                 return false;
             }
 
-            oldDelete.parentNode.replaceChild(linkDelete, oldDelete)
-            oldSave.parentNode.replaceChild(editButton, oldSave)
-            editedLink.parentNode.replaceChild(newLink, editedLink)
+            // use the data from the edit input to save a new link
+            function saveLink(event) {
+                editedLink = document.getElementById("link_edit_" + event.target.value)
 
-            links.delete(event.target.value)
-            links.add(editedLink.value)
+                let newLink = document.createElement("a");
+                newLink.id = "link_" + editedLink.value
+                newLink.className = "sprint-description display_data text_button trim_text"
+                newLink.style.fontSize = "110%"
+                newLink.width = "90% !important"
+                newLink.style.display = "inline-block"
+                newLink.target = "_blank"
+                newLink.innerText = editedLink.value
+                newLink.href = editedLink.value
 
-            storeLinks()
+                let linkDelete = document.createElement("button");
+                linkDelete.className = "fa fa-trash each_link_delete"
+                linkDelete.value = editedLink.value
+                linkDelete.onclick = removeLink;
+                linkDelete.id = "delete_" + editedLink.value
 
-            return false;
-        }
+                oldDelete = document.getElementById("delete_" + event.target.value)
 
-        // Override the append link to add the edit button
-        function appendLink(linkText) {
-            let linkBox = document.createElement("div");
-            linksContainer.appendChild(linkBox)
-            linkBox.className = "trim_text"
-            linkBox.style.display = "flex"
-            let newLink = document.createElement("a");
-            newLink.id = "link_" + linkText
-            newLink.className = "sprint-description display_data text_button trim_text"
-            newLink.style.fontSize = "110%"
-            newLink.width = "90% !important"
-            newLink.style.display = "inline-block"
-            newLink.target = "_blank"
-            newLink.innerText = linkText
-            newLink.href = linkText
-            let linkDelete = document.createElement("button");
-            linkDelete.className = "fa fa-trash each_link_delete"
-            linkDelete.value = linkText
-            linkDelete.onclick = removeLink;
-            linkDelete.id = "delete_" + linkText
-            let linkEdit = document.createElement("button");
-            linkEdit.className = "fa fa-edit each_link_edit"
-            linkEdit.value = linkText
-            linkEdit.id = "edit_" + linkText
-            linkEdit.onclick = editLink;
-            linkBox.appendChild(newLink)
-            linkBox.appendChild(linkEdit)
-            linkBox.appendChild(linkDelete)
-            storeLinks()
-        }
+                let editButton = document.createElement("button");
+                editButton.className = "fa fa-edit each_link_edit"
+                editButton.value = editedLink.value
+                editButton.id = "edit_" + editedLink.value
+                editButton.onclick = editLink;
+
+                oldSave = document.getElementById("save_" + event.target.value)
+
+                if (!validateLink(editedLink.value)) {
+                    alert('Link is not valid, please ensure link includes http(s):// protocol');
+                    return false;
+                }
+
+                oldDelete.parentNode.replaceChild(linkDelete, oldDelete)
+                oldSave.parentNode.replaceChild(editButton, oldSave)
+                editedLink.parentNode.replaceChild(newLink, editedLink)
+
+                links.delete(event.target.value)
+                links.add(editedLink.value)
+
+                storeLinks()
+
+                return false;
+            }
+
+            // Override the append link to add the edit button
+            function appendLink(linkText) {
+                let linkBox = document.createElement("div");
+                linksContainer.appendChild(linkBox)
+                linkBox.className = "trim_text"
+                linkBox.style.display = "flex"
+                let newLink = document.createElement("a");
+                newLink.id = "link_" + linkText
+                newLink.className = "sprint-description display_data text_button trim_text"
+                newLink.style.fontSize = "110%"
+                newLink.width = "90% !important"
+                newLink.style.display = "inline-block"
+                newLink.target = "_blank"
+                newLink.innerText = linkText
+                newLink.href = linkText
+                let linkDelete = document.createElement("button");
+                linkDelete.className = "fa fa-trash each_link_delete"
+                linkDelete.value = linkText
+                linkDelete.onclick = removeLink;
+                linkDelete.id = "delete_" + linkText
+                let linkEdit = document.createElement("button");
+                linkEdit.className = "fa fa-edit each_link_edit"
+                linkEdit.value = linkText
+                linkEdit.id = "edit_" + linkText
+                linkEdit.onclick = editLink;
+                linkBox.appendChild(newLink)
+                linkBox.appendChild(linkEdit)
+                linkBox.appendChild(linkDelete)
+                storeLinks()
+            }
+
+            let allUsers = [[${allUsers}]];
+            let imagePrefix = [[${photoPrefix}]];
+            autocomplete(document.getElementById("add_user_input"), allUsers, "user");
 
             // set the checkboxes to have the categories from the evidence
             for (const category of [[${evidence.getCategoryStrings()}]]) {
@@ -256,6 +262,10 @@
             for (const link of [[${links}]]) {
                 links.add(link)
                 appendLink(link)
+            }
+
+            for (const user of [[${users}]]) {
+                appendUser(user, user.split(":")[1] == [[${username}]])
             }
         </script>
 

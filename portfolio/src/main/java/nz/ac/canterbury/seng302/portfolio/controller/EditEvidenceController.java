@@ -2,10 +2,13 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceUser;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +76,21 @@ public class EditEvidenceController {
             linkUrls.add(link.getUrl());
         }
 
+        List<String> evidenceUsers = new ArrayList<>();
+        for (EvidenceUser user : evidence.getEvidenceUsersId()) {
+            evidenceUsers.add(user.getUserid() + ":" + user.getUsername());
+        }
+
+        PaginatedUsersResponse
+            response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
+        List<String> users = new ArrayList<>();
+        for (UserResponse user: response.getUsersList()) {
+            User temp = new User(user);
+            users.add(temp.id + ":" + temp.username);
+        }
+        model.addAttribute("allUsers", users);
+
+        model.addAttribute("users", evidenceUsers);
         model.addAttribute("links", linkUrls);
         model.addAttribute("evidence", evidence);
         model.addAttribute("title", "Edit Evidence: " + evidence.getTitle());
