@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,9 +53,9 @@ public class EvidenceService {
     public List<Evidence> getFilteredEvidenceForUserInProject(Integer userId, Integer projectId, String categoryName, String skillName) throws CustomExceptions.ProjectItemNotFoundException {
         if (projectId != null){
             Project project = projectService.getProjectById(projectId);
-            return evidenceRepository.findAllByAssociatedProjectOrderByDateDesc(project);
+            return evidenceRepository.findAllByAssociatedProjectOrderByDateAsc(project);
         } else if (userId != null){
-            return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
+            return evidenceRepository.findAllByParentUserIdOrderByDateAsc(userId);
         }else if (categoryName != null){
             List<Evidence> evidenceCategoryList = evidenceRepository.getEvidenceByCategoryInt(Evidence.categoryStringToInt(categoryName));
             evidenceCategoryList.sort((o1, o2) -> {
@@ -77,17 +75,17 @@ public class EvidenceService {
             });
             return evidenceSkillList;
         }else{
-            return evidenceRepository.findAllByOrderByDateDesc();
+            return evidenceRepository.findAllByOrderByDateAsc();
         }
     }
 
     public List<Evidence> getEvidenceForUserAndProject(int userId, int projectId) throws CustomExceptions.ProjectItemNotFoundException {
         Project project = projectService.getProjectById(projectId);
-        return evidenceRepository.findAllByAssociatedProjectAndParentUserIdOrderByDateDesc(project, userId);
+        return evidenceRepository.findAllByAssociatedProjectAndParentUserIdOrderByDateAsc(project, userId);
     }
 
     public List<Evidence> getEvidenceForUser(int userId) {
-        return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
+        return evidenceRepository.findAllByParentUserIdOrderByDateAsc(userId);
     }
 
     public List<Evidence> filterBySkill(List<Evidence> evidenceList, String skillName) {
@@ -296,7 +294,7 @@ public class EvidenceService {
      * @return a set of skill objects
      */
     public Set<SkillTag> getUserSkills(Integer id) {
-        List<Evidence> user_evidence = evidenceRepository.findAllByParentUserIdOrderByDateDesc(id);
+        List<Evidence> user_evidence = evidenceRepository.findAllByParentUserIdOrderByDateAsc(id);
         Set<SkillTag> user_skillTags = new HashSet<>();
         for (Evidence evidence: user_evidence) {
             List<EvidenceTag> user_evidenceTag = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
