@@ -62,8 +62,6 @@ public class DeleteEvidenceStepDefs {
         new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton" + evidenceId)));
         WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
         //scrollWindowToElement(arrowButton);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", arrowButton);
-        Thread.sleep(500);
         seleniumExample.config.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         arrowButton.click();
     }
@@ -117,7 +115,7 @@ public class DeleteEvidenceStepDefs {
     public void aModelAppearsContainingTheEvidenceTitle() {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
         WebElement modelTitle = seleniumExample.config.getDriver().findElement(By.id("exampleModalLongTitle"));
-        String expected = "Delete - Evidence Delete?";
+        String expected = "Delete -  Evidence One?";
         Assertions.assertEquals(expected, modelTitle.getText());
 
     }
@@ -130,7 +128,7 @@ public class DeleteEvidenceStepDefs {
     }
 
 
-    @Then("I fill out all mandatory fields")
+    @When("I fill out all mandatory fields for delete")
     public void iFillOutAllMandatoryFields() throws InterruptedException {
         WebElement titleField = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
         titleField.sendKeys("Evidence Delete");

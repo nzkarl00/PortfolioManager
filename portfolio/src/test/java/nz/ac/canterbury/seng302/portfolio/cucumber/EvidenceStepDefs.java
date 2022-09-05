@@ -52,12 +52,13 @@ public class EvidenceStepDefs {
     public void thereIsEvidenceInTheTable() throws InterruptedException {
         seleniumExample.config.getDriver()
                 .get(seleniumExample.url + "/evidence?pi=1");
+        Thread.sleep(500);
         evidenceAdded = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(), 'Evidence One')]")).size() > 0;
         if (!evidenceAdded) {
             // open create evidence form
-            WebElement button = seleniumExample.config.getDriver()
-                .findElement(By.id("add_button"));
-            button.click();
+            WebElement thereIsEvidenceInTheTablebutton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+            thereIsEvidenceInTheTablebutton.click();
+            Thread.sleep(500);
 
             // add title
             WebElement titleField = seleniumExample.config.getDriver()
@@ -122,9 +123,12 @@ public class EvidenceStepDefs {
     }
 
     @Given("I click the Add Evidence button")
-    public void iClickTheAddEvidenceButton() {
-        WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
-        button.click();
+    public void iClickTheAddEvidenceButton() throws InterruptedException {
+        Thread.sleep(500);
+        WebElement iClickTheAddEvidenceButtonbutton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+        iClickTheAddEvidenceButtonbutton.click();
+
+        Thread.sleep(500);
     }
 
     @When("I have filled out all mandatory title, description, and date fields to an evidence")
@@ -162,17 +166,29 @@ public class EvidenceStepDefs {
         Assertions.assertFalse(saveButton.isEnabled());
     }
 
+
+    @Then("I cannot click the save button")
+    public void i_cannot_click_the_save_button() {
+        WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+        Assertions.assertEquals("true", saveButton.getAttribute("disabled"));
+    }
+
+
     @When("I click the cancel button")
     public void iClickTheCancelButton() {
+
+
         WebElement cancelButton = seleniumExample.config.getDriver().findElement(By.id("cancelButton"));
         cancelButton.sendKeys(Keys.ENTER);
 
     }
 
     @Then("I can see the evidence creation page extract and replace by a plus button")
-    public void iCanSeeTheEvidenceCreationPageExtractAndReplaceByAPlusButton() {
-        WebElement addButton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
-        Assertions.assertTrue(addButton.isEnabled());
+    public void iCanSeeTheEvidenceCreationPageExtractAndReplaceByAPlusButton() throws InterruptedException {
+        WebElement iCanSeeTheEvidenceCreationPageExtractAndReplaceByAPlusButtonaddButtonaddButton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+
+        Thread.sleep(500);
+        Assertions.assertTrue(iCanSeeTheEvidenceCreationPageExtractAndReplaceByAPlusButtonaddButtonaddButton.isEnabled());
     }
 
     @When("User selects the Quantitative skills option in the category dropdown")

@@ -6,6 +6,7 @@ import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import java.util.*;
 
@@ -18,6 +19,8 @@ public class SkillStepDefs {
     @When("User inputs {string} into the skill input textbox.")
     public void userInputsIntoTheSkillInputTextbox(String inputSkill) {
         skillName = inputSkill;
+
+
         WebElement
             skillInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         skillInput.sendKeys(inputSkill);
@@ -37,11 +40,6 @@ public class SkillStepDefs {
         Assertions.assertTrue(skills.isEmpty());
     }
 
-    @When("User selects the {string} option in the skills side menu")
-    public void userSelectsTheOptionInTheSkillsSideMenu(String inputSkill) {
-        WebElement button = seleniumExample.config.getDriver().findElement(By.id("skill_button_"+inputSkill));
-        button.click();
-    }
 
     @And("An appropriate error message will be shown.")
     public void anAppropriateErrorMessageWillBeShown() {
