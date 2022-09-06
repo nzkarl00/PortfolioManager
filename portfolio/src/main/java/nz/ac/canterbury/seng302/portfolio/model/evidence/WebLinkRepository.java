@@ -13,6 +13,6 @@ public interface WebLinkRepository extends CrudRepository<WebLink, Integer> {
     List<WebLink> findByParentEvidence(int parentEvidenceId);
 
     @Modifying
-    @Query("delete from Weblink w where w.parentEvidence = ?1")
+    @Query("delete from WebLink w where w.parentEvidence = ?1")
     void deleteAllByEvidence(Evidence evidence);
 }
