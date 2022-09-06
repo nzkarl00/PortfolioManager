@@ -4,10 +4,13 @@ import nz.ac.canterbury.seng302.portfolio.model.AuthenticatedUser;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.openqa.selenium.InvalidArgumentException;
 import org.slf4j.Logger;
@@ -74,33 +77,38 @@ public class EvidenceListController {
     logger.info("[EVIDENCE] Request to view list of evidence");
 
     setPageTitle(model,"List Of Evidence");
-
+      int id = AuthStateInformer.getId(principal);
+      if (userId == null) {
+          userId = id;
+      }
     List<SkillTag> skillList = skillRepository.findAll();
-
-    List<Evidence> evidenceList = evidenceService.getFilteredEvidenceForUserInProject(userId, projectId, categoryName, skillName);
     setTitle(model, userId, projectId, categoryName, skillName);
-    HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
-    HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
-    for (Evidence evidence: evidenceList) {
-      evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
-      evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
-    }
-    int id = AuthStateInformer.getId(principal);
 
     //TODO get rid of once this is actually used
     logger.info("[EVIDENCE] getting all the groups for user");
     logger.info(groupsClientService.getAllGroupsForUser(id).toString());
+    List<Evidence> evidenceList = new ArrayList<>();
 
-    model.addAttribute("skillMap", evidenceSkillMap);
-    model.addAttribute("categoryMap", evidenceCategoryMap);
-    model.addAttribute("evidenceList", evidenceList);
+
+    evidenceList = evidenceService.getEvidenceForUser(userId);
+
+
+      if (skillName != null) {
+          evidenceList = evidenceService.filterBySkill(evidenceList, skillName);
+      }
+      if (categoryName != null) {
+          evidenceList = evidenceService.filterByCategory(evidenceList, categoryName);
+      }
+
+
+
+    List<Project> allProjects = projectService.getAllProjects();
+    model.addAttribute("projectList", allProjects);
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
-      Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
-    skillTagListNoSkill.remove("No_skills");
     model.addAttribute("allSkills", skillTagList);
-      model.addAttribute("autoSkills", skillTagListNoSkill);
     model.addAttribute("skillList", skillList);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
+    model.addAttribute("userSkills", evidenceService.getUserSkills(AuthStateInformer.getId(principal)));
     model.addAttribute("userID", id);
 
     // Attributes For header
@@ -127,6 +135,68 @@ public class EvidenceListController {
     return "evidenceList";
   }
 
+  @PostMapping("evidence-project")
+  public String sendProjectEvidence(@AuthenticationPrincipal AuthState principal,
+                                    @RequestParam(required = false , value="ui") Integer userId,
+                                    @RequestParam(required = false , value="pi") Integer projectId,
+                                    @RequestParam(required = false , value="si") String skillName,
+                                    @RequestParam(required = false , value="ci") String categoryName,
+                                    Model model) throws CustomExceptions.ProjectItemNotFoundException {
+      if (userId == null) {
+          userId = AuthStateInformer.getId(principal);
+      }
+      List<Evidence> evidenceList = evidenceService.getEvidenceList(userId, projectId, categoryName, skillName);
+      if (projectId == -1) {
+      } else {
+          model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
+          Project project = projectService.getProjectById(projectId);
+          model.addAttribute("project", project);
+      }
+
+
+      model.addAttribute("evidenceList", evidenceList);
+      HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
+      HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
+      for (Evidence evidence: evidenceList) {
+          evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
+          evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
+      }
+      model.addAttribute("skillMap", evidenceSkillMap);
+      model.addAttribute("categoryMap", evidenceCategoryMap);
+      model.addAttribute("username", AuthStateInformer.getUsername(principal));
+      model.addAttribute("userId", AuthStateInformer.getId(principal));
+      return "fragments/evidenceItems.html :: evidenceItems";
+  }
+
+  @GetMapping("evidence-form")
+  public String sendEvidenceForm(@AuthenticationPrincipal AuthState principal,
+                                 @RequestParam(required = false , value="pi") Integer projectId,
+                                 Model model) throws CustomExceptions.ProjectItemNotFoundException {
+      model.addAttribute("date", LocalDate.now());
+      Project project = projectService.getProjectById(projectId);
+      model.addAttribute("project", project);
+
+      PaginatedUsersResponse response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
+      List<String> users = new ArrayList<>();
+      for (UserResponse user: response.getUsersList()) {
+          User temp = new User(user);
+          users.add(temp.id + ":" + temp.username);
+      }
+      model.addAttribute("allUsers", users);
+
+      Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
+      skillTagListNoSkill.remove("No_skills");
+      model.addAttribute("autoSkills", skillTagListNoSkill);
+      int userId = AuthStateInformer.getId(principal);
+      model.addAttribute("userId", userId);
+
+      navController.updateModelForNav(principal, model, accountClientService.getUserById(userId), userId);
+
+      return "fragments/evidenceForm.html :: evidenceForm";
+  }
+
+
+
   private void setPageTitle(Model model, String title) {
     model.addAttribute("title", title);
   }
@@ -137,7 +207,7 @@ public class EvidenceListController {
    * @param title evidence title
    * @param date evidence date
    * @param projectId the id of the project that the evidence is linked too
-   * @param otherUsers A list of usernames of other people (not the author) who worked on this evidence
+   * @param users A list of usernames of other people (not the author) who worked on this evidence
    * @param categories the category the evidence is associated with
    * @param skills the skills the evidence is associated with
    * @param links are an optional list of links associated with this new piece of evidence
@@ -152,9 +222,9 @@ public class EvidenceListController {
           @RequestParam(value = "titleInput") String title,
           @RequestParam(value = "dateInput") String date,
           @RequestParam(value = "projectId") Integer projectId,
-          @RequestParam(value = "otherUsers") Optional <String> otherUsers,
           @RequestParam(value = "categoryInput") String categories,
           @RequestParam(value = "skillInput") String skills,
+          @RequestParam(value = "userInput") Optional <String> users,
           @RequestParam(value = "linksInput") Optional <String> links,
           @RequestParam(value = "descriptionInput") String description,
           Model model
@@ -193,15 +263,9 @@ public class EvidenceListController {
 
       int categoriesInt = Evidence.categoryStringToInt(categories);
 
-      List<String> extractedUsers = extractListFromHTMLString(otherUsers.orElse(""));
-
-      //TODO program out once front-end is working as intended
-      if (extractedUsers.isEmpty()) {
-          extractedUsers.add(accountID + ":" + thisUser.getUsername());
-      }
+      List<String> extractedUsers = evidenceService.extractListFromHTMLStringSkills(users.orElse(""));
 
       List<Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, LocalDate.parse(date), categoriesInt);
-
       // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links
       logger.info("[EVIDENCE] Saving evidence to repo");
       for (Evidence evidence : allUserEvidence) {
@@ -212,7 +276,7 @@ public class EvidenceListController {
 
           noSkillsCheck(evidence);
 
-          if (extractedLinks.isEmpty()) {
+          if (!extractedLinks.isEmpty()) {
               logger.debug("[EVIDENCE] Saving web links");
               try {
                   webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
@@ -224,6 +288,27 @@ public class EvidenceListController {
       }
       return "redirect:evidence?pi=" + projectId;
   }
+
+  @PostMapping("/delete-evidence")
+  public String deleteEvidence(@RequestParam(required = false, value = "projectId") String projectId,
+                               @RequestParam(value = "evidenceId") String evidenceId,
+                               @AuthenticationPrincipal AuthState principal) {
+      Evidence targetEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
+      if (targetEvidence == null) {
+          logger.debug("[EVIDENCE] Redirecting, evidence id " + evidenceId + " does not exist");
+          return "redirect:evidence?pi=" + projectId;
+      }
+      Integer accountID = AuthStateInformer.getId(principal);
+      if (!principal.getIsAuthenticated() || accountID != targetEvidence.getParentUserId()) {
+          logger.debug("[EVIDENCE] Redirecting, user does not have permissions to delete evidence " + evidenceId);
+          return "redirect:evidence?pi=" + projectId;
+      }
+      evidenceService.deleteEvidence(targetEvidence);
+      return "redirect:evidence?pi=" + projectId;
+  }
+
+
+
 
     /**
     * Construct web links, must be validated first.
@@ -327,18 +412,15 @@ public class EvidenceListController {
    * @throws InvalidArgumentException possible exceptions can be raised from project ID not being valid and skillID not being valid
    */
   private void setTitle(Model model, Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
-
-    if (projectId != null){
-      Project project = projectService.getProjectById(projectId);
-      setPageTitle(model, "Evidence from project: " + project.getName());
-    } else if (userId != null){
-      UserResponse userReply = accountClientService.getUserById(userId); // Get the user
-      setPageTitle(model, "Evidence from user: " + userReply.getUsername());
-    }else if (categoryName != null){
-        setPageTitle(model, "Evidence from category: " + categoryName);
-    } else if (skillName != null){
+        if (categoryName != null){
+            setPageTitle(model, "Evidence from category: " + categoryName);
+        } else if (skillName != null){
             setPageTitle(model, "Evidence from skill tag: " + skillName.replaceAll("_", " "));
-    }
+        } else if (userId != null || projectId != null) {
+            UserResponse userReply = accountClientService.getUserById(userId); // Get the user
+            setPageTitle(model, "Evidence from user: " + userReply.getUsername());
+        }
+
   }
 
 

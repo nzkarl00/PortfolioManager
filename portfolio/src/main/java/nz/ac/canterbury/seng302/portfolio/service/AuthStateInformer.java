@@ -42,7 +42,7 @@ public class AuthStateInformer {
      */
     public static String getUsername(AuthState principal) {
         return principal.getClaimsList().stream()
-            .filter(claim -> claim.getType().equals("name"))
+            .filter(claim -> claim.getType().equals("unique_name"))
             .findFirst()
             .map(ClaimDTO::getValue)
             .orElse("-100");

@@ -46,11 +46,11 @@ class AuthStateInformerTest {
     @Test
     void getUsernameTest() {
         String expected = "yaboi";
-        ClaimDTO claimDTO = ClaimDTO.newBuilder().setType("name").setValue(expected).build();
+        ClaimDTO claimDTO = ClaimDTO.newBuilder().setType("unique_name").setValue(expected).build();
         AuthState authState = AuthState.newBuilder().addClaims(claimDTO).build();
         assertEquals(expected, AuthStateInformer.getUsername(authState));
 
-        claimDTO = ClaimDTO.newBuilder().setType("name").setValue("fail").build();
+        claimDTO = ClaimDTO.newBuilder().setType("unique_name").setValue("fail").build();
         authState = AuthState.newBuilder().addClaims(claimDTO).build();
         assertNotEquals(expected, AuthStateInformer.getUsername(authState));
     }

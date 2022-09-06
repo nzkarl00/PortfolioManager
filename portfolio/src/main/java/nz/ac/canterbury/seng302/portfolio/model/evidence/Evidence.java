@@ -57,9 +57,8 @@ public class Evidence {
     @JoinColumn(name="associated_project_id", nullable=false)
     protected Project associatedProject;
 
-    @OneToMany
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinColumn(name="evidence_tag_id")
     protected List<EvidenceTag> evidenceTags;
 
     @Column(name="title", length = MAX_TITLE_LENGTH, nullable = false)
@@ -313,5 +312,26 @@ public class Evidence {
 
     public List<EvidenceUser> getEvidenceUsersId() {
         return evidenceUsersId;
+    }
+
+    @Override
+    public boolean equals(Object e) {
+        if (e == this) {
+            return true;
+        }
+        if (!(e instanceof Evidence)) {
+            return false;
+        }
+        Evidence toComp = (Evidence) e;
+        return toComp.id == this.id;
+    }
+
+    @Override
+    public final int hashCode() {
+        return this.id;
+    }
+
+    public void setEvidenceTags(List<EvidenceTag> evidenceTags) {
+        this.evidenceTags = evidenceTags;
     }
 }

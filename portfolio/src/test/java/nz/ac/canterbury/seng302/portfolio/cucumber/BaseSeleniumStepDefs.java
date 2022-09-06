@@ -74,7 +74,8 @@ public class BaseSeleniumStepDefs {
     }
 
     @When("User navigates to {string}.")
-    public void userNavigatesTo(String arg0) {
+    public void userNavigatesTo(String arg0) throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url + "/" + arg0);
+        Thread.sleep(500);
     }
 }

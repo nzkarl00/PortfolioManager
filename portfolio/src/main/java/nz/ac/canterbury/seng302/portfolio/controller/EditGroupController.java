@@ -38,6 +38,9 @@ public class EditGroupController {
     @Autowired
     private GroupRepoRepository groupRepoRepository;
 
+    @Autowired
+    private GitlabClient gitlabClient;
+
     String errorShow = "display:none;";
     String errorCode = "";
     String successShow = "display:none;";
@@ -194,9 +197,8 @@ public class EditGroupController {
             groupRepo.setAlias(repoAlias);
 
             // Check with Gitlab client that the repo exists.
-            GitlabClient client = new GitlabClient(gitlabInstanceURL, apiKey);
             try {
-                client.getProject(repoOwner, repoName);
+                gitlabClient.getProject(apiKey, repoOwner, repoName);
             } catch (Exception e) {
                 logger.warn(String.format(
                         "Provided API integration did not work: repoOwner=%s repoName=%s apiKey=%s",

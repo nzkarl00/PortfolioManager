@@ -10,7 +10,7 @@ Feature: U27: Skills, Adding to evidence
     Given User is logged in.
     When User navigates to "evidence?pi=1".
     And I click the Add Evidence button
-    When User inputs "skill" into the skill input textbox.
+    And User inputs "skill" into the skill input textbox.
     Then There will be a skill displayed.
 
   @Close
@@ -23,7 +23,7 @@ Feature: U27: Skills, Adding to evidence
     Given User is logged in.
     When User navigates to "evidence?pi=1".
     And I click the Add Evidence button
-    When User inputs "skill fails because of ()*&^*&^$(*^(&^)" into the skill input textbox.
+    And User inputs "skill fails because of ()*&^*&^$(*^(&^)" into the skill input textbox.
     Then There will not be a skill displayed.
     And An appropriate error message will be shown.
 
@@ -34,9 +34,9 @@ Feature: U27: Skills, Adding to evidence
   but all underscores are converted to spaces, e.g.
   the tag “Intra-team_communication” becomes “Intra-team communication” in the heading.
     Given User is logged in.
-    Given There is evidence in the table
+    And There is evidence in the table
     When User navigates to "evidence".
-    When User selects the Quantitative skills option in the category dropdown
+    And User selects the Quantitative skills option in the category dropdown
     And User clicks search button
     Then user is directed to a page where the heading is "Evidence from category: Quantitative Skills"
 
@@ -49,7 +49,7 @@ Feature: U27: Skills, Adding to evidence
     Given User is logged in.
     Given There is evidence in the table
     When User navigates to "evidence".
-    When User selects the "skill" option in the skills dropdown
+    And User selects the "skill" option in the skills dropdown
     And User clicks search button
     Then user is directed to a page where the heading is "Evidence from skill tag: skill"
 
@@ -63,7 +63,7 @@ Feature: U27: Skills, Adding to evidence
     Given User is logged in.
     When User navigates to "evidence?pi=1".
     And I click the Add Evidence button
-    When User inputs <skill> into the skill input textbox.
+    And User inputs <skill> into the skill input textbox.
     Then The skill <skill> will be displayed.
 
     Examples:
@@ -75,9 +75,40 @@ Feature: U27: Skills, Adding to evidence
 
   @Close
   Scenario: AC8 All the tags that are currently on any of my pieces of evidence
-  are displayed in a panel on the side of my pages
+  are displayed in a panel on the side of my pages.
+  Scenario: There should never be any duplicates of tags.
     Given User is logged in.
-    Given There is evidence in the table
+    When User navigates to "evidence?pi=1".
+    And I click the Add Evidence button
+    And I have filled out all mandatory title, description, and date fields to an evidence
+    And User inputs "Programming" into the skill input textbox.
+    And I click the save button
+    When User navigates to "evidence?pi=1".
+    And I click the Add Evidence button
+    When I have filled out all mandatory title, description, and date fields to an evidence
+    When User inputs "Programming" into the skill input textbox.
+    When I click the save button
+    Then There are no duplicates in the skill menu
+
+  Scenario: There should also be a way of getting to a list of evidences that have no tag
+  (e.g., a special/system tag called “No_skills”); clicking on this tag takes me
+  to a page with pieces of evidence that have no tags on them.
+    Given User is logged in.
+    And There is evidence in the table
     When User navigates to "evidence".
-    When User selects the "skill" option in the skills side menu
+    And User selects the "skill" option in the skills side menu
     Then user is directed to a page where the heading is "Evidence from skill tag: skill"
+
+    Given User is logged in.
+    And There is evidence in the table
+    When User navigates to "evidence".
+    And User selects the "No_skills" option in the skills side menu
+    Then user is directed to a page where the heading is "Evidence from skill tag: No skills"
+
+  Scenario: If a special/system tag is used, the user should not be able to create this tag separately.
+    Given User is logged in.
+    And User navigates to "evidence?pi=1".
+    And I click the Add Evidence button
+    When User inputs "No_skills" into the skill input textbox.
+    Then There will not be a skill displayed.
+    And An appropriate error message will be shown.

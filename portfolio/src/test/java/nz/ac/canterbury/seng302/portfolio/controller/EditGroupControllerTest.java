@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.GitlabClient;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
@@ -94,6 +95,9 @@ class EditGroupControllerTest {
 
     @MockBean
     GroupRepoRepository groupRepoRepository;
+
+    @MockBean
+    GitlabClient gitlabClientMock;
 
     @Before
     public void setup() {
