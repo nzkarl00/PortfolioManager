@@ -75,12 +75,18 @@
                             </div>
                         </div>
                         <br>
+                        <form th:if="${evidence.getParentUserId() == userID}" th:action="@{editEvidence}" method="get">
+                            <input style="display:none;" th:name="id" th:value="${evidence.getId()}" type="number">
+                            <button
+                                    class="fa fa-edit edit_evidence"
+                                    type="submit"/>
+                        </form>
                         <button
                                 th:if="${evidence.getParentUserId() == userID}"
                                 type="button" th:style="${displayDeleteButton}" th:value="${evidence.getId()}"
                                 th:id="${evidence.getId()}" data-toggle="modal"
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
-                                class="fa fa-trash group_delete_button"
+                                class="fa fa-trash delete_button"
                         />
                     </div>
                     <!-- Modal -->

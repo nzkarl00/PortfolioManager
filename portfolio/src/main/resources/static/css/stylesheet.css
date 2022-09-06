@@ -1067,7 +1067,7 @@
     color: white;
 }
 
-.group_delete_button {
+.delete_button {
     border: none;
     margin-left: 10px;
     padding: 4px 10px;
@@ -1363,6 +1363,17 @@ select.form-control {
     padding: 0.5rem !important;
     font-family: nexaLight !important;
 
+}
+
+.edit_evidence {
+    border: none;
+    padding: 1px 10px;
+    text-decoration: none !important;
+    background: #FF48CF  !important;
+    margin-left: 10px;
+    margin-bottom: 2px;
+    border-radius: px;
+    color: white;
 }
 
 .trim_text {

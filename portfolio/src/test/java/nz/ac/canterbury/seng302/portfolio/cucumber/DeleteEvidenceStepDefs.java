@@ -89,7 +89,7 @@ public class DeleteEvidenceStepDefs {
         WebElement element = driver.findElement(By.id(getId));
         scrollWindowToElement(element);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-        WebElement button = seleniumExample.config.getDriver().findElement(By.className("group_delete_button"));
+        WebElement button = seleniumExample.config.getDriver().findElement(By.className("delete_button"));
         button.click();
     }
 
@@ -102,7 +102,7 @@ public class DeleteEvidenceStepDefs {
     public void i_cannot_see_a_delete_icon() {
         String getId = getEvidenceId("Evidence One");
         try {
-            WebElement button = seleniumExample.config.getDriver().findElement(By.className("group_delete_button"));
+            WebElement button = seleniumExample.config.getDriver().findElement(By.className("delete_button"));
             Assertions.assertNotEquals(getId, button.getAttribute("id"));
         } catch(Exception e) {
 
