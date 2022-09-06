@@ -46,13 +46,14 @@ public class SeleniumWithTestNGLiveTest_Evidence {
     public void whenLoggedInAsAdmin_AddSkill_ForTest()
         throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
-        Thread.sleep(100);
+        Thread.sleep(500);
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
         button.click();
-        Thread.sleep(100);
+        Thread.sleep(500);
 
         ((JavascriptExecutor) seleniumExample.config.getDriver())
                 .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(500);
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
         skillsInput.click();
@@ -76,6 +77,7 @@ public class SeleniumWithTestNGLiveTest_Evidence {
 
         ((JavascriptExecutor) seleniumExample.config.getDriver())
                 .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(500);
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
         skillsInput.click();
@@ -103,6 +105,7 @@ public class SeleniumWithTestNGLiveTest_Evidence {
 
         ((JavascriptExecutor) seleniumExample.config.getDriver())
                 .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(500);
 
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));

@@ -56,6 +56,7 @@ public class EvidenceStepDefs {
         evidenceAdded = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(), 'Evidence One')]")).size() > 0;
         if (!evidenceAdded) {
             // open create evidence form
+            Thread.sleep(500);
             WebElement thereIsEvidenceInTheTablebutton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
             thereIsEvidenceInTheTablebutton.click();
             Thread.sleep(500);
@@ -104,8 +105,10 @@ public class EvidenceStepDefs {
     }
 
     @When("I go to the evidence page")
-    public void iGoToTheEvidencePage() {
+    public void iGoToTheEvidencePage() throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url + "/evidence");
+
+        Thread.sleep(500);
     }
 
     @Then("There will be the data for the evidence I created")
@@ -122,6 +125,8 @@ public class EvidenceStepDefs {
 
     @Given("I click the Add Evidence button")
     public void iClickTheAddEvidenceButton() throws InterruptedException {
+
+        Thread.sleep(500);
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
         button.click();
         Thread.sleep(500);
@@ -181,6 +186,8 @@ public class EvidenceStepDefs {
 
     @Then("I can see the evidence creation page extract and replace by a plus button")
     public void iCanSeeTheEvidenceCreationPageExtractAndReplaceByAPlusButton() throws InterruptedException {
+
+        Thread.sleep(500);
         WebElement iCanSeeTheEvidenceCreationPageExtractAndReplaceByAPlusButtonaddButtonaddButton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
 
         Thread.sleep(500);

@@ -163,9 +163,8 @@
           }
       }
       projectId = parseInt(document.getElementById("project_selector").value)
-      const queryString = window.location.search;
-      const urlParams = new URLSearchParams(queryString);
-      $.post("evidence-project", {pi: projectId, ui: userId, si: urlParams.get('si'), ci: urlParams.get('ci')}).done(function (evidenceItems) {
+      const url = constructUrl(projectId, userId, categoryId, skillId)
+      $.post("evidence-project", {pi: projectId, ui: userId, ci: categoryId, si: skillId}).done(function (evidenceItems) {
           $("#evidence_item_list").replaceWith(evidenceItems)
           if (projectId !== -1) {
               window.history.pushState(null, '', url.toString())
@@ -178,6 +177,7 @@
           }
       })
   }
+
 
   function constructUrl(projectId, userId, categoryId, skillId) {
       let url = new URL(window.location.href.split("?")[0])
