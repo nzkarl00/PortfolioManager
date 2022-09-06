@@ -42,12 +42,12 @@
                             <!-- These are doubled up to show the author first, then the contributors after  -->
                             <div class="p-2" th:each="user: ${evidence.getEvidenceUsersId()}" th:if="${evidence.getParentUserId == user.getUserid()}">
                                 <div id="authors_container" style="width: 85%; display: block;">
-                                    <a th:id="${'contributor_' + user.getUsername()}" class="table_text author_tag" th:if="${username == user.getUsername()}" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}" ></a>
+                                    <a th:id="${'contributor_' + user.getUsername()}" class="table_text author_tag" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}" ></a>
                                 </div>
                             </div>
                             <div class="p-2" th:each="user: ${evidence.getEvidenceUsersId()}" th:if="${evidence.getParentUserId != user.getUserid()}">
                                 <div id="contributors_container" style="width: 85%; display: block;">
-                                    <a th:id="${'contributor_' + user.getUsername()}" class="table_text contributor_tag" th:if="${username != user.getUsername()}" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}"></a>
+                                    <a th:id="${'contributor_' + user.getUsername()}" class="table_text contributor_tag" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}"></a>
                                 </div>
                             </div>
                         </div>
