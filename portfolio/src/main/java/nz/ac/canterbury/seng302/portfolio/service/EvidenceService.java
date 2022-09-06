@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -99,6 +97,44 @@ public class EvidenceService {
      */
     public List<Evidence> getEvidenceForUser(int userId) {
         return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
+    }
+
+    public List<Evidence> filterBySkill(List<Evidence> evidenceList, String skillName) {
+        List<Evidence> unfilteredEvidence = evidenceList;
+        List<Evidence> filteredEvidence = new ArrayList<>();
+        for (Evidence evidence: unfilteredEvidence) {
+            Boolean isValid = false;
+            List<EvidenceTag> tagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+            for (EvidenceTag tag: tagList) {
+                if (tag.getParentSkillTag().getTitle().equals(skillName)) {
+                    isValid = true;
+                }
+            }
+            if (isValid) {
+                filteredEvidence.add(evidence);
+            }
+        }
+        return filteredEvidence;
+    }
+
+    public List<Evidence> filterByCategory(List<Evidence> evidenceList, String categoryName) {
+        List<Evidence> unfilteredEvidence = evidenceList;
+        List<Evidence> filteredEvidence = new ArrayList<>();
+        for (Evidence evidence: unfilteredEvidence) {
+            Boolean isValid = false;
+
+            List<String> evidenceCats = evidence.getCategoryStrings();
+            for (String catString: evidenceCats) {
+                if (catString.equals(categoryName)) {
+                    isValid = true;
+                }
+            }
+
+            if (isValid) {
+                filteredEvidence.add(evidence);
+            }
+        }
+        return filteredEvidence;
     }
 
     /**
@@ -278,4 +314,38 @@ public class EvidenceService {
         }
 
     }
+    /**
+     * Returns a set of every skill that is used in a piece of evidence a given user is the parent of.
+     * @param id the id of the user being skill checked
+     * @return a set of skill objects
+     */
+    public Set<SkillTag> getUserSkills(Integer id) {
+        List<Evidence> user_evidence = evidenceRepository.findAllByParentUserIdOrderByDateDesc(id);
+        Set<SkillTag> user_skillTags = new HashSet<>();
+        for (Evidence evidence: user_evidence) {
+            List<EvidenceTag> user_evidenceTag = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+            for (EvidenceTag evidenceTag: user_evidenceTag){
+                Boolean isIn = false;
+                for(SkillTag o : user_skillTags) {
+                    if(o.getTitle().equals(evidenceTag.getParentSkillTag().getTitle())) {
+                        isIn = true;
+                    }
+                }
+                if (isIn == false){
+                    user_skillTags.add(evidenceTag.getParentSkillTag());
+                }
+            }
+        }
+        Boolean isIn = false;
+        for(SkillTag o : user_skillTags) {
+            if(o.getTitle().equals("No_skills")) {
+                isIn = true;
+            }
+        }
+        if (isIn == false){
+            user_skillTags.add(skillTagRepository.findByTitle("No_skills"));
+        }
+        return user_skillTags;
+    }
+
 }

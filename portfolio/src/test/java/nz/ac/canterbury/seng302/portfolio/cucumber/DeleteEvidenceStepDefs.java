@@ -62,6 +62,7 @@ public class DeleteEvidenceStepDefs {
         String getId = getEvidenceId(arg0);
         new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+getId)));
         WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
+        scrollWindowToElement(arrowButton);
         arrowButton.click();
     }
 
@@ -80,13 +81,25 @@ public class DeleteEvidenceStepDefs {
         String evidenceId = getEvidenceId("Evidence Delete");
         WebElement element = driver.findElement(By.id(evidenceId));
         scrollWindowToElement(element);
+        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
+        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
+        scrollWindowToElement(arrowButton);
+        arrowButton.click();
     }
 
     @Then("I can click the delete Icon")
     public void iCanClickTheDeleteIcon() throws InterruptedException {
-        String evidenceId = getEvidenceId("Evidence Delete");
+        String evidenceId = getEvidenceId("Evidence One");
         WebElement element = driver.findElement(By.id(evidenceId));
         scrollWindowToElement(element);
+        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
+        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
+        scrollWindowToElement(arrowButton);
+        arrowButton.click();
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(100);
         WebElement button = seleniumExample.config.getDriver().findElement(By.className("group_delete_button"));
         scrollWindowToElement(button);
         Thread.sleep(200);
@@ -114,7 +127,7 @@ public class DeleteEvidenceStepDefs {
     public void aModelAppearsContainingTheEvidenceTitle() {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
         WebElement modelTitle = seleniumExample.config.getDriver().findElement(By.id("exampleModalLongTitle"));
-        String expected = "Delete - Evidence Delete?";
+        String expected = "Delete - Evidence One?";
         Assertions.assertEquals(expected, modelTitle.getText());
 
     }
@@ -129,6 +142,19 @@ public class DeleteEvidenceStepDefs {
 
     @Then("I fill out all mandatory fields")
     public void iFillOutAllMandatoryFields() throws InterruptedException {
+        WebElement titleField = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
+        titleField.sendKeys("Evidence Delete");
+        WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
+        description.sendKeys("This evidence relates to the work done on the evidence page");
+        WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
+        String dateToSend = date.getAttribute("min");
+        date.sendKeys(dateToSend);
+        Thread.sleep(1000);
+    }
+
+
+    @When("I fill out all mandatory fields for delete")
+    public void iFillOutAllMandatoryFieldsDelete() throws InterruptedException {
         WebElement titleField = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
         titleField.sendKeys("Evidence Delete");
         WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
