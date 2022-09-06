@@ -112,7 +112,6 @@ public class EditEvidenceController {
         evidence.setDate(LocalDate.parse(date));
         evidence.setDescription(description);
         evidence.setTitle(title);
-        logger.debug(links);
 
         evidenceRepository.save(evidence);
 
