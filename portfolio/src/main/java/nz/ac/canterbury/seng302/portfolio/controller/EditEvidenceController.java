@@ -133,11 +133,17 @@ public class EditEvidenceController {
         @RequestParam(value = "userInput") String users,
         Model model) throws MalformedURLException {
 
+        int userId = AuthStateInformer.getId(principal);
+        UserResponse userReply = accountClientService.getUserById(userId);
+
         Evidence evidence = evidenceRepository.findById((int) id);
-        evidence.setCategories(Evidence.categoryStringToInt(categories));
+
+        Evidence.validateProperties(evidence.getAssociatedProject(), title, description, LocalDate.parse(date));
         evidence.setDate(LocalDate.parse(date));
         evidence.setDescription(description);
         evidence.setTitle(title);
+
+        evidence.setCategories(Evidence.categoryStringToInt(categories));
 
         logger.debug(users);
         // delete all users for evidence
