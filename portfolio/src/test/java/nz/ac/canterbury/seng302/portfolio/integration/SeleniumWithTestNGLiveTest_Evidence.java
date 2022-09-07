@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.integration;
 
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -23,7 +24,6 @@ public class SeleniumWithTestNGLiveTest_Evidence {
     String evidenceUrl = "/evidence";
     WebElement skillsInput;
     WebElement addSkillButton;
-    WebDriverWait wait = new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3));
 
     @BeforeSuite
     public void setUp() throws FileNotFoundException, InterruptedException {
@@ -43,14 +43,20 @@ public class SeleniumWithTestNGLiveTest_Evidence {
     /**
      * Inputs a new skill, checks a tag has been added
      */
-    public void whenLoggedInAsAdmin_AddSkill_ForTest() {
+    public void whenLoggedInAsAdmin_AddSkill_ForTest()
+        throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add_button")));
+        Thread.sleep(500);
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
         button.click();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add_skill_input")));
+        Thread.sleep(500);
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(500);
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
+        skillsInput.click();
         skillsInput.sendKeys("new_skill");
         addSkillButton.click();
         List<WebElement> skillTags = seleniumExample.config.getDriver().findElements(By.className("skill_tag"));
@@ -61,16 +67,23 @@ public class SeleniumWithTestNGLiveTest_Evidence {
     /**
      * Inputs a second skill, checks there are now two skill tags
      */
-    public void whenLoggedInAsAdmin_AddTwoSkills_ForTest() {
+    public void whenLoggedInAsAdmin_AddTwoSkills_ForTest()
+        throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add_button")));
-        WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
-        button.click();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add_skill_input")));
+        Thread.sleep(500);
+        WebElement newbutton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+        newbutton.click();
+        Thread.sleep(500);
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(500);
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
-        skillsInput.sendKeys("new_skill");
+        skillsInput.click();
+        skillsInput.sendKeys("new_skill_wuho");
         addSkillButton.click();
+        skillsInput.click();
         skillsInput.sendKeys("new_skill_2");
         addSkillButton.click();
         List<WebElement> skillTags = seleniumExample.config.getDriver().findElements(By.className("skill_tag"));
@@ -81,16 +94,25 @@ public class SeleniumWithTestNGLiveTest_Evidence {
     /**
      * Removes the first skill, checks it has been removed and the second tag is unchanged
      */
-    public void whenLoggedInAsAdmin_AddTwoSkills_ThenRemoveFirstSkill_ForTest() {
+    public void whenLoggedInAsAdmin_AddTwoSkills_ThenRemoveFirstSkill_ForTest()
+        throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add_button")));
-        WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
-        button.click();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add_skill_input")));
+        Thread.sleep(500);
+        WebElement newerbutton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+        newerbutton.click();
+        Thread.sleep(500);
+
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(500);
+
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
+        skillsInput.click();
         skillsInput.sendKeys("new_skill");
         addSkillButton.click();
+        skillsInput.click();
         skillsInput.sendKeys("new_skill_2");
         addSkillButton.click();
         List<WebElement> skillTags = seleniumExample.config.getDriver().findElements(By.className("skill_tag"));
@@ -98,5 +120,10 @@ public class SeleniumWithTestNGLiveTest_Evidence {
         skillTags = seleniumExample.config.getDriver().findElements(By.className("skill_tag"));
         Assertions.assertEquals(1, skillTags.size());
         Assertions.assertEquals("new_skill_2 ✖", skillTags.get(0).getText());
+    }
+
+    public void scrollIntoView(WebElement element) throws InterruptedException {
+        ((JavascriptExecutor) seleniumExample.config.getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
+        Thread.sleep(500);
     }
 }

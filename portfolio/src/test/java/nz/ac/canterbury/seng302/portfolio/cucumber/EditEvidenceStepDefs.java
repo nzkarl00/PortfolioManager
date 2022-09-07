@@ -22,33 +22,44 @@ public class EditEvidenceStepDefs {
 
     CommonEvidenceServices commonEvidenceServices = new CommonEvidenceServices();
 
-    /**
-     *Can be used to scroll window to element
-     * @Param element webElement that the window is to scroll too
-     **/
-    public void scrollWindowToElement(WebElement element) {
-        //https://learn-automation.com/how-to-scroll-into-view-in-selenium-webdriver/
-        JavascriptExecutor je = (JavascriptExecutor) driver;
-        je.executeScript("arguments[0].scrollIntoView(true);",element);
-    }
-
-
     @When("I click the edit icon")
     public void i_click_the_edit_icon() {
-        String getId = commonEvidenceServices.getEvidenceId("Evidence One");
-        WebElement element = driver.findElement(By.id(getId));
-        scrollWindowToElement(element);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-        WebElement button = driver.findElement(By.className("edit_evidence"));
-        button.click();
+        String evidenceId = commonEvidenceServices.getEvidenceId("Evidence One");
+        WebElement element = driver.findElement(By.id(evidenceId));
+        try {
+            BaseSeleniumStepDefs.scrollWindowToElement(driver, element);
+            new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
+            WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
+            BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
+            arrowButton.click();
+
+            ((JavascriptExecutor) seleniumExample.config.getDriver())
+                    .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+            Thread.sleep(100);
+            WebElement button = seleniumExample.config.getDriver().findElement(By.className("edit_evidence"));
+            BaseSeleniumStepDefs.scrollWindowToElement(driver, button);
+            Thread.sleep(200);
+            button.click();
+        } catch(InterruptedException e) {
+
+        }
     }
 
     @Then("I cannot click the edit icon")
     public void i_cannot_click_the_edit_icon() {
-        String getId = commonEvidenceServices.getEvidenceId("Evidence One");
+        String evidenceId = commonEvidenceServices.getEvidenceId("Evidence One");
+        WebElement element = driver.findElement(By.id(evidenceId));
         try {
-            WebElement button = driver.findElement(By.className("edit_evidence"));
-            Assertions.assertNotEquals(getId, button.getAttribute("id"));
+            BaseSeleniumStepDefs.scrollWindowToElement(driver, element);
+            new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
+            WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
+            BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
+            arrowButton.click();
+
+            ((JavascriptExecutor) seleniumExample.config.getDriver())
+                    .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+            Thread.sleep(100);
+            WebElement button = seleniumExample.config.getDriver().findElement(By.className("edit_evidence"));
         } catch(Exception e) {
 
         }

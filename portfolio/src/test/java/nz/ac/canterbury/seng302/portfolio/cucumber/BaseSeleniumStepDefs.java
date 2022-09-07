@@ -36,6 +36,18 @@ public class BaseSeleniumStepDefs {
     }
 
     /**
+     *Can be used to scroll window to element
+     * @Param element webElement that the window is to scroll too
+     **/
+    public static void scrollWindowToElement(WebDriver driver, WebElement element)
+            throws InterruptedException {
+        //https://learn-automation.com/how-to-scroll-into-view-in-selenium-webdriver/
+        JavascriptExecutor je = (JavascriptExecutor) driver;
+        je.executeScript("arguments[0].scrollIntoView(true);",element);
+        Thread.sleep(300);
+    }
+
+    /**
      * https://stackoverflow.com/questions/18510576/find-an-element-by-text-and-get-xpath-selenium-webdriver-junit
      * get the xpath of aan element
      * @param childElement the element to get the xpath from
@@ -76,7 +88,8 @@ public class BaseSeleniumStepDefs {
     }
 
     @When("User navigates to {string}.")
-    public void userNavigatesTo(String arg0) {
+    public void userNavigatesTo(String arg0) throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url + "/" + arg0);
+        Thread.sleep(500);
     }
 }

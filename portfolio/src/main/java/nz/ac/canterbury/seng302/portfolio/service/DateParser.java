@@ -11,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A class for parsing and processing dates
@@ -18,6 +20,8 @@ import java.util.List;
 public class DateParser {
 
     public static String sprintIdFail;
+
+    private static final Pattern datePattern = Pattern.compile("^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$");
 
     /**
      * It takes a UserResponse and outputs a readable date string.
@@ -174,5 +178,26 @@ public class DateParser {
         return Instant.ofEpochMilli(dateToConvert.getTime())
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
+    }
+
+    /**
+     * Convert a LocalDateTime object to an old Date object
+     * @param dateTime
+     * @return
+     */
+    public static Date localDateTimeToDate(LocalDateTime dateTime) {
+        return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    /**
+     * Validate if a user supplied date yyyy-MM-dd is of valid format.
+     * True if the date is of valid format.
+     * Note this uses a basic regex and does not check for things like leap year dates, etc.
+     * @param date
+     * @return
+     */
+    public static boolean isValidDateString(String date) {
+        Matcher dateMatcher = datePattern.matcher(date);
+        return dateMatcher.matches();
     }
 }

@@ -18,6 +18,7 @@ import java.util.List;
 
 public class CommonEvidenceServices {
     SeleniumExample seleniumExample = BaseSeleniumStepDefs.seleniumExample;
+    WebDriver driver = seleniumExample.config.getDriver();
 
     public CommonEvidenceServices() {
     }
@@ -34,33 +35,36 @@ public class CommonEvidenceServices {
     /**
      *Opens a piece of evidence
      **/
-    public void viewFullPieceOfEvidence() {
-        String getId = getEvidenceId("Evidence One");
+    public void viewFullPieceOfEvidence() throws InterruptedException {
+        String getId = getEvidenceId("Evidence Delete");
         new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+getId)));
         WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
-        //scrollWindowToElement(arrowButton);
-        seleniumExample.config.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
         arrowButton.click();
     }
     /**
      *Opens a piece of evidence
      **/
-    public void viewFullPieceOfEvidence(String arg0) {
+    public void viewFullPieceOfEvidence(String arg0) throws InterruptedException {
         String getId = getEvidenceId(arg0);
         new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+getId)));
         WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
-        //scrollWindowToElement(arrowButton);
-        seleniumExample.config.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
         arrowButton.click();
     }
 
     @And("I view that piece of evidence {string}")
-    public void iViewThatPieceOfEvidence(String arg0) {
-        viewFullPieceOfEvidence();
+    public void iViewThatPieceOfEvidence(String arg0) throws InterruptedException {
+        viewFullPieceOfEvidence(arg0);
     }
 
     @When("I view that piece of evidence")
-    public void i_view_that_piece_of_evidence() {
+    public void iViewThatPieceOfEvidence() throws InterruptedException {
+        viewFullPieceOfEvidence();
+    }
+
+    @When("I view that piece of evidence that is not mine")
+    public void iViewThatPieceOfEvidenceThatIsNotMine() throws InterruptedException {
         viewFullPieceOfEvidence();
     }
 }

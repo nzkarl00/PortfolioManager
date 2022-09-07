@@ -23,4 +23,6 @@ public interface EvidenceRepository extends CrudRepository<Evidence, Integer> {
     // If the shifted value MOD 2 is equal to 1 it means the role is present in that piece of evidence, so it will be selected
     @Query(value="select * from evidence where MOD(evidence.categories/:categoryInt, 2) = 1", nativeQuery = true)
     List<Evidence> getEvidenceByCategoryInt(Integer categoryInt);
+    List<Evidence> findAllByAssociatedProject(Project parentProject);
+    List<Evidence> findAllByParentUserId(Integer parentUserId);
 }

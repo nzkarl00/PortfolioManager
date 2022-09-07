@@ -11,7 +11,6 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import org.gitlab4j.api.models.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,9 @@ public class GroupController {
 
     @Autowired
     private GroupRepoRepository groupRepoRepository;
+
+    @Autowired
+    GitlabClient gitlabClient;
 
     @Value("${portfolio.gitlab-instance-url}")
     private String gitlabInstanceURL;
@@ -114,9 +116,8 @@ public class GroupController {
                 GroupRepo repo = groupRepo.get();
 
                 // Fetch the group repo from the GitlabClient service
-                GitlabClient client = new GitlabClient(gitlabInstanceURL, repo.getApiKey());
                 try {
-                    Project project = client.getProject(repo.getOwner(), repo.getName());
+                    org.gitlab4j.api.models.Project project = gitlabClient.getProject(repo.getApiKey(), repo.getOwner(), repo.getName());
                     gitlabLinkNotices.put(group.getId(), String.format(
                         "Linked to %s/%s (%s) - Commits: %d",
                         repo.getOwner(),
