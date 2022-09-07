@@ -50,7 +50,7 @@ public class SkillStepDefs {
         // there are many error message locations, make sure one of them is open and showing the right text
         List<WebElement> errors = seleniumExample.config.getDriver().findElements(By.id("skill_error"));
         for (WebElement element : errors) {
-            if (element.getText().equals("Only letters, underscores, hyphens, and numbers are allowed. No more than 50 characters.")) {
+            if (element.getText().equals("Only letters, underscores, hyphens, and numbers are allowed. No more than 50 characters. No_skills is a reserved skill.")) {
                 check = true;
             }
         }
