@@ -120,7 +120,6 @@ public class EvidenceListController {
     boolean showForm = false;
     if (projectId != null) {
       showForm = true;
-      model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
       Project project = projectService.getProjectById(projectId);
 
       List<Sprint> sprintList = sprintService.getSprintByParentId(project.getId());
