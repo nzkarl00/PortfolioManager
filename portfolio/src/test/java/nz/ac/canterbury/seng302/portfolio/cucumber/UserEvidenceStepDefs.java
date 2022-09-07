@@ -86,7 +86,7 @@ public class UserEvidenceStepDefs {
             JavascriptExecutor je = (JavascriptExecutor) seleniumExample.config.getDriver();
             je.executeScript("arguments[0].scrollIntoView(true);", saveButton);
             Thread.sleep(300);
-            saveButton.submit();
+            saveButton.click();
         }
         Thread.sleep(200);
     }
