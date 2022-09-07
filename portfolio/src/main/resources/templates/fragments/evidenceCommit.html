@@ -22,6 +22,8 @@
 
     <!-- Add icon library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
 </head>
 
 <body>
@@ -59,7 +61,7 @@
                     <option value="ExampleGroupB">ExampleGroupB</option>
                     <option value="ExampleGroupC">ExampleGroupC</option>
                     </select>
-                    <a  data-toggle="collapse" th:id="${'ArrowButtonCommit'}" th:href="'#collapseCommit'" role="button" aria-expanded="false" aria-controls="collapseExample">
+                    <a  data-toggle="collapse" th:id="${'ArrowButtonCommit'}" th:href="'#collapseCommit'" onclick="canSearchCheck();" role="button" aria-expanded="false" aria-controls="collapseExample">
                         <i class="align-content-center fa fa-plus" style="margin-top: 0.25em; margin-left: 0.25em; font-size: 250%;"></i>
                     </a>
                 </div>
@@ -72,11 +74,11 @@
                             <div class="row-1" style="display:flex;">
                                 <div class="col-6" >
                                     <b class="commit_head_small setWide">User:</b><br>
-                                    <input form="commitSearchForm" type="text" id="userCommitInput" maxlength="100" oninput="canSearchCheck()" class="commit_edit_data_smaller" th:name="userCommitInput" >
+                                    <input form="commitSearchForm" type="text" id="userCommitInput" maxlength="100" oninput="canSearchCheck()" oncut="canSearchCheck()" onchange="canSearchCheck()" class="commit_edit_data_smaller" th:name="userCommitInput" >
                                 </div>
                                 <div class="col-6" >
                                     <b class="commit_head_small setWide">Hash:</b><br>
-                                    <input form="commitSearchForm" type="text" id="hashCommitInput" maxlength="100" oninput="canSearchCheck()" class="commit_edit_data_small" th:name="hashCommitInput" >
+                                    <input form="commitSearchForm" type="text" id="hashCommitInput" maxlength="100" oninput="canSearchCheck()" oncut="canSearchCheck()" onchange="canSearchCheck()" class="commit_edit_data_small" th:name="hashCommitInput" >
                                 </div>
                             </div>
                             <div class="row-1">
@@ -112,7 +114,7 @@
 
                             <div class="row-1" >
                                 <div class="evidence_form_element align-content-center col-12">
-                                    <button id="searchCommit" onload="canSearchCheck()" data-toggle="collapse" th:href="'#collapseCommitSearch'" form="commitSearchForm" class="searchCommit" type="submit"><i class="fa fa-search"></i></button>
+                                    <button id="searchCommit" data-toggle="collapse" th:href="'#collapseCommitSearch'" form="commitSearchForm" class="searchCommit" type="submit"><i class="fa fa-search"></i></button>
                                 </div>
                             </div>
                             <br>
@@ -145,7 +147,9 @@
     <script th:inline="javascript">
 
         window.onload = function() {
+        setTimeout(function(){
             canSearchCheck();
+            }, 500);
         };
 
         function setDates(sprint) {
@@ -164,7 +168,6 @@
         }
 
         function canSearchCheck() {
-
 
             userInput = document.getElementById("userCommitInput")
             hashInput = document.getElementById("hashCommitInput")
@@ -186,6 +189,7 @@
         }
 
     </script>
+
 
 
 </div>

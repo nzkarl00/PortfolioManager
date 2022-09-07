@@ -1,42 +1,57 @@
-Feature: U32: Modifying pieces of evidence
+Feature: U33: Adding evidence from repository
 
   @Close
-  Scenario: AC3 When I click on a skill tag, I can edit it.
-  This is useful if I find that I made a spelling mistake.
-  when this piece of evidence is saved, the tag will be changed globally for me
-  (i.e., the spelling will be corrected on all my pieces of evidence and in associated headings).
+  Scenario: The idea is that the commits would be in some way related to each other
+  (this does not need to be checked by the system). For this story I can search for commits by
+  specifying at least one of the criteria.
     Given I am authenticated as a admin
-    Given There is evidence in the table
     And I go to the evidence page with a project id
-    And I open the piece of evidence
-    And I click the edit button
-    And I click the "skill" tag
-    And I change the skill to "skill1"
-    Then The edit list is updated
-
+    And I click the Add Evidence button
+    When I open the Add Commit Form
+    Then I can't click the add commit button
 
   @Close
-  Scenario: AC4 I can remove any of the skill tags.
-  This might be by providing an “x” on each tag button or some other means.
-  Removing a tag only removes it from this piece of evidence.
-  It does not delete the tag globally. I can also add other skill tags.
+  Scenario: The idea is that the commits would be in some way related to each other
+  (this does not need to be checked by the system). For this story I can search for commits by
+  specifying at least one of the criteria.
     Given I am authenticated as a admin
-    Given There is evidence in the table
     And I go to the evidence page with a project id
-    And I open the piece of evidence
-    And I click the edit button
-    And I click the delete "skill" button
-    Then The delete list is updated
+    And I click the Add Evidence button
+    When I open the Add Commit Form
+    And I type "test" in the username box
+    Then I can click the add commit button
 
   @Close
-  Scenario: AC4 I can remove any of the skill tags.
-  This might be by providing an “x” on each tag button or some other means.
-  Removing a tag only removes it from this piece of evidence.
-  It does not delete the tag globally. I can also add other skill tags.
+  Scenario: The idea is that the commits would be in some way related to each other
+  (this does not need to be checked by the system). For this story I can search for commits by
+  specifying at least one of the criteria.
     Given I am authenticated as a admin
-    Given There is evidence in the table
     And I go to the evidence page with a project id
-    And I open the piece of evidence
-    And I click the edit button
-    When User inputs "new_skill" into the edit skill input textbox.
-    Then The new list is updated
+    And I click the Add Evidence button
+    When I open the Add Commit Form
+    And I type "test" in the hash box
+    Then I can click the add commit button
+
+  @Close
+  Scenario: The idea is that the commits would be in some way related to each other
+  (this does not need to be checked by the system). For this story I can search for commits by
+  specifying at least one of the criteria.
+    Given I am authenticated as a admin
+    And I go to the evidence page with a project id
+    And I click the Add Evidence button
+    When I open the Add Commit Form
+    And I type "test" in the username box
+    And I type "test" in the hash box
+    Then I can click the add commit button
+
+  @Close
+  Scenario: The idea is that the commits would be in some way related to each other
+  (this does not need to be checked by the system). For this story I can search for commits by
+  specifying at least one of the criteria.
+    Given I am authenticated as a admin
+    And I go to the evidence page with a project id
+    And I click the Add Evidence button
+    When I open the Add Commit Form
+    And I type "test" in the username box
+    And I delete text in the username box
+    Then I can't click the add commit button
