@@ -234,6 +234,8 @@ public class EvidenceListController {
           return "redirect:evidence?pi=" + projectId.toString();
       }
 
+      logger.debug(skills);
+
       Integer accountID = AuthStateInformer.getId(principal);
       model.addAttribute("authorId", accountID);
       AuthenticatedUser thisUser = new AuthenticatedUser(principal);
