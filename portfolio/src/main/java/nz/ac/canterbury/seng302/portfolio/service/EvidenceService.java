@@ -69,7 +69,6 @@ public class EvidenceService {
         }
         if (userId != null) {
             if (!evidenceList.isEmpty()) {
-                evidenceRepository.findAllByParentUserId(userId).forEach(e -> logger.debug(e.getTitle()));
                 // Intersection of current list and query
                 evidenceList = evidenceList.stream().filter(evidenceRepository.findAllByParentUserId(userId)::contains).toList();
             } else {
@@ -197,7 +196,6 @@ public class EvidenceService {
         for(String[] user: validUsers) {
             Evidence userEvidence = new Evidence(Integer.parseInt(user[0]), parentProject, title, description, evidenceDate, categories);
             evidenceRepository.save(userEvidence);
-            allEvidence.add(userEvidence);
             //Loop through all associated users again so that we can associate them to the evidence we created
             for(String[] associated: validUsers) {
                 EvidenceUser evidenceUser = new EvidenceUser(Integer.parseInt(associated[0]), associated[1], userEvidence);
