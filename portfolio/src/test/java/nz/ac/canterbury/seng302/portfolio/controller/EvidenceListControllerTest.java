@@ -2,11 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
-import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -84,6 +80,8 @@ public class EvidenceListControllerTest {
     private NavController navController;
     @MockBean
     private EvidenceService evidenceService;
+    @MockBean
+    private SprintService sprintService;
     @MockBean
     private WebLinkRepository webLinkRepository;
     @MockBean

@@ -38,5 +38,5 @@ Feature: U32: Modifying pieces of evidence
     And I go to the evidence page with a project id
     And I open the piece of evidence
     And I click the edit button
-    When User inputs "new_skill" into the skill input textbox.
+    When User inputs "new_skill" into the edit skill input textbox.
     Then The new list is updated

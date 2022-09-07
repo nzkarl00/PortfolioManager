@@ -94,10 +94,14 @@ public class EvidenceStepDefs {
             linkButton.click();
             System.out.println("links added");
 
-            WebElement saveButton = seleniumExample.config.getDriver()
-                .findElement(By.id("projectSave"));
+
+
+
+
+            WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+            scrollIntoView(saveButton);
             Assertions.assertTrue(saveButton.isEnabled());
-            saveButton.submit();
+            saveButton.click();
 
             evidenceAdded = true;
         }
@@ -142,10 +146,14 @@ public class EvidenceStepDefs {
 
     @When("I click the save button")
     public void iClickTheSaveButton() throws InterruptedException {
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(100);
         WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
         scrollIntoView(saveButton);
         Assertions.assertTrue(saveButton.isEnabled());
-        saveButton.submit();
+        saveButton.click();
         Thread.sleep(200);
     }
 

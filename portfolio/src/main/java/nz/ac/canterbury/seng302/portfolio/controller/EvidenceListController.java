@@ -5,6 +5,8 @@ import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
@@ -43,6 +45,10 @@ public class EvidenceListController {
   private ProjectService projectService;
   @Autowired
   private AccountClientService accountClientService;
+  @Autowired
+  private EvidenceUserRepository evidenceUserRepository;
+  @Autowired
+  private SprintService sprintService;
   @Autowired
   private NavController navController;
   @Autowired
@@ -114,6 +120,12 @@ public class EvidenceListController {
     boolean showForm = false;
     if (projectId != null) {
       showForm = true;
+      Project project = projectService.getProjectById(projectId);
+
+      List<Sprint> sprintList = sprintService.getSprintByParentId(project.getId());
+
+      model.addAttribute("project", project);
+      model.addAttribute("sprintList", sprintList);
     }
     model.addAttribute("showForm", showForm);
     model.addAttribute("errorMessage", errorMessage);

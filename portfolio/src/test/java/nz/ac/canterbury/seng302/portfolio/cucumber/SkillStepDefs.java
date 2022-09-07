@@ -17,9 +17,12 @@ public class SkillStepDefs {
     String skillName;
 
     @When("User inputs {string} into the skill input textbox.")
-    public void userInputsIntoTheSkillInputTextbox(String inputSkill) {
+    public void userInputsIntoTheSkillInputTextbox(String inputSkill) throws InterruptedException {
         skillName = inputSkill;
 
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(100);
 
         WebElement
             skillInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
