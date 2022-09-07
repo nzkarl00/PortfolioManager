@@ -9,6 +9,8 @@ import nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.JavascriptExecutor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
