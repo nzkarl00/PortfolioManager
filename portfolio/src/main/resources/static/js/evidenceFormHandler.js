@@ -398,14 +398,36 @@ function updateDesc() {
     canSaveCheck()
 }
 
-function canSaveCheck() {
-    const descInput = document.getElementById("evidence_desc")
+function verifyTitle() {
     const titleInput = document.getElementById("evidence_title")
+    if (titleInput.value.match(allChrPattern) == null) {
+        if (titleInput.value !== "") {
+            document.getElementById("title_error").style = "color:red;";
+        }
+        return false
+    } else {
+        document.getElementById("title_error").style = "display:none;";
+        return true
+    }
+}
+
+function verifyDesc() {
+    const descInput = document.getElementById("evidence_desc")
+    if (descInput.value.match(allChrPattern) == null) {
+        if (descInput.value !== "") {
+            document.getElementById("description_error").style = "color:red;";
+        }
+        return false
+    } else {
+        document.getElementById("description_error").style = "display:none;";
+        return true
+    }
+}
+
+function canSaveCheck() {
     const saveButton = document.getElementById("projectSave")
     //https://stackoverflow.com/questions/15861088/regex-to-match-only-language-chars-all-language
-    const validateDesc = descInput.value.match(allChrPattern)
-    const validateTitle = titleInput.value.match(allChrPattern)
-    if (validateDesc == null || validateTitle == null) {
+    if (!verifyDesc() || !verifyTitle()) {
         saveButton.style = "background-color: #AAAAAA;"
         saveButton.setAttribute("disabled","disabled");
     } else {
