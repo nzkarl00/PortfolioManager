@@ -326,7 +326,7 @@ public class EvidenceService {
      * @param id the id of the user being skill checked
      * @return a set of skill objects
      */
-    public Set<SkillTag> getUserSkills(Integer id) {
+    public List<SkillTag> getUserSkills(Integer id) {
         List<Evidence> user_evidence = evidenceRepository.findAllByParentUserIdOrderByDateDesc(id);
         Set<SkillTag> user_skillTags = new HashSet<>();
         for (Evidence evidence: user_evidence) {
@@ -352,7 +352,19 @@ public class EvidenceService {
         if (isIn == false){
             user_skillTags.add(skillTagRepository.findByTitle("No_skills"));
         }
-        return user_skillTags;
+        return sortSkillSet(user_skillTags);
+    }
+
+    /**
+     * sorts a set of skills into an alphabetical arraylist of skills
+     * No_skills is first, it shouldn't be (I don't know why it is), but this bug is a feature ;)
+     * @param skills the initial set
+     * @return the sorted list
+     */
+    public static List<SkillTag> sortSkillSet(Set<SkillTag> skills) {
+        List<SkillTag> returning = new ArrayList<>(skills);
+        returning.sort(Comparator.comparing(SkillTag::getTitle)); // Puts skills in alphabetical order
+        return returning;
     }
 
 }
