@@ -5,11 +5,6 @@ import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
@@ -21,13 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
@@ -93,21 +86,22 @@ public class EditEvidenceController {
         }
 
 
+        // Creating a mapping of ID: Usernames, for the users who are contributing to this evidence
         List<String> evidenceUsers = new ArrayList<>();
         for (EvidenceUser user : evidence.getEvidenceUsersId()) {
             evidenceUsers.add(user.getUserid() + ":" + user.getUsername());
         }
+        model.addAttribute("users", evidenceUsers);
 
-        PaginatedUsersResponse
-            response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
+
+        PaginatedUsersResponse response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
+
         List<String> users = new ArrayList<>();
         for (UserResponse user: response.getUsersList()) {
             User temp = new User(user);
             users.add(temp.id + ":" + temp.username);
         }
         model.addAttribute("allUsers", users);
-
-        model.addAttribute("users", evidenceUsers);
 
         List<EvidenceTag> tags = evidence.getEvidenceTags();
         List<String> skills = new ArrayList<>();
@@ -160,11 +154,9 @@ public class EditEvidenceController {
         @RequestParam(value = "userInput") String users,
         Model model) throws MalformedURLException {
 
-        int userId = AuthStateInformer.getId(principal);
-        UserResponse userReply = accountClientService.getUserById(userId);
-
         Evidence evidence = evidenceRepository.findById((int) id);
 
+        // Validating the mandatory fields from U7
         Evidence.validateProperties(evidence.getAssociatedProject(), title, description, LocalDate.parse(date));
         evidence.setDate(LocalDate.parse(date));
         evidence.setDescription(description);
@@ -172,16 +164,13 @@ public class EditEvidenceController {
 
         evidence.setCategories(Evidence.categoryStringToInt(categories));
 
-        logger.debug(users);
-        // delete all users for evidence
+        // delete all past users from this user's evidence, then add all modified users for this user's evidence
         evidenceUserRepository.deleteAllByEvidence(evidence);
-        // add all users for evidence
         evidenceService.addUserToEvidence(evidenceService.extractListFromHTMLStringSkills(users), evidence);
 
-        logger.debug(links);
+        // delete all past weblinks from this user's evidence, then add all modified weblinks for this user's evidence
         webLinkRepository.deleteAllByEvidence(evidence);
         evidenceService.addLinksToEvidence(evidenceService.extractListFromHTMLString(links), evidence);
-
 
         evidenceRepository.save(evidence);
 
