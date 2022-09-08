@@ -82,7 +82,7 @@ Feature: U32 (U13): Modifying pieces of evidence
     Scenario Outline: AC5 I can remove existing categories from this piece of evidence, similar to tags.
         Given I am on edit mode for an evidence I own
         And I can see this evidence has a <category>
-        When I delete an existing <category>
+        When I delete the existing <category>
         And I save this piece of evidence
         Then I can see this skill tag deleted from this piece of evidence
         And This skill tag won't be deleted globally
@@ -109,36 +109,44 @@ Feature: U32 (U13): Modifying pieces of evidence
     Scenario Outline: U13 AC6 Properties that are mandatory remain.
     U7 AC4 - The save button is only enabled once the mandatory fields are filled in.
         Given I am on edit mode for an evidence I own
-        When I remove data from the <mandatory field>
+        When I remove data from the <mandatoryField>
         Then I will see the save button is disabled
         And I will see an error message to explain why I cannot save
         Examples:
-            | mandatory field |
+            | mandatoryField  |
             | "Title"         |
             | "Date"          |
             | "Description"   |
 
     Scenario Outline: Usual validation is carried out
     U7 AC 1 - I cannot save unless these are filled in with valid data.
+    Invalid data design decision here: https://eng-git.canterbury.ac.nz/seng302-2022/team-700/-/wikis/Design-Decisions
         Given I am on edit mode for an evidence I own
-        When I modify data from the <mandatory field>
-        And Usual validation fails on the modified data
+        When I modify the <mandatoryField> with <invalidData>
+        And Usual validation fails on the modified <invalidData>
         Then I will see the save button is disabled
         And I will see an error message to explain why I cannot save
         Examples:
-            | mandatory field |
-            | "Title"         |
-            | "Date"          |
-            | "Description"   |
+            | mandatoryField  | invalidData |
+            | "Title"         | "回"         |
+            | "Date"          | "ā"         |
+            | "Description"   | "1"         |
+            | "Title"         | "[*]"       |
+            | "Date"          | "1😊😊"      |
+            | "Description"   | "1+2=3!"    |
 
     Scenario Outline: Usual validation is carried out
     U7 AC 1 - I cannot save unless these are filled in with valid data.
+    Valid data design decision here: https://eng-git.canterbury.ac.nz/seng302-2022/team-700/-/wikis/Design-Decisions
         Given I am on edit mode for an evidence I own
-        When I modify data from the <mandatory field>
-        And Usual validation pass on the modified data
+        When I modify the <mandatoryField> with <validData>
+        And Usual validation pass on the modified <validData>
         Then I will see the save button is enabled
         Examples:
-            | mandatory field |
-            | "Title"         |
-            | "Date"          |
-            | "Description"   |
+            | mandatoryField  | validData   |
+            | "Title"         | "😊"         |
+            | "Date"          | "Māori"     |
+            | "Description"   | "ab"        |
+            | "Title"         | "a回"        |
+            | "Date"          | "1😊😊char"  |
+            | "Description"   | "回回"       |
