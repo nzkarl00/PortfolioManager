@@ -165,30 +165,45 @@ public class EvidenceService {
         return returning;
     }
 
-    public void addUserToEvidence(List<String> userStrings, Evidence evidence) {
+    /**
+     * Given a piece of evidence that exist already,
+     * this function will validate the list of users,
+     * so they can be added as contributors to this piece of evidence.
+     * @param userStrings A list of users in string formatted in "userId: username" pairs
+     * @param evidence An existing piece of evidence to be modified by adding a list of users to it
+     */
+    public void addUsersToExistingEvidence(List<String> userStrings, Evidence evidence) {
 
         // Validate that the username exists in the IDP
-        List<String[]> validUsers = validateUserIdPair(userStrings);
+        List<String[]> validUsers = validateUserIdPairExist(userStrings);
 
-        //Loop through all associated users again so that we can associate them to the evidence we created
-        for(String[] associated: validUsers) {
-            EvidenceUser evidenceUser = new EvidenceUser(Integer.parseInt(associated[0]), associated[1], evidence);
+        //Loop through all associated users so that we can add them to the existing evidence as contributors
+        for(String[] validUser: validUsers) {
+            int userId = Integer.parseInt(validUser[0]);
+            String userName = validUser[1];
+            EvidenceUser evidenceUser = new EvidenceUser(userId, userName, evidence);
             evidenceUserRepository.save(evidenceUser);
         }
     }
 
-    public List<String[]> validateUserIdPair(List<String> userStrings) {
+    /**
+     * Given a list of users, validate if their userId: userName pair exist in the IDP already
+     * @param userStrings A list of users in string formatted in "userId: username" pairs
+     * @return A string list of valid users who exist in the IDP, formatted in "userId: username" pairs
+     */
+    public List<String[]> validateUserIdPairExist(List<String> userStrings) {
 
         List<String[]> validUsers = new ArrayList<>();
 
-        for(String username: userStrings) {
-            String[] split = username.split(":");
-            int userId = Integer.parseInt(split[0]);
+        for(String userString: userStrings) {
+            String[] userIdPair = userString.split(":");
+            int userId = Integer.parseInt(userIdPair[0]);
+            String userName = userIdPair[1];
 
-            // Make a call to the IDP and make sure the username and given userId match with what is expected
+            // Make a call to the IDP and make sure the userId and username pair match with what is expected
             UserResponse response = accountClientService.getUserById(userId);
-            if (response.getUsername().equals(split[1])) {
-                validUsers.add(split);
+            if (response.getUsername().equals(userName)) {
+                validUsers.add(userIdPair);
             }
         }
 
@@ -196,7 +211,7 @@ public class EvidenceService {
     }
 
     /**
-     * For every user associated to a piece of evidence, duplicate the evidence and save it for them
+     * For every user associated to a piece of evidence, duplicate the evidence and generate a new evidence for them
      * And then creating an association between each evidence user and their parent evidence
      * @param userStrings List of {id}:{username} that a user has said also worked on the piece of evidence they're creating
      * @param parentProject The parent project that all pieces of evidence will relate to
@@ -211,16 +226,20 @@ public class EvidenceService {
         List<Evidence> allEvidence = new ArrayList<>();
 
         // Validate that the username exists in the IDP
-        List<String[]> validUsers = validateUserIdPair(userStrings);
+        List<String[]> validUsers = validateUserIdPairExist(userStrings);
 
         //Loop through all associated users so we can create their pieces of evidence
         for(String[] user: validUsers) {
-            Evidence userEvidence = new Evidence(Integer.parseInt(user[0]), parentProject, title, description, evidenceDate, categories);
+            int userId = Integer.parseInt(user[0]);
+            Evidence userEvidence = new Evidence(userId, parentProject, title, description, evidenceDate, categories);
             evidenceRepository.save(userEvidence);
 
             //Loop through all associated users again so that we can associate them to the evidence we created
+            // TODO: can refactor this to use to addUsersToExistingEvidence function
             for(String[] associated: validUsers) {
-                EvidenceUser evidenceUser = new EvidenceUser(Integer.parseInt(associated[0]), associated[1], userEvidence);
+                int associatedId = Integer.parseInt(user[0]);
+                String associatedName = user[1];
+                EvidenceUser evidenceUser = new EvidenceUser(associatedId, associatedName, userEvidence);
                 evidenceUserRepository.save(evidenceUser);
             }
             allEvidence.add(userEvidence);
@@ -248,7 +267,7 @@ public class EvidenceService {
     public void addSkillsToRepo(Project parentProject, Evidence evidence, String skills) {
         //Create new skill for any skill that doesn't exist, create evidence tag for all skills
         if (skills.replace(" ", "").length() > 0) {
-            List<String> skillList = extractListFromHTMLStringSkills(skills);
+            List<String> skillList = extractListFromHTMLStringWithTilda(skills);
             for (String skillString : skillList) {
                 String validSkillString = skillString.replace(" ", "_");
                 SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase(validSkillString);
@@ -301,29 +320,28 @@ public class EvidenceService {
 
     /**
      * Splits an HTML form input list, into multiple array elements.
-     * @param stringFromHTML The string containing items delimited by ~
+     * @param stringFromHTMLWithTilda The string containing items delimited by ~
      * @return an array representation of the list
-     * TODO: change these function names to cover more of its correct usages
      */
-    public List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
-        if (stringFromHTML.equals("")) {
+    public List<String> extractListFromHTMLStringWithTilda(String stringFromHTMLWithTilda) {
+        if (stringFromHTMLWithTilda.equals("")) {
             return Collections.emptyList();
         }
 
-        return Arrays.asList(stringFromHTML.split("~"));
+        return Arrays.asList(stringFromHTMLWithTilda.split("~"));
     }
 
     /**
      * Splits an HTML form input list, into multiple array elements.
-     * @param stringFromHTML The string of values posted by the evidence form in format Item1~Item2~Item3
+     * @param stringFromHTMLWithSpace The string containing items delimited by a space
      * @return An array of the individual values present in the string
      */
-    public List<String> extractListFromHTMLString(String stringFromHTML) {
-        if (stringFromHTML.equals("")) {
+    public List<String> extractListFromHTMLStringWithSpace(String stringFromHTMLWithSpace) {
+        if (stringFromHTMLWithSpace.equals("")) {
             return new ArrayList<>();
         }
 
-        return Arrays.asList(stringFromHTML.split(" "));
+        return Arrays.asList(stringFromHTMLWithSpace.split(" "));
     }
 
     /**
@@ -357,6 +375,12 @@ public class EvidenceService {
         return resultLinks;
     }
 
+    /**
+     * Given a list of links, add then all to the existing piece of evidence
+     * @param links String list of links to be constructed into WebLink() and added to the evidence
+     * @param evidence An existing piece of evidence to be modified by adding a list of links to it
+     * @throws MalformedURLException
+     */
     public void addLinksToEvidence(List<String> links, Evidence evidence) throws MalformedURLException {
         Optional<String> possibleError = validateLinks(links);
         if (possibleError.equals("")) {

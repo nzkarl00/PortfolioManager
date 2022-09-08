@@ -244,7 +244,7 @@ public class EvidenceListController {
       }
 
       // Extract then validate links
-      List<String> extractedLinks = evidenceService.extractListFromHTMLString(links.orElse(""));
+      List<String> extractedLinks = evidenceService.extractListFromHTMLStringWithSpace(links.orElse(""));
       Optional<String> possibleError = evidenceService.validateLinks(extractedLinks);
       // prioritise mandatory fields first, then link errors
       this.errorMessage = possibleError.orElse(errorMessage);
@@ -259,7 +259,7 @@ public class EvidenceListController {
 
       int categoriesInt = Evidence.categoryStringToInt(categories);
 
-      List<String> extractedUsers = evidenceService.extractListFromHTMLStringSkills(users.orElse(""));
+      List<String> extractedUsers = evidenceService.extractListFromHTMLStringWithTilda(users.orElse(""));
 
       List<Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, LocalDate.parse(date), categoriesInt);
       // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links

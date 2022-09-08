@@ -166,11 +166,11 @@ public class EditEvidenceController {
 
         // delete all past users from this user's evidence, then add all modified users for this user's evidence
         evidenceUserRepository.deleteAllByEvidence(evidence);
-        evidenceService.addUserToEvidence(evidenceService.extractListFromHTMLStringSkills(users), evidence);
+        evidenceService.addUsersToExistingEvidence(evidenceService.extractListFromHTMLStringWithTilda(users), evidence);
 
         // delete all past weblinks from this user's evidence, then add all modified weblinks for this user's evidence
         webLinkRepository.deleteAllByEvidence(evidence);
-        evidenceService.addLinksToEvidence(evidenceService.extractListFromHTMLString(links), evidence);
+        evidenceService.addLinksToEvidence(evidenceService.extractListFromHTMLStringWithSpace(links), evidence);
 
         evidenceRepository.save(evidence);
 
