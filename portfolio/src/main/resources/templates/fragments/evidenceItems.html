@@ -81,7 +81,7 @@
                             </div>
                         </div>
                         <br>
-                        <form th:if="${evidence.getParentUserId() == userID}" th:action="@{editEvidence}" method="get">
+                        <form th:if="${evidence.getParentUserId() == userId}" th:action="@{editEvidence}" method="get">
                             <input style="display:none;" th:name="id" th:value="${evidence.getId()}" type="number">
                             <button
                                     class="fa fa-edit edit_evidence"

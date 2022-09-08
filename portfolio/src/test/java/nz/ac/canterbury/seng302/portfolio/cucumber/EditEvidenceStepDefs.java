@@ -23,26 +23,22 @@ public class EditEvidenceStepDefs {
     CommonEvidenceServices commonEvidenceServices = new CommonEvidenceServices();
 
     @When("I click the edit icon")
-    public void i_click_the_edit_icon() {
+    public void i_click_the_edit_icon() throws InterruptedException {
         String evidenceId = commonEvidenceServices.getEvidenceId("Evidence One");
         WebElement element = driver.findElement(By.id(evidenceId));
-        try {
-            BaseSeleniumStepDefs.scrollWindowToElement(driver, element);
-            new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
-            WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
-            BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
-            arrowButton.click();
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, element);
+        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
+        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
+        arrowButton.click();
 
-            ((JavascriptExecutor) seleniumExample.config.getDriver())
-                    .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
-            Thread.sleep(100);
-            WebElement button = seleniumExample.config.getDriver().findElement(By.className("edit_evidence"));
-            BaseSeleniumStepDefs.scrollWindowToElement(driver, button);
-            Thread.sleep(200);
-            button.click();
-        } catch(InterruptedException e) {
-
-        }
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(100);
+        WebElement button = seleniumExample.config.getDriver().findElement(By.className("edit_evidence"));
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, button);
+        Thread.sleep(300);
+        button.click();
     }
 
     @Then("I cannot click the edit icon")
