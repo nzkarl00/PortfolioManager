@@ -134,7 +134,9 @@ public class EditEvidenceController {
      * @param date new/existing date
      * @param projectId old project id
      * @param categories string list of categories
-     * @param skills string list of skills
+     * @param skillsDelete string list of skills to delete
+     * @param skillsEdit string list of skills to edit
+     * @param skillsNew string list of skills to add
      * @param links string list of links
      * @param description new/existing description
      * @param id the id for the piece of evidence to edit
