@@ -43,7 +43,7 @@ Feature: U25: Piece of evidence creation
     Given I am authenticated as a admin
     And I go to the evidence page with a project id
     And I click the Add Evidence button
-    When The all mandatory fields to an evidence are empty, I cannot click the save button
+    Then I cannot click the save button
 
   @Close
   Scenario: AC4: Saving and cancelling give expected results. The save button is only enabled once the mandatory fields are filled in.
@@ -78,20 +78,3 @@ Feature: U25: Piece of evidence creation
     |"Title"|"Description"|
     |"  Title"|"  Description"|
     |"中文"|"Россия"|
-
-  @Close
-  Scenario Outline: U9 AC10: As usual, any error messages are displayed as close (in time and proximity) to the error itself;
-  i.e., ideally, I should not have to click save/submit to see all the errors.
-    Given User is logged in.
-    And I go to the evidence page with a project id
-    And I click the Add Evidence button
-
-    When User enters <title> into the title
-    And User enters <desc> into the description
-    Then Save button cannot be clicked
-
-    Examples:
-      | title | desc |
-      |"990"|"  Description"|
-      |"  (*(^*&"|"  Description"|
-      |"  "|"  Description"|

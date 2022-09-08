@@ -52,12 +52,14 @@ public class EvidenceStepDefs {
     public void thereIsEvidenceInTheTable() throws InterruptedException {
         seleniumExample.config.getDriver()
                 .get(seleniumExample.url + "/evidence?pi=1");
+        Thread.sleep(500);
         evidenceAdded = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(), 'Evidence One')]")).size() > 0;
         if (!evidenceAdded) {
             // open create evidence form
-            WebElement button = seleniumExample.config.getDriver()
-                .findElement(By.id("add_button"));
-            button.click();
+            Thread.sleep(500);
+            WebElement thereIsEvidenceInTheTablebutton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+            thereIsEvidenceInTheTablebutton.click();
+            Thread.sleep(500);
 
             // add title
             WebElement titleField = seleniumExample.config.getDriver()
@@ -92,10 +94,14 @@ public class EvidenceStepDefs {
             linkButton.click();
             System.out.println("links added");
 
-            WebElement saveButton = seleniumExample.config.getDriver()
-                .findElement(By.id("projectSave"));
+
+
+
+
+            WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+            scrollIntoView(saveButton);
             Assertions.assertTrue(saveButton.isEnabled());
-            saveButton.submit();
+            saveButton.click();
 
             evidenceAdded = true;
         }
@@ -103,8 +109,10 @@ public class EvidenceStepDefs {
     }
 
     @When("I go to the evidence page")
-    public void iGoToTheEvidencePage() {
+    public void iGoToTheEvidencePage() throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url + "/evidence");
+
+        Thread.sleep(500);
     }
 
     @Then("There will be the data for the evidence I created")
@@ -121,6 +129,8 @@ public class EvidenceStepDefs {
 
     @Given("I click the Add Evidence button")
     public void iClickTheAddEvidenceButton() throws InterruptedException {
+
+        Thread.sleep(500);
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
         button.click();
         Thread.sleep(500);
@@ -136,10 +146,14 @@ public class EvidenceStepDefs {
 
     @When("I click the save button")
     public void iClickTheSaveButton() throws InterruptedException {
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(100);
         WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
         scrollIntoView(saveButton);
         Assertions.assertTrue(saveButton.isEnabled());
-        saveButton.submit();
+        saveButton.click();
         Thread.sleep(200);
     }
 
@@ -161,17 +175,31 @@ public class EvidenceStepDefs {
         Assertions.assertFalse(saveButton.isEnabled());
     }
 
+
+    @Then("I cannot click the save button")
+    public void i_cannot_click_the_save_button() {
+        WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+        Assertions.assertEquals("true", saveButton.getAttribute("disabled"));
+    }
+
+
     @When("I click the cancel button")
     public void iClickTheCancelButton() {
+
+
         WebElement cancelButton = seleniumExample.config.getDriver().findElement(By.id("cancelButton"));
         cancelButton.sendKeys(Keys.ENTER);
 
     }
 
     @Then("I can see the evidence creation page extract and replace by a plus button")
-    public void iCanSeeTheEvidenceCreationPageExtractAndReplaceByAPlusButton() {
-        WebElement addButton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
-        Assertions.assertTrue(addButton.isEnabled());
+    public void iCanSeeTheEvidenceCreationPageExtractAndReplaceByAPlusButton() throws InterruptedException {
+
+        Thread.sleep(500);
+        WebElement iCanSeeTheEvidenceCreationPageExtractAndReplaceByAPlusButtonaddButtonaddButton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+
+        Thread.sleep(500);
+        Assertions.assertTrue(iCanSeeTheEvidenceCreationPageExtractAndReplaceByAPlusButtonaddButtonaddButton.isEnabled());
     }
 
     @When("User selects the Quantitative skills option in the category dropdown")

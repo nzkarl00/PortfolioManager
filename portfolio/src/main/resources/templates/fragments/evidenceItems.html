@@ -42,12 +42,12 @@
                             <!-- These are doubled up to show the author first, then the contributors after  -->
                             <div class="p-2" th:each="user: ${evidence.getEvidenceUsersId()}" th:if="${evidence.getParentUserId == user.getUserid()}">
                                 <div id="authors_container" style="width: 85%; display: block;">
-                                    <a th:id="${'contributor_' + user.getUsername()}" class="table_text author_tag" th:if="${username == user.getUsername()}" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}" ></a>
+                                    <a th:id="${'contributor_' + user.getUsername()}" class="table_text author_tag" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}" ></a>
                                 </div>
                             </div>
                             <div class="p-2" th:each="user: ${evidence.getEvidenceUsersId()}" th:if="${evidence.getParentUserId != user.getUserid()}">
                                 <div id="contributors_container" style="width: 85%; display: block;">
-                                    <a th:id="${'contributor_' + user.getUsername()}" class="table_text contributor_tag" th:if="${username != user.getUsername()}" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}"></a>
+                                    <a th:id="${'contributor_' + user.getUsername()}" class="table_text contributor_tag" th:text="${user.getUsername()}" th:href="@{account(id=${user.getUserid()})}"></a>
                                 </div>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
                         <button
                                 th:if="${evidence.getParentUserId() == userId}"
                                 type="button" th:style="${displayDeleteButton}" th:value="${evidence.getId()}"
-                                th:id="${evidence.getId()}" data-toggle="modal"
+                                th:id="${'deleteButton' + evidence.getId()}" data-toggle="modal"
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
                                 class="fa fa-trash group_delete_button"
                         />
@@ -94,7 +94,7 @@
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete - ' + evidence.getTitle()+ '?' }"/>
+                                    <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete - ' + evidence.getTitle()+ '?' }">Delete?</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -176,6 +176,7 @@
             }
         }
     </script>
+    <br>
 </div>
 </body>
 </html>

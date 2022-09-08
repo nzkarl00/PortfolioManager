@@ -5,6 +5,8 @@ import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
@@ -44,6 +46,10 @@ public class EvidenceListController {
   @Autowired
   private AccountClientService accountClientService;
   @Autowired
+  private EvidenceUserRepository evidenceUserRepository;
+  @Autowired
+  private SprintService sprintService;
+  @Autowired
   private NavController navController;
   @Autowired
   private GroupsClientService groupsClientService;
@@ -81,14 +87,29 @@ public class EvidenceListController {
     //TODO get rid of once this is actually used
     logger.info("[EVIDENCE] getting all the groups for user");
     logger.info(groupsClientService.getAllGroupsForUser(id).toString());
+    List<Evidence> evidenceList = new ArrayList<>();
 
-    List<Evidence> evidenceList = evidenceService.getEvidenceForUser(userId);
+
+    evidenceList = evidenceService.getEvidenceForUser(userId);
+
+
+      if (skillName != null) {
+          evidenceList = evidenceService.filterBySkill(evidenceList, skillName);
+      }
+      if (categoryName != null) {
+          evidenceList = evidenceService.filterByCategory(evidenceList, categoryName);
+      }
+
+
+
     List<Project> allProjects = projectService.getAllProjects();
     model.addAttribute("projectList", allProjects);
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
     model.addAttribute("allSkills", skillTagList);
     model.addAttribute("skillList", skillList);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
+    model.addAttribute("userSkills", evidenceService.getUserSkills(AuthStateInformer.getId(principal)));
+    model.addAttribute("userID", id);
 
     // Attributes For header
     UserResponse userReply;
@@ -99,6 +120,12 @@ public class EvidenceListController {
     boolean showForm = false;
     if (projectId != null) {
       showForm = true;
+      Project project = projectService.getProjectById(projectId);
+
+      List<Sprint> sprintList = sprintService.getSprintByParentId(project.getId());
+
+      model.addAttribute("project", project);
+      model.addAttribute("sprintList", sprintList);
     }
     model.addAttribute("showForm", showForm);
     model.addAttribute("errorMessage", errorMessage);
@@ -111,8 +138,8 @@ public class EvidenceListController {
   public String sendProjectEvidence(@AuthenticationPrincipal AuthState principal,
                                     @RequestParam(required = false , value="ui") Integer userId,
                                     @RequestParam(required = false , value="pi") Integer projectId,
-                                    @RequestParam(required = false, value="ci") String categoryName,
-                                    @RequestParam(required = false, value="si") String skillName,
+                                    @RequestParam(required = false , value="si") String skillName,
+                                    @RequestParam(required = false , value="ci") String categoryName,
                                     Model model) throws CustomExceptions.ProjectItemNotFoundException {
       if (userId == null) {
           userId = AuthStateInformer.getId(principal);
@@ -124,6 +151,8 @@ public class EvidenceListController {
           Project project = projectService.getProjectById(projectId);
           model.addAttribute("project", project);
       }
+
+
       model.addAttribute("evidenceList", evidenceList);
       HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
       HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();

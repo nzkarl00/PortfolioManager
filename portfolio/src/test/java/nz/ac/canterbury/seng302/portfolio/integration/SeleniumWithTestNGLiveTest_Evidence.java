@@ -46,13 +46,17 @@ public class SeleniumWithTestNGLiveTest_Evidence {
     public void whenLoggedInAsAdmin_AddSkill_ForTest()
         throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
-        Thread.sleep(100);
+        Thread.sleep(500);
         WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
         button.click();
-        Thread.sleep(100);
+        Thread.sleep(500);
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(500);
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
-        scrollIntoView(skillsInput);
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
+        skillsInput.click();
         skillsInput.sendKeys("new_skill");
         addSkillButton.click();
         List<WebElement> skillTags = seleniumExample.config.getDriver().findElements(By.className("skill_tag"));
@@ -66,15 +70,20 @@ public class SeleniumWithTestNGLiveTest_Evidence {
     public void whenLoggedInAsAdmin_AddTwoSkills_ForTest()
         throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
-        Thread.sleep(100);
-        WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
-        button.click();
-        Thread.sleep(100);
+        Thread.sleep(500);
+        WebElement newbutton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+        newbutton.click();
+        Thread.sleep(500);
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(500);
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
-        scrollIntoView(skillsInput);
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
-        skillsInput.sendKeys("new_skill");
+        skillsInput.click();
+        skillsInput.sendKeys("new_skill_wuho");
         addSkillButton.click();
+        skillsInput.click();
         skillsInput.sendKeys("new_skill_2");
         addSkillButton.click();
         List<WebElement> skillTags = seleniumExample.config.getDriver().findElements(By.className("skill_tag"));
@@ -88,19 +97,25 @@ public class SeleniumWithTestNGLiveTest_Evidence {
     public void whenLoggedInAsAdmin_AddTwoSkills_ThenRemoveFirstSkill_ForTest()
         throws InterruptedException {
         seleniumExample.config.getDriver().get(seleniumExample.url + evidenceUrl + "?pi=1");
-        Thread.sleep(100);
-        WebElement button = seleniumExample.config.getDriver().findElement(By.id("add_button"));
-        button.click();
-        Thread.sleep(100);
+        Thread.sleep(500);
+        WebElement newerbutton = seleniumExample.config.getDriver().findElement(By.id("add_button"));
+        newerbutton.click();
+        Thread.sleep(500);
+
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
+        Thread.sleep(500);
+
         skillsInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
-        scrollIntoView(skillsInput);
         addSkillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
+        skillsInput.click();
         skillsInput.sendKeys("new_skill");
         addSkillButton.click();
+        skillsInput.click();
         skillsInput.sendKeys("new_skill_2");
         addSkillButton.click();
         List<WebElement> skillTags = seleniumExample.config.getDriver().findElements(By.className("skill_tag"));
-        scrollIntoView(skillTags.get(0));
         skillTags.get(0).click();
         skillTags = seleniumExample.config.getDriver().findElements(By.className("skill_tag"));
         Assertions.assertEquals(1, skillTags.size());

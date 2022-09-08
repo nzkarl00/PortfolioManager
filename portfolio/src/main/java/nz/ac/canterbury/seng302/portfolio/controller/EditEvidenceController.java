@@ -2,6 +2,15 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
@@ -25,6 +34,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Responsible for the edit evidence page
@@ -54,7 +64,7 @@ public class EditEvidenceController {
      * @param model The model to be used by the application for web integration
      * @return the html template to give to the user
      */
-    @GetMapping("/editEvidence")
+    @GetMapping("/edit-evidence")
     public String editEvidence(
         @AuthenticationPrincipal AuthState principal,
         @RequestParam(value = "id") Optional<Integer> evidenceId,
@@ -82,6 +92,7 @@ public class EditEvidenceController {
             linkUrls.add(link.getUrl());
         }
 
+
         List<String> evidenceUsers = new ArrayList<>();
         for (EvidenceUser user : evidence.getEvidenceUsersId()) {
             evidenceUsers.add(user.getUserid() + ":" + user.getUsername());
@@ -97,6 +108,18 @@ public class EditEvidenceController {
         model.addAttribute("allUsers", users);
 
         model.addAttribute("users", evidenceUsers);
+
+        List<EvidenceTag> tags = evidence.getEvidenceTags();
+        List<String> skills = new ArrayList<>();
+        for (EvidenceTag tag: tags) {
+            skills.add(tag.getParentSkillTag().getId() + ":" + tag.getParentSkillTag().getTitle());
+        }
+
+        Set<String> skillTagList = evidenceService.getAllUniqueSkills();
+        logger.debug(skills.toString());
+
+        model.addAttribute("allSkills", skillTagList);
+        model.addAttribute("skills", skills);
         model.addAttribute("links", linkUrls);
         model.addAttribute("evidence", evidence);
         model.addAttribute("title", "Edit Evidence: " + evidence.getTitle());
@@ -126,7 +149,9 @@ public class EditEvidenceController {
         @RequestParam(value = "dateInput") String date,
         @RequestParam(value = "projectId") Integer projectId,
         @RequestParam(value = "categoryInput") String categories,
-        @RequestParam(value = "skillInput") String skills,
+        @RequestParam(value = "skillDeleteInput") String skillsDelete,
+        @RequestParam(value = "skillEditInput") String skillsEdit,
+        @RequestParam(value = "skillNewInput") String skillsNew,
         @RequestParam(value = "linksInput") String links,
         @RequestParam(value = "descriptionInput") String description,
         @RequestParam(value = "evidenceId") Integer id,
@@ -154,6 +179,7 @@ public class EditEvidenceController {
         logger.debug(links);
         webLinkRepository.deleteAllByEvidence(evidence);
         evidenceService.addLinksToEvidence(evidenceService.extractListFromHTMLString(links), evidence);
+
 
         evidenceRepository.save(evidence);
 

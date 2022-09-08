@@ -10,4 +10,6 @@ public class CustomExceptions {
     public static class ProjectItemNotFoundException extends Exception {
         public ProjectItemNotFoundException(String errorMessage) { super(errorMessage); }
     }
+
+
 }

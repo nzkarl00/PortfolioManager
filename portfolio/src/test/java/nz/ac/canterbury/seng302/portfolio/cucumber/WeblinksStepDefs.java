@@ -5,18 +5,83 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import org.junit.jupiter.api.Assertions;
-import org.openqa.selenium.By;
-import org.openqa.selenium.ElementNotInteractableException;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 
 public class WeblinksStepDefs {
 
     SeleniumExample seleniumExample = BaseSeleniumStepDefs.seleniumExample;
+
+    WebDriver driver = seleniumExample.config.getDriver();
+
+    /**
+     * https://stackoverflow.com/questions/18510576/find-an-element-by-text-and-get-xpath-selenium-webdriver-junit
+     * get the xpath of aan element
+     * @param childElement the element to get the xpath from
+     * @param current the current xpath to recurse onto
+     * @return the xpath in the form of a string
+     */
+    private String generateXPATH(WebElement childElement, String current) {
+        String childTag = childElement.getTagName();
+        if(childTag.equals("html")) {
+            return "/html[1]"+current;
+        }
+        WebElement parentElement = childElement.findElement(By.xpath(".."));
+        List<WebElement> childrenElements = parentElement.findElements(By.xpath("*"));
+        int count = 0;
+        for(int i=0;i<childrenElements.size(); i++) {
+            WebElement childrenElement = childrenElements.get(i);
+            String childrenElementTag = childrenElement.getTagName();
+            if(childTag.equals(childrenElementTag)) {
+                count++;
+            }
+            if(childElement.equals(childrenElement)) {
+                return generateXPATH(parentElement, "/" + childTag + "[" + count + "]"+current);
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     *Gets the evidence id for the users evidence
+     * @return evidence id - type String
+     **/
+    public String getEvidenceId(String title) {
+        List<WebElement> elementsList = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(),'" + title + "')]"));
+        return elementsList.get(0).getAttribute("id");
+    }
+
+    @Given("I open the piece of evidence")
+    public void openEvidence() throws InterruptedException {
+        // get the xpath of the desired pieve of evidence
+        String evidenceId = getEvidenceId("Evidence One");
+        WebElement element = driver.findElement(By.id(evidenceId));
+        scrollWindowToElement(element);
+        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
+        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
+        scrollWindowToElement(arrowButton);
+        arrowButton.click();
+    }
+
+
+    /**
+     *Can be used to scroll window to element
+     * @Param element webElement that the window is to scroll too
+     **/
+    public void scrollWindowToElement(WebElement element)
+            throws InterruptedException {
+        //https://learn-automation.com/how-to-scroll-into-view-in-selenium-webdriver/
+        JavascriptExecutor je = (JavascriptExecutor) driver;
+        je.executeScript("arguments[0].scrollIntoView(true);",element);
+        Thread.sleep(300);
+    }
 
     @And("I click the weblink")
     public void iClickTheWeblink() {
@@ -101,8 +166,11 @@ public class WeblinksStepDefs {
 
             WebElement saveButton = seleniumExample.config.getDriver()
                 .findElement(By.id("projectSave"));
+            JavascriptExecutor je = (JavascriptExecutor) seleniumExample.config.getDriver();
+            je.executeScript("arguments[0].scrollIntoView(true);", saveButton);
+            Thread.sleep(300);
             Assertions.assertTrue(saveButton.isEnabled());
-            saveButton.submit();
+            saveButton.click();
         }
         Thread.sleep(200);
     }

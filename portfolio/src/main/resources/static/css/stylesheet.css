@@ -1118,28 +1118,22 @@
     font-size: 125% !important;
 }
 
+
 .evidence_top {
 
     background: #D9F9FF !important;
     border-radius: 20px 20px 0px 0px;
     padding: 10px !important;
     padding-left: 15px !important;
-
-
 }
 
 .evidence_bot {
-
     background: #D9F9FF !important;
     border-radius: 0px 0px 20px 20px;
-
-
 }
 
 
 .evidence_data {
-
-
     font-family: nexa !important;
     color: #000000 !important;
     font-size: 110% !important;
@@ -1151,12 +1145,97 @@
     padding-right: 20px !important;
 }
 
+.commit_top {
+
+    background: #19DAFF !important;
+    border-radius: 20px 20px 0px 0px;
+    padding: 10px !important;
+    padding-left: 15px !important;
+}
+
+.commit_bot {
+    background: #19DAFF !important;
+    border-radius: 0px 0px 20px 20px;
+}
+
+
+.commit_data {
+    font-family: nexa !important;
+    color: #000000 !important;
+    font-size: 110% !important;
+    background-color: #19DAFF !important;
+    overflow-wrap: break-word;
+    border-radius: 0px 0px 0px 0px !important;
+    margin-bottom:  0px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
+
+.commit_edit_data {
+  font-family: nexa !important;
+  color: #000000 !important;
+  font-size: 100% !important;
+  background-color: #F7FEFF !important;
+  border-style: solid !important;
+  border-color: #056BFA !important;
+  border-width: 10px !important;
+  border-radius: 10px 20px 20px 20px !important;
+}
+.commit_edit_data_small {
+  font-family: nexa !important;
+  color: #000000 !important;
+  font-size: 100% !important;
+  background-color: #F7FEFF !important;
+  border-style: solid !important;
+  border-color: #056BFA !important;
+  border-width: 10px !important;
+  width: 100% !important;
+  border-radius: 10px 20px 20px 20px !important;
+}
+.commit_edit_data_smaller {
+  font-family: nexa !important;
+  color: #000000 !important;
+  font-size: 100% !important;
+  background-color: #F7FEFF !important;
+  border-style: solid !important;
+  border-color: #056BFA !important;
+  border-width: 10px !important;
+  width: 95% !important;
+  border-radius: 10px 20px 20px 20px !important;
+}
+
+.commit_search_result_body {
+  background-color: #D9F9FF !important;
+  border-radius: 20px 20px 20px 20px !important;
+  font-size: 100% !important;
+}
+
+
+.commit_head_small {
+    font-family: nexaBold !important;
+    color: #056BFA !important;
+    font-size: 150% !important;
+
+}
+
+
+.commit_head {
+    font-family: nexaBold !important;
+    color: #056BFA !important;
+    font-color: #056BFA !important;
+    font-size: 175% !important;
+}
+
+.commit_text {
+    margin-left: -0.5em !important;
+}
+
 .fa-arrow-down {
     color: #19DAFF !important;
 }
 
 .alignRight {
-
     align: right !important;
 }
 
@@ -1164,6 +1243,7 @@
 .evidence_head {
     font-family: nexaBold !important;
     color: #19DAFF !important;
+    font-size: 175% !important;
     font-size: 200% !important;
 }
 
@@ -1174,11 +1254,11 @@
 }
 
 
+
 .evidence_date {
     font-family: nexaLight !important;
     color: #19DAFF !important;
     font-size: 175% !important;
-
 }
 
 .evidence_text {
@@ -1303,6 +1383,8 @@ select.form-control {
     font-size: 100% !important;
     padding: 0.5rem !important;
     margin: 1rem !important;
+    margin-left: 6rem !important;
+    margin-top: 0rem !important;
     font-family: nexaLight !important;
 
 }
@@ -1319,6 +1401,8 @@ select.form-control {
     font-colour: #FFFFFF !important;
     padding: 0.5rem !important;
     margin: 1rem !important;
+    margin-left: 6rem !important;
+    margin-top: 0rem !important;
     font-family: nexaLight !important;
 
 }
@@ -1435,6 +1519,26 @@ select.form-control {
 .search:hover {
 
     background: #056BFA !important;
+    color: #ffffff !important;
+
+}
+
+.searchCommit {
+
+    background-color: #056BFA !important;
+    border-radius: 20px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 250% !important;
+    font-colour: #FFFFFF !important;
+    font-family: nexaLight !important;
+
+}
+.searchCommit:hover:not([disabled]) {
+
+    background: #0046C9 !important;
     color: #ffffff !important;
 
 }
