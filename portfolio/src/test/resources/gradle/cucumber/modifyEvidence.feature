@@ -1,7 +1,7 @@
 Feature: U32 (U13): Modifying pieces of evidence
 
     @Close
-    Scenario: AC1 There is a clickable edit icon for an evidence I own
+    Scenario: AC1 There is a clickable edit icon for an evidence I own.
         Given There is an existing evidence that I own
         When I navigate to that evidence
         Then I can click on the edit icon
@@ -9,7 +9,7 @@ Feature: U32 (U13): Modifying pieces of evidence
         And I can see the edit icon is next to the delete icon
 
     @Close
-    Scenario: AC1 There is not a clickable edit icon for an evidence I don't own
+    Scenario: AC7 I cannot modify others’ pieces of evidence.
         Given There is an existing evidence that I don't own
         When I navigate to that evidence
         Then I will not find an edit icon at all
@@ -33,22 +33,21 @@ Feature: U32 (U13): Modifying pieces of evidence
         And I can see the save button is visible, but disabled
         When I have make a modification to the evidence <field>
         Then I can see the save button enabled for me to click on
-
         Examples:
-        | field         |
-        | "Title"       |
-        | "Date"        |
-        | "Category"    |
-        | "Description" |
-        | "Users"       |
-        | "Skills"      |
-        | "Links"       |
-        | "Commits"     |
+            | field         |
+            | "Title"       |
+            | "Date"        |
+            | "Category"    |
+            | "Description" |
+            | "Users"       |
+            | "Skills"      |
+            | "Links"       |
+            | "Commits"     |
 
     @Close
     Scenario: AC3 When I click on a skill tag, I can edit it.
     This is useful if I find that I made a spelling mistake.
-    when this piece of evidence is saved, the tag will be changed globally for me
+    when this piece of evidence is saved, the tag will be changed globally for me.
     (i.e., the spelling will be corrected on all my pieces of evidence and in associated headings).
         Given I am on edit mode for an evidence I own
         And I can see this evidence has an "original_skill" skill tag
@@ -68,13 +67,15 @@ Feature: U32 (U13): Modifying pieces of evidence
         Given I am on edit mode for an evidence I own
         And I can see this evidence has an "original_skill" skill tag
         When I click the delete button on a skill tag
+        And I save this piece of evidence
         Then I can see this skill tag deleted from this piece of evidence
         And This skill tag won't be deleted globally
 
     @Close
     Scenario: AC4 I can add other skill tags.
         Given I am on edit mode for an evidence I own
-        When User inputs "new_skill" into the edit skill input textbox.
+        When User inputs "new_skill" into the edit skill input textbox
+        And I save this piece of evidence
         Then I can see this "new_skill" skill tag added to this piece of evidence
 
     @Close
@@ -82,18 +83,21 @@ Feature: U32 (U13): Modifying pieces of evidence
         Given I am on edit mode for an evidence I own
         And I can see this evidence has a <category>
         When I delete an existing <category>
+        And I save this piece of evidence
         Then I can see this skill tag deleted from this piece of evidence
         And This skill tag won't be deleted globally
         Examples:
-        | category              |
-        | "Quantitative Skills" |
-        | "Qualitative Skills"  |
-        | "Service"             |
+            | category              |
+            | "Quantitative Skills" |
+            | "Qualitative Skills"  |
+            | "Service"             |
 
     @Close
     Scenario Outline: AC5 I can add categories to this piece of evidence, similar to tags.
         Given I am on edit mode for an evidence I own
+        And I can see this evidence does not have a <category> added already
         When User add a <category> to this evidence
+        And I save this piece of evidence
         Then I can see this <category> added to this piece of evidence
 
         Examples:
@@ -101,3 +105,40 @@ Feature: U32 (U13): Modifying pieces of evidence
             | "Quantitative Skills" |
             | "Qualitative Skills"  |
             | "Service"             |
+
+    Scenario Outline: U13 AC6 Properties that are mandatory remain.
+    U7 AC4 - The save button is only enabled once the mandatory fields are filled in.
+        Given I am on edit mode for an evidence I own
+        When I remove data from the <mandatory field>
+        Then I will see the save button is disabled
+        And I will see an error message to explain why I cannot save
+        Examples:
+            | mandatory field |
+            | "Title"         |
+            | "Date"          |
+            | "Description"   |
+
+    Scenario Outline: Usual validation is carried out
+    U7 AC 1 - I cannot save unless these are filled in with valid data.
+        Given I am on edit mode for an evidence I own
+        When I modify data from the <mandatory field>
+        And Usual validation fails on the modified data
+        Then I will see the save button is disabled
+        And I will see an error message to explain why I cannot save
+        Examples:
+            | mandatory field |
+            | "Title"         |
+            | "Date"          |
+            | "Description"   |
+
+    Scenario Outline: Usual validation is carried out
+    U7 AC 1 - I cannot save unless these are filled in with valid data.
+        Given I am on edit mode for an evidence I own
+        When I modify data from the <mandatory field>
+        And Usual validation pass on the modified data
+        Then I will see the save button is enabled
+        Examples:
+            | mandatory field |
+            | "Title"         |
+            | "Date"          |
+            | "Description"   |
