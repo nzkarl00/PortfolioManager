@@ -40,6 +40,9 @@
 
                 <!-- 3. List of all the links the user added from the input field -->
                 <div id="commit_container" style="width: 85%; display: block">
+                    <div th:each="group: ${groupList}">
+                        <p th:text="${group.longName}">SS</p>
+                    </div>
                     <input type="hidden" id="commitInput" th:name="commitInput">
                 </div>
 
@@ -56,10 +59,9 @@
                         <b class="commit_head">Link Group:</b>
                     </div>
                     <select class="commit_edit_data"  id="commit_group" th:name="commit_group" >
-                    <option value=" "> </option>
-                    <option value="ExampleGroupA">ExampleGroupA</option>
-                    <option value="ExampleGroupB">ExampleGroupB</option>
-                    <option value="ExampleGroupC">ExampleGroupC</option>
+                        <option value="defaultStart" selected disabled> Select A Group</option>
+                        <option th:each="group: ${groupList}" th:value="${group.id}" th:text="${group.longName}">
+                        </option>
                     </select>
                     <a  data-toggle="collapse" th:id="${'ArrowButtonCommit'}" th:href="'#collapseCommit'" onclick="canSearchCheck();" role="button" aria-expanded="false" aria-controls="collapseExample">
                         <i class="align-content-center fa fa-plus" style="margin-top: 0.25em; margin-left: 0.25em; font-size: 250%;"></i>
@@ -87,7 +89,7 @@
                                     <select form="commitSearchForm"  id="commit_sprint_multiselect_items" th:onChange="setDates(value); canSearchCheck();" class="commit_edit_data_small">
                                         <option value="defaultStart" selected disabled> Select A Sprint</option>
                                         <div th:each="sprint: ${sprintList}">
-                                            <option th:value="${sprint}" th:text="${sprint.getLabel}"></option>
+                                            <option th:value="${sprint}" th:text="${sprint.getLabel()}"></option>
                                         </div>
                                     </select>
                                 </div>
@@ -143,6 +145,9 @@
             </div>
             </form>
         </div>
+
+    <script th:inline="javascript">
+    </script>
 
     <script th:inline="javascript">
 

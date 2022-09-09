@@ -4,6 +4,9 @@ import nz.ac.canterbury.seng302.portfolio.model.AuthenticatedUser;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.Group;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
@@ -55,6 +58,10 @@ public class EvidenceListController {
   private GroupsClientService groupsClientService;
   @Autowired
   private EvidenceService evidenceService;
+  @Autowired
+  private GroupRepoRepository groupRepoRepository;
+    @Autowired
+    private GroupsClientService groupsService;
 
   private String errorMessage = "";
 
@@ -102,6 +109,8 @@ public class EvidenceListController {
 
 
 
+
+
     List<Project> allProjects = projectService.getAllProjects();
     model.addAttribute("projectList", allProjects);
     Set<String> skillTagList = evidenceService.getAllUniqueSkills();
@@ -118,6 +127,11 @@ public class EvidenceListController {
     // End of Attributes for header
     //Attributes for form
     boolean showForm = false;
+
+
+    PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(userId);
+    model.addAttribute("groupList", groupList.getGroupsList());
+
     if (projectId != null) {
       showForm = true;
       Project project = projectService.getProjectById(projectId);
@@ -150,7 +164,15 @@ public class EvidenceListController {
           model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
           Project project = projectService.getProjectById(projectId);
           model.addAttribute("project", project);
+
+          List<Sprint> sprintList = sprintService.getSprintByParentId(project.getId());
+
+          model.addAttribute("project", project);
+          model.addAttribute("sprintList", sprintList);
       }
+
+      PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(userId);
+      model.addAttribute("groupList", groupList.getGroupsList());
 
 
       model.addAttribute("evidenceList", evidenceList);
