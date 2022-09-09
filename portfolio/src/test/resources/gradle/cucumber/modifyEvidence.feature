@@ -1,5 +1,6 @@
 Feature: U32 (U13): Modifying pieces of evidence
 
+    @Admin
     @Close
     Scenario: AC1 There is a clickable edit icon for an evidence I own.
         Given There is an existing evidence that I own
@@ -8,12 +9,14 @@ Feature: U32 (U13): Modifying pieces of evidence
         And I can see a pencil icon for the edit icon
         And I can see the edit icon is next to the delete icon
 
+    @Admin
     @Close
     Scenario: AC7 I cannot modify others’ pieces of evidence.
         Given There is an existing evidence that I don't own
         When I navigate to that evidence
         Then I will not find an edit icon at all
 
+    @Admin
     @Close
     Scenario: AC2 Clicking on this icon allows me to edit this piece of evidence.
     It should be obvious that I am in edit mode.
@@ -26,11 +29,12 @@ Feature: U32 (U13): Modifying pieces of evidence
         And I can see the cancel button
         And I cannot see the edit icon as it is not visible in edit mode
 
+    @Admin
     @Close
     Scenario Outline: AC2 The save button is only enabled if the piece of evidence has been modified in some way.
         Given I am on edit mode for an evidence I own
         And I can see this evidence has the <field> filled in
-        And I can see the save button is visible, but disabled
+        And I can see the save button is visible and disabled
         When I have make a modification to the evidence <field>
         Then I can see the save button enabled for me to click on
         Examples:
@@ -44,6 +48,7 @@ Feature: U32 (U13): Modifying pieces of evidence
             | "Links"       |
             | "Commits"     |
 
+    @Admin
     @Close
     Scenario: AC3 When I click on a skill tag, I can edit it.
     This is useful if I find that I made a spelling mistake.
@@ -58,7 +63,7 @@ Feature: U32 (U13): Modifying pieces of evidence
         And I can see the skill tag is updated on all my piece of evidence
         And I can see the skill tag is updated in the headings
 
-
+    @Admin
     @Close
     Scenario: AC4 I can remove any of the skill tags.
     This might be by providing an “x” on each tag button or some other means.
@@ -71,6 +76,7 @@ Feature: U32 (U13): Modifying pieces of evidence
         Then I can see this skill tag deleted from this piece of evidence
         And This skill tag won't be deleted globally
 
+    @Admin
     @Close
     Scenario: AC4 I can add other skill tags.
         Given I am on edit mode for an evidence I own
@@ -78,6 +84,7 @@ Feature: U32 (U13): Modifying pieces of evidence
         And I save this piece of evidence
         Then I can see this "new_skill" skill tag added to this piece of evidence
 
+    @Admin
     @Close
     Scenario Outline: AC5 I can remove existing categories from this piece of evidence, similar to tags.
         Given I am on edit mode for an evidence I own
@@ -92,6 +99,7 @@ Feature: U32 (U13): Modifying pieces of evidence
             | "Qualitative Skills"  |
             | "Service"             |
 
+    @Admin
     @Close
     Scenario Outline: AC5 I can add categories to this piece of evidence, similar to tags.
         Given I am on edit mode for an evidence I own
@@ -99,13 +107,14 @@ Feature: U32 (U13): Modifying pieces of evidence
         When User add a <category> to this evidence
         And I save this piece of evidence
         Then I can see this <category> added to this piece of evidence
-
         Examples:
             | category              |
             | "Quantitative Skills" |
             | "Qualitative Skills"  |
             | "Service"             |
 
+    @Admin
+    @Close
     Scenario Outline: U13 AC6 Properties that are mandatory remain.
     U7 AC4 - The save button is only enabled once the mandatory fields are filled in.
         Given I am on edit mode for an evidence I own
@@ -118,6 +127,8 @@ Feature: U32 (U13): Modifying pieces of evidence
             | "Date"          |
             | "Description"   |
 
+    @Admin
+    @Close
     Scenario Outline: Usual validation is carried out
     U7 AC 1 - I cannot save unless these are filled in with valid data.
     Invalid data design decision here: https://eng-git.canterbury.ac.nz/seng302-2022/team-700/-/wikis/Design-Decisions
@@ -135,6 +146,8 @@ Feature: U32 (U13): Modifying pieces of evidence
             | "Date"          | "1😊😊"      |
             | "Description"   | "1+2=3!"    |
 
+    @Admin
+    @Close
     Scenario Outline: Usual validation is carried out
     U7 AC 1 - I cannot save unless these are filled in with valid data.
     Valid data design decision here: https://eng-git.canterbury.ac.nz/seng302-2022/team-700/-/wikis/Design-Decisions

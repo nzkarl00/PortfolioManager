@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.cucumber;
 
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
@@ -23,6 +24,11 @@ public class BaseSeleniumStepDefs {
 
     private boolean registered = false;
 
+    @Before("@Admin")
+    public void adminIsLoggedIn() throws FileNotFoundException, InterruptedException {
+        iAmAuthenticatedAsAAdmin();
+    }
+
     @Given("User is logged in.")
     public void userIsLoggedIn() {
         seleniumExample = new SeleniumExample("");
@@ -31,34 +37,6 @@ public class BaseSeleniumStepDefs {
             registered = true;
         }
         SeleniumLogins.whenPortfolioIsLoaded_thenLoginWorks(seleniumExample);
-    }
-
-    /**
-     * https://stackoverflow.com/questions/18510576/find-an-element-by-text-and-get-xpath-selenium-webdriver-junit
-     * get the xpath of aan element
-     * @param childElement the element to get the xpath from
-     * @param current the current xpath to recurse onto
-     * @return the xpath in the form of a string
-     */
-    public static String generateXPATH(WebElement childElement, String current) {
-        String childTag = childElement.getTagName();
-        if(childTag.equals("html")) {
-            return "/html[1]"+current;
-        }
-        WebElement parentElement = childElement.findElement(By.xpath(".."));
-        List<WebElement> childrenElements = parentElement.findElements(By.xpath("*"));
-        int count = 0;
-        for(int i=0;i<childrenElements.size(); i++) {
-            WebElement childrenElement = childrenElements.get(i);
-            String childrenElementTag = childrenElement.getTagName();
-            if(childTag.equals(childrenElementTag)) {
-                count++;
-            }
-            if(childElement.equals(childrenElement)) {
-                return generateXPATH(parentElement, "/" + childTag + "[" + count + "]"+current);
-            }
-        }
-        return null;
     }
 
     @And("I am authenticated as a admin")
