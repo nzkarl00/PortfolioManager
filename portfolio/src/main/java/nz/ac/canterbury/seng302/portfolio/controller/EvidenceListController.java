@@ -197,6 +197,11 @@ public class EvidenceListController {
       Project project = projectService.getProjectById(projectId);
       model.addAttribute("project", project);
 
+
+      List<Sprint> sprintList = sprintService.getSprintByParentId(project.getId());
+
+      model.addAttribute("sprintList", sprintList);
+
       PaginatedUsersResponse response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
       List<String> users = new ArrayList<>();
       for (UserResponse user: response.getUsersList()) {
@@ -210,6 +215,8 @@ public class EvidenceListController {
       model.addAttribute("autoSkills", skillTagListNoSkill);
       int userId = AuthStateInformer.getId(principal);
       model.addAttribute("userId", userId);
+      PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(userId);
+      model.addAttribute("groupList", groupList.getGroupsList());
 
       navController.updateModelForNav(principal, model, accountClientService.getUserById(userId), userId);
 

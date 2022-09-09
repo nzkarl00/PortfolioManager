@@ -59,8 +59,8 @@
                         <b class="commit_head">Link Group:</b>
                     </div>
                     <select class="commit_edit_data"  id="commit_group" th:name="commit_group" >
-                        <option value="defaultStart" selected disabled> Select A Group</option>
-                        <option th:each="group: ${groupList}" th:value="${group.id}" th:text="${group.longName}">
+                        <option value="noGroup" selected> Select A Group</option>
+                        <option th:each="group: ${groupList}" th:value="${group.getGroupId()}" th:text="${group.getLongName()}">
                         </option>
                     </select>
                     <a  data-toggle="collapse" th:id="${'ArrowButtonCommit'}" th:href="'#collapseCommit'" onclick="canSearchCheck();" role="button" aria-expanded="false" aria-controls="collapseExample">
