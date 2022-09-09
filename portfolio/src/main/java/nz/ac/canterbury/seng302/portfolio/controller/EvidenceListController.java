@@ -81,7 +81,6 @@ public class EvidenceListController {
       if (userId == null) {
           userId = id;
       }
-    List<SkillTag> skillList = skillRepository.findAll();
     setTitle(model, userId, projectId, categoryName, skillName);
 
     //TODO get rid of once this is actually used
@@ -104,9 +103,6 @@ public class EvidenceListController {
 
     List<Project> allProjects = projectService.getAllProjects();
     model.addAttribute("projectList", allProjects);
-    Set<String> skillTagList = evidenceService.getAllUniqueSkills();
-    model.addAttribute("allSkills", skillTagList);
-    model.addAttribute("skillList", skillList);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
     model.addAttribute("userSkills", evidenceService.getUserSkills(AuthStateInformer.getId(principal)));
     model.addAttribute("userID", id);
@@ -233,6 +229,8 @@ public class EvidenceListController {
           logger.debug("[EVIDENCE] Redirecting, user not authenticated");
           return "redirect:evidence?pi=" + projectId.toString();
       }
+
+      logger.debug(skills);
 
       Integer accountID = AuthStateInformer.getId(principal);
       model.addAttribute("authorId", accountID);
