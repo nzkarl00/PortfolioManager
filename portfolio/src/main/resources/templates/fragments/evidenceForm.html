@@ -128,7 +128,7 @@
                         </div>
                         <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill(); return false;"></button>
                     </div>
-                    <label class="project_inputAlertBlue" id="skillCharCount" style="padding-left: 5px">Characters Remaining: 50</label>
+                    <label class="project_inputAlertBlue" id="skillCharCount" style="padding-left: 5px">Characters Remaining: 50, press DELETE to remove skills</label>
                     <br>
                     <div id="skills_container" style="width: 100%">
                         <div id="skill_sub_1" style="display: flex; width: 100%"></div>
@@ -137,8 +137,10 @@
                     <!-- Start of link section of the form, which includes the 1. "Links" title, 2. input, and 3. list of inputted links -->
                     <div class="col-12">
                         <!-- 1. "Links" title-->
-                        <b class="evidence_head setWide" id="links_input">Links:</b><br>
-
+                        <div class="row-1">
+                        <b class="evidence_head setWide" id="links_input">Links:</b>
+                        <p style="display:none;" id="link_error">Link is not valid, please ensure link includes http(s):// protocol</p>
+                        </div>
                         <!-- 2. Input field where user can add links -->
                         <div class="col-12" id="links_div" style="display: flex; justify-content: center; align-items: center;">
                             <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->

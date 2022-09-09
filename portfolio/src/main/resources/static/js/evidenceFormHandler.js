@@ -197,8 +197,12 @@ function clearUsers() {
 
 // Event listener to add skills when enter is pressed and the skill input is selected
 document.querySelector("#add_skill_input").addEventListener("keyup", event => {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    addSkill()
+    if (event.key === "Enter" || event.key === " ") {
+        addSkill()
+    } else if (event.key === "Delete") {
+        skillRow.children.item(skillRow.children.length-1).click() // Negative index doesn't work for htmlcollection
+    }
+    return;
 })
 
 //Returns the skills
@@ -250,7 +254,7 @@ function addSkill() {
 function updateSkills() {
     const skillCounter = document.getElementById("skillCharCount")
     const skillInput = document.getElementById("add_skill_input")
-    skillCounter.innerText = "Characters Remaining: "  + (100 - skillInput.value.length)
+    skillCounter.innerText = "Characters Remaining: "  + (100 - skillInput.value.length) + ", press DELETE to remove skills"
 }
 
 // Inserts a new skill tag into the form
@@ -317,9 +321,10 @@ function addLink() {
         return;
     }
     if (!validateLink(newLink)) {
-        alert('Link is not valid, please ensure link includes http(s):// protocol');
+        document.getElementById("link_error").style = "color:red;";
         return;
     }
+    document.getElementById("link_error").style = "display:none;";
     if (links.has(newLink)) return;
     links.add(newLink)
     document.getElementById("add_link_input").value = ""
