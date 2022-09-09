@@ -261,6 +261,7 @@ public class EvidenceListController {
 
       List<String> extractedUsers = evidenceService.extractListFromHTMLStringWithTilda(users.orElse(""));
 
+      logger.debug(extractedUsers.toString());
       List<Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, LocalDate.parse(date), categoriesInt);
       // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links
       logger.info("[EVIDENCE] Saving evidence to repo");

@@ -237,8 +237,9 @@ public class EvidenceService {
             //Loop through all associated users again so that we can associate them to the evidence we created
             // TODO: can refactor this to use to addUsersToExistingEvidence function
             for(String[] associated: validUsers) {
-                int associatedId = Integer.parseInt(user[0]);
-                String associatedName = user[1];
+                int associatedId = Integer.parseInt(associated[0]);
+                String associatedName = associated[1];
+                logger.debug(associatedName);
                 EvidenceUser evidenceUser = new EvidenceUser(associatedId, associatedName, userEvidence);
                 evidenceUserRepository.save(evidenceUser);
             }
