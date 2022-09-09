@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -58,6 +59,9 @@ public class CommitSearchControllerTest {
 
     @MockBean
     GitlabClient gitlabClient;
+
+    @MockBean
+    Logger logger;
 
     @Before
      void setup() throws Exception {
@@ -310,9 +314,7 @@ public class CommitSearchControllerTest {
 
         mockMvc.perform(get("/evidence/search-commits").param(
                 "group-id", String.valueOf(1)).param("author-email", "not-email")
-                )
-                .andExpect(status().is4xxClientError())
-                .andExpect(content().string("Author email must be a valid email"));
+                ).andExpect(model().attribute("errorMessage", "Parameters passed to searchForCommit are invalid, rejecting: Author email must be a valid email"));
     }
 
     @Test
@@ -345,9 +347,7 @@ public class CommitSearchControllerTest {
         mockMvc.perform(
                 get("/evidence/search-commits")
                         .param("group-id", "-1")
-            )
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("No repository is configured for group with ID=-1"));
+        ).andExpect(model().attribute("errorMessage", "No repository is configured for group with ID=-1"));
     }
 
     @Test
@@ -406,8 +406,6 @@ public class CommitSearchControllerTest {
         mockMvc.perform(
                         get("/evidence/search-commits")
                                 .param("group-id", "1")
-                )
-                .andExpect(status().is5xxServerError())
-                .andExpect(content().string("Communicating with the Gitlab API failed, please try again"));
+                ).andExpect(model().attribute("errorMessage", "Communicating with the Gitlab API failed, please try again"));
     }
 }
