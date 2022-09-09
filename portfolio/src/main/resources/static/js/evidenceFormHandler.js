@@ -405,9 +405,9 @@ function updateDesc() {
 }
 
 function verifyTitle() {
-    const titleInput = document.getElementById("evidence_title")
-    if (titleInput.value.match(allChrPattern) == null || titleInput.value.match(emojiPattern) != null) {
-        if (titleInput.value !== "") {
+    const titleData = document.getElementById("evidence_title").value.replace(/[\n\r ]/g, '');
+    if (titleData.match(allChrPattern) == null || titleData.match(emojiPattern) != null) {
+        if (titleData !== "") {
             document.getElementById("title_error").style = "color:red;";
         }
         return false
@@ -418,9 +418,9 @@ function verifyTitle() {
 }
 
 function verifyDesc() {
-    const descInput = document.getElementById("evidence_desc")
-    if (descInput.value.match(allChrPattern) == null || descInput.value.match(emojiPattern) != null) {
-        if (descInput.value !== "") {
+    const descData = document.getElementById("evidence_desc").value.replace(/[\n\r ]/g, '');
+    if (descData.match(allChrPattern) == null || descData.match(emojiPattern) != null) {
+        if (descData !== "") {
             document.getElementById("description_error").style = "color:red;";
         }
         return false
