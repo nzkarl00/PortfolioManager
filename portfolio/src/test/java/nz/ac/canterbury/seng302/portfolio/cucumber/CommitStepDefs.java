@@ -99,4 +99,32 @@ public class CommitStepDefs {
         Thread.sleep(500);
         Assertions.assertEquals("true", saveButton.getAttribute("disabled"));
     }
+
+    @And("I search for evidence")
+    public void iSearchForEvidence() {
+    }
+
+    @Then("I add commit {string}")
+    public void iAddCommit(String arg0) {
+    }
+
+    @Then("I enter the appropriate mandatory attributes for {string}")
+    public void iEnterTheAppropriateMandatoryAttributesFor(String arg0) {
+    }
+
+    @Then("There is the commit saved")
+    public void thereIsTheCommitSaved() {
+    }
+
+    @Then("I delete commit {string}")
+    public void iDeleteCommit(String arg0) {
+    }
+
+    @Then("There is not the commit saved")
+    public void thereIsNotTheCommitSaved() {
+    }
+
+    @Then("There are the commits saved")
+    public void thereAreTheCommitsSaved() {
+    }
 }
