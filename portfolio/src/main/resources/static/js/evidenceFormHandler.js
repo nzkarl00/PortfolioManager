@@ -254,7 +254,7 @@ function addSkill() {
 function updateSkills() {
     const skillCounter = document.getElementById("skillCharCount")
     const skillInput = document.getElementById("add_skill_input")
-    skillCounter.innerText = "Characters Remaining: "  + (100 - skillInput.value.length) + ", press DELETE to remove skills"
+    skillCounter.innerText = "Characters Remaining: "  + (50 - skillInput.value.length) + ", press DELETE to remove skills"
 }
 
 // Inserts a new skill tag into the form
