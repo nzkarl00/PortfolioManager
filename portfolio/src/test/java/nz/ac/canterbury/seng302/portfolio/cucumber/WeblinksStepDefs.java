@@ -61,13 +61,13 @@ public class WeblinksStepDefs {
     @Given("I open the piece of evidence")
     public void openEvidence() throws InterruptedException {
         // get the xpath of the desired pieve of evidence
-        String getId = getEvidenceId("Evidence One");
-        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+getId)));
-        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
+        String evidenceId = getEvidenceId("Evidence One");
+        WebElement element = driver.findElement(By.id(evidenceId));
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, element);
+        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
+        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
         BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
         arrowButton.click();
-        // wait for dropdown
-        Thread.sleep(500);
     }
 
     @And("I click the weblink")
@@ -153,8 +153,11 @@ public class WeblinksStepDefs {
 
             WebElement saveButton = seleniumExample.config.getDriver()
                 .findElement(By.id("projectSave"));
+            JavascriptExecutor je = (JavascriptExecutor) seleniumExample.config.getDriver();
+            je.executeScript("arguments[0].scrollIntoView(true);", saveButton);
+            Thread.sleep(300);
             Assertions.assertTrue(saveButton.isEnabled());
-            saveButton.submit();
+            saveButton.click();
         }
         Thread.sleep(200);
     }

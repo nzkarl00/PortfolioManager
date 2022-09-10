@@ -60,6 +60,8 @@ public class DeleteEvidenceTest {
     @MockBean
     private WebLinkRepository webLinkRepository;
     @MockBean
+    private SprintService sprintService;
+    @MockBean
     private EvidenceUserRepository evidenceUserRepository;
     @MockBean
     private GroupsClientService groupsClientService;

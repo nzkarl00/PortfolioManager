@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.cucumber;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 
 public class ModifyEvidenceStepDefs {
@@ -18,6 +19,10 @@ public class ModifyEvidenceStepDefs {
 
     @And("I change the skill to {string}")
     public void iChangeTheSkillTo(String arg0) {
+    }
+
+    @When("User inputs {string} into the edit skill input textbox.")
+    public void iAddTheSkillTo(String arg0) {
     }
 
     @Then("The edit list is updated")

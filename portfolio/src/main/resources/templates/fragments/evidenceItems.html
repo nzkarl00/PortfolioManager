@@ -90,7 +90,7 @@
                         <button
                                 th:if="${evidence.getParentUserId() == userId}"
                                 type="button" th:style="${displayDeleteButton}" th:value="${evidence.getId()}"
-                                th:id="${evidence.getId()}" data-toggle="modal"
+                                th:id="${'deleteButton' + evidence.getId()}" data-toggle="modal"
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
                                 class="fa fa-trash delete_button"
                         />
@@ -100,7 +100,7 @@
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete - ' + evidence.getTitle()+ '?' }"/>
+                                    <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete - ' + evidence.getTitle()+ '?' }">Delete?</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>

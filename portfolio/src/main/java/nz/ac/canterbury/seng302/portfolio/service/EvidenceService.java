@@ -26,11 +26,20 @@ public class EvidenceService {
     @Autowired
     ProjectService projectService;
     @Autowired
-    EvidenceUserRepository evidenceUserRepository;
-    @Autowired
     AccountClientService accountClientService;
+    @Autowired
+    EvidenceUserRepository evidenceUserRepository;
 
     Logger logger = LoggerFactory.getLogger(EvidenceService.class);
+
+    // TODO: add in custom exceptions for if there is no group repo found for this user.
+    public List<String> getGroupRepoOptionsForUser(Integer userId) {
+
+//        UserResponse user = accountClientService.getUserById(userId);
+//        List<GroupMembership> findAllByRegisteredGroupUser(AccountProfile profile);
+        List<String> testList = new ArrayList<>();
+        return testList;
+    }
 
     /**
      * Get a list of all unique skill tag names
