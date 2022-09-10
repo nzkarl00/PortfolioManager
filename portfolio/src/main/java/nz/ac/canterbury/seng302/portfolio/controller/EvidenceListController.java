@@ -221,6 +221,7 @@ public class EvidenceListController {
           @RequestParam(value = "skillInput") String skills,
           @RequestParam(value = "userInput") Optional <String> users,
           @RequestParam(value = "linksInput") Optional <String> links,
+          @RequestParam(value = "commitsInput") Optional <String> commits,
           @RequestParam(value = "descriptionInput") String description,
           Model model
   ) throws CustomExceptions.ProjectItemNotFoundException {
@@ -230,7 +231,7 @@ public class EvidenceListController {
           return "redirect:evidence?pi=" + projectId.toString();
       }
 
-      logger.debug(skills);
+      logger.debug(commits.orElse("commits not present"));
 
       Integer accountID = AuthStateInformer.getId(principal);
       model.addAttribute("authorId", accountID);
