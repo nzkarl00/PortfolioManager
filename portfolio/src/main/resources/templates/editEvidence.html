@@ -129,13 +129,13 @@
                     <input type="hidden" id="skillEditInput" th:name="skillEditInput">
                     <input type="hidden" id="skillNewInput" th:name="skillNewInput">
 
-                    <div id="links_and_submit" style="display: flex">
+                    <div class="row-1" id="links_and_submit" style="display: flex">
 
                         <!-- 3. List of all the links the user added from the input field -->
                         <div id="links_container" style="width: 85%; display: block">
                         </div>
 
-                        <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
+                        <div class="col-2" id="submit_and_cancel" style="margin-right:60px;">
                             <button class="cancel_evidence"><a th:href="@{evidence}" id="cancelButton" type="button" style="text-align: center; color: #FFFFFF;">CANCEL</a></button>
                             <button class="save_evidence" id="projectSave" type="submit">SAVE</button>
                         </div>
