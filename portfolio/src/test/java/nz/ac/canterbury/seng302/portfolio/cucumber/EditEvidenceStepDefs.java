@@ -14,6 +14,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 public class EditEvidenceStepDefs {
 
@@ -22,9 +23,18 @@ public class EditEvidenceStepDefs {
 
     CommonEvidenceServices commonEvidenceServices = new CommonEvidenceServices();
 
+    /**
+     *Gets the evidence id for the users evidence
+     * @return evidence id - type String
+     **/
+    public String getEvidenceId(String title) {
+        List<WebElement> elementsList = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(),'" + title + "')]"));
+        return elementsList.get(0).getAttribute("id");
+    }
+
     @When("I click the edit icon")
     public void i_click_the_edit_icon() throws InterruptedException {
-        String evidenceId = commonEvidenceServices.getEvidenceId("Evidence One");
+        String evidenceId = getEvidenceId("Evidence One");
         WebElement element = driver.findElement(By.id(evidenceId));
         BaseSeleniumStepDefs.scrollWindowToElement(driver, element);
         new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
@@ -35,15 +45,16 @@ public class EditEvidenceStepDefs {
         ((JavascriptExecutor) seleniumExample.config.getDriver())
                 .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
         Thread.sleep(100);
-        WebElement button = seleniumExample.config.getDriver().findElement(By.className("edit_evidence"));
+        WebElement button = seleniumExample.config.getDriver().findElement(By.id("editButton" + evidenceId));
         BaseSeleniumStepDefs.scrollWindowToElement(driver, button);
-        Thread.sleep(300);
+        Thread.sleep(200);
         button.click();
+        Thread.sleep(1000);
     }
 
     @Then("I cannot click the edit icon")
     public void i_cannot_click_the_edit_icon() {
-        String evidenceId = commonEvidenceServices.getEvidenceId("Evidence One");
+        String evidenceId = getEvidenceId("Evidence One");
         WebElement element = driver.findElement(By.id(evidenceId));
         try {
             BaseSeleniumStepDefs.scrollWindowToElement(driver, element);
@@ -55,7 +66,7 @@ public class EditEvidenceStepDefs {
             ((JavascriptExecutor) seleniumExample.config.getDriver())
                     .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
             Thread.sleep(100);
-            WebElement button = seleniumExample.config.getDriver().findElement(By.className("edit_evidence"));
+            WebElement button = seleniumExample.config.getDriver().findElement(By.id("editButton" + evidenceId));
         } catch(Exception e) {
 
         }

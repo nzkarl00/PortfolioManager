@@ -81,19 +81,21 @@
                             </div>
                         </div>
                         <br>
-                        <form th:if="${evidence.getParentUserId() == userId}" th:action="@{editEvidence}" method="get">
+                        <div class="row-1" style="display: flex">
+                        <form th:if="${evidence.getParentUserId() == userId}" th:action="@{edit-evidence}" method="get">
                             <input style="display:none;" th:name="id" th:value="${evidence.getId()}" type="number">
                             <button
+                                    th:id="${'editButton' + evidence.getId()}"
                                     class="fa fa-edit edit_evidence"
-                                    type="submit"/>
+                                    type="submit"></button>
                         </form>
                         <button
                                 th:if="${evidence.getParentUserId() == userId}"
                                 type="button" th:style="${displayDeleteButton}" th:value="${evidence.getId()}"
                                 th:id="${'deleteButton' + evidence.getId()}" data-toggle="modal"
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
-                                class="fa fa-trash delete_button"
-                        />
+                                class="fa fa-trash delete_button"></button>
+                        </div>
                     </div>
                     <!-- Modal -->
                     <div class="modal fade" th:id="${'deleteModal'+evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

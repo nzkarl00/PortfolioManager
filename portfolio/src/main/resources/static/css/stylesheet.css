@@ -1423,12 +1423,10 @@ select.form-control {
 
 .edit_evidence {
     border: none;
-    padding: 1px 10px;
-    text-decoration: none !important;
-    background: #FF48CF  !important;
     margin-left: 10px;
-    margin-bottom: 2px;
-    border-radius: px;
+    padding: 4px 10px;
+    background: #FF48CF  !important;
+    border-radius: 10px;
     color: white;
 }
 

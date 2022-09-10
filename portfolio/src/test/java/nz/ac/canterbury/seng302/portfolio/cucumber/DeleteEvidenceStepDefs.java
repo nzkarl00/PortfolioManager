@@ -24,6 +24,15 @@ public class DeleteEvidenceStepDefs {
     SeleniumExample seleniumExample = BaseSeleniumStepDefs.seleniumExample;
     WebDriver driver = seleniumExample.config.getDriver();
 
+    /**
+     *Gets the evidence id for the users evidence
+     * @return evidence id - type String
+     **/
+    public String getEvidenceId(String title) {
+        List<WebElement> elementsList = seleniumExample.config.getDriver().findElements(By.xpath("//*[contains(text(),'" + title + "')]"));
+        return elementsList.get(0).getAttribute("id");
+    }
+
     @Then("I can see a delete icon")
     public void iCanSeeADeleteIcon() throws InterruptedException {
         String evidenceId = getEvidenceId("Evidence One");
@@ -55,12 +64,6 @@ public class DeleteEvidenceStepDefs {
         driver.findElement(By.xpath("//button[@data-target='#deleteModal" + evidenceId + "']")).click();
 
         Thread.sleep(1000);
-    }
-
-    @When("I view that piece of evidence that is not mine")
-    public void iViewThatPieceOfEvidenceThatIsNotMine()
-        throws InterruptedException {
-        viewFullPieceOfEvidence();
     }
 
     @Then("I cannot see a delete icon")

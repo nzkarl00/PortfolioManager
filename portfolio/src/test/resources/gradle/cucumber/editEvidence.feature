@@ -11,6 +11,7 @@ Feature: U32 - Modifying pieces of evidence
     And I click the save button
     When User navigates to "evidence?pi=1".
     When I view that piece of evidence "Evidence One"
+    Then I can see a delete icon
     When I click the edit icon
 
   @Close
@@ -23,4 +24,5 @@ Feature: U32 - Modifying pieces of evidence
     Given I am authenticated as a admin
     When User navigates to "evidence?pi=1".
     When I view that piece of evidence "Evidence One"
+    Then I can see a delete icon
     Then I cannot click the edit icon

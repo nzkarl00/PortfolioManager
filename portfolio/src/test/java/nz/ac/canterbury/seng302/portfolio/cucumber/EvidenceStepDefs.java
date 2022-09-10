@@ -13,6 +13,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -237,18 +238,18 @@ public class EvidenceStepDefs {
     }
 
     @When("I try to update the widget date to a new date that is within the project")
-    public void iTryToUpdateTheWidgetDateToANewDateThatIsWithinTheProject()
-        throws InterruptedException {
+    public void iTryToUpdateTheWidgetDateToANewDateThatIsWithinTheProject() {
         WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
         String minDateStringFormat = date.getAttribute("min");
         Date minDate = DateParser.stringToDate(minDateStringFormat);
         Calendar cal = Calendar.getInstance();
+        assert minDate != null;
         cal.setTime(minDate);
         cal.add(Calendar.DAY_OF_MONTH, 2);
         String month = String.valueOf(cal.get(Calendar.MONTH));
         String day = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
         if (cal.get(Calendar.MONTH) < 10) {
-            month = "0" + String.valueOf(cal.get(Calendar.MONTH));
+            month = "0" + cal.get(Calendar.MONTH);
         }
         if (cal.get(Calendar.DAY_OF_MONTH) < 10) {
             day = "0" + cal.get(Calendar.DAY_OF_MONTH);
@@ -263,12 +264,13 @@ public class EvidenceStepDefs {
         String minDateStringFormat = date.getAttribute("min");
         Date minDate = DateParser.stringToDate(minDateStringFormat);
         Calendar cal = Calendar.getInstance();
+        assert minDate != null;
         cal.setTime(minDate);
         cal.add(Calendar.DAY_OF_MONTH, 2);
         String month = String.valueOf(cal.get(Calendar.MONTH));
         String day = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
         if (cal.get(Calendar.MONTH) < 10) {
-            month = "0" + String.valueOf(cal.get(Calendar.MONTH));
+            month = "0" + cal.get(Calendar.MONTH);
         }
         if (cal.get(Calendar.DAY_OF_MONTH) < 10) {
             day = "0" + cal.get(Calendar.DAY_OF_MONTH);
@@ -347,16 +349,19 @@ public class EvidenceStepDefs {
      **/
     public void viewFullPieceOfEvidence() throws InterruptedException {
         String getId = getEvidenceId("Evidence Delete");
+        WebDriver driver = seleniumExample.config.getDriver();
         new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+getId)));
         WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
         BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
         arrowButton.click();
     }
+
     /**
      *Opens a piece of evidence
      **/
     public void viewFullPieceOfEvidence(String arg0) throws InterruptedException {
         String getId = getEvidenceId(arg0);
+        WebDriver driver = seleniumExample.config.getDriver();
         new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+getId)));
         WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
         BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
