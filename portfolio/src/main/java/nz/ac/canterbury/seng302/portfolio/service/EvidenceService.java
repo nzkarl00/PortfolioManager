@@ -178,6 +178,7 @@ public class EvidenceService {
         List<String[]> validUsers = validateUserIdPairExist(userStrings);
 
         //Loop through all associated users so that we can add them to the existing evidence as contributors
+        logger.info("[EVIDENCE SERVICE] adding contributors to the evidence");
         for(String[] validUser: validUsers) {
             int userId = Integer.parseInt(validUser[0]);
             String userName = validUser[1];
@@ -195,6 +196,7 @@ public class EvidenceService {
 
         List<String[]> validUsers = new ArrayList<>();
 
+        logger.info("[EVIDENCE SERVICE] validating users");
         for(String userString: userStrings) {
             String[] userIdPair = userString.split(":");
             int userId = Integer.parseInt(userIdPair[0]);
