@@ -14,6 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>
     <link
@@ -55,15 +56,11 @@
                     <div class="btn commit_text float-end">
                         <b class="commit_head">Link Group:</b>
                     </div>
-                    <select class="commit_edit_data"  id="commit_group" th:name="commit_group" >
-                    <option value=" "> </option>
-                    <option value="1">ExampleGroupA</option>
-                    <option value="2">ExampleGroupB</option>
-                    <option value="3">ExampleGroupC</option>
+                    <select class="commit_edit_data"  id="commit_group" th:name="commit_group" th:onChange="openSearchCommit(value); canSearchCheck();">
+                        <option value="-1" selected> Select A Group</option>
+                        <option th:each="group: ${groupList}" th:value="${group.getGroupId()}" th:text="${group.getLongName()}">
+                        </option>
                     </select>
-                    <a  data-toggle="collapse" th:id="${'ArrowButtonCommit'}" th:href="'#collapseCommit'" onclick="canSearchCheck();" role="button" aria-expanded="false" aria-controls="collapseExample">
-                        <i class="align-content-center fa fa-plus" style="margin-top: 0.25em; margin-left: 0.25em; font-size: 250%;"></i>
-                    </a>
                 </div>
 
                 <!-- 2. evidence information that can be expanded or collapsed  -->
@@ -87,7 +84,7 @@
                                     <select form="commitSearchForm"  id="commit_sprint_multiselect_items" th:onChange="setDates(value); canSearchCheck();" class="commit_edit_data_small">
                                         <option value="defaultStart" selected disabled> Select A Sprint</option>
                                         <div th:each="sprint: ${sprintList}">
-                                            <option th:value="${sprint}" th:text="${sprint.getLabel}"></option>
+                                            <option th:value="${sprint}" th:text="${sprint.getLabel()}"></option>
                                         </div>
                                     </select>
                                 </div>
@@ -131,6 +128,10 @@
                 <!-- 3.. evidence bottom  -->
                 <div class="row-1">
                     <div class="commit_bot">
+
+                        <div class="commit_text_alert">
+                            <b id="commit_group_alert_message" class="commit_alert">Please link a group with a repository connection.</b>
+                        </div>
                         <br>
                     </div>
                 </div>
@@ -138,13 +139,31 @@
             </form>
         </div>
 
+
     <script th:inline="javascript">
+
 
         window.onload = function() {
         setTimeout(function(){
             canSearchCheck();
             }, 500);
         };
+
+        // Checks if a group with the ID provided exists and has a repo, if yes it opens the search option if
+        // not closes it and displays the alert error
+        function openSearchCommit(id) {
+            var alertMessage = document.getElementById("commit_group_alert_message");
+
+            $.get("/repoCheck", {"groupId":id}).done(function (isRepo) {
+                if (isRepo == true) {
+                    alertMessage.style.display = "none";
+                    $('#collapseCommit').collapse('show')
+                } else {
+                    alertMessage.style.display = "";
+                    $('#collapseCommit').collapse('hide')
+                }
+            })
+        }
 
         function setDates(sprint) {
 

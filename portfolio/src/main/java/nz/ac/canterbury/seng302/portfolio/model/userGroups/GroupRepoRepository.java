@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.model.userGroups;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -11,5 +12,6 @@ import java.util.Optional;
 @Repository
 public interface GroupRepoRepository extends CrudRepository<GroupRepo, Integer> {
     GroupRepo findById(int id);
+    List<GroupRepo> findAll();
     Optional<GroupRepo> findByParentGroupId(int id);
 }

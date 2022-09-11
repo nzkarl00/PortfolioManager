@@ -580,6 +580,9 @@
     border: none;
     padding: 4px 10px;
     background: #26D20F !important;
+    width: 80% !important;
+    margin-left: 10% !important;
+    margin-right: 10% !important;
     border-radius: 10px;
     color: white;
 
@@ -1256,8 +1259,20 @@
     font-size: 175% !important;
 }
 
+
+.commit_alert {
+    font-family: nexaLight !important;
+    color: #FF202E !important;
+    font-color: #FF202E !important;
+    font-size: 100% !important;
+
+}
+
 .commit_text {
     margin-left: -0.5em !important;
+}
+.commit_text_alert {
+    padding-left: 1.25em !important;
 }
 
 .fa-arrow-down {
@@ -1589,9 +1604,9 @@ select.form-control {
 
 .author_tag{
     text-decoration: underline;
-    background-color: #333344; !important;
+    background-color: #6E4F94; !important;
     border-style: none !important;
-    border-radius: 3px !important;
+    border-radius: 8px !important;
     color: #ffffff !important;
     padding: 0.3rem 1rem;
     display: inline-block !important;
@@ -1602,9 +1617,9 @@ select.form-control {
 
 .contributor_tag{
     text-decoration: underline;
-    background-color: #666688; !important;
+    background-color: #8F41C5; !important;
     border-style: none !important;
-    border-radius: 3px !important;
+    border-radius: 8px !important;
     color: #ffffff !important;
     padding: 0.3rem 1rem;
     display: inline-block !important;
