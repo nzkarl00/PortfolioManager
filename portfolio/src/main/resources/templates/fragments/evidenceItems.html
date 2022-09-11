@@ -110,7 +110,7 @@
                                 <div class="modal-body"
                                      th:text="${'Are you sure you want to delete this piece of evidence (' + evidence.getTitle()+ ') from your portfolio?'}"
                                 />
-                                <form method="post" th:action="@{/delete-evidence}">
+                                <form method="post" th:action="@{delete-evidence}">
                                     <div class="modal-footer">
                                         <input type="number" th:name="evidenceId" th:value="${evidence.getId()}" style="display: none">
                                         <input type="number" th:name="projectId" th:value="${evidence.getAssociatedProject().getId()}" style="display: none">
