@@ -34,6 +34,7 @@
     <input form="evidenceCreateForm" type="hidden" id="commitsInput" th:name="commitsInput">
 
     <div class="commit_data no-gutters commit_search_result_body" id="commit_search_result_box">
+
         <div th:each="commit: ${commitMap}">
             <div th:id="${commit.value.getId}" class="row">
                 <div class="row commit_display_small" th:text="${'[' + commit.value.getId + ']'}"></div>

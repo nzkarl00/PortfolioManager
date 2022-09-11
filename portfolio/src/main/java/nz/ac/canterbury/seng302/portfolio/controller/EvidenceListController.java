@@ -110,10 +110,6 @@ public class EvidenceListController {
           evidenceList = evidenceService.filterByCategory(evidenceList, categoryName);
       }
 
-
-
-
-
     List<Project> allProjects = projectService.getAllProjects();
     model.addAttribute("projectList", allProjects);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
@@ -131,8 +127,6 @@ public class EvidenceListController {
     if (projectId != null) {
       showForm = true;
       Project project = projectService.getProjectById(projectId);
-
-
       model.addAttribute("project", project);
     }
     model.addAttribute("showForm", showForm);
