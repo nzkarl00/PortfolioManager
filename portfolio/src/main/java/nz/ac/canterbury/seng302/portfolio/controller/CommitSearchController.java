@@ -59,27 +59,11 @@ public class CommitSearchController {
         @RequestParam(value = "author-email") Optional<String> authorEmail,
         @RequestParam(value = "date-start") Optional<String> dateRangeStart,
         @RequestParam(value = "date-end") Optional<String> dateRangeEnd,
+        @RequestParam(value = "selected-commits") Optional<String> selectedCommits,
         Model model
     ) throws Exception {
         logger.info(String.format("Attempting to carry out commit search for group id=<%d>", groupID));
-        Map<String, Object> res = new HashMap<String, Object>();
-
-
-        // TODO take this out once front-end validation is complete
-        Map<String, Object> test = new HashMap<String, Object>();
-        String testApiKey = "naz71Wwxyp31nYzaEgxZ";
-        List<Commit> testCommits = gitlabClient.getCommits(new GitLabApi(gitlabInstanceURL, testApiKey), "lra63", "example-for-api", 5);
-        for (Commit commit : testCommits) {
-            test.put(commit.getTitle(), commit);
-        }
-
-        Map<String, Object> output = new HashMap<String, Object>();
-        for (Map.Entry<String, Object> entry : test.entrySet()) {
-            if (output.size() < 5) {
-                output.put(entry.getKey(), entry.getValue());
-            }
-        }
-        model.addAttribute("commitMap", output);
+        Map<String, Commit> res = new HashMap<String, Commit>();
 
         // Validation
         try {
@@ -109,20 +93,26 @@ public class CommitSearchController {
                     commitHash,
                     authorName,
                     authorEmail,
-                    dateRangeStart.map((dateStr) -> DateParser.stringToDate(dateStr)),
-                    dateRangeEnd.map((dateStr) -> DateParser.stringToDate(dateStr))
+                    dateRangeStart.map(DateParser::stringToDate),
+                    dateRangeEnd.map(DateParser::stringToDate)
             );
-
-            res.put("count", commits.size());
-            // Convert each commit into a commit message.
-            List<CommitMessage> commitMessages = commits.stream().map((commit) -> new CommitMessage(commit)).toList();
-            res.put("commits", commitMessages);
+            commits.forEach(commit -> res.put(commit.getTitle(), commit));
         } catch (Exception e) {
             logger.error(String.format("Could not get commits for group with ID=<%d>", groupID), e);
             model.addAttribute("errorMessage", "Communicating with the Gitlab API failed, please try again");
             return "fragments/commitDisplay.html :: commitDisplay";
         }
-
+        List<String> selectedHashes = EvidenceService.extractListFromHTMLStringSkills(selectedCommits.orElse(""));
+        Map<String, Commit> output = new HashMap<String, Commit>();
+        logger.debug(String.valueOf(output.size()));
+        logger.debug(res.toString());
+        for (Map.Entry<String, Commit> entry : res.entrySet()) {
+            if (output.size() < 5 && !selectedHashes.contains(entry.getValue().getId())) {
+                logger.debug(entry.getValue().getTitle());
+                output.put(entry.getKey(), entry.getValue());
+            }
+        }
+        model.addAttribute("commitMap", output);
         return "fragments/commitDisplay.html :: commitDisplay";
     }
 

@@ -282,7 +282,7 @@ public class EvidenceService {
      * @param stringFromHTML The string containing items delimited by ~
      * @return an array representation of the list
      */
-    public List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
+    public static List<String> extractListFromHTMLStringSkills(String stringFromHTML) {
         if (stringFromHTML.equals("")) {
             return Collections.emptyList();
         }

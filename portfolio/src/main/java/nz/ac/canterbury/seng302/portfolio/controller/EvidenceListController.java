@@ -94,7 +94,6 @@ public class EvidenceListController {
       }
     setTitle(model, userId, projectId, categoryName, skillName);
 
-    //TODO get rid of once this is actually used
     logger.info("[EVIDENCE] getting all the groups for user");
     logger.info(groupsClientService.getAllGroupsForUser(id).toString());
     List<Evidence> evidenceList = new ArrayList<>();
@@ -308,7 +307,7 @@ public class EvidenceListController {
 
       int categoriesInt = Evidence.categoryStringToInt(categories);
 
-      List<String> extractedUsers = evidenceService.extractListFromHTMLStringSkills(users.orElse(""));
+      List<String> extractedUsers = EvidenceService.extractListFromHTMLStringSkills(users.orElse(""));
 
       List<Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, LocalDate.parse(date), categoriesInt);
       // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links

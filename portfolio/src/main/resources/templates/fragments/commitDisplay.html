@@ -39,16 +39,17 @@
                 <div class="row commit_display_small" th:text="${'[' + commit.value.getId + ']'}"></div>
                 <div class="row commit_display_large" th:text="${commit.key}"></div>
                 <div class="row commit_display_small" th:text="${'(' + commit.value.getAuthorName + ') ' + '(' + commit.value.getCommittedDate + ')'}"></div>
-                <button class="addCommit" type="button" th:parent-id="${commit.value.getId}" onclick="repositionCommit(this.getAttribute('parent-id'))">+</button>
+                <button class="addCommit" type="button" th:parent-id="${commit.value.getId}" onclick="repositionCommit(this.getAttribute('parent-id')); searchCommits();">+</button>
                 <div></div>
                 <br>
             </div>
         </div>
         <div th:if="${commitMap.size() == 5}"><br>Only 5 commits are being shown, filter with more specific options to get more</div>
+        <p th:text="${errorMessage}"></p>
     </div>
 
     <script>
-        let commits = new Set()
+        commits = new Set()
 
         // move the commit referenced by the hash to the current commits container
         // and change the button styling
