@@ -63,24 +63,11 @@ public class WeblinksStepDefs {
         // get the xpath of the desired pieve of evidence
         String evidenceId = getEvidenceId("Evidence One");
         WebElement element = driver.findElement(By.id(evidenceId));
-        scrollWindowToElement(element);
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, element);
         new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
         WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
-        scrollWindowToElement(arrowButton);
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
         arrowButton.click();
-    }
-
-
-    /**
-     *Can be used to scroll window to element
-     * @Param element webElement that the window is to scroll too
-     **/
-    public void scrollWindowToElement(WebElement element)
-            throws InterruptedException {
-        //https://learn-automation.com/how-to-scroll-into-view-in-selenium-webdriver/
-        JavascriptExecutor je = (JavascriptExecutor) driver;
-        je.executeScript("arguments[0].scrollIntoView(true);",element);
-        Thread.sleep(300);
     }
 
     @And("I click the weblink")

@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
@@ -88,6 +89,10 @@ public class EvidenceListControllerTest {
     private EvidenceUserRepository evidenceUserRepository;
     @MockBean
     private GroupsClientService groupsClientService;
+    @MockBean
+    private GroupRepoRepository groupRepoRepository;
+    @MockBean
+    private GitlabClient gitlabClient;
 
     @Before
     public void setup() throws Exception {

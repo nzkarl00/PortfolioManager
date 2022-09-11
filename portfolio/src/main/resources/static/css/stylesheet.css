@@ -575,6 +575,19 @@
 
 }
 
+.addCommit {
+
+    border: none;
+    padding: 4px 10px;
+    background: #26D20F !important;
+    width: 80% !important;
+    margin-left: 10% !important;
+    margin-right: 10% !important;
+    border-radius: 10px;
+    color: white;
+
+}
+
 .save_hover:hover {
 
     background: #08F722 !important;
@@ -1067,7 +1080,7 @@
     color: white;
 }
 
-.group_delete_button {
+.delete_button {
     border: none;
     margin-left: 10px;
     padding: 4px 10px;
@@ -1158,6 +1171,24 @@
     border-radius: 0px 0px 20px 20px;
 }
 
+.commit_display_small {
+    font-size: 80% !important;
+    color: #555555 !important;
+    overflow-wrap: break-word;
+    border-radius: 0px 0px 0px 0px !important;
+    margin-bottom:  0px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
+.commit_display_large {
+    font-size: 100% !important;
+    overflow-wrap: break-word;
+    border-radius: 0px 0px 0px 0px !important;
+    margin-bottom:  0px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
 
 .commit_data {
     font-family: nexa !important;
@@ -1209,6 +1240,7 @@
   background-color: #D9F9FF !important;
   border-radius: 20px 20px 20px 20px !important;
   font-size: 100% !important;
+  padding:15px !important;
 }
 
 
@@ -1227,8 +1259,20 @@
     font-size: 175% !important;
 }
 
+
+.commit_alert {
+    font-family: nexaLight !important;
+    color: #FF202E !important;
+    font-color: #FF202E !important;
+    font-size: 100% !important;
+
+}
+
 .commit_text {
     margin-left: -0.5em !important;
+}
+.commit_text_alert {
+    padding-left: 1.25em !important;
 }
 
 .fa-arrow-down {
@@ -1421,6 +1465,16 @@ select.form-control {
 
 }
 
+.edit_evidence {
+    height: 100%;
+    border: none;
+    margin-left: 10px;
+    padding: 4px 10px;
+    background: #FF48CF  !important;
+    border-radius: 10px;
+    color: white;
+}
+
 .trim_text {
     text-overflow: ellipsis;
     overflow: hidden;
@@ -1560,9 +1614,9 @@ select.form-control {
 
 .author_tag{
     text-decoration: underline;
-    background-color: #333344; !important;
+    background-color: #6E4F94; !important;
     border-style: none !important;
-    border-radius: 3px !important;
+    border-radius: 8px !important;
     color: #ffffff !important;
     padding: 0.3rem 1rem;
     display: inline-block !important;
@@ -1573,9 +1627,9 @@ select.form-control {
 
 .contributor_tag{
     text-decoration: underline;
-    background-color: #666688; !important;
+    background-color: #8F41C5; !important;
     border-style: none !important;
-    border-radius: 3px !important;
+    border-radius: 8px !important;
     color: #ffffff !important;
     padding: 0.3rem 1rem;
     display: inline-block !important;
