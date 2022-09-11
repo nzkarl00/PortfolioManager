@@ -164,10 +164,8 @@ public class EvidenceListController {
           Project project = projectService.getProjectById(projectId);
           model.addAttribute("project", project);
 
-          List<Sprint> sprintList = sprintService.getSprintByParentId(project.getId());
 
           model.addAttribute("project", project);
-          model.addAttribute("sprintList", sprintList);
       }
 
       PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(userId);
