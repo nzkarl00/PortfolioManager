@@ -149,15 +149,17 @@
             }, 500);
         };
 
+        // Checks if a group with the ID provided exists and has a repo, if yes it opens the search option if
+        // not closes it and displays the alert error
         function openSearchCommit(id) {
-            var x = document.getElementById("commit_group_alert_message");
+            var alertMessage = document.getElementById("commit_group_alert_message");
 
             $.get("/repoCheck", {"groupId":id}).done(function (isRepo) {
                 if (isRepo == true) {
-                    x.style.display = "none";
+                    alertMessage.style.display = "none";
                     $('#collapseCommit').collapse('show')
                 } else {
-                    x.style.display = "";
+                    alertMessage.style.display = "";
                     $('#collapseCommit').collapse('hide')
                 }
             })
