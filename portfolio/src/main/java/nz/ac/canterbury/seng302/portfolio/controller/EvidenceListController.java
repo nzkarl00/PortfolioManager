@@ -4,9 +4,10 @@ import nz.ac.canterbury.seng302.portfolio.model.AuthenticatedUser;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
@@ -16,6 +17,8 @@ import org.openqa.selenium.InvalidArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,8 +49,6 @@ public class EvidenceListController {
   @Autowired
   private AccountClientService accountClientService;
   @Autowired
-  private EvidenceUserRepository evidenceUserRepository;
-  @Autowired
   private SprintService sprintService;
   @Autowired
   private NavController navController;
@@ -55,6 +56,16 @@ public class EvidenceListController {
   private GroupsClientService groupsClientService;
   @Autowired
   private EvidenceService evidenceService;
+  @Autowired
+  private GroupRepoRepository groupRepoRepository;
+  @Autowired
+  private GroupsClientService groupsService;
+  @Autowired
+  private GitlabClient gitlabClient;
+
+
+    @Value("${portfolio.base-url}")
+    private String baseUrl;
 
   private String errorMessage = "";
 
@@ -101,6 +112,8 @@ public class EvidenceListController {
 
 
 
+
+
     List<Project> allProjects = projectService.getAllProjects();
     model.addAttribute("projectList", allProjects);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
@@ -114,14 +127,13 @@ public class EvidenceListController {
     // End of Attributes for header
     //Attributes for form
     boolean showForm = false;
+
     if (projectId != null) {
       showForm = true;
       Project project = projectService.getProjectById(projectId);
 
-      List<Sprint> sprintList = sprintService.getSprintByParentId(project.getId());
 
       model.addAttribute("project", project);
-      model.addAttribute("sprintList", sprintList);
     }
     model.addAttribute("showForm", showForm);
     model.addAttribute("errorMessage", errorMessage);
@@ -141,12 +153,17 @@ public class EvidenceListController {
           userId = AuthStateInformer.getId(principal);
       }
       List<Evidence> evidenceList = evidenceService.getEvidenceList(userId, projectId, categoryName, skillName);
-      if (projectId == -1) {
-      } else {
+      if (projectId != -1) {
           model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
           Project project = projectService.getProjectById(projectId);
           model.addAttribute("project", project);
+
+
+          model.addAttribute("project", project);
       }
+
+      PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(userId);
+      model.addAttribute("groupList", groupList.getGroupsList());
 
 
       model.addAttribute("evidenceList", evidenceList);
@@ -171,6 +188,12 @@ public class EvidenceListController {
       Project project = projectService.getProjectById(projectId);
       model.addAttribute("project", project);
 
+
+      model.addAttribute("baseUrl", baseUrl);
+      List<Sprint> sprintList = sprintService.getSprintByParentId(project.getId());
+
+      model.addAttribute("sprintList", sprintList);
+
       PaginatedUsersResponse response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
       List<String> users = new ArrayList<>();
       for (UserResponse user: response.getUsersList()) {
@@ -184,12 +207,36 @@ public class EvidenceListController {
       model.addAttribute("autoSkills", skillTagListNoSkill);
       int userId = AuthStateInformer.getId(principal);
       model.addAttribute("userId", userId);
+      PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(userId);
+      model.addAttribute("groupList", groupList.getGroupsList());
 
       navController.updateModelForNav(principal, model, accountClientService.getUserById(userId), userId);
 
       return "fragments/evidenceForm.html :: evidenceForm";
   }
 
+
+    /**
+     * Sends all the deadlines in JSON for a given project
+     * @param groupId the id of the group to
+     * @return the list of deadlines in JSON
+     */
+    @GetMapping("/repoCheck")
+    public ResponseEntity<Boolean> getProjectDeadlines(@RequestParam(value = "groupId") Integer groupId) {
+        GroupRepo groupRepo;
+        Optional<GroupRepo> existingGroupRepo = groupRepoRepository.findByParentGroupId(groupId);
+        if (groupId == -1 || existingGroupRepo.isEmpty()) {
+            return ResponseEntity.ok(false);
+        } else {
+            groupRepo = existingGroupRepo.get();
+            try {
+                gitlabClient.getProject(groupRepo.getApiKey(), groupRepo.getOwner(), groupRepo.getName());
+                return ResponseEntity.ok(true);
+            } catch (Exception e) {
+                return ResponseEntity.ok(false);
+            }
+        }
+    }
 
 
   private void setPageTitle(Model model, String title) {
@@ -407,9 +454,8 @@ public class EvidenceListController {
    * @param projectId Id of project to get evidence from
    * @param categoryName name of category to get evidence from
    * @param skillName name of skill to get evidence from
-   * @throws InvalidArgumentException possible exceptions can be raised from project ID not being valid and skillID not being valid
-   */
-  private void setTitle(Model model, Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
+     */
+  private void setTitle(Model model, Integer userId, Integer projectId, String categoryName, String skillName) {
         if (categoryName != null){
             setPageTitle(model, "Evidence from category: " + categoryName);
         } else if (skillName != null){

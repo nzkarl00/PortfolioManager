@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.junit.Before;
@@ -65,6 +66,10 @@ public class DeleteEvidenceTest {
     private EvidenceUserRepository evidenceUserRepository;
     @MockBean
     private GroupsClientService groupsClientService;
+    @MockBean
+    private GroupRepoRepository groupRepoRepository;
+    @MockBean
+    private GitlabClient gitlabClient;
 
     private static final Project testProject = getValidProject();
     private static final LocalDate may4 = LocalDate.parse("2022-05-04");
