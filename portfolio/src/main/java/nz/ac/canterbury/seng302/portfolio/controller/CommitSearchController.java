@@ -5,16 +5,19 @@ import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.util.Validation;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.models.Commit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -22,8 +25,11 @@ import java.util.regex.Pattern;
 /**
  * A Controller to control searching for commits associated with a group repository.
  */
-@RestController
+@Controller
 public class CommitSearchController {
+    @Value("${portfolio.gitlab-instance-url}")
+    private String gitlabInstanceURL;
+
     @Autowired
     private GroupRepoRepository groupRepoRepository;
 
@@ -44,36 +50,53 @@ public class CommitSearchController {
      * @return
      * @throws Exception
      */
-    @GetMapping("/evidence/search-commits")
-    public ResponseEntity<Object> searchCommits(
+    @GetMapping("evidence/search-commits")
+    public String searchCommits(
         @AuthenticationPrincipal AuthState principal,
         @RequestParam(value = "group-id") Integer groupID,
         @RequestParam(value = "commit-hash") Optional<String> commitHash,
         @RequestParam(value = "author-name") Optional<String> authorName,
         @RequestParam(value = "author-email") Optional<String> authorEmail,
         @RequestParam(value = "date-start") Optional<String> dateRangeStart,
-        @RequestParam(value = "date-end") Optional<String> dateRangeEnd
+        @RequestParam(value = "date-end") Optional<String> dateRangeEnd,
+        Model model
     ) throws Exception {
         logger.info(String.format("Attempting to carry out commit search for group id=<%d>", groupID));
         Map<String, Object> res = new HashMap<String, Object>();
+
+
+        // TODO take this out once front-end validation is complete
+        Map<String, Object> test = new HashMap<String, Object>();
+        String testApiKey = "naz71Wwxyp31nYzaEgxZ";
+        List<Commit> testCommits = gitlabClient.getCommits(new GitLabApi(gitlabInstanceURL, testApiKey), "lra63", "example-for-api", 5);
+        for (Commit commit : testCommits) {
+            test.put(commit.getTitle(), commit);
+        }
+
+        Map<String, Object> output = new HashMap<String, Object>();
+        for (Map.Entry<String, Object> entry : test.entrySet()) {
+            if (output.size() < 5) {
+                output.put(entry.getKey(), entry.getValue());
+            }
+        }
+        model.addAttribute("commitMap", output);
 
         // Validation
         try {
             validateDetailsParameters(commitHash, authorName, authorEmail, dateRangeStart, dateRangeEnd);
         } catch (IllegalArgumentException e) {
             logger.info("Parameters passed to searchForCommit are invalid, rejecting: " + e.getMessage());
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+            model.addAttribute("errorMessage", "Parameters passed to searchForCommit are invalid, rejecting: " + e.getMessage());
+            return "fragments/commitDisplay.html :: commitDisplay";
         }
 
         Optional<GroupRepo> repoOption = groupRepoRepository.findByParentGroupId(groupID);
 
         // Reject with 404 if there is no group repo with the provided ID.
         if (repoOption.isEmpty()) {
-            logger.info("No repository found for the group id=<%d>, sending 404");
-            return new ResponseEntity(
-                    String.format("No repository is configured for group with ID=%d", groupID),
-                    HttpStatus.NOT_FOUND
-            );
+            logger.info("No repository found for the group id=<%d>", groupID);
+            model.addAttribute("errorMessage", String.format("No repository is configured for group with ID=%d", groupID));
+            return "fragments/commitDisplay.html :: commitDisplay";
         }
         GroupRepo repo = repoOption.get();
         logger.debug(String.format("Retrieved repo entity for group id=<%d>", groupID));
@@ -89,19 +112,18 @@ public class CommitSearchController {
                     dateRangeStart.map((dateStr) -> DateParser.stringToDate(dateStr)),
                     dateRangeEnd.map((dateStr) -> DateParser.stringToDate(dateStr))
             );
+
             res.put("count", commits.size());
             // Convert each commit into a commit message.
             List<CommitMessage> commitMessages = commits.stream().map((commit) -> new CommitMessage(commit)).toList();
             res.put("commits", commitMessages);
         } catch (Exception e) {
             logger.error(String.format("Could not get commits for group with ID=<%d>", groupID), e);
-            return new ResponseEntity(
-                    "Communicating with the Gitlab API failed, please try again",
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
+            model.addAttribute("errorMessage", "Communicating with the Gitlab API failed, please try again");
+            return "fragments/commitDisplay.html :: commitDisplay";
         }
 
-        return new ResponseEntity(res, HttpStatus.OK);
+        return "fragments/commitDisplay.html :: commitDisplay";
     }
 
     /**

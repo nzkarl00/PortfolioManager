@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="headerfiles">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{css/stylesheet.css}" rel="stylesheet">
+
+    <!-- For dropdown to work -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>
+    <link
+            href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css"
+            rel="stylesheet"  type='text/css'>
+
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+</head>
+
+<body>
+
+
+<div th:fragment="commitDisplay">
+
+    <input form="evidenceCreateForm" type="hidden" id="commitsInput" th:name="commitsInput">
+
+    <div class="commit_data no-gutters commit_search_result_body" id="commit_search_result_box">
+        <div th:each="commit: ${commitMap}">
+            <div th:id="${commit.value.getId}" class="row">
+                <div class="row commit_display_small" th:text="${'[' + commit.value.getId + ']'}"></div>
+                <div class="row commit_display_large" th:text="${commit.key}"></div>
+                <div class="row commit_display_small" th:text="${'(' + commit.value.getAuthorName + ') ' + '(' + commit.value.getCommittedDate + ')'}"></div>
+                <button class="addCommit" type="button" th:parent-id="${commit.value.getId}" onclick="repositionCommit(this.getAttribute('parent-id'))">+</button>
+                <div></div>
+                <br>
+            </div>
+        </div>
+        <div th:if="${commitMap.size() == 5}"><br>Only 5 commits are being shown, filter with more specific options to get more</div>
+    </div>
+
+    <script>
+        let commits = new Set()
+
+        // move the commit referenced by the hash to the current commits container
+        // and change the button styling
+        function repositionCommit(id) {
+            let commit = document.getElementById(id)
+            const newContainer = document.getElementById("commit_container")
+            // if the commit already exists reassign the commit variable to the old one
+            if (newContainer.querySelector("#moved" + id)) {
+                commit.remove()
+                commit = newContainer.querySelector("#moved" + id)
+            } else {
+                newContainer.appendChild(commit)
+            }
+            // find the button to change it from an add button to a delete button
+            const button = commit.querySelector(".addCommit")
+            button.className = "fa fa-trash group_delete_button"
+            button.innerText = ""
+            button.setAttribute('onclick', "deleteCommit('" + id + "')")
+            // allow for showing a commit already added in the search without overlapping the ids
+            commit.id = "moved" + id
+            commits.add(id)
+            storeCommits()
+        }
+
+        // remove the commit from the added commit list
+        function deleteCommit(id) {
+            const commit = document.getElementById("moved" + id)
+            commit.remove()
+            commits.delete(id)
+            storeCommits()
+        }
+
+        // update the form property to contain all commit hashes
+        function storeCommits() {
+            let commitsStore = document.getElementById("commitsInput")
+            const commitList = Array.from(commits).join('~');
+            commitsStore.value = commitList
+        }
+
+    </script>
+</div>
+
+</body>
+</html>

@@ -97,7 +97,6 @@ public class EvidenceListController {
       if (userId == null) {
           userId = id;
       }
-    List<SkillTag> skillList = skillRepository.findAll();
     setTitle(model, userId, projectId, categoryName, skillName);
 
     //TODO get rid of once this is actually used
@@ -122,9 +121,6 @@ public class EvidenceListController {
 
     List<Project> allProjects = projectService.getAllProjects();
     model.addAttribute("projectList", allProjects);
-    Set<String> skillTagList = evidenceService.getAllUniqueSkills();
-    model.addAttribute("allSkills", skillTagList);
-    model.addAttribute("skillList", skillList);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
     model.addAttribute("userSkills", evidenceService.getUserSkills(AuthStateInformer.getId(principal)));
     model.addAttribute("userID", id);
@@ -303,6 +299,7 @@ public class EvidenceListController {
           @RequestParam(value = "skillInput") String skills,
           @RequestParam(value = "userInput") Optional <String> users,
           @RequestParam(value = "linksInput") Optional <String> links,
+          @RequestParam(value = "commitsInput") Optional <String> commits,
           @RequestParam(value = "descriptionInput") String description,
           Model model
   ) throws CustomExceptions.ProjectItemNotFoundException {
@@ -311,6 +308,8 @@ public class EvidenceListController {
           logger.debug("[EVIDENCE] Redirecting, user not authenticated");
           return "redirect:evidence?pi=" + projectId.toString();
       }
+
+      logger.debug(commits.orElse("commits not present"));
 
       Integer accountID = AuthStateInformer.getId(principal);
       model.addAttribute("authorId", accountID);
