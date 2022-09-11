@@ -4,13 +4,10 @@ import nz.ac.canterbury.seng302.portfolio.model.AuthenticatedUser;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Deadline;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.Group;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
@@ -52,8 +49,6 @@ public class EvidenceListController {
   @Autowired
   private AccountClientService accountClientService;
   @Autowired
-  private EvidenceUserRepository evidenceUserRepository;
-  @Autowired
   private SprintService sprintService;
   @Autowired
   private NavController navController;
@@ -63,10 +58,10 @@ public class EvidenceListController {
   private EvidenceService evidenceService;
   @Autowired
   private GroupRepoRepository groupRepoRepository;
-    @Autowired
-    private GroupsClientService groupsService;
-    @Autowired
-    private GitlabClient gitlabClient;
+  @Autowired
+  private GroupsClientService groupsService;
+  @Autowired
+  private GitlabClient gitlabClient;
 
 
     @Value("${portfolio.base-url}")
@@ -158,8 +153,7 @@ public class EvidenceListController {
           userId = AuthStateInformer.getId(principal);
       }
       List<Evidence> evidenceList = evidenceService.getEvidenceList(userId, projectId, categoryName, skillName);
-      if (projectId == -1) {
-      } else {
+      if (projectId != -1) {
           model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
           Project project = projectService.getProjectById(projectId);
           model.addAttribute("project", project);
@@ -226,41 +220,24 @@ public class EvidenceListController {
 
     /**
      * Sends all the deadlines in JSON for a given project
-     * @param principal authstate to validate the user
      * @param groupId the id of the group to
      * @return the list of deadlines in JSON
      */
     @GetMapping("/repoCheck")
-    public ResponseEntity<Boolean> getProjectDeadlines(@AuthenticationPrincipal AuthState principal,
-                                                              @RequestParam(value="groupId") Integer groupId) throws Exception {
-
-        Boolean isValidRepo;
-        if (groupId == -1) {
-
-            isValidRepo = false;
-            return ResponseEntity.ok(isValidRepo);
-
-        }
-
-        GroupRepo groupRepo = null;
+    public ResponseEntity<Boolean> getProjectDeadlines(@RequestParam(value = "groupId") Integer groupId) {
+        GroupRepo groupRepo;
         Optional<GroupRepo> existingGroupRepo = groupRepoRepository.findByParentGroupId(groupId);
-        if (!existingGroupRepo.isPresent()) {
-            isValidRepo = false;
-            return ResponseEntity.ok(isValidRepo);
+        if (groupId == -1 || existingGroupRepo.isEmpty()) {
+            return ResponseEntity.ok(false);
         } else {
-            isValidRepo = true;
             groupRepo = existingGroupRepo.get();
-
             try {
                 gitlabClient.getProject(groupRepo.getApiKey(), groupRepo.getOwner(), groupRepo.getName());
-                return ResponseEntity.ok(isValidRepo);
+                return ResponseEntity.ok(true);
             } catch (Exception e) {
-
-                isValidRepo = false;
-                return ResponseEntity.ok(isValidRepo);
+                return ResponseEntity.ok(false);
             }
         }
-
     }
 
 
@@ -479,9 +456,8 @@ public class EvidenceListController {
    * @param projectId Id of project to get evidence from
    * @param categoryName name of category to get evidence from
    * @param skillName name of skill to get evidence from
-   * @throws InvalidArgumentException possible exceptions can be raised from project ID not being valid and skillID not being valid
-   */
-  private void setTitle(Model model, Integer userId, Integer projectId, String categoryName, String skillName) throws Exception {
+     */
+  private void setTitle(Model model, Integer userId, Integer projectId, String categoryName, String skillName) {
         if (categoryName != null){
             setPageTitle(model, "Evidence from category: " + categoryName);
         } else if (skillName != null){
