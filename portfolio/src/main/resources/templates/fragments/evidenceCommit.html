@@ -49,7 +49,7 @@
         <!-- 2. Add Commit -->
         <div class="col-6">
             <b class="evidence_head setWide">Add Commits:</b>
-            <form id="commitSearchForm" method="post">
+            <form id="commitSearchForm" onsubmit="searchCommits()">
             <div>
                 <div class="row-1 commit_top" style="display:flex;">
                     <div class="btn commit_text float-end">
@@ -57,9 +57,9 @@
                     </div>
                     <select class="commit_edit_data"  id="commit_group" th:name="commit_group" >
                     <option value=" "> </option>
-                    <option value="ExampleGroupA">ExampleGroupA</option>
-                    <option value="ExampleGroupB">ExampleGroupB</option>
-                    <option value="ExampleGroupC">ExampleGroupC</option>
+                    <option value="1">ExampleGroupA</option>
+                    <option value="2">ExampleGroupB</option>
+                    <option value="3">ExampleGroupC</option>
                     </select>
                     <a  data-toggle="collapse" th:id="${'ArrowButtonCommit'}" th:href="'#collapseCommit'" onclick="canSearchCheck();" role="button" aria-expanded="false" aria-controls="collapseExample">
                         <i class="align-content-center fa fa-plus" style="margin-top: 0.25em; margin-left: 0.25em; font-size: 250%;"></i>
@@ -114,19 +114,13 @@
 
                             <div class="row-1" >
                                 <div class="evidence_form_element align-content-center col-12">
-                                    <button id="searchCommit" data-toggle="collapse" th:href="'#collapseCommitSearch'" form="commitSearchForm" class="searchCommit" type="submit"><i class="fa fa-search"></i></button>
+                                    <button id="searchCommit" form="commitSearchForm" class="searchCommit" type="submit" onclick="searchCommits()"><i class="fa fa-search"></i></button>
                                 </div>
                             </div>
                             <br>
                             <br>
                             <div class="row-1">
-                                <div class="collapse commit_data no-gutters commit_search_result_body" th:id="'collapseCommitSearch'">
-                                    <br>
-                                    <div id="commit_search_result_box">
-                                    Example Text To Show Commits
-                                    </div>
-                                    <br>
-                                </div>
+                                <div id="commit_search_result_box"></div>
                             </div>
 
 
@@ -186,6 +180,33 @@
                 searchButton.style = "background-color: #056BFA !important;"
                 searchButton.removeAttribute("disabled");
             }
+        }
+
+        function searchCommits() {
+            const commitGroup = document.getElementById("commit_group");
+            const hash = document.getElementById("hashCommitInput");
+            const author = document.getElementById("userCommitInput");
+            const start = document.getElementById("commit_date_start_input");
+            const end = document.getElementById("commit_date_end_input");
+
+            let params = {'group-id':commitGroup.value}
+
+            if (hash.value) {
+                params['commit-hash'] = hash.value
+            }
+            if (author.value) {
+                params['author-name'] = author.value
+            }
+            if (start.value) {
+                params['date-start'] = start.value
+            }
+            if (end.value) {
+                params['date-end'] = end.value
+            }
+
+            $.get("evidence/search-commits", params).done(function (commits) {
+                $("#commit_search_result_box").replaceWith(commits)
+            })
         }
 
     </script>

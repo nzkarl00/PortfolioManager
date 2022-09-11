@@ -55,3 +55,47 @@ Feature: U33: Adding evidence from repository
     And I type "test" in the username box
     And I delete text in the username box
     Then I can't click the add commit button
+
+  @Close
+  Scenario: I can then select one or more commits (e.g., by ticking a checkbox) and add them to the piece of evidence.
+    Given I am authenticated as a admin
+    And I go to the evidence page with a project id
+    And I click the Add Evidence button
+    When I open the Add Commit Form
+    And I type "test" in the username box
+    And I search for evidence
+    Then I add commit "hash1234hash1234hash1234hash1234hash1234"
+    Then I enter the appropriate mandatory attributes for "Commits Test"
+    #Then I click the save button
+    #Then I view that piece of evidence "Commits Test"
+    Then There is the commit saved
+
+  @Close
+  Scenario: I can then select one or more commits (e.g., by ticking a checkbox) and add them to the piece of evidence.
+    Given I am authenticated as a admin
+    And I go to the evidence page with a project id
+    And I click the Add Evidence button
+    When I open the Add Commit Form
+    And I type "test" in the username box
+    And I search for evidence
+    Then I add commit "hash1234hash1234hash1234hash1234hash1234"
+    Then I delete commit "hash1234hash1234hash1234hash1234hash1234"
+    Then I enter the appropriate mandatory attributes for "Commits Delete Test"
+    #Then I click the save button
+    #Then I view that piece of evidence "Commits Delete Test"
+    Then There is not the commit saved
+
+  @Close
+  Scenario: I can then select one or more commits (e.g., by ticking a checkbox) and add them to the piece of evidence.
+    Given I am authenticated as a admin
+    And I go to the evidence page with a project id
+    And I click the Add Evidence button
+    When I open the Add Commit Form
+    And I type "test" in the username box
+    And I search for evidence
+    Then I add commit "hash1234hash1234hash1234hash1234hash1234"
+    Then I add commit "hash6789hash6789hash6789hash6789hash6789"
+    Then I enter the appropriate mandatory attributes for "Commits Multiple Test"
+    #Then I click the save button
+    #Then I view that piece of evidence "Commits Multiple Test"
+    Then There are the commits saved
