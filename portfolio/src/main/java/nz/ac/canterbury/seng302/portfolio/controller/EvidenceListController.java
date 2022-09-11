@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.model.AuthenticatedUser;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.Group;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
@@ -19,6 +20,8 @@ import org.openqa.selenium.InvalidArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -62,6 +65,12 @@ public class EvidenceListController {
   private GroupRepoRepository groupRepoRepository;
     @Autowired
     private GroupsClientService groupsService;
+    @Autowired
+    private GitlabClient gitlabClient;
+
+
+    @Value("${portfolio.base-url}")
+    private String baseUrl;
 
   private String errorMessage = "";
 
@@ -198,6 +207,7 @@ public class EvidenceListController {
       model.addAttribute("project", project);
 
 
+      model.addAttribute("baseUrl", baseUrl);
       List<Sprint> sprintList = sprintService.getSprintByParentId(project.getId());
 
       model.addAttribute("sprintList", sprintList);
@@ -223,6 +233,39 @@ public class EvidenceListController {
       return "fragments/evidenceForm.html :: evidenceForm";
   }
 
+
+    /**
+     * Sends all the deadlines in JSON for a given project
+     * @param principal authstate to validate the user
+     * @param groupId the id of the group to
+     * @return the list of deadlines in JSON
+     */
+    @GetMapping("/repoCheck")
+    public ResponseEntity<Boolean> getProjectDeadlines(@AuthenticationPrincipal AuthState principal,
+                                                              @RequestParam(value="groupId") Integer groupId) throws Exception {
+
+        Boolean isValidRepo;
+
+        GroupRepo groupRepo = null;
+        Optional<GroupRepo> existingGroupRepo = groupRepoRepository.findByParentGroupId(groupId);
+        if (!existingGroupRepo.isPresent()) {
+            isValidRepo = false;
+            return ResponseEntity.ok(isValidRepo);
+        } else {
+            isValidRepo = true;
+            groupRepo = existingGroupRepo.get();
+
+            try {
+                gitlabClient.getProject(groupRepo.getApiKey(), groupRepo.getOwner(), groupRepo.getName());
+                return ResponseEntity.ok(isValidRepo);
+            } catch (Exception e) {
+
+                isValidRepo = false;
+                return ResponseEntity.ok(isValidRepo);
+            }
+        }
+
+    }
 
 
   private void setPageTitle(Model model, String title) {

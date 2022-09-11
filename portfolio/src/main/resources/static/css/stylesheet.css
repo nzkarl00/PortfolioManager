@@ -1227,8 +1227,20 @@
     font-size: 175% !important;
 }
 
+
+.commit_alert {
+    font-family: nexaLight !important;
+    color: #FF202E !important;
+    font-color: #FF202E !important;
+    font-size: 100% !important;
+
+}
+
 .commit_text {
     margin-left: -0.5em !important;
+}
+.commit_text_alert {
+    padding-left: 1.25em !important;
 }
 
 .fa-arrow-down {
