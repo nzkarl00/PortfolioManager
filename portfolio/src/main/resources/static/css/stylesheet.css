@@ -1422,6 +1422,7 @@ select.form-control {
 }
 
 .edit_evidence {
+    height: 105%;
     border: none;
     margin-left: 10px;
     padding: 4px 10px;

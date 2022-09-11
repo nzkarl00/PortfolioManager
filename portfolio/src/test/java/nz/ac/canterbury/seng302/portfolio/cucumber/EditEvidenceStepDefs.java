@@ -21,8 +21,6 @@ public class EditEvidenceStepDefs {
     SeleniumExample seleniumExample = BaseSeleniumStepDefs.seleniumExample;
     WebDriver driver = seleniumExample.config.getDriver();
 
-    CommonEvidenceServices commonEvidenceServices = new CommonEvidenceServices();
-
     /**
      *Gets the evidence id for the users evidence
      * @return evidence id - type String
