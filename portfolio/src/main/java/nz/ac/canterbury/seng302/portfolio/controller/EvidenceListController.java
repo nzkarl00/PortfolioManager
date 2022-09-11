@@ -245,6 +245,12 @@ public class EvidenceListController {
                                                               @RequestParam(value="groupId") Integer groupId) throws Exception {
 
         Boolean isValidRepo;
+        if (groupId == -1) {
+
+            isValidRepo = false;
+            return ResponseEntity.ok(isValidRepo);
+
+        }
 
         GroupRepo groupRepo = null;
         Optional<GroupRepo> existingGroupRepo = groupRepoRepository.findByParentGroupId(groupId);

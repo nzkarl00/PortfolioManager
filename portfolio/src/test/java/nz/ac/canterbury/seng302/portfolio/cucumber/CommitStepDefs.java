@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
@@ -23,7 +24,9 @@ public class CommitStepDefs {
     public void iOpenTheAddCommitForm() throws InterruptedException {
 
         Thread.sleep(500);
-        WebElement commitbutton = seleniumExample.config.getDriver().findElement(By.id("ArrowButtonCommit"));
+        WebElement commitbutton = seleniumExample.config.getDriver().findElement(By.id("commit_group"));
+        Select commitSelect = new Select(seleniumExample.config.getDriver().findElement(By.id("commit_group")));
+
 
         ((JavascriptExecutor) seleniumExample.config.getDriver()).executeScript("arguments[0].scrollIntoView(true);", commitbutton);
 
@@ -33,9 +36,70 @@ public class CommitStepDefs {
 
         scrollIntoView(commitbutton);
         Thread.sleep(500);
-        commitbutton.click();
+        commitSelect.selectByVisibleText("Group Repo");
         Thread.sleep(500);
     }
+
+    @When("I select a group without a repository")
+    public void iSelectAGroupWithNoRepo() throws InterruptedException {
+
+        Thread.sleep(500);
+        WebElement commitbutton = seleniumExample.config.getDriver().findElement(By.id("commit_group"));
+        Select commitSelect = new Select(seleniumExample.config.getDriver().findElement(By.id("commit_group")));
+
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver()).executeScript("arguments[0].scrollIntoView(true);", commitbutton);
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollBy(0, 600)");
+        Thread.sleep(500);
+
+        scrollIntoView(commitbutton);
+        Thread.sleep(500);
+        commitSelect.selectByVisibleText("GroupNoRep");
+        Thread.sleep(500);
+    }
+
+    @When("I select a group with a repository")
+    public void iSelectAGroupWithRepo() throws InterruptedException {
+
+        Thread.sleep(500);
+        WebElement commitbutton = seleniumExample.config.getDriver().findElement(By.id("commit_group"));
+        Select commitSelect = new Select(seleniumExample.config.getDriver().findElement(By.id("commit_group")));
+
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver()).executeScript("arguments[0].scrollIntoView(true);", commitbutton);
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollBy(0, 600)");
+        Thread.sleep(500);
+
+        scrollIntoView(commitbutton);
+        Thread.sleep(500);
+        commitSelect.selectByVisibleText("Group Repo");
+        Thread.sleep(500);
+    }
+
+    @When("I select the no group option")
+    public void iSelectNoGroup() throws InterruptedException {
+
+        Thread.sleep(500);
+        WebElement commitbutton = seleniumExample.config.getDriver().findElement(By.id("commit_group"));
+        Select commitSelect = new Select(seleniumExample.config.getDriver().findElement(By.id("commit_group")));
+
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver()).executeScript("arguments[0].scrollIntoView(true);", commitbutton);
+
+        ((JavascriptExecutor) seleniumExample.config.getDriver())
+                .executeScript("window.scrollBy(0, 600)");
+        Thread.sleep(500);
+
+        scrollIntoView(commitbutton);
+        Thread.sleep(500);
+        commitSelect.selectByVisibleText("Select A Group");
+        Thread.sleep(500);
+    }
+
     @When("I then open the Add Commit Form")
     public void iThenOpenTheAddCommitForm() throws InterruptedException {
 
@@ -98,5 +162,23 @@ public class CommitStepDefs {
         scrollIntoView(saveButton);
         Thread.sleep(500);
         Assertions.assertEquals("true", saveButton.getAttribute("disabled"));
+    }
+
+    @Then("I can see a message showing I need to add a valid group")
+    public void searchCommitCantBeSeen() throws InterruptedException {
+        Thread.sleep(500);
+        WebElement alert_message = seleniumExample.config.getDriver().findElement(By.id("commit_group_alert_message"));
+        scrollIntoView(alert_message);
+        Thread.sleep(500);
+        Assertions.assertEquals(true, alert_message.isDisplayed());
+    }
+
+    @Then("I can see the search form and search button")
+    public void searchCommitIsVisible() throws InterruptedException {
+        Thread.sleep(500);
+        WebElement searchButton = seleniumExample.config.getDriver().findElement(By.id("searchCommit"));
+        scrollIntoView(searchButton);
+        Thread.sleep(500);
+        Assertions.assertEquals(true, searchButton.isDisplayed());
     }
 }

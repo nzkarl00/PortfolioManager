@@ -1572,9 +1572,9 @@ select.form-control {
 
 .author_tag{
     text-decoration: underline;
-    background-color: #333344; !important;
+    background-color: #6E4F94; !important;
     border-style: none !important;
-    border-radius: 3px !important;
+    border-radius: 8px !important;
     color: #ffffff !important;
     padding: 0.3rem 1rem;
     display: inline-block !important;
@@ -1585,9 +1585,9 @@ select.form-control {
 
 .contributor_tag{
     text-decoration: underline;
-    background-color: #666688; !important;
+    background-color: #8F41C5; !important;
     border-style: none !important;
-    border-radius: 3px !important;
+    border-radius: 8px !important;
     color: #ffffff !important;
     padding: 0.3rem 1rem;
     display: inline-block !important;

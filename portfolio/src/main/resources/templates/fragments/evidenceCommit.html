@@ -57,7 +57,7 @@
                         <b class="commit_head">Link Group:</b>
                     </div>
                     <select class="commit_edit_data"  id="commit_group" th:name="commit_group" th:onChange="openSearchCommit(value);">
-                        <option value="noGroup" selected> Select A Group</option>
+                        <option value="-1" selected> Select A Group</option>
                         <option th:each="group: ${groupList}" th:value="${group.getGroupId()}" th:text="${group.getLongName()}">
                         </option>
                     </select>
