@@ -1,17 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +40,8 @@ public class EditEvidenceController {
     private EvidenceRepository evidenceRepository;
     @Autowired
     private EvidenceService evidenceService;
+    @Autowired
+    private GroupsClientService groupsService;
 
     Logger logger = LoggerFactory.getLogger(EditEvidenceController.class);
 
@@ -72,7 +70,7 @@ public class EditEvidenceController {
         }
 
         Evidence evidence = evidenceRepository.findById(evidenceIdActualised);
-        if (evidence == null) {
+        if (evidence == null || AuthStateInformer.getId(principal) != evidence.getParentUserId()) {
             return "redirect:evidence";
         }
         // get the links and pass the urls to the frontend
@@ -90,11 +88,22 @@ public class EditEvidenceController {
 
         Set<String> skillTagList = evidenceService.getAllUniqueSkills();
         logger.debug(skills.toString());
-
+        LinkedCommit temp = new LinkedCommit(evidence,
+                "Test Name",
+                "Test Owner",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "lachlan",
+                "This is a commit",
+                LocalDateTime.now());
+        List<LinkedCommit> tempList = new ArrayList<>(List.of(temp));
+        model.addAttribute("existingCommits", tempList);
+        PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(evidence.getParentUserId());
+        model.addAttribute("groupList", groupList.getGroupsList());
         model.addAttribute("allSkills", skillTagList);
         model.addAttribute("skills", skills);
         model.addAttribute("links", linkUrls);
         model.addAttribute("evidence", evidence);
+        model.addAttribute("project", evidence.getAssociatedProject());
         model.addAttribute("title", "Edit Evidence: " + evidence.getTitle());
 
         return "editEvidence";
@@ -130,6 +139,9 @@ public class EditEvidenceController {
         Model model) {
 
         Evidence evidence = evidenceRepository.findById((int) id);
+        if (evidence == null || AuthStateInformer.getId(principal) != evidence.getParentUserId()) {
+            return "redirect:evidence";
+        }
         evidence.setCategories(Evidence.categoryStringToInt(categories));
         evidence.setDate(LocalDate.parse(date));
         evidence.setDescription(description);
