@@ -580,6 +580,9 @@
     border: none;
     padding: 4px 10px;
     background: #26D20F !important;
+    width: 80% !important;
+    margin-left: 10% !important;
+    margin-right: 10% !important;
     border-radius: 10px;
     color: white;
 
