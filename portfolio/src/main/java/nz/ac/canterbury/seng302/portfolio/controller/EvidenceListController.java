@@ -133,18 +133,12 @@ public class EvidenceListController {
     //Attributes for form
     boolean showForm = false;
 
-
-    PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(userId);
-    model.addAttribute("groupList", groupList.getGroupsList());
-
     if (projectId != null) {
       showForm = true;
       Project project = projectService.getProjectById(projectId);
 
-      List<Sprint> sprintList = sprintService.getSprintByParentId(project.getId());
 
       model.addAttribute("project", project);
-      model.addAttribute("sprintList", sprintList);
     }
     model.addAttribute("showForm", showForm);
     model.addAttribute("errorMessage", errorMessage);
