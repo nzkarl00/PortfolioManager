@@ -79,7 +79,6 @@ userRow = document.getElementById("user_sub_1");
 // Adds the user to the set and resets the input.
 function addUser() {
     let newUser = document.getElementById("add_user_input").value
-    console.log(newUser)
     if (newUser.slice(-1) === " ") {
         newUser = newUser.slice(0, -1);
     }

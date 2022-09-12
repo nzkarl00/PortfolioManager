@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.cucumber;
 
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
@@ -24,6 +25,11 @@ public class BaseSeleniumStepDefs {
     String passwordText = "";
 
     private boolean registered = false;
+
+    @Before("@Admin")
+    public void adminIsLoggedIn() throws FileNotFoundException, InterruptedException {
+        iAmAuthenticatedAsAAdmin();
+    }
 
     @Given("User is logged in.")
     public void userIsLoggedIn() {

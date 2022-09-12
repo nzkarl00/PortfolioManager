@@ -25,7 +25,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
@@ -293,7 +292,7 @@ public class EvidenceListController {
       }
 
       // Extract then validate links
-      List<String> extractedLinks = extractListFromHTMLString(links.orElse(""));
+      List<String> extractedLinks = evidenceService.extractListFromHTMLStringWithSpace(links.orElse(""));
       Optional<String> possibleError = evidenceService.validateLinks(extractedLinks);
       // prioritise mandatory fields first, then link errors
       this.errorMessage = possibleError.orElse(errorMessage);
@@ -308,8 +307,9 @@ public class EvidenceListController {
 
       int categoriesInt = Evidence.categoryStringToInt(categories);
 
-      List<String> extractedUsers = evidenceService.extractListFromHTMLStringSkills(users.orElse(""));
+      List<String> extractedUsers = evidenceService.extractListFromHTMLStringWithTilda(users.orElse(""));
 
+      logger.debug(extractedUsers.toString());
       List<Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, LocalDate.parse(date), categoriesInt);
       // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links
       logger.info("[EVIDENCE] Saving evidence to repo");
@@ -324,7 +324,7 @@ public class EvidenceListController {
           if (!extractedLinks.isEmpty()) {
               logger.debug("[EVIDENCE] Saving web links");
               try {
-                  webLinkRepository.saveAll(constructLinks(extractedLinks, evidence));
+                  webLinkRepository.saveAll(evidenceService.constructLinks(extractedLinks, evidence));
               } catch (MalformedURLException e) {
                   logger.error("[EVIDENCE] Somehow links were attempted for construction with malformed URL", e);
                   logger.error("[EVIDENCE] Links not saved");
@@ -350,38 +350,6 @@ public class EvidenceListController {
       }
       evidenceService.deleteEvidence(targetEvidence);
       return "redirect:evidence?pi=" + projectId;
-  }
-
-
-
-
-    /**
-    * Construct web links, must be validated first.
-    * @param links The link of links which are associated with a given piece of evidence
-    * @param parentEvidence The evidence object which the weblink belongs to
-    * @return An array of weblink objects which contain both the link text and the parent evidence
-    */
-  private List<WebLink> constructLinks(List<String> links, Evidence parentEvidence) throws MalformedURLException {
-    ArrayList<WebLink> resultLinks = new ArrayList<>();
-    // Validate all links
-    for (String link : links) {
-      // Web links are valid, so construct them all
-      resultLinks.add(new WebLink(link, parentEvidence));
-    }
-    return resultLinks;
-  }
-
-  /**
-   * Splits an HTML form input list, into multiple array elements.
-   * @param stringFromHTML The string of values posted by the evidence form in format Item1~Item2~Item3
-   * @return An array of the individual values present in the string
-   */
-  private List<String> extractListFromHTMLString(String stringFromHTML) {
-      if (stringFromHTML.equals("")) {
-          return new ArrayList<>();
-      }
-
-      return Arrays.asList(stringFromHTML.split(" "));
   }
 
   private void noSkillsCheck(Evidence evidence) {
