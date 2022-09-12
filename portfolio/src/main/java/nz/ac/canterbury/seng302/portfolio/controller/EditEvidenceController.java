@@ -88,14 +88,14 @@ public class EditEvidenceController {
 
         Set<String> skillTagList = evidenceService.getAllUniqueSkills();
         logger.debug(skills.toString());
-        LinkedCommit temp = new LinkedCommit(evidence,
+        LinkedCommit temp = new LinkedCommit(evidence, //TODO REMOVE TEST DATA
                 "Test Name",
                 "Test Owner",
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 "lachlan",
                 "This is a commit",
                 LocalDateTime.now());
-        List<LinkedCommit> tempList = new ArrayList<>(List.of(temp));
+        List<LinkedCommit> tempList = new ArrayList<>(List.of(temp)); //TODO REMOVE TEST DATA
         model.addAttribute("existingCommits", tempList);
         PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(evidence.getParentUserId());
         model.addAttribute("groupList", groupList.getGroupsList());

@@ -42,14 +42,14 @@
                 <!-- 3. List of all the links the user added from the input field -->
                 <div id="commit_container" style="width: 85%; display: block">
                     <div th:each="commit: ${existingCommits}" >
-                        <div th:id="moved${commit.getHash}" class="row">
+                        <div th:id="'moved' + ${commit.getHash}" class="row">
                             <div class="row commit_display_small" th:text="${'[' + commit.getHash + ']'}"></div>
                             <div class="row commit_display_large" th:text="${commit.getTitle}"></div>
                             <div class="row commit_display_small" th:text="${'(' + commit.getAuthor + ') ' + '(' + commit.getTimeStamp + ')'}"></div>
                             <button class="fa fa-trash group_delete_button" type="button" th:parent-id="${commit.getHash}" onclick="deleteCommit(this.getAttribute('parent-id')); searchCommits();"></button>
                             <div></div>
                             <br>
-                        </div>-
+                        </div>
                     </div>
                     <input type="hidden" id="commitInput" th:name="commitInput">
                 </div>
