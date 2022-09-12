@@ -116,6 +116,13 @@ public class CommitSearchController {
             res.put("count", commits.size());
             // Convert each commit into a commit message.
             List<CommitMessage> commitMessages = commits.stream().map((commit) -> new CommitMessage(commit)).toList();
+
+            //Simple lambda expression to sort commits in terms of their timestamp
+            ArrayList<CommitMessage> sortedCommits = new ArrayList<CommitMessage>(commitMessages);
+            sortedCommits.sort(
+                    (CommitMessage previous, CommitMessage next) -> (-previous.getTimestamp().compareTo(next.getTimestamp()))
+            );
+            System.out.println(commitMessages);
             res.put("commits", commitMessages);
         } catch (Exception e) {
             logger.error(String.format("Could not get commits for group with ID=<%d>", groupID), e);
@@ -210,6 +217,30 @@ public class CommitSearchController {
             authorEmail = commit.getAuthorEmail();
             title = commit.getTitle();
             message = commit.getMessage();
+        }
+
+        public String getAuthorName() {
+            return authorName;
+        }
+
+        public String getAuthorEmail() {
+            return authorEmail;
+        }
+
+        public String getHash() {
+            return hash;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public Date getTimestamp() {
+            return timestamp;
         }
     }
 }
