@@ -87,32 +87,34 @@ public class EvidenceListController {
     logger.info("[EVIDENCE] Request to view list of evidence");
 
     setPageTitle(model,"List Of Evidence");
-      int id = AuthStateInformer.getId(principal);
-      if (userId == null) {
-          userId = id;
-      }
+    int id = AuthStateInformer.getId(principal);
+    if (userId == null) {
+      userId = id;
+    }
     setTitle(model, userId, projectId, categoryName, skillName);
 
     //TODO get rid of once this is actually used
-    logger.info("[EVIDENCE] getting all the groups for user");
+    logger.debug("[EVIDENCE] getting all the groups for user");
     logger.info(groupsClientService.getAllGroupsForUser(id).toString());
     List<Evidence> evidenceList = new ArrayList<>();
 
 
+    logger.debug("[EVIDENCE] Getting evidence for user");
     evidenceList = evidenceService.getEvidenceForUser(userId);
 
 
-      if (skillName != null) {
-          evidenceList = evidenceService.filterBySkill(evidenceList, skillName);
-      }
-      if (categoryName != null) {
-          evidenceList = evidenceService.filterByCategory(evidenceList, categoryName);
-      }
+    logger.debug("[EVIDENCE] Filtering evidence for user");
+    if (skillName != null) {
+      evidenceList = evidenceService.filterBySkill(evidenceList, skillName);
+    }
+    if (categoryName != null) {
+      evidenceList = evidenceService.filterByCategory(evidenceList, categoryName);
+    }
 
 
 
 
-
+    logger.debug("[EVIDENCE] Getting all projects");
     List<Project> allProjects = projectService.getAllProjects();
     model.addAttribute("projectList", allProjects);
     model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
@@ -121,6 +123,7 @@ public class EvidenceListController {
 
     // Attributes For header
     UserResponse userReply;
+    logger.debug("[EVIDENCE] Getting current user details");
     userReply = accountClientService.getUserById(id);
     navController.updateModelForNav(principal, model, userReply, id);
     // End of Attributes for header
@@ -129,6 +132,7 @@ public class EvidenceListController {
 
     if (projectId != null) {
       showForm = true;
+      logger.debug("[EVIDENCE] Getting specific project and attaching to model");
       Project project = projectService.getProjectById(projectId);
 
 
@@ -138,6 +142,7 @@ public class EvidenceListController {
     model.addAttribute("errorMessage", errorMessage);
     this.errorMessage = "";
 
+    logger.info("[EVIDENCE] Returning evidence list template");
     return "evidenceList";
   }
 
