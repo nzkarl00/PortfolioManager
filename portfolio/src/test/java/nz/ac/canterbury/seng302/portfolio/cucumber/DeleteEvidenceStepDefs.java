@@ -6,6 +6,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
@@ -120,5 +121,21 @@ public class DeleteEvidenceStepDefs {
         String dateToSend = date.getAttribute("min");
         date.sendKeys(dateToSend);
         Thread.sleep(1000);
+    }
+
+    @When("I click Delete")
+    public void i_click_delete() {
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
+        String evidenceId = getEvidenceId("Evidence One");
+        WebElement modalContainer = driver.findElement(By.id("deleteModal"+evidenceId));
+        WebElement button = modalContainer.findElement(By.id("deleteButton"));
+        button.click();
+    }
+
+    @Then("I cannot view that piece of evidence {string}")
+    public void i_cannot_view_that_piece_of_evidence(String string) {
+        List<WebElement> list = driver.findElements(By.xpath("//*[contains(text(),'" + string + "')]"));
+        Assert.assertTrue(list.size() == 0);
+
     }
 }
