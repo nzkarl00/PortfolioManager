@@ -104,8 +104,7 @@ public class CommitSearchController {
         }
         List<String> selectedHashes = EvidenceService.extractListFromHTMLStringSkills(selectedCommits.orElse(""));
         Map<String, Commit> output = new HashMap<String, Commit>();
-        logger.debug(String.valueOf(output.size()));
-        logger.debug(res.toString());
+        logger.debug(String.valueOf(res.size()));
         for (Map.Entry<String, Commit> entry : res.entrySet()) {
             if (output.size() < 5 && !selectedHashes.contains(entry.getValue().getId())) {
                 logger.debug(entry.getValue().getTitle());
