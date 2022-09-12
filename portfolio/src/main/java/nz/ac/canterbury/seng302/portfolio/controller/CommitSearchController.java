@@ -106,7 +106,7 @@ public class CommitSearchController {
         Map<String, Commit> output = new HashMap<String, Commit>();
         logger.debug(String.valueOf(res.size()));
         for (Map.Entry<String, Commit> entry : res.entrySet()) {
-            if (output.size() < 5 && !selectedHashes.contains(entry.getValue().getId())) {
+            if (output.size() < 50 && !selectedHashes.contains(entry.getValue().getId())) {
                 logger.debug(entry.getValue().getTitle());
                 output.put(entry.getKey(), entry.getValue());
             }
