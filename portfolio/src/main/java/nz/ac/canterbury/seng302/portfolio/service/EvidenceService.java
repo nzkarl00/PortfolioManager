@@ -154,7 +154,7 @@ public class EvidenceService {
     public Set<SkillTag> getFilterSkills(List<Evidence> evidenceList) {
         Set<SkillTag> returning = new HashSet<>();
         for (Evidence evidence : evidenceList) {
-            for (EvidenceTag tag: evidenceTagRepository.findAllByParentEvidenceId(evidence.getId())) {
+            for (EvidenceTag tag : evidence.getEvidenceTags()) {
                 if (!tag.getParentSkillTag().getTitle().equals("No_skills")) {
                     returning.add(tag.getParentSkillTag());
                 }
@@ -172,13 +172,12 @@ public class EvidenceService {
      * @param evidence An existing piece of evidence to be modified by adding a list of users to it
      */
     public void addUsersToExistingEvidence(List<String> userStrings, Evidence evidence) {
-
         // Validate that the username exists in the IDP
         List<String[]> validUsers = validateUserIdPairExist(userStrings);
 
         //Loop through all associated users so that we can add them to the existing evidence as contributors
         logger.info("[EVIDENCE SERVICE] adding contributors to the evidence");
-        for(String[] validUser: validUsers) {
+        for (String[] validUser: validUsers) {
             int userId = Integer.parseInt(validUser[0]);
             String userName = validUser[1];
             EvidenceUser evidenceUser = new EvidenceUser(userId, userName, evidence);
@@ -417,44 +416,30 @@ public class EvidenceService {
      * @return a set of skill objects
      */
     public List<SkillTag> getUserSkills(Integer id) {
-        List<Evidence> user_evidence = evidenceRepository.findAllByParentUserIdOrderByDateDesc(id);
-        Set<SkillTag> user_skillTags = new HashSet<>();
-        for (Evidence evidence: user_evidence) {
-            List<EvidenceTag> user_evidenceTag = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
-            for (EvidenceTag evidenceTag: user_evidenceTag){
-                Boolean isIn = false;
-                for(SkillTag o : user_skillTags) {
-                    if(o.getTitle().equals(evidenceTag.getParentSkillTag().getTitle())) {
-                        isIn = true;
-                    }
-                }
-                if (isIn == false){
-                    user_skillTags.add(evidenceTag.getParentSkillTag());
+        List<Evidence> evidenceList = evidenceRepository.findAllByParentUserIdOrderByDateDesc(id);
+        // A hashset of tag IDs that have been found already, to determine if
+        // The tag should be added to the tag list.
+        HashSet<Integer> tagIDs = new HashSet<Integer>();
+        ArrayList<SkillTag> tagList = new ArrayList<>();
+        for (Evidence evidence : evidenceList) {
+            List<EvidenceTag> tagsForEvidence = evidence.getEvidenceTags();
+            for (EvidenceTag evidenceTag : tagsForEvidence) {
+                SkillTag skillTag = evidenceTag.getParentSkillTag();
+                if (!tagIDs.contains(skillTag.getId())) {
+                    tagIDs.add(skillTag.getId());
+                    tagList.add(skillTag);
                 }
             }
         }
-        Boolean isIn = false;
-        for(SkillTag o : user_skillTags) {
-            if(o.getTitle().equals("No_skills")) {
-                isIn = true;
-            }
-        }
-        if (isIn == false){
-            user_skillTags.add(skillTagRepository.findByTitle("No_skills"));
-        }
-        return sortSkillSet(user_skillTags);
-    }
 
-    /**
-     * sorts a set of skills into an alphabetical arraylist of skills
-     * No_skills is first, it shouldn't be (I don't know why it is), but this bug is a feature ;)
-     * @param skills the initial set
-     * @return the sorted list
-     */
-    public static List<SkillTag> sortSkillSet(Set<SkillTag> skills) {
-        List<SkillTag> returning = new ArrayList<>(skills);
-        returning.sort(Comparator.comparing(SkillTag::getTitle)); // Puts skills in alphabetical order
-        return returning;
+        // Ensure no skills is in the list
+        boolean containsNoSkills = tagList.stream()
+                .anyMatch((SkillTag tag) -> tag.getTitle() == "No_skills");
+        if (!containsNoSkills) {
+            tagList.add(skillTagRepository.findByTitle("No_skills"));
+        }
+        tagList.sort(Comparator.comparing(SkillTag::getTitle));
+        return tagList;
     }
 
 }
