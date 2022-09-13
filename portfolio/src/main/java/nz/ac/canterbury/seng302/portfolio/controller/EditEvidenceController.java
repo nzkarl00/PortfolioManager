@@ -54,7 +54,6 @@ public class EditEvidenceController {
     private EvidenceUserRepository evidenceUserRepository;
     @Autowired
     private WebLinkRepository webLinkRepository;
-    private EvidenceService evidenceService;
     @Autowired
     private GroupsClientService groupsService;
 
@@ -104,14 +103,7 @@ public class EditEvidenceController {
         model.addAttribute("users", evidenceUsers);
 
 
-        PaginatedUsersResponse response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
-
-        List<String> users = new ArrayList<>();
-        for (UserResponse user: response.getUsersList()) {
-            User temp = new User(user);
-            users.add(temp.id + ":" + temp.username);
-        }
-        model.addAttribute("allUsers", users);
+        userGroups(model, accountClientService);
 
         List<EvidenceTag> tags = evidence.getEvidenceTags();
         List<String> skills = new ArrayList<>();
@@ -140,6 +132,17 @@ public class EditEvidenceController {
         model.addAttribute("title", "Edit Evidence: " + evidence.getTitle());
 
         return "editEvidence";
+    }
+
+    public static void userGroups(Model model, AccountClientService accountClientService) {
+        PaginatedUsersResponse response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
+
+        List<String> users = new ArrayList<>();
+        for (UserResponse user: response.getUsersList()) {
+            User temp = new User(user);
+            users.add(temp.id + ":" + temp.username);
+        }
+        model.addAttribute("allUsers", users);
     }
 
     /**
@@ -191,7 +194,7 @@ public class EditEvidenceController {
 
         // delete all past users from this user's evidence, then add all modified users for this user's evidence
         evidenceUserRepository.deleteAllByEvidence(evidence);
-        evidenceService.addUsersToExistingEvidence(evidenceService.extractListFromHTMLStringWithTilda(users), evidence);
+        evidenceService.addUsersToExistingEvidence(EvidenceService.extractListFromHTMLStringWithTilda(users), evidence);
 
         // delete all past weblinks from this user's evidence, then add all modified weblinks for this user's evidence
         webLinkRepository.deleteAllByEvidence(evidence);

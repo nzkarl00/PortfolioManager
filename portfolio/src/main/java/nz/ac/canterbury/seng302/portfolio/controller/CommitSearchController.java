@@ -102,7 +102,7 @@ public class CommitSearchController {
             model.addAttribute("errorMessage", "Communicating with the Gitlab API failed, please try again");
             return "fragments/commitDisplay.html :: commitDisplay";
         }
-        List<String> selectedHashes = EvidenceService.extractListFromHTMLStringSkills(selectedCommits.orElse(""));
+        List<String> selectedHashes = EvidenceService.extractListFromHTMLStringWithTilda(selectedCommits.orElse(""));
         Map<String, Commit> output = new HashMap<String, Commit>();
         logger.debug(String.valueOf(res.size()));
         for (Map.Entry<String, Commit> entry : res.entrySet()) {

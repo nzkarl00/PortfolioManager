@@ -28,10 +28,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.testUserTeacher;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateTeacher;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonProjectItems.getValidProject;
-import static nz.ac.canterbury.seng302.portfolio.service.EvidenceService.extractListFromHTMLStringSkills;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -104,6 +102,7 @@ public class EvidenceListControllerTest {
 
     // setting up and closing the mocked static authStateInformer
     static MockedStatic<AuthStateInformer> utilities;
+    static MockedStatic<EvidenceService> listReader;
     private static final MultiValueMap<String, String> validParamsEvidenceRequired = new LinkedMultiValueMap<>();
     private static final MultiValueMap<String, String> validParamsNoSkill = new LinkedMultiValueMap<>();
     private static final MultiValueMap<String, String> validParamsMultipleSkills = new LinkedMultiValueMap<>();
