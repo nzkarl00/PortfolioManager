@@ -64,7 +64,7 @@ public class CommitSearchController {
     ) throws Exception {
         logger.info(String.format("Attempting to carry out commit search for group id=<%d>", groupID));
         Map<String, Commit> res = new HashMap<String, Commit>();
-
+        model.addAttribute("commitMap", res);
         // Validation
         try {
             validateDetailsParameters(commitHash, authorName, authorEmail, dateRangeStart, dateRangeEnd);
