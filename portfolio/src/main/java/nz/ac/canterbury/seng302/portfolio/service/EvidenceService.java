@@ -433,9 +433,8 @@ public class EvidenceService {
         }
 
         // Ensure no skills is in the list
-        boolean containsNoSkills = tagList.stream()
-                .anyMatch((SkillTag tag) -> tag.getTitle() == "No_skills");
-        if (!containsNoSkills) {
+        boolean containsNoSkills = (tagList.size() == 0);
+        if (containsNoSkills) {
             tagList.add(skillTagRepository.findByTitle("No_skills"));
         }
         tagList.sort(Comparator.comparing(SkillTag::getTitle));
