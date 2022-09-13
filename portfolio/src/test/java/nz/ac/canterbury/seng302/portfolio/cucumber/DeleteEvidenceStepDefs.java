@@ -34,37 +34,22 @@ public class DeleteEvidenceStepDefs {
         return elementsList.get(0).getAttribute("id");
     }
 
-    @Then("I can see a delete icon")
-    public void iCanSeeADeleteIcon() throws InterruptedException {
-        String evidenceId = getEvidenceId("Evidence One");
-        WebElement element = driver.findElement(By.id(evidenceId));
-        BaseSeleniumStepDefs.scrollWindowToElement(driver, element);
-        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
-        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
-        BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
-        arrowButton.click();
+
+    @Then("I can see a delete icon for {string}")
+    public void i_can_see_a_delete_icon_for(String title) throws InterruptedException {
+        String evidenceId = getEvidenceId(title);
+        WebElement deleteIcon = driver.findElement(By.xpath("//button[@data-target='#deleteModal" + evidenceId + "']"));
+        Assertions.assertTrue(deleteIcon.isEnabled());
+
+
+
     }
 
-    @Then("I can click the delete Icon")
-    public void iCanClickTheDeleteIcon() throws InterruptedException {
-        String evidenceId = getEvidenceId("Evidence One");
-        WebElement element = driver.findElement(By.id(evidenceId));
-        BaseSeleniumStepDefs.scrollWindowToElement(driver, element);
-        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
-        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
-        BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
-        arrowButton.click();
-
-        ((JavascriptExecutor) seleniumExample.config.getDriver())
-                .executeScript("window.scrollTo(0, document.body.scrollHeight/5)");
-        Thread.sleep(100);
-        WebElement deletebutton = seleniumExample.config.getDriver().findElement(By.id("deleteButton" + evidenceId));
-        BaseSeleniumStepDefs.scrollWindowToElement(driver, deletebutton);
-        Thread.sleep(200);
-
-        driver.findElement(By.xpath("//button[@data-target='#deleteModal" + evidenceId + "']")).click();
-
-        Thread.sleep(1000);
+    @Then("I can click the delete Icon for {string}")
+    public void i_can_click_the_delete_icon_for(String title) throws InterruptedException {
+        String evidenceId = getEvidenceId(title);
+        WebElement deleteIcon = driver.findElement(By.xpath("//button[@data-target='#deleteModal" + evidenceId + "']"));
+        deleteIcon.sendKeys(Keys.ENTER);
     }
 
     @Then("I cannot see a delete icon")
@@ -78,50 +63,22 @@ public class DeleteEvidenceStepDefs {
         }
     }
 
-    @Then("A model appears containing the evidence title")
-    public void aModelAppearsContainingTheEvidenceTitle() {
-        String evidenceId = getEvidenceId("Evidence One");
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
-        WebElement modalContainer = driver.findElement(By.id("deleteModal"+evidenceId));
-        WebElement modelTitle = modalContainer.findElement(By.id("exampleModalLongTitle"));
-        String expected = "Delete - Evidence One?";
-        Assertions.assertEquals(expected, modelTitle.getText());
 
+    @Then("A model appears containing the evidence title {string}")
+    public void a_model_appears_containing_the_evidence_title(String title) throws InterruptedException {
+        List<WebElement> list = driver.findElements(By.xpath("//*[contains(text(),'" + title + "')]"));
+        Assertions.assertFalse(list.isEmpty());
     }
+
 
     @When("I click cancel")
-    public void iClickCancel() {
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-        String evidenceId = getEvidenceId("Evidence One");
-        WebElement modalContainer = driver.findElement(By.id("deleteModal"+evidenceId));
-        WebElement button = modalContainer.findElement(By.id("CancelButton"));
-        button.click();
+    public void iClickCancel() throws InterruptedException {
+        WebElement cancelButton = driver.findElement(By.id("CancelButton"));
+        Thread.sleep(300);
+        cancelButton.submit();
     }
 
 
-    @Then("I fill out all mandatory fields")
-    public void iFillOutAllMandatoryFields() throws InterruptedException {
-        WebElement titleField = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
-        titleField.sendKeys("Evidence Delete");
-        WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
-        description.sendKeys("This evidence relates to the work done on the evidence page");
-        WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
-        String dateToSend = date.getAttribute("min");
-        date.sendKeys(dateToSend);
-        Thread.sleep(1000);
-    }
-
-    @When("I fill out all mandatory fields for delete")
-    public void iFillOutAllMandatoryFieldsDelete() throws InterruptedException {
-        WebElement titleField = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
-        titleField.sendKeys("Evidence Delete");
-        WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
-        description.sendKeys("This evidence relates to the work done on the evidence page");
-        WebElement date = seleniumExample.config.getDriver().findElement(By.id("date_input"));
-        String dateToSend = date.getAttribute("min");
-        date.sendKeys(dateToSend);
-        Thread.sleep(1000);
-    }
 
     @When("I click Delete")
     public void i_click_delete() {
@@ -132,10 +89,32 @@ public class DeleteEvidenceStepDefs {
         button.click();
     }
 
+
     @Then("I cannot view that piece of evidence {string}")
     public void i_cannot_view_that_piece_of_evidence(String string) {
         List<WebElement> list = driver.findElements(By.xpath("//*[contains(text(),'" + string + "')]"));
         Assert.assertTrue(list.size() == 0);
 
     }
+
+
+    @When("I have filled out all mandatory title {string}, description {string}, and date fields to an evidence")
+    public void i_have_filled_out_all_mandatory_title_description_and_date_fields_to_an_evidence(String title, String desc) {
+        WebElement titleField = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
+        titleField.sendKeys(title);
+        WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
+        description.sendKeys(desc);
+    }
+
+
+//    @Then("A model appears containing the evidence title")
+//    public void aModelAppearsContainingTheEvidenceTitle() {
+//        String evidenceId = getEvidenceId("Evidence One");
+//        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+//        WebElement modalContainer = driver.findElement(By.id("deleteModal"+evidenceId));
+//        WebElement modelTitle = modalContainer.findElement(By.id("exampleModalLongTitle"));
+//        String expected = "Delete - Evidence One?";
+//        Assertions.assertEquals(expected, modelTitle.getText());
+//
+//    }
 }
