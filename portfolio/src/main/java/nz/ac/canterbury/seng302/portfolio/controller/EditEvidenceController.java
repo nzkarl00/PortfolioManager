@@ -1,24 +1,34 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import javax.transaction.Transactional;
+import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,8 +47,13 @@ public class EditEvidenceController {
     @Autowired
     private AccountClientService accountClientService;
     @Autowired
+    private EvidenceService evidenceService;
+    @Autowired
     private EvidenceRepository evidenceRepository;
     @Autowired
+    private EvidenceUserRepository evidenceUserRepository;
+    @Autowired
+    private WebLinkRepository webLinkRepository;
     private EvidenceService evidenceService;
     @Autowired
     private GroupsClientService groupsService;
@@ -80,6 +95,24 @@ public class EditEvidenceController {
             linkUrls.add(link.getUrl());
         }
 
+
+        // Creating a mapping of ID: Usernames, for the users who are contributing to this evidence
+        List<String> evidenceUsers = new ArrayList<>();
+        for (EvidenceUser user : evidence.getEvidenceUsersId()) {
+            evidenceUsers.add(user.getUserid() + ":" + user.getUsername());
+        }
+        model.addAttribute("users", evidenceUsers);
+
+
+        PaginatedUsersResponse response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
+
+        List<String> users = new ArrayList<>();
+        for (UserResponse user: response.getUsersList()) {
+            User temp = new User(user);
+            users.add(temp.id + ":" + temp.username);
+        }
+        model.addAttribute("allUsers", users);
+
         List<EvidenceTag> tags = evidence.getEvidenceTags();
         List<String> skills = new ArrayList<>();
         for (EvidenceTag tag: tags) {
@@ -116,13 +149,16 @@ public class EditEvidenceController {
      * @param date new/existing date
      * @param projectId old project id
      * @param categories string list of categories
-     * @param skills string list of skills
+     * @param skillsDelete string list of skills to delete
+     * @param skillsEdit string list of skills to edit
+     * @param skillsNew string list of skills to add
      * @param links string list of links
      * @param description new/existing description
      * @param id the id for the piece of evidence to edit
      * @param model The model to be used by the application for web integration
      * @return redirect to the evidence page once the edit is complete
      */
+    @Transactional
     @PostMapping("/edit-evidence")
     public String addEvidence(
         @AuthenticationPrincipal AuthState principal,
@@ -136,16 +172,30 @@ public class EditEvidenceController {
         @RequestParam(value = "linksInput") String links,
         @RequestParam(value = "descriptionInput") String description,
         @RequestParam(value = "evidenceId") Integer id,
-        Model model) {
+        @RequestParam(value = "userInput") String users,
+        Model model) throws MalformedURLException {
 
         Evidence evidence = evidenceRepository.findById((int) id);
         if (evidence == null || AuthStateInformer.getId(principal) != evidence.getParentUserId()) {
             return "redirect:evidence";
         }
         evidence.setCategories(Evidence.categoryStringToInt(categories));
+
+        // Validating the mandatory fields from U7
+        Evidence.validateProperties(evidence.getAssociatedProject(), title, description, LocalDate.parse(date));
         evidence.setDate(LocalDate.parse(date));
         evidence.setDescription(description);
         evidence.setTitle(title);
+
+        evidence.setCategories(Evidence.categoryStringToInt(categories));
+
+        // delete all past users from this user's evidence, then add all modified users for this user's evidence
+        evidenceUserRepository.deleteAllByEvidence(evidence);
+        evidenceService.addUsersToExistingEvidence(evidenceService.extractListFromHTMLStringWithTilda(users), evidence);
+
+        // delete all past weblinks from this user's evidence, then add all modified weblinks for this user's evidence
+        webLinkRepository.deleteAllByEvidence(evidence);
+        evidenceService.addLinksToEvidence(evidenceService.extractListFromHTMLStringWithSpace(links), evidence);
 
         evidenceRepository.save(evidence);
 

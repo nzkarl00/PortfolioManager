@@ -56,7 +56,7 @@
                             th:style="${ group.getId() == 1 || group.getId() == 2 ?  'display: none; ' + display  : display}"
                             type="button" th:value="${group.shortName}"
                             th:id="${group.shortName}" data-toggle="modal"
-                            th:data-target="${'#deleteModal'+group.getId()}" class="fa fa-trash group_delete_button"
+                            th:data-target="${'#deleteModal'+group.getId()}" class="fa fa-trash delete_button"
                     />
                 </div>
 

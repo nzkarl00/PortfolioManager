@@ -24,7 +24,6 @@ public class DeleteEvidenceStepDefs {
     SeleniumExample seleniumExample = BaseSeleniumStepDefs.seleniumExample;
     WebDriver driver = seleniumExample.config.getDriver();
 
-
     /**
      *Gets the evidence id for the users evidence
      * @return evidence id - type String
@@ -34,57 +33,14 @@ public class DeleteEvidenceStepDefs {
         return elementsList.get(0).getAttribute("id");
     }
 
-    /**
-     *Can be used to scroll window to element
-     * @Param element webElement that the window is to scroll too
-     **/
-    public void scrollWindowToElement(WebElement element)
-        throws InterruptedException {
-        //https://learn-automation.com/how-to-scroll-into-view-in-selenium-webdriver/
-        JavascriptExecutor je = (JavascriptExecutor) driver;
-        je.executeScript("arguments[0].scrollIntoView(true);",element);
-        Thread.sleep(300);
-    }
-
-    /**
-     *Opens a piece of evidence
-     **/
-    public void viewFullPieceOfEvidence() throws InterruptedException {
-        String getId = getEvidenceId("Evidence One");
-        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+getId)));
-        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
-        scrollWindowToElement(arrowButton);
-        arrowButton.click();
-    }
-    /**
-     *Opens a piece of evidence
-     **/
-    public void viewFullPieceOfEvidence(String arg0) throws InterruptedException {
-        String getId = getEvidenceId(arg0);
-        new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+getId)));
-        WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + getId));
-        scrollWindowToElement(arrowButton);
-        arrowButton.click();
-    }
-
-    @And("I view that piece of evidence {string}")
-    public void iViewThatPieceOfEvidence(String arg0) throws InterruptedException {
-        viewFullPieceOfEvidence(arg0);
-    }
-
-    @When("I view that piece of evidence")
-    public void iViewThatPieceOfEvidence() throws InterruptedException {
-        viewFullPieceOfEvidence();
-    }
-
     @Then("I can see a delete icon")
     public void iCanSeeADeleteIcon() throws InterruptedException {
         String evidenceId = getEvidenceId("Evidence One");
         WebElement element = driver.findElement(By.id(evidenceId));
-        scrollWindowToElement(element);
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, element);
         new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
         WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
-        scrollWindowToElement(arrowButton);
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
         arrowButton.click();
     }
 
@@ -92,28 +48,22 @@ public class DeleteEvidenceStepDefs {
     public void iCanClickTheDeleteIcon() throws InterruptedException {
         String evidenceId = getEvidenceId("Evidence One");
         WebElement element = driver.findElement(By.id(evidenceId));
-        scrollWindowToElement(element);
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, element);
         new WebDriverWait(seleniumExample.config.getDriver(), Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfElementLocated(By.id("ArrowButton"+evidenceId)));
         WebElement arrowButton = seleniumExample.config.getDriver().findElement(By.id("ArrowButton" + evidenceId));
-        scrollWindowToElement(arrowButton);
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, arrowButton);
         arrowButton.click();
 
         ((JavascriptExecutor) seleniumExample.config.getDriver())
                 .executeScript("window.scrollTo(0, document.body.scrollHeight/5)");
         Thread.sleep(100);
         WebElement deletebutton = seleniumExample.config.getDriver().findElement(By.id("deleteButton" + evidenceId));
-        scrollWindowToElement(deletebutton);
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, deletebutton);
         Thread.sleep(200);
 
         driver.findElement(By.xpath("//button[@data-target='#deleteModal" + evidenceId + "']")).click();
 
         Thread.sleep(1000);
-    }
-
-    @When("I view that piece of evidence that is not mine")
-    public void iViewThatPieceOfEvidenceThatIsNotMine()
-        throws InterruptedException {
-        viewFullPieceOfEvidence();
     }
 
     @Then("I cannot see a delete icon")
@@ -129,7 +79,6 @@ public class DeleteEvidenceStepDefs {
 
     @Then("A model appears containing the evidence title")
     public void aModelAppearsContainingTheEvidenceTitle() {
-
         String evidenceId = getEvidenceId("Evidence One");
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         WebElement modalContainer = driver.findElement(By.id("deleteModal"+evidenceId));
@@ -161,11 +110,8 @@ public class DeleteEvidenceStepDefs {
         Thread.sleep(1000);
     }
 
-
     @When("I fill out all mandatory fields for delete")
     public void iFillOutAllMandatoryFieldsDelete() throws InterruptedException {
-
-
         WebElement titleField = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
         titleField.sendKeys("Evidence Delete");
         WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
@@ -175,10 +121,4 @@ public class DeleteEvidenceStepDefs {
         date.sendKeys(dateToSend);
         Thread.sleep(1000);
     }
-
-    @Then("I close the window")
-    public void iCloseTheWindow() {
-        seleniumExample.closeWindow();
-    }
-
 }

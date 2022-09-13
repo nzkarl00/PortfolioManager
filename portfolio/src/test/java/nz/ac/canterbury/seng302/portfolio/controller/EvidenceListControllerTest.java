@@ -104,7 +104,6 @@ public class EvidenceListControllerTest {
 
     // setting up and closing the mocked static authStateInformer
     static MockedStatic<AuthStateInformer> utilities;
-    static MockedStatic<EvidenceService> listReader;
     private static final MultiValueMap<String, String> validParamsEvidenceRequired = new LinkedMultiValueMap<>();
     private static final MultiValueMap<String, String> validParamsNoSkill = new LinkedMultiValueMap<>();
     private static final MultiValueMap<String, String> validParamsMultipleSkills = new LinkedMultiValueMap<>();
@@ -187,7 +186,7 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        listReader.when(() -> EvidenceService.extractListFromHTMLStringSkills("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
+        listReader.when(() -> EvidenceService.extractListFromHTMLStringWithTilda("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
         when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
 
 
@@ -215,7 +214,7 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        listReader.when(() -> EvidenceService.extractListFromHTMLStringSkills("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
+        listReader.when(() -> EvidenceService.extractListFromHTMLStringWithTilda("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
         when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 7)).thenReturn(new ArrayList<>(List.of(testEvidenceAllCategories)));
 
         // Executing the mocked post request, checking that the page is displayed
@@ -242,7 +241,7 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        listReader.when(() -> EvidenceService.extractListFromHTMLStringSkills("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
+        listReader.when(() -> EvidenceService.extractListFromHTMLStringWithTilda("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
         when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
 
         // Executing the mocked post request, checking that the page is displayed
@@ -319,7 +318,7 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        listReader.when(() -> EvidenceService.extractListFromHTMLStringSkills("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
+        listReader.when(() -> EvidenceService.extractListFromHTMLStringWithTilda("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
         when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
 
 
