@@ -324,7 +324,7 @@ public class EvidenceService {
      * @param stringFromHTMLWithTilda The string containing items delimited by ~
      * @return an array representation of the list
      */
-    public List<String> extractListFromHTMLStringWithTilda(String stringFromHTMLWithTilda) {
+    public static List<String> extractListFromHTMLStringWithTilda(String stringFromHTMLWithTilda) {
         if (stringFromHTMLWithTilda.equals("")) {
             return Collections.emptyList();
         }
