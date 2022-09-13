@@ -19,7 +19,7 @@ function repositionCommit(id) {
     button.setAttribute('onclick', "deleteCommit('" + id + "')")
     // allow for showing a commit already added in the search without overlapping the ids
     commit.id = "moved" + id
-    commits.add(id)
+    commits.add(id + "+" + document.getElementById("commit_group").value)
     storeCommits()
 }
 
@@ -36,6 +36,5 @@ function deleteCommit(id) {
 // update the form property to contain all commit hashes
 function storeCommits() {
     let commitsStore = document.getElementById("commitsInput")
-    const commitList = Array.from(commits).join('~');
-    commitsStore.value = commitList
+    commitsStore.value = Array.from(commits).join('~')
 }

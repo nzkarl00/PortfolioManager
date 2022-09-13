@@ -13,6 +13,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.gitlab4j.api.GitLabApiException;
 import org.openqa.selenium.InvalidArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,8 @@ public class EvidenceListController {
   private GroupsClientService groupsService;
   @Autowired
   private GitlabClient gitlabClient;
+  @Autowired
+  private LinkedCommitRepository linkedCommitRepository;
 
 
     @Value("${portfolio.base-url}")
@@ -266,7 +269,7 @@ public class EvidenceListController {
           @RequestParam(value = "skillInput") String skills,
           @RequestParam(value = "userInput") Optional <String> users,
           @RequestParam(value = "linksInput") Optional <String> links,
-          @RequestParam(value = "commitsInput") Optional <String> commits,
+          @RequestParam(value = "commitsInput") Optional <String> commitsWithGroupIds,
           @RequestParam(value = "descriptionInput") String description,
           Model model
   ) throws CustomExceptions.ProjectItemNotFoundException {
@@ -275,9 +278,6 @@ public class EvidenceListController {
           logger.debug("[EVIDENCE] Redirecting, user not authenticated");
           return "redirect:evidence?pi=" + projectId.toString();
       }
-
-      logger.debug(commits.orElse("commits not present"));
-
       Integer accountID = AuthStateInformer.getId(principal);
       model.addAttribute("authorId", accountID);
       AuthenticatedUser thisUser = new AuthenticatedUser(principal);
@@ -306,16 +306,15 @@ public class EvidenceListController {
 
       int categoriesInt = Evidence.categoryStringToInt(categories);
 
-      List<String> extractedUsers = evidenceService.extractListFromHTMLStringWithTilda(users.orElse(""));
-
+      List<String> extractedUsers = EvidenceService.extractListFromHTMLStringWithTilda(users.orElse(""));
+      List<String> extractedCommits = EvidenceService.extractListFromHTMLStringWithTilda(commitsWithGroupIds.orElse(""));
       logger.debug(extractedUsers.toString());
       List<Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, LocalDate.parse(date), categoriesInt);
-      // If no error occurs with the mandatoryfields then save the evidence to the repo and relavent skills or links
+      // If no error occurs with the mandatory fields then save the evidence to the repo and relevant skills or links
       logger.info("[EVIDENCE] Saving evidence to repo");
       for (Evidence evidence : allUserEvidence) {
           logger.info(String.format("[EVIDENCE] Saved evidence to repo, id=<%s>", evidence.getId()));
           errorMessage = "Evidence has been added";
-
           evidenceService.addSkillsToRepo(parentProject, evidence, skills);
 
           noSkillsCheck(evidence);
@@ -327,6 +326,16 @@ public class EvidenceListController {
               } catch (MalformedURLException e) {
                   logger.error("[EVIDENCE] Somehow links were attempted for construction with malformed URL", e);
                   logger.error("[EVIDENCE] Links not saved");
+              }
+          }
+
+          if (!extractedCommits.isEmpty()) {
+              logger.debug("[EVIDENCE] Saving commits");
+              try {
+                  linkedCommitRepository.saveAll(evidenceService.constructCommits(extractedCommits, evidence));
+              } catch (GitLabApiException e) {
+                  logger.error("[EVIDENCE] GitLabAPI error finding selected commits");
+                  logger.error("[EVIDENCE] Commits not saved");
               }
           }
       }

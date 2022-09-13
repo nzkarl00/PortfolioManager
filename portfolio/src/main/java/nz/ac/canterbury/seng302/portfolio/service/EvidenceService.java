@@ -3,7 +3,11 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.gitlab4j.api.GitLabApiException;
+import org.gitlab4j.api.models.Commit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.net.MalformedURLException;
@@ -29,6 +33,10 @@ public class EvidenceService {
     WebLinkRepository webLinkRepository;
     @Autowired
     AccountClientService accountClientService;
+    @Autowired
+    GroupRepoRepository groupRepoRepository;
+    @Autowired
+    private GitlabClient gitlabClient;
 
     Logger logger = LoggerFactory.getLogger(EvidenceService.class);
 
@@ -374,6 +382,29 @@ public class EvidenceService {
             resultLinks.add(new WebLink(link, parentEvidence));
         }
         return resultLinks;
+    }
+
+    /**
+     * Builds commit to save from a commit hash with group ID.
+     * @param hashAndGroupStrings An array of strings containing all commit hashes and group IDs separated by a "+"
+     * @param parentEvidence Evidence to connect to the newly constructed commit
+     * @exception GitLabApiException can be thrown if there is an error fetching the commit from GitLabApi
+     */
+    public List<LinkedCommit> constructCommits(List<String> hashAndGroupStrings, Evidence parentEvidence) throws GitLabApiException {
+        List<LinkedCommit> constructedCommits = new ArrayList<>();
+        for (String hashAndGroupString: hashAndGroupStrings) {
+            List<String> hashAndGroup = Arrays.asList(hashAndGroupString.split("\\+"));
+            Optional<GroupRepo> optionalGroupRepo = groupRepoRepository.findByParentGroupId(Integer.parseInt(hashAndGroup.get(1)));
+            if (optionalGroupRepo.isEmpty()) {
+                logger.warn("No repository found for the group id=<%d>", hashAndGroup.get(1));
+            }
+            GroupRepo groupRepo = optionalGroupRepo.get();
+            Commit foundCommit = gitlabClient.getSingleCommit(hashAndGroup.get(0), groupRepo);
+            logger.info(foundCommit.toString());
+            constructedCommits.add(new LinkedCommit(parentEvidence, groupRepo.getName(), groupRepo.getOwner(), hashAndGroup.get(0),
+                foundCommit.getAuthorName(), foundCommit.getTitle(), DateParser.convertToLocalDateTime(foundCommit.getCreatedAt())));
+        }
+        return constructedCommits;
     }
 
     /**

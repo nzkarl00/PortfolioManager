@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
@@ -105,6 +106,19 @@ public class GitlabClient {
             lastN
         ));
         return commits;
+    }
+
+    /**
+     * Gets a single commit from the GitLab API
+     * @param commitHash hash to find the commit by
+     * @param groupRepo repository to search
+     * @return commit found in the given repository with the given hash
+     * @throws GitLabApiException if there is an error finding the commit
+     */
+    public Commit getSingleCommit(String commitHash, GroupRepo groupRepo) throws GitLabApiException {
+        logger.info("Getting commit with hash: " + commitHash + " from GitLabAPI");
+        GitLabApi api = new GitLabApi(gitlabInstanceURL, groupRepo.getApiKey());
+        return api.getCommitsApi().getCommit(genRepoName(groupRepo.getOwner(), groupRepo.getName()), commitHash);
     }
 
     /**

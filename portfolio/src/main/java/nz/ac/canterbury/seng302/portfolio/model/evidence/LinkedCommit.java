@@ -47,7 +47,7 @@ public class LinkedCommit {
     @Column(name="author", nullable = false)
     protected String author = "";
     public static final int MAX_TITLE_LENGTH = 80;
-    @Column(name="title", length = MAX_TITLE_LENGTH, nullable = false)
+    @Column(name="title", nullable = false)
     protected String title = "";
     @Column(name="timestamp", nullable = false)
     protected LocalDateTime timestamp;
