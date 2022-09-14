@@ -31,18 +31,18 @@
 
 <div th:fragment="commitDisplay" id="commit_search_result_box" class="commit_search_result_container">
         <div class="commit_data no-gutters commit_search_result_body">
-        <div th:each="commit: ${commitMap}">
-            <div th:id="${commit.value.getId}" class="row">
-                <div class="row commit_display_small" th:text="${'[' + commit.value.getId + ']'}"></div>
-                <div class="row commit_display_large" th:text="${commit.key}"></div>
-                <div class="row commit_display_small" th:text="${'(' + commit.value.getAuthorName + ') ' + '(' + commit.value.getCommittedDate + ')'}"></div>
-                <button class="addCommit" type="button" th:parent-id="${commit.value.getId}" onclick="repositionCommit(this.getAttribute('parent-id')); searchCommits();">+</button>
+        <div th:each="commit: ${commitList}">
+            <div th:id="${commit.getId}" class="row">
+                <div class="row commit_display_small" th:text="${'[' + commit.getId + ']'}"></div>
+                <div class="row commit_display_large" th:text="${commit.getTitle}"></div>
+                <div class="row commit_display_small" th:text="${'(' + commit.getAuthorName + ') ' + '(' + commit.getCommittedDate + ')'}"></div>
+                <button class="addCommit" type="button" th:parent-id="${commit.getId}" onclick="repositionCommit(this.getAttribute('parent-id')); searchCommits();">+</button>
                 <div></div>
                 <br>
             </div>
         </div>
-        <div th:if="${commitMap.size() == 50}"><br>Only 50 commits are being shown, filter with more specific options to get more</div>
-        <div th:if="${commitMap.size() == 0}"><br>No result from this search condition. Expand your commit filter(s) wider to try searching again.</div>
+        <div th:if="${commitList.size() == 50}"><br>Only 50 commits are being shown, filter with more specific options to get more</div>
+        <div th:if="${commitList.size() == 0}"><br>No result from this search condition. Expand your commit filter(s) wider to try searching again.</div>
         <p th:text="${errorMessage}"></p>
     </div>
 </div>

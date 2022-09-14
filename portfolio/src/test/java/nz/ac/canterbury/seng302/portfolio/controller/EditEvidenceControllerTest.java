@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceUserRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.LinkedCommitRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLinkRepository;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.*;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
@@ -69,6 +70,9 @@ public class EditEvidenceControllerTest {
 
     @MockBean
     GroupsClientService groupsClientService;
+
+    @MockBean
+    LinkedCommitRepository linkedCommitRepository;
 
     @Before
     void setup() throws Exception {
