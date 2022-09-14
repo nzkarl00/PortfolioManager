@@ -6,7 +6,9 @@ import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import javax.persistence.*;
+import javax.ws.rs.core.Link;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -329,5 +331,9 @@ public class Evidence {
 
     public void setEvidenceTags(List<EvidenceTag> evidenceTags) {
         this.evidenceTags = evidenceTags;
+    }
+
+    public List<LinkedCommit> getLinkedCommit() {
+        return linkedCommit;
     }
 }

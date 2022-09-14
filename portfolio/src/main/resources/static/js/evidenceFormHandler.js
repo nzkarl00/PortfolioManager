@@ -1,13 +1,13 @@
 
-dateTooltip = '<span id="info" class="tooltip_body_evidence">This is the date the evidence occurred, date selection is restricted to the boundaries of the project it is assigned to.</span>'
+setTimeout(() => {dateTooltip = '<span id="info" class="tooltip_body_evidence">This is the date the evidence occurred, date selection is restricted to the boundaries of the project it is assigned to.</span>'
 
-$("#evidence_date_tool").tooltip({
-    title: dateTooltip,
-    placement: "top",
-    trigger: "hover",
-    container: "body",
-    html: true
-});
+                  $("#evidence_date_tool").tooltip({
+                      title: dateTooltip,
+                      placement: "top",
+                      trigger: "hover",
+                      container: "body",
+                      html: true
+                  });}, 20)
 
 categoryOptionsShown = true;
 selectedCategories = new Set()
@@ -60,10 +60,11 @@ document.addEventListener("click", function (e) {
 
 
 // Event listener to add user when enter is pressed and the user input is selected
-document.querySelector("#add_user_input").addEventListener("keyup", event => {
-    if (event.key !== "Enter" && event.key !== ".") return;
-    addUser()
-})
+setTimeout(() => {document.querySelector("#add_user_input").addEventListener("keyup", event => {
+                      if (event.key !== "Enter" && event.key !== ".") return;
+                      addUser()
+                  })}, 20)
+
 
 //Returns the users
 function storeUsers() {
@@ -74,6 +75,7 @@ function storeUsers() {
 
 users = new Set()
 userRow = document.getElementById("user_sub_1");
+setTimeout(() => {userRow = document.getElementById("user_sub_1");}, 10)
 
 
 // Adds the user to the set and resets the input.
@@ -100,9 +102,6 @@ function addUser() {
         // try matching for sole id or username
         for (const user of allUsers) {
             username = user.split(":")[1]
-            console.log(username)
-            console.log(newUser.toLowerCase() == username.toLowerCase())
-            console.log(newUser)
             id = user.split(":")[0]
             if (newUser.toLowerCase() == username.toLowerCase() || newUser == id) {
                 newUser = user
@@ -195,14 +194,11 @@ function clearUsers() {
 //
 
 // Event listener to add skills when enter is pressed and the skill input is selected
-document.querySelector("#add_skill_input").addEventListener("keyup", event => {
-    if (event.key === "Enter" || event.key === " ") {
-        addSkill()
-    } else if (event.key === "Delete") {
-        skillRow.children.item(skillRow.children.length-1).click() // Negative index doesn't work for htmlcollection
-    }
-    return;
-})
+setTimeout(() => {document.querySelector("#add_skill_input").addEventListener("keyup", event => {
+                      if (event.key !== "Enter" && event.key !== " ") return;
+                      addSkill()
+                  })}, 20)
+
 
 //Returns the skills
 function storeSkills() {
@@ -222,6 +218,9 @@ const skillPattern = /^[\u0041-\u005A\u0061-\u007A\u00AA\u00B5\u00BA\u00C0-\u00D
 // Adds the skill to the set and resets the input.
 function addSkill() {
     let newSkill = document.getElementById("add_skill_input").value
+    if (newSkill.slice(-1) === " ") {
+        newSkill = newSkill.slice(0, -1);
+    }
 
     if (skills.has(newSkill)) {
         document.getElementById("add_skill_input").value = "";
@@ -304,13 +303,15 @@ function clearSkills() {
 
 
 // Event listener to add links when enter is pressed and the link input is selected
-document.querySelector("#add_link_input").addEventListener("keyup", event => {
-    if (event.key !== "Enter") return;
-    addLink()
-})
+setTimeout(() => {document.querySelector("#add_link_input").addEventListener("keyup", event => {
+                      if (event.key !== "Enter") return;
+                      addLink()
+                  })}, 20)
+
 
 links = new Set();
 linksContainer = document.getElementById("links_container")
+setTimeout(() => {linksContainer = document.getElementById("links_container")}, 10)
 linkCounter = 0;
 
 // Adds the link to the set and resets the input.
@@ -378,6 +379,7 @@ function removeLink(event) {
     for (const link of links) {
         appendLink(link)
     }
+    storeLinks()
     return false;
 }
 
@@ -393,14 +395,12 @@ function updateTitle() {
     const titleCounter = document.getElementById("titleCharCount")
     const titleInput = document.getElementById("evidence_title")
     titleCounter.innerText = "Characters Remaining: "  + (100 - titleInput.value.length)
-    canSaveCheck()
 }
 
 function updateDesc() {
     const descCounter = document.getElementById("descCharCount")
     const descInput = document.getElementById("evidence_desc")
     descCounter.innerText = "Characters Remaining: "  + (2000 - descInput.value.length)
-    canSaveCheck()
 }
 
 function verifyTitle() {
@@ -441,6 +441,16 @@ function canSaveCheck() {
     }
 }
 
+function dateCheck() {
+    const dateInput = document.getElementById("date_input")
+    if (Date.parse(dateInput.value) < Date.parse(dateInput.min) || Date.parse(dateInput.value) > Date.parse(dateInput.max)) {
+        document.getElementById("date_error").style = "color:red;";
+    } else {
+        document.getElementById("date_error").style = "display:none;";
+    }
+
+}
+
 function updateUsers() {
     const userCounter = document.getElementById("userCharCount")
     const userInput = document.getElementById("add_user_input")
@@ -460,4 +470,4 @@ function displayAddButton() {
     document.getElementById('add_button').style = "display: block";
 }
 
-canSaveCheck()
+

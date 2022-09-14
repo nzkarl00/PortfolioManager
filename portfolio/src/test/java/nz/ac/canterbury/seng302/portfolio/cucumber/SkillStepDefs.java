@@ -23,9 +23,7 @@ public class SkillStepDefs {
         ((JavascriptExecutor) seleniumExample.config.getDriver())
                 .executeScript("window.scrollTo(0, document.body.scrollHeight/8)");
         Thread.sleep(100);
-
-        WebElement
-            skillInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
+        WebElement skillInput = seleniumExample.config.getDriver().findElement(By.id("add_skill_input"));
         skillInput.sendKeys(inputSkill);
         WebElement skillButton = seleniumExample.config.getDriver().findElement(By.id("add_skill_button"));
         skillButton.click();
