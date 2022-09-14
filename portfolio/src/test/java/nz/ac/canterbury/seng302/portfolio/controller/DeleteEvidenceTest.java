@@ -70,6 +70,8 @@ public class DeleteEvidenceTest {
     private GroupRepoRepository groupRepoRepository;
     @MockBean
     private GitlabClient gitlabClient;
+    @MockBean
+    private LinkedCommitRepository linkedCommitRepository;
 
     private static final Project testProject = getValidProject();
     private static final LocalDate may4 = LocalDate.parse("2022-05-04");

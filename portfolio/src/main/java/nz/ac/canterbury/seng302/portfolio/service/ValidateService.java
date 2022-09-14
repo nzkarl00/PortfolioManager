@@ -23,7 +23,7 @@ public class ValidateService {
             }
         }
         //If there are not enough non-special characters, throw an error
-        if(charCount < 3) {
+        if(charCount < 2) {
           throw new IllegalArgumentException("Text does not contain enough non-special characters");
         }
     }

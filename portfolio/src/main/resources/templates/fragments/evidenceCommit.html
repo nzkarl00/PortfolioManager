@@ -51,7 +51,6 @@
                             <br>
                         </div>
                     </div>
-                    <input type="hidden" id="commitInput" th:name="commitInput">
                 </div>
 
             </div>
@@ -128,7 +127,8 @@
                             <br>
                             <div class="row-1">
                                 <div id="commit_search_result_box"></div>
-                                <input form="evidenceCreateForm" type="hidden" id="commitsInput" th:name="commitsInput">
+                                <input type="hidden" id="commitsInput" th:name="commitsInput">
+                                <input type=hidden id="commitsDelete" th:name="commitsDelete">
                             </div>
 
 
@@ -243,9 +243,8 @@
         }
 
     </script>
-
     <script type="text/javascript" th:src="@{js/commitHandler.js}"></script>
-
+    <script th:inline="javascript">let existingCommits = [[${existingCommits}]]; console.log(existingCommits); existingCommits.forEach(commit => commits.add(commit.hash))</script>
 </div>
 
 </body>
