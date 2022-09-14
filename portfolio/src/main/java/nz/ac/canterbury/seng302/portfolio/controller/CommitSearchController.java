@@ -64,6 +64,7 @@ public class CommitSearchController {
     ) throws Exception {
         logger.info(String.format("Attempting to carry out commit search for group id=<%d>", groupID));
         List<Commit> res = new ArrayList<>();
+        model.addAttribute("commitList", res);
         // Validation
         try {
             validateDetailsParameters(commitHash, authorName, authorEmail, dateRangeStart, dateRangeEnd);
