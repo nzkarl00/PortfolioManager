@@ -134,8 +134,6 @@ public class EvidenceListController {
       showForm = true;
       logger.debug("[EVIDENCE] Getting specific project and attaching to model");
       Project project = projectService.getProjectById(projectId);
-
-
       model.addAttribute("project", project);
     }
     model.addAttribute("showForm", showForm);
