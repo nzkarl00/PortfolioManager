@@ -40,7 +40,7 @@
             <div style="display: flex">
 
                 <!-- 3. List of all the links the user added from the input field -->
-                <div id="commit_container" style="width: 85%; display: block">
+                <div id="commit_container" style="width: 85%; display: block;">
                     <div th:each="commit: ${existingCommits}" >
                         <div th:id="'moved' + ${commit.getHash}" class="row">
                             <div class="row commit_display_small" th:text="${'[' + commit.getHash + ']'}"></div>

@@ -63,8 +63,8 @@ public class CommitSearchController {
         Model model
     ) throws Exception {
         logger.info(String.format("Attempting to carry out commit search for group id=<%d>", groupID));
-        Map<String, Commit> res = new HashMap<String, Commit>();
-        model.addAttribute("commitMap", res);
+        List<Commit> res = new ArrayList<>();
+        model.addAttribute("commitList", res);
         // Validation
         try {
             validateDetailsParameters(commitHash, authorName, authorEmail, dateRangeStart, dateRangeEnd);
@@ -93,25 +93,26 @@ public class CommitSearchController {
                     commitHash,
                     authorName,
                     authorEmail,
-                    dateRangeStart.map(DateParser::stringToDate),
-                    dateRangeEnd.map(DateParser::stringToDate)
+                    dateRangeStart.map((dateStr) -> DateParser.stringToDate(dateStr)),
+                    dateRangeEnd.map((dateStr) -> DateParser.stringToDate(dateStr))
             );
-            commits.forEach(commit -> res.put(commit.getTitle(), commit));
+
+            // Convert each commit into a commit message.
+            res.addAll(commits);
+            //This lambda expression sorts commits in terms of their timestamp
+            res.sort(
+                    //The negative sign before the compareTo function will reverse the sorting order
+                    //Because we are comparing dates this will give a reverse chronological ordering
+                    (previous, next) -> (-previous.getCommittedDate().compareTo(next.getCommittedDate()))
+            );
+
         } catch (Exception e) {
             logger.error(String.format("Could not get commits for group with ID=<%d>", groupID), e);
             model.addAttribute("errorMessage", "Communicating with the Gitlab API failed, please try again");
             return "fragments/commitDisplay.html :: commitDisplay";
         }
-        List<String> selectedHashes = EvidenceService.extractListFromHTMLStringWithTilda(selectedCommits.orElse(""));
-        Map<String, Commit> output = new HashMap<String, Commit>();
-        logger.debug(String.valueOf(res.size()));
-        for (Map.Entry<String, Commit> entry : res.entrySet()) {
-            if (output.size() < 50 && !selectedHashes.contains(entry.getValue().getId())) {
-                logger.debug(entry.getValue().getTitle());
-                output.put(entry.getKey(), entry.getValue());
-            }
-        }
-        model.addAttribute("commitMap", output);
+
+        model.addAttribute("commitList", res);
         return "fragments/commitDisplay.html :: commitDisplay";
     }
 
