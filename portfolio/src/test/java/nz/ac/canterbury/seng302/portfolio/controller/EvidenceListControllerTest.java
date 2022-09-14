@@ -92,6 +92,8 @@ public class EvidenceListControllerTest {
     private GroupRepoRepository groupRepoRepository;
     @MockBean
     private GitlabClient gitlabClient;
+    @MockBean
+    private LinkedCommitRepository linkedCommitRepository;
 
     @Before
     public void setup() throws Exception {
