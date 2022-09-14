@@ -2,12 +2,15 @@ package nz.ac.canterbury.seng302.portfolio.common;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 public final class CommonProjectItems {
 
@@ -21,9 +24,60 @@ public final class CommonProjectItems {
     public static Evidence getValidEvidence() {
         Project testProject = getValidProject();
         LocalDate may4 = LocalDate.parse("2022-05-04");
-        Evidence evidence = new Evidence(0, testProject, "Evidence One", "This evidence is the first to be submitted", may4);
+        Evidence evidence = new Evidence(0, testProject, "Evidence One", "This evidence is the first to be submitted", may4, 0);
 
         return evidence;
+    }
+
+    public static SkillTag getNoSkillsSkillTag() {
+        return new SkillTag(getValidProject(), "No_skills");
+    }
+
+    public static SkillTag getSkillTagA() {
+        return new SkillTag(getValidProject(), "A");
+    }
+
+    public static SkillTag getSkillTagB() {
+        return new SkillTag(getValidProject(), "B");
+    }
+
+    public static SkillTag getSkillTagC() {
+        return new SkillTag(getValidProject(), "C");
+    }
+
+    public static EvidenceTag getNoSkillsEvidenceTag(Evidence e) {
+        SkillTag skillTag = getNoSkillsSkillTag();
+        EvidenceTag evidenceTag = new EvidenceTag(skillTag, e);
+        skillTag.setEvidenceTags(List.of(evidenceTag));
+        return evidenceTag;
+    }
+
+    public static EvidenceTag getEvidenceTagA(Evidence e) {
+        SkillTag skillTag = getSkillTagA();
+        EvidenceTag evidenceTag = new EvidenceTag(skillTag, e);
+        skillTag.setEvidenceTags(List.of(evidenceTag));
+        return evidenceTag;
+    }
+
+    public static EvidenceTag getEvidenceTagANotUnique(Evidence e) {
+        SkillTag skillTag = getSkillTagA();
+        EvidenceTag evidenceTag = new EvidenceTag(skillTag, e);
+        skillTag.setEvidenceTags(List.of(evidenceTag, new EvidenceTag()));
+        return evidenceTag;
+    }
+
+    public static EvidenceTag getEvidenceTagB(Evidence e) {
+        SkillTag skillTag = getSkillTagB();
+        EvidenceTag evidenceTag = new EvidenceTag(skillTag, e);
+        skillTag.setEvidenceTags(List.of(evidenceTag));
+        return evidenceTag;
+    }
+
+    public static EvidenceTag getEvidenceTagC(Evidence e) {
+        SkillTag skillTag = getSkillTagC();
+        EvidenceTag evidenceTag = new EvidenceTag(skillTag, e);
+        skillTag.setEvidenceTags(List.of(evidenceTag));
+        return evidenceTag;
     }
 
     public static MultiValueMap<String, String> validParamsDeadline = getValid();

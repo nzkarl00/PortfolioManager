@@ -82,7 +82,7 @@ public class SeleniumWithTestNGLiveTest_EvidenceManualFilter {
     public void goTo_evidencePage() {
         seleniumExample.config.getDriver().get(seleniumExample.url+"/evidence");
         WebElement pageTitle = seleniumExample.config.getDriver().findElement(By.xpath("/html/body/div[2]/div/div[1]/div[1]/div[2]/div/p"));
-        Assertions.assertEquals("List Of Evidence", pageTitle.getText());
+        Assertions.assertEquals("Evidence from user: admin", pageTitle.getText());
     }
 
     /**

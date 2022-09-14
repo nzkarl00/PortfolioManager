@@ -6,6 +6,9 @@ import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 
+import java.time.Instant;
+import java.util.Date;
+
 /**
  * Responsible for having common usage attributes for the controller tests
  */
@@ -17,6 +20,9 @@ public class CommonControllerUsage {
             .setRoleClaimType("role")
             .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
             .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
+        .addClaims(ClaimDTO.newBuilder().setType("unique_name").setValue("Timmy Little").build()) // Set the mock user's username
+        .addClaims(ClaimDTO.newBuilder().setType("name").setValue("Ya Boi").build()) // Set the mock user's name
+            .addClaims(ClaimDTO.newBuilder().setType("exp").setValue(String.valueOf(Instant.now().getEpochSecond() + 864000)).build()) // Set the expiry time
             .setAuthenticationType("AuthenticationTypes.Federation")
             .setName("validtesttoken")
             .build();
@@ -27,6 +33,9 @@ public class CommonControllerUsage {
             .setRoleClaimType("role")
             .addClaims(ClaimDTO.newBuilder().setType("role").setValue("TEACHER").build()) // Set the mock user's role
             .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
+        .addClaims(ClaimDTO.newBuilder().setType("unique_name").setValue("Timmy Little").build()) // Set the mock user's username
+        .addClaims(ClaimDTO.newBuilder().setType("name").setValue("Ya Boi").build()) // Set the mock user's name
+        .addClaims(ClaimDTO.newBuilder().setType("exp").setValue(String.valueOf(Instant.now().getEpochSecond() + 864000)).build()) // Set the expiry time
             .setAuthenticationType("AuthenticationTypes.Federation")
             .setName("validtesttoken")
             .build();
@@ -37,6 +46,9 @@ public class CommonControllerUsage {
             .setRoleClaimType("role")
             .addClaims(ClaimDTO.newBuilder().setType("role").setValue("STUDENT").build()) // Set the mock user's role
             .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
+        .addClaims(ClaimDTO.newBuilder().setType("unique_name").setValue("Timmy Little").build()) // Set the mock user's username
+        .addClaims(ClaimDTO.newBuilder().setType("name").setValue("Ya Boi").build()) // Set the mock user's name
+        .addClaims(ClaimDTO.newBuilder().setType("exp").setValue(String.valueOf(Instant.now().getEpochSecond() + 864000)).build()) // Set the expiry time
             .setAuthenticationType("AuthenticationTypes.Federation")
             .setName("validtesttoken")
             .build();
@@ -47,6 +59,9 @@ public class CommonControllerUsage {
             .setRoleClaimType("role")
             .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
             .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
+        .addClaims(ClaimDTO.newBuilder().setType("unique_name").setValue("Timmy Little").build()) // Set the mock user's username
+        .addClaims(ClaimDTO.newBuilder().setType("name").setValue("Ya Boi").build()) // Set the mock user's name
+        .addClaims(ClaimDTO.newBuilder().setType("exp").setValue(String.valueOf(Instant.now().getEpochSecond() + 864000)).build()) // Set the expiry time
             .setAuthenticationType("AuthenticationTypes.Federation")
             .setName("")
             .build();

@@ -29,7 +29,7 @@
                 <div class="row px-md-5 justify-content-start constrain-overflow">
                     <br><br>
 
-                    <div class="col-7">
+                    <div th:if="${isSelf}" class="col-7" id="edit_account_button">
                         <form th:action="@{edit-account}" method="get">
                             <input style="display:none;" th:name="id" id="id" type="number">
                             <button class="edit_wide" style="padding-top:0rem;" type="submit">
@@ -39,7 +39,7 @@
                     </div>
 
                     <div class="col-7">
-                    <form th:action="@{edit-password}" method="get">
+                    <form th:if="${isSelf}" th:action="@{edit-password}" id="edit_password_button" method="get">
                         <input style="display:none;" th:name="id" id="id" type="number">
                         <button class="edit_wide" style="padding-top:0rem;" type="submit">
                             EDIT PASSWORD
@@ -48,7 +48,7 @@
                     </div>
 
                     <div class="col-7">
-                    <form th:action="@{edit-photo}" method="get">
+                    <form th:if="${isSelf}" th:action="@{edit-photo}" method="get" id="edit_photo_button">
                         <input style="display:none;" th:name="id" id="id" type="number">
                         <button class="edit_wide" style="padding-top:0rem;" type="submit">
                             EDIT PHOTO
@@ -67,7 +67,7 @@
                 <div>
                     <p class="profile_subhead">Username</p>
                     <div class="profile_data">
-                        <p class="data"><span th:text="${username}" ></span></p>
+                        <p class="data"><span id="username" th:text="${username}" ></span></p>
                     </div>
                 </div>
 
@@ -122,14 +122,11 @@
 
             <!-- View Evidence Button -->
             <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
-
-                <form th:action="@{evidenceList}" method="get">
-                    <input style="display:none;" th:name="ui" id="ui" type="number" th:value="${userId}">
-                    <button class="edit_wide" style="padding-top:0rem;" type="submit">
+                <a th:href="@{evidence(ui=${userId})}">
+                    <button class="edit_wide" style="padding-top:0rem;">
                         VIEW EVIDENCE
                     </button>
-                </form>
-
+                </a>
             </div>
 
 

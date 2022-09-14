@@ -1,5 +1,6 @@
 /* reference https://www.w3schools.com/howto/howto_js_autocomplete.asp*/
-function autocomplete(inp, arr) {
+function autocomplete(inp, arr, autocompleteType) {
+
 
     let currentItem;
 
@@ -17,16 +18,25 @@ function autocomplete(inp, arr) {
 
         // Add possible autocomplete options to the container
         for (let i = 0; i < arr.length; i++) {
-            if (arr[i].substr(0, value.length).toUpperCase() == value.toUpperCase()) {
+            if (arr[i].toLowerCase().includes(value.toLowerCase())) {
                 let optionItem = document.createElement("div")
-                optionItem.innerHTML = "<strong>" + arr[i].substr(0, value.length) + "</strong>"
-                optionItem.innerHTML += arr[i].substr(value.length)
+                if (autocompleteType == "user") {
+                    optionItem.innerHTML = arr[i].split(":")[1]
+                } else {
+                    optionItem.innerHTML = arr[i]
+                }
                 optionItem.value = arr[i]
                 optionItem.addEventListener("click", function(e) {
                     inp.value = optionItem.value
-                    addSkill()
-                    updateSkills()
-                    closeAllLists()
+                    if (autocompleteType == "user") {
+                        addUser()
+                        updateUsers()
+                        closeAllLists()
+                    } else {
+                        addSkill()
+                        updateSkills()
+                        closeAllLists()
+                    }
                 });
                 optionContainer.appendChild(optionItem)
             }

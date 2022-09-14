@@ -25,31 +25,34 @@
 
         <form class="row-1 portion_body_tall" th:action="@{search-evidence}" style="display:flex;" >
 
-                        <div class="evidence_form_element col-5">
-                            <div class="slight_pad">
-                            <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
-                            <b class="evidence_head setWide">Category:</b><br>
-                            <select id="ci" th:name="ci"  onclick="resetElement('si')" class="project_edit_data setWide">
-                                <option value="" selected disabled> Choose here</option>
-                                <option value="Quantitative Skills">&nbsp;&nbsp;Quantitative skills</option>
-                                <option value="Qualitative Skills">&nbsp;&nbsp;Qualitative skills</option>
-                                <option value="Service">&nbsp;&nbsp;Service</option>
-                            </select>
-                        </div>
-                        </div>
-                        <div class="evidence_form_element col-6">
-                            <div class="slight_pad">
-                            <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
-                            <b class="evidence_head setWide">Skill:</b><br>
-                            <select id="si" th:name="si" onclick="resetElement('ci')" class="project_edit_data setWide">
-                                <option value="" selected disabled> Choose here</option>
-                                <div th:each="skill: ${skillList}"><option th:value="${skill.getTitle}" th:text="${skill.getTitle}"> </option><div>
-                            </select>
-                            </div>
-                        </div>
-                        <div class="evidence_form_element align-content-center col-1">
-                            <button id="searchEvidence" class="search" type="submit"><i class="fa fa-search"></i></button>
-                        </div>
+            <div class="evidence_form_element col-5">
+                <div class="slight_pad">
+                    <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
+                    <b class="evidence_head setWide">Category:</b><br>
+                    <select id="ci" th:name="ci"  onclick="resetElement('si')" class="project_edit_data setWide">
+                        <option value="" selected disabled> Choose here</option>
+                        <option value="Quantitative Skills">&nbsp;&nbsp;Quantitative skills</option>
+                        <option value="Qualitative Skills">&nbsp;&nbsp;Qualitative skills</option>
+                        <option value="Service">&nbsp;&nbsp;Service</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="evidence_form_element col-6">
+                <div class="slight_pad">
+                    <!-- https://bbbootstrap.com/snippets/multiselect-dropdown-list-83601849# -->
+                    <b class="evidence_head setWide">Skill:</b><br>
+                    <select id="si" th:name="si" onclick="resetElement('ci')" class="project_edit_data setWide">
+                        <option value="" selected disabled> Choose here</option>
+                        <div th:if="${userSkills.size() > 0}" th:each="skill: ${userSkills}"><option th:value="${skill.getTitle}" th:text="${skill.getTitle}"> </option><div>
+                    </select>
+                </div>
+            </div>
+
+            <div class="evidence_form_element align-content-center col-1">
+                <button id="searchEvidence" class="search" type="submit"><i class="fa fa-search"></i></button>
+            </div>
+
         </form>
     <script type="text/javascript" th:inline="javascript">
         function resetElement(element_id){

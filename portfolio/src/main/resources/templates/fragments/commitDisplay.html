@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="headerfiles">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{css/stylesheet.css}" rel="stylesheet">
+
+    <!-- For dropdown to work -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>
+    <link
+            href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css"
+            rel="stylesheet"  type='text/css'>
+
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+</head>
+
+<body>
+
+
+<div th:fragment="commitDisplay" id="commit_search_result_box" class="commit_search_result_container">
+        <div class="commit_data no-gutters commit_search_result_body">
+        <div th:each="commit: ${commitList}">
+            <div th:id="${commit.getId}" class="row">
+                <div class="row commit_display_small" th:text="${'[' + commit.getId + ']'}"></div>
+                <div class="row commit_display_large" th:text="${commit.getTitle}"></div>
+                <div class="row commit_display_small" th:text="${'(' + commit.getAuthorName + ') ' + '(' + commit.getCommittedDate + ')'}"></div>
+                <button class="addCommit" type="button" th:parent-id="${commit.getId}" onclick="repositionCommit(this.getAttribute('parent-id')); searchCommits();">+</button>
+                <div></div>
+                <br>
+            </div>
+        </div>
+        <div th:if="${commitList.size() == 50}"><br>Only 50 commits are being shown, filter with more specific options to get more</div>
+        <div th:if="${commitList.size() == 0}"><br>No result from this search condition. Expand your commit filter(s) wider to try searching again.</div>
+        <p th:text="${errorMessage}"></p>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{js/commitHandler.js}"></script>
+</body>
+</html>
