@@ -129,7 +129,14 @@
                         <input type="text" id="add_link_input" class="evidence_form_element_wide project_edit_data">
                         <button id="add_link_button" type="button" style="margin-left: 1em" class="table_text user_role_table" onclick="addLink(); return false; canEditCheck()" th:text="Add"></button>
                         </input>
-                    </div><br>
+                    </div>
+                    <br>
+
+                    <!-- 3. List of all the links the user added from the input field -->
+                    <div id="links_container" style="width: 85%; display: block">
+                    </div>
+
+                    <br>
 
                     <div th:replace="fragments/evidenceCommit.html :: evidenceCommit"></div>
 
@@ -141,9 +148,7 @@
                     <input type="hidden" id="skillNewInput" th:name="skillNewInput">
 
                     <div id="links_and_submit" style="display: flex">
-
-                        <!-- 3. List of all the links the user added from the input field -->
-                        <div id="links_container" style="width: 85%; display: block">
+                        <div style="width: 85%; display: block">
                         </div>
 
                         <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
@@ -356,7 +361,6 @@
 
         // when the check button is pressed save the edited skill
         function saveSkill(event) {
-
             editedSkill = document.getElementById("skill_" + event.target.value)
 
             let newSkill = document.createElement("button");
@@ -526,22 +530,25 @@
         let originalLinks = new Set()
         originalUsers = new Set()
         originalCommits = new Set()
+        // wait for the page to load
+        setTimeout(() => {
+            // set the existing links and skills
+            for (const link of [[${links}]]) {
+                links.add(link)
+                originalLinks.add(link)
+                appendLink(link)
+            }
 
-        // set the existing links and skills
-        for (const link of [[${links}]]) {
-            links.add(link)
-            originalLinks.add(link)
-            appendLink(link)
-        }
+            for (const skill of [[${skills}]]) {
+                appendSkill(skill, true)
+            }
 
-        for (const skill of [[${skills}]]) {
-            appendSkill(skill, true)
-        }
+            for (const user of [[${users}]]) {
+                originalUsers.add(user)
+                appendUser(user, user.split(":")[1] == [[${username}]])
+            }
 
-        setTimeout(() => {for (const user of [[${users}]]) {
-            originalUsers.add(user)
-            appendUser(user, user.split(":")[1] == [[${username}]])
-        }}, 20)
+            }, 20)
 
         for (const commit of [[${existingCommits}]]) {
             originalCommits.add(commit.hash)
