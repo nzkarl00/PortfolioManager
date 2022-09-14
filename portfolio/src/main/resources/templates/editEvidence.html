@@ -57,6 +57,7 @@
             <br>
             <br>
             <br>
+            <br>
 
             <div class="row-1">
                 <div>
@@ -514,8 +515,17 @@
             canEditCheck()
         }
 
+        // update the form property to contain all commit hashes
+        function storeCommits() {
+            let commitsStore = document.getElementById("commitsInput")
+            const commitList = Array.from(commits).join('~');
+            commitsStore.value = commitList
+            canEditCheck()
+        }
+
         let originalLinks = new Set()
         originalUsers = new Set()
+        originalCommits = new Set()
 
         // set the existing links and skills
         for (const link of [[${links}]]) {
@@ -528,11 +538,15 @@
             appendSkill(skill, true)
         }
 
-        for (const user of [[${users}]]) {
+        setTimeout(() => {for (const user of [[${users}]]) {
             originalUsers.add(user)
             appendUser(user, user.split(":")[1] == [[${username}]])
-        }
+        }}, 20)
 
+        for (const commit of [[${existingCommits}]]) {
+            originalCommits.add(commit.hash)
+            commits.add(commit.hash)
+        }
 
         function canEditCheck() {
             const originalTitle = [[${evidence.getTitle()}]];
@@ -559,7 +573,6 @@
                 xs.size === ys.size &&
                 [...xs].every((x) => ys.has(x));
 
-
             if (
                 originalTitle === currentTitle &&
                 originalDate === currentDate &&
@@ -567,6 +580,7 @@
                 originalCategory === currentCategory &&
                 originalSkills === currentSkills &&
                 eqSet(originalLinks, links) &&
+                eqSet(originalCommits, commits) &&
                 eqSet(originalUsers, users)
             ) {
                 saveButton.style = "background-color: #AAAAAA;"
@@ -576,6 +590,7 @@
                 canSaveCheck();
             }
         }
+        canEditCheck()
         </script>
     </div>
 </div>
