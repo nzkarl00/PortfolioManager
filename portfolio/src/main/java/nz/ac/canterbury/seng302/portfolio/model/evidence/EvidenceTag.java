@@ -39,6 +39,12 @@ public class EvidenceTag {
         parentSkillTag = tag;
     }
 
+    /**
+     * Get the ID of the evidence tag
+     * @return
+     */
+    public int getId() {return id; }
+
     public Evidence getParentEvidence() {
         return parentEvidence;
     }

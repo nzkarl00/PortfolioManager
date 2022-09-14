@@ -3,9 +3,11 @@ package nz.ac.canterbury.seng302.portfolio.model.evidence;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import javax.ws.rs.core.Link;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,9 +61,9 @@ public class Evidence {
     @JoinColumn(name="associated_project_id", nullable=false)
     protected Project associatedProject;
 
-    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
-    protected List<EvidenceTag> evidenceTags;
+    protected List<EvidenceTag> evidenceTags = List.of();
 
     @Column(name="title", length = MAX_TITLE_LENGTH, nullable = false)
     protected String title = "";
@@ -327,10 +329,33 @@ public class Evidence {
         return this.id;
     }
 
+    @Transactional
     public void setEvidenceTags(List<EvidenceTag> evidenceTags) {
         this.evidenceTags = evidenceTags;
     }
 
+    /**
+     * Removes an evidence tag from the associated evidence tags.
+     * @param evidenceTag
+     */
+    @Transactional
+    public void removeEvidenceTag(EvidenceTag evidenceTag) {
+        this.evidenceTags.removeIf((EvidenceTag tag) -> tag.getId() == evidenceTag.id);
+    }
+
+    /**
+     * Add an evidence tag to the evidence.
+     * @param evidenceTag
+     */
+    @Transactional
+    public void addEvidenceTag(EvidenceTag evidenceTag) {
+        this.evidenceTags.add(evidenceTag);
+    }
+
+    /**
+     * Get the linked commits associated with a piece of Evidence
+     * @return
+     */
     public List<LinkedCommit> getLinkedCommit() {
         return linkedCommit;
     }
