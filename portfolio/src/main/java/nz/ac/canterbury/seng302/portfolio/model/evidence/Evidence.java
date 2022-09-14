@@ -77,7 +77,6 @@ public class Evidence {
      */
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
-    @JsonBackReference
     protected List<WebLink> links;
 
     /**
@@ -87,7 +86,6 @@ public class Evidence {
      */
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
-    @JsonBackReference // This prevents infinite reference looping between tables
     protected List<LinkedCommit> linkedCommit;
 
     public Evidence() {}

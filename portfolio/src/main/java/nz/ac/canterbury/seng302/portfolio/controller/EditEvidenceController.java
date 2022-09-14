@@ -26,6 +26,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.gitlab4j.api.GitLabApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Responsible for the edit evidence page
@@ -64,6 +67,8 @@ public class EditEvidenceController {
     private WebLinkRepository webLinkRepository;
     @Autowired
     private GroupsClientService groupsService;
+    @Autowired
+    private LinkedCommitRepository linkedCommitRepository;
 
     Logger logger = LoggerFactory.getLogger(EditEvidenceController.class);
 
@@ -125,15 +130,7 @@ public class EditEvidenceController {
 
         Set<String> skillTagList = evidenceService.getAllUniqueSkills();
         logger.debug(skills.toString());
-        LinkedCommit temp = new LinkedCommit(evidence, //TODO REMOVE TEST DATA
-                "Test Name",
-                "Test Owner",
-                "aaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                "lachlan",
-                "This is a commit",
-                LocalDateTime.now());
-        List<LinkedCommit> tempList = new ArrayList<>(List.of(temp)); //TODO REMOVE TEST DATA
-        model.addAttribute("existingCommits", tempList);
+        model.addAttribute("existingCommits", evidence.getLinkedCommit());
         PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(evidence.getParentUserId());
         model.addAttribute("groupList", groupList.getGroupsList());
         model.addAttribute("allSkills", skillTagList);
@@ -173,6 +170,8 @@ public class EditEvidenceController {
      * @param id the id for the piece of evidence to edit
      * @param model The model to be used by the application for web integration
      * @return redirect to the evidence page once the edit is complete
+     * @exception MalformedURLException if an invalid link is given
+     * @exception GitLabApiException if there is an issue fetching commit data from gitlab API
      */
     @Transactional
     @PostMapping("/edit-evidence")
@@ -191,7 +190,7 @@ public class EditEvidenceController {
         @RequestParam(value = "userInput") String users,
         @RequestParam(value = "commitsInput") String newCommits,
         @RequestParam(value = "commitsDelete") String deletedCommits,
-        Model model) throws MalformedURLException {
+        Model model) throws MalformedURLException, GitLabApiException {
         logger.debug(newCommits);
         logger.debug(deletedCommits);
         Evidence evidence = evidenceRepository.findById((int) id);
@@ -216,6 +215,11 @@ public class EditEvidenceController {
         webLinkRepository.deleteAllByEvidence(evidence);
         evidenceService.addLinksToEvidence(evidenceService.extractListFromHTMLStringWithSpace(links), evidence);
 
+        List<LinkedCommit> newLinkedCommits = evidenceService.constructCommits(EvidenceService.extractListFromHTMLStringWithTilda(newCommits).stream().filter(hashAndGroupString -> hashAndGroupString.contains("+")).collect(Collectors.toList()), evidence);
+        for (String deletedCommit: EvidenceService.extractListFromHTMLStringWithTilda(deletedCommits)) {
+            linkedCommitRepository.deleteByParentEvidenceAndHash(evidence, deletedCommit);
+        }
+        linkedCommitRepository.saveAll(newLinkedCommits);
         evidenceRepository.save(evidence);
 
         return "redirect:evidence";
