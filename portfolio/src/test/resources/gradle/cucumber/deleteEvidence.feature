@@ -40,6 +40,7 @@ Feature: U12: deleting your own evidence
         Then I can click the delete Icon for "Evidence Delete"
         Then A model appears containing the evidence title "Evidence Delete"
         When I click cancel
+        And I go to the evidence page
         Then I view that piece of evidence "Evidence Delete"
 
     @Admin

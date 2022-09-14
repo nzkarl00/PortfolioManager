@@ -73,9 +73,11 @@ public class DeleteEvidenceStepDefs {
 
     @When("I click cancel")
     public void iClickCancel() throws InterruptedException {
-        WebElement cancelButton = driver.findElement(By.id("CancelButton"));
-        Thread.sleep(300);
-        cancelButton.click();
+        Thread.sleep(700);
+        WebElement cancelButton = driver.findElement(By.id("cancelButton"));
+        BaseSeleniumStepDefs.scrollWindowToElement(driver, cancelButton);
+        Thread.sleep(700);
+        cancelButton.sendKeys(Keys.ENTER);
     }
 
 

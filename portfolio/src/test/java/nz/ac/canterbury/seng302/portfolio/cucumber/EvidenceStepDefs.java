@@ -370,6 +370,7 @@ public class EvidenceStepDefs {
 
     @And("I view that piece of evidence {string}")
     public void iViewThatPieceOfEvidence(String arg0) throws InterruptedException {
+
         viewFullPieceOfEvidence(arg0);
     }
 
