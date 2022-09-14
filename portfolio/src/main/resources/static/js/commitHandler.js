@@ -3,8 +3,6 @@ commits = new Set()
 existing = new Set()
 removedCommits = new Set()
 
-console.log(existing)
-
 // move the commit referenced by the hash to the current commits container
 // and change the button styling
 function repositionCommit(id) {
@@ -26,7 +24,10 @@ function repositionCommit(id) {
     commit.id = "moved" + id
     commits.add(id + "+" + document.getElementById("commit_group").value)
     removedCommits.delete(id)
-    storeCommits()
+    let commitsStore = document.getElementById("commitsInput")
+    let deletedCommits = document.getElementById("commitsDelete")
+    commitsStore.value = Array.from(commits).join('~')
+    deletedCommits.value = Array.from(removedCommits).join('~')
 }
 
 // remove the commit from the added commit list
@@ -40,10 +41,13 @@ function deleteCommit(id) {
             commits.delete(comm)
         }
     })
-    if (existingCommits.includes(id)) {
+    if (existing.has(id)) {
         removedCommits.add(id)
     }
-    storeCommits()
+    let commitsStore = document.getElementById("commitsInput")
+    let deletedCommits = document.getElementById("commitsDelete")
+    commitsStore.value = Array.from(commits).join('~')
+    deletedCommits.value = Array.from(removedCommits).join('~')
 }
 
 // update the form property to contain all commit hashes
