@@ -42,7 +42,7 @@
             </div>
         </div>
         <div th:if="${commitMap.size() == 50}"><br>Only 50 commits are being shown, filter with more specific options to get more</div>
-            <div th:if="${commitMap.size() == 0}"><br>No result from this search condition. Expand your commit filter(s) wider to try searching again.</div>
+        <div th:if="${commitMap.size() == 0}"><br>No result from this search condition. Expand your commit filter(s) wider to try searching again.</div>
         <p th:text="${errorMessage}"></p>
     </div>
 </div>

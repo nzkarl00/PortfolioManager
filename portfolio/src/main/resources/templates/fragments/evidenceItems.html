@@ -113,7 +113,7 @@
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete - ' + evidence.getTitle()+ '?' }">Delete?</h5>
+                                    <h5 class="modal-title" th:id= "${'exampleModalLongTitle'+evidence.getId()}"  th:text="${'Delete - ' + evidence.getTitle()+ '?' }">Delete?</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -125,8 +125,8 @@
                                     <div class="modal-footer">
                                         <input type="number" th:name="evidenceId" th:value="${evidence.getId()}" style="display: none">
                                         <input type="number" th:name="projectId" th:value="${evidence.getAssociatedProject().getId()}" style="display: none">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="CancelButton">Cancel</button>
-                                        <button type="submit" class="btn btn-primary bg-danger" >Delete</button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelButton">Cancel</button>
+                                        <button type="submit" class="btn btn-primary bg-danger" id="deleteButton" >Delete</button>
                                     </div>
                                 </form>
                             </div>
