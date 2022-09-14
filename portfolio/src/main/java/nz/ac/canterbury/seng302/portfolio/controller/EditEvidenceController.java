@@ -23,6 +23,7 @@ import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.gitlab4j.api.GitLabApiException;
@@ -91,17 +92,6 @@ public class EditEvidenceController {
     /**
      * Validates arguments passed to the edit evidence route.
      * Currently only validates skill related components.
-     *
-     * @param id
-     * @param title
-     * @param date
-     * @param projectId
-     * @param categories
-     * @param skillsDelete
-     * @param skillsEdit
-     * @param skillsNew
-     * @param links
-     * @param description
      */
     protected static void validateEditEvidenceParameters(
             Integer _id,
