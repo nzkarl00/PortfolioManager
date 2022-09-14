@@ -1,5 +1,4 @@
 Feature: U32 (U13): Modifying pieces of evidence
-
 #    @Admin
 #    @Close
 #    Scenario: AC1 There is a clickable edit icon for an evidence I own.

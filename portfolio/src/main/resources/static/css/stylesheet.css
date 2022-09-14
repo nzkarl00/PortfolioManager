@@ -1459,6 +1459,22 @@ select.form-control {
     font-family: nexaLight !important;
 
 }
+.cancel_edit_evidence {
+
+    background-color: #FF202E !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    margin-left: 0rem !important;
+    margin-top: 0rem !important;
+    font-family: nexaLight !important;
+
+}
 
 .save_evidence {
 
@@ -1473,6 +1489,24 @@ select.form-control {
     padding: 0.5rem !important;
     margin: 1rem !important;
     margin-left: 6rem !important;
+    margin-top: 0rem !important;
+    font-family: nexaLight !important;
+
+}
+
+.save_edit_evidence {
+
+    background-color: #26D20F;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-colour: #FFFFFF !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    margin-left: 0rem !important;
     margin-top: 0rem !important;
     font-family: nexaLight !important;
 
