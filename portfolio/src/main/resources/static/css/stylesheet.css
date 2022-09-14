@@ -1181,6 +1181,16 @@
     padding-right: 20px !important;
 }
 
+
+.group_delete_button {
+    border: none;
+    margin-left: 10px;
+    padding: 4px 10px;
+    background: #FF202E !important;
+    border-radius: 10px;
+    color: white;
+}
+
 .commit_display_smaller {
     font-size: 70% !important;
     color: #999999 !important;
