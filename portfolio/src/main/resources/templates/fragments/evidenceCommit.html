@@ -244,7 +244,7 @@
 
     </script>
     <script type="text/javascript" th:src="@{js/commitHandler.js}"></script>
-    <script th:inline="javascript">let existingCommits = [[${existingCommits}]]; console.log(existingCommits); existingCommits.forEach(commit => commits.add(commit.hash))</script>
+    <script th:inline="javascript">let existingCommits = [[${existingCommits}]]; console.log(existingCommits); existingCommits.forEach(commit => existing.add(commit.hash))</script>
 </div>
 
 </body>

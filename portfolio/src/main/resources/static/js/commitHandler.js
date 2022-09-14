@@ -1,6 +1,9 @@
 
 commits = new Set()
+existing = new Set()
 removedCommits = new Set()
+
+console.log(existing)
 
 // move the commit referenced by the hash to the current commits container
 // and change the button styling
@@ -35,11 +38,11 @@ function deleteCommit(id) {
     commits.forEach(comm => {
         if (comm.includes(id)) {
             commits.delete(comm)
-            if (!comm.includes("+")) {
-                removedCommits.add(comm)
-            }
         }
     })
+    if (existingCommits.includes(id)) {
+        removedCommits.add(id)
+    }
     storeCommits()
 }
 
