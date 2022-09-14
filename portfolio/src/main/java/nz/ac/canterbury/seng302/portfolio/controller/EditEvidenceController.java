@@ -176,8 +176,11 @@ public class EditEvidenceController {
         @RequestParam(value = "descriptionInput") String description,
         @RequestParam(value = "evidenceId") Integer id,
         @RequestParam(value = "userInput") String users,
+        @RequestParam(value = "commitsInput") String newCommits,
+        @RequestParam(value = "commitsDelete") String deletedCommits,
         Model model) throws MalformedURLException {
-
+        logger.debug(newCommits);
+        logger.debug(deletedCommits);
         Evidence evidence = evidenceRepository.findById((int) id);
         if (evidence == null || AuthStateInformer.getId(principal) != evidence.getParentUserId()) {
             return "redirect:evidence";

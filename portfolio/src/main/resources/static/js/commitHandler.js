@@ -1,5 +1,7 @@
 
 commits = new Set()
+removedCommits = new Set()
+
 // move the commit referenced by the hash to the current commits container
 // and change the button styling
 function repositionCommit(id) {
@@ -20,6 +22,7 @@ function repositionCommit(id) {
     // allow for showing a commit already added in the search without overlapping the ids
     commit.id = "moved" + id
     commits.add(id + "+" + document.getElementById("commit_group").value)
+    removedCommits.delete(id)
     storeCommits()
 }
 
@@ -29,12 +32,21 @@ function deleteCommit(id) {
     if (commit) {
         commit.remove()
     }
-    commits.delete(id)
+    commits.forEach(comm => {
+        if (comm.includes(id)) {
+            commits.delete(comm)
+            if (!comm.includes("+")) {
+                removedCommits.add(comm)
+            }
+        }
+    })
     storeCommits()
 }
 
 // update the form property to contain all commit hashes
 function storeCommits() {
     let commitsStore = document.getElementById("commitsInput")
+    let deletedCommits = document.getElementById("commitsDelete")
     commitsStore.value = Array.from(commits).join('~')
+    deletedCommits.value = Array.from(removedCommits).join('~')
 }
