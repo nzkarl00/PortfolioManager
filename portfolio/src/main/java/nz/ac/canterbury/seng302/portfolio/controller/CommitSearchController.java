@@ -117,13 +117,14 @@ public class CommitSearchController {
             // Convert each commit into a commit message.
             List<CommitMessage> commitMessages = commits.stream().map((commit) -> new CommitMessage(commit)).toList();
 
-            //Simple lambda expression to sort commits in terms of their timestamp
             ArrayList<CommitMessage> sortedCommits = new ArrayList<CommitMessage>(commitMessages);
+            //This lambda expression sorts commits in terms of their timestamp
             sortedCommits.sort(
+                    //The negative sign before the compareTo function will reverse the sorting order
+                    //Because we are comparing dates this will give a reverse chronological ordering
                     (CommitMessage previous, CommitMessage next) -> (-previous.getTimestamp().compareTo(next.getTimestamp()))
             );
-            System.out.println(commitMessages);
-            res.put("commits", commitMessages);
+            res.put("commits", sortedCommits);
         } catch (Exception e) {
             logger.error(String.format("Could not get commits for group with ID=<%d>", groupID), e);
             model.addAttribute("errorMessage", "Communicating with the Gitlab API failed, please try again");
