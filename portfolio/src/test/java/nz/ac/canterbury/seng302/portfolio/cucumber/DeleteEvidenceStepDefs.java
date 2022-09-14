@@ -75,25 +75,25 @@ public class DeleteEvidenceStepDefs {
     public void iClickCancel() throws InterruptedException {
         WebElement cancelButton = driver.findElement(By.id("CancelButton"));
         Thread.sleep(300);
-        cancelButton.submit();
+        cancelButton.click();
     }
 
 
 
     @When("I click Delete")
-    public void i_click_delete() {
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-        String evidenceId = getEvidenceId("Evidence One");
-        WebElement modalContainer = driver.findElement(By.id("deleteModal"+evidenceId));
-        WebElement button = modalContainer.findElement(By.id("deleteButton"));
-        button.click();
+    public void i_click_delete() throws InterruptedException {
+        Thread.sleep(100);
+        WebElement cancelButton = driver.findElement(By.id("deleteButton"));
+        Thread.sleep(300);
+        cancelButton.submit();
     }
 
 
     @Then("I cannot view that piece of evidence {string}")
     public void i_cannot_view_that_piece_of_evidence(String string) {
+        //https://stackoverflow.com/questions/11454798/how-can-i-check-if-some-text-exist-or-not-in-the-page-using-selenium
         List<WebElement> list = driver.findElements(By.xpath("//*[contains(text(),'" + string + "')]"));
-        Assert.assertTrue(list.size() == 0);
+        Assert.assertTrue("Text not found!", list.size() > 0);
 
     }
 
