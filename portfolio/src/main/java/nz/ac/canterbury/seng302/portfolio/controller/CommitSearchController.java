@@ -98,7 +98,6 @@ public class CommitSearchController {
 
             // Convert each commit into a commit message.
             res.addAll(commits);
-            //Simple lambda expression to sort commits in terms of their timestamp
             //This lambda expression sorts commits in terms of their timestamp
             res.sort(
                     //The negative sign before the compareTo function will reverse the sorting order
