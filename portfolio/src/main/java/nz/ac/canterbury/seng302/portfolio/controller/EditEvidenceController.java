@@ -23,8 +23,10 @@ import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.gitlab4j.api.GitLabApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -67,6 +71,10 @@ public class EditEvidenceController {
     private EvidenceUserRepository evidenceUserRepository;
     @Autowired
     private WebLinkRepository webLinkRepository;
+    @Autowired
+    private GroupsClientService groupsService;
+    @Autowired
+    private LinkedCommitRepository linkedCommitRepository;
 
     public static void userGroups(Model model,
                                   AccountClientService accountClientService) {
@@ -84,17 +92,6 @@ public class EditEvidenceController {
     /**
      * Validates arguments passed to the edit evidence route.
      * Currently only validates skill related components.
-     *
-     * @param id
-     * @param title
-     * @param date
-     * @param projectId
-     * @param categories
-     * @param skillsDelete
-     * @param skillsEdit
-     * @param skillsNew
-     * @param links
-     * @param description
      */
     protected static void validateEditEvidenceParameters(
             Integer _id,
@@ -261,6 +258,10 @@ public class EditEvidenceController {
                 .collect(Collectors.toList());
 
         Set<String> skillTagList = evidenceService.getAllUniqueSkills();
+        logger.debug(skills.toString());
+        model.addAttribute("existingCommits", evidence.getLinkedCommit());
+        PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(evidence.getParentUserId());
+        model.addAttribute("groupList", groupList.getGroupsList());
         skillTagList.remove("No_skills");
 
         model.addAttribute("allSkills", skillTagList);
@@ -289,24 +290,27 @@ public class EditEvidenceController {
      * @param description  new/existing description
      * @param id           the id for the piece of evidence to edit
      * @return redirect to the evidence page once the edit is complete
+     * @exception MalformedURLException if an invalid link is given
+     * @exception GitLabApiException if there is an issue fetching commit data from gitlab API
      */
     @Transactional
     @PostMapping("/edit-evidence")
     public String editEvidence(
-            @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value = "titleInput") String title,
-            @RequestParam(value = "dateInput") String date,
-            @RequestParam(value = "projectId") Integer projectId,
-            @RequestParam(value = "categoryInput") String categories,
-            @RequestParam(value = "skillDeleteInput") String skillsDelete,
-            @RequestParam(value = "skillEditInput") String skillsEdit,
-            @RequestParam(value = "skillNewInput") String skillsNew,
-            @RequestParam(value = "linksInput") String links,
-            @RequestParam(value = "descriptionInput") String description,
-            @RequestParam(value = "evidenceId") Integer id,
-            @RequestParam(value = "userInput") String users,
-            Model model)
-            throws MalformedURLException {
+        @AuthenticationPrincipal AuthState principal,
+        @RequestParam(value = "titleInput") String title,
+        @RequestParam(value = "dateInput") String date,
+        @RequestParam(value = "projectId") Integer projectId,
+        @RequestParam(value = "categoryInput") String categories,
+        @RequestParam(value = "skillDeleteInput") String skillsDelete,
+        @RequestParam(value = "skillEditInput") String skillsEdit,
+        @RequestParam(value = "skillNewInput") String skillsNew,
+        @RequestParam(value = "linksInput") String links,
+        @RequestParam(value = "descriptionInput") String description,
+        @RequestParam(value = "evidenceId") Integer id,
+        @RequestParam(value = "userInput") String users,
+        @RequestParam(value = "commitsInput") String newCommits,
+        @RequestParam(value = "commitsDelete") String deletedCommits,
+        Model model) throws MalformedURLException, GitLabApiException {
         logger.info(
                 String.format(
                         "Received POST request to edit-evidence, evidence-id=<%d>",
@@ -333,8 +337,7 @@ public class EditEvidenceController {
                 skillsDelete,
                 skillsEdit
         );
-        // Validating and parsing is completed first, as we don't want to be in a situation where
-        // some writes are made before we fail to validate other writes that must be made.
+
         Evidence evidence = evidenceRepository.findById((int) id);
         if (evidence == null || AuthStateInformer.getId(principal) !=
                 evidence.getParentUserId()) {
@@ -363,6 +366,11 @@ public class EditEvidenceController {
                 evidenceService.extractListFromHTMLStringWithSpace(links),
                 evidence);
 
+        List<LinkedCommit> newLinkedCommits = evidenceService.constructCommits(EvidenceService.extractListFromHTMLStringWithTilda(newCommits).stream().filter(hashAndGroupString -> hashAndGroupString.contains("+")).collect(Collectors.toList()), evidence);
+        for (String deletedCommit: EvidenceService.extractListFromHTMLStringWithTilda(deletedCommits)) {
+            linkedCommitRepository.deleteByParentEvidenceAndHash(evidence, deletedCommit);
+        }
+        linkedCommitRepository.saveAll(newLinkedCommits);
         evidenceRepository.save(evidence);
 
         // Now deal with skill tags
