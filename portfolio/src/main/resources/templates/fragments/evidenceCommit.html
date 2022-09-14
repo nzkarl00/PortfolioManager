@@ -40,7 +40,17 @@
             <div style="display: flex">
 
                 <!-- 3. List of all the links the user added from the input field -->
-                <div id="commit_container" style="width: 85%; display: block">
+                <div id="commit_container" style="width: 85%; display: block;">
+                    <div th:each="commit: ${existingCommits}" >
+                        <div th:id="'moved' + ${commit.getHash}" class="row">
+                            <div class="row commit_display_small" th:text="${'[' + commit.getHash + ']'}"></div>
+                            <div class="row commit_display_large" th:text="${commit.getTitle}"></div>
+                            <div class="row commit_display_small" th:text="${'(' + commit.getAuthor + ') ' + '(' + commit.getTimeStamp + ')'}"></div>
+                            <button class="fa fa-trash group_delete_button" type="button" th:parent-id="${commit.getHash}" onclick="deleteCommit(this.getAttribute('parent-id')); searchCommits();"></button>
+                            <div></div>
+                            <br>
+                        </div>
+                    </div>
                     <input type="hidden" id="commitInput" th:name="commitInput">
                 </div>
 
@@ -56,7 +66,7 @@
                     <div class="btn commit_text float-end">
                         <b class="commit_head">Link Group:</b>
                     </div>
-                    <select class="commit_edit_data"  id="commit_group" th:name="commit_group" th:onChange="openSearchCommit(value); canSearchCheck();">
+                    <select class="commit_edit_data"  id="commit_group" th:name="commit_group" th:onChange="openSearchCommit(value); canSearchCheck(); searchCommits();">
                         <option value="-1" selected> Select A Group</option>
                         <option th:each="group: ${groupList}" th:value="${group.getGroupId()}" th:text="${group.getLongName()}">
                         </option>
@@ -118,6 +128,7 @@
                             <br>
                             <div class="row-1">
                                 <div id="commit_search_result_box"></div>
+                                <input form="evidenceCreateForm" type="hidden" id="commitsInput" th:name="commitsInput">
                             </div>
 
 
@@ -155,7 +166,7 @@
             var alertMessage = document.getElementById("commit_group_alert_message");
 
             $.get("/repoCheck", {"groupId":id}).done(function (isRepo) {
-                if (isRepo == true) {
+                if (isRepo === true) {
                     alertMessage.style.display = "none";
                     $('#collapseCommit').collapse('show')
                 } else {
@@ -192,7 +203,7 @@
             cleanUserInput = userInput.value.replace(/\s/g, "")
             cleanHashInput = hashInput.value.replace(/\s/g, "")
 
-            if (cleanUserInput == "" & cleanHashInput == "" & select.value == "defaultStart" & (!widgetStart.value || !widgetEnd.value)) {
+            if (cleanUserInput === "" & cleanHashInput === "" & select.value === "defaultStart" & (!widgetStart.value || !widgetEnd.value)) {
                 searchButton.style = "background-color: #AAAAAA !important;"
                 searchButton.setAttribute("disabled","disabled");
             } else {
@@ -207,9 +218,12 @@
             const author = document.getElementById("userCommitInput");
             const start = document.getElementById("commit_date_start_input");
             const end = document.getElementById("commit_date_end_input");
+            const selectedCommits = document.getElementById("commitsInput");
 
             let params = {'group-id':commitGroup.value}
-
+            if (selectedCommits && selectedCommits.value) {
+                params['selected-commits'] = selectedCommits.value
+            }
             if (hash.value) {
                 params['commit-hash'] = hash.value
             }
@@ -230,7 +244,7 @@
 
     </script>
 
-
+    <script type="text/javascript" th:src="@{js/commitHandler.js}"></script>
 
 </div>
 

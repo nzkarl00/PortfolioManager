@@ -6,25 +6,29 @@
 <!-- Navigation Bar -->
 <div th:replace="fragments/validUser.html :: navbar"></div>
 
+<script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>
+
 <div class="container">
     <p class="body_title_large" id="title" th:text="${title}"></p>
     <div class="portion_body" id="evidence_form">
         <form th:action="@{edit-evidence}" method="post">
+            <p style="display:none;" id="title_error">Title must contain at least two non-symbol characters or be a single emoji</p>
             <div class="row-1" style="display:flex;">
                 <div class="evidence_form_element col-4">
-                    <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" th:value="${evidence.getTitle}" class="project_edit_data" th:name="titleInput">
-                    <label class="project_inputAlertBlue" id="titleCharCount">Characters Remaining: 100</label>
+                    <b class="evidence_head setWide">Title*:</b><br> <input type="text" id="evidence_title" maxlength="100" th:value="${evidence.getTitle}" class="project_edit_data" th:name="titleInput" oninput="updateTitle(); canEditCheck();" required>
+                    <br>
+                    <label class="project_inputAlertBlue" id="titleCharCount" th:text="${'Characters Remaining: ' + (100 - evidence.getTitle().length)}"></label>
                 </div>
                 <div id="date_container" class="evidence_form_element col-3">
                     <div style="display: flex">
                         <b class="evidence_head">Date*:</b> <br>
                         <i id="evidence_date_tool" class="fa fa-question-circle-o" style="padding-left: 0.2em; font-size: 200%"></i>
-
-
                     </div>
+                    <p style="display:none;" id="date_error">Date must be within the range of the project</p>
                     <input type="date" th:value="${evidence.getDate}" th:name="dateInput"
+                           th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}"
                            class="project_edit_data" id="date_input"
-                           oninput="canSaveCheck()" required
+                           oninput="dateCheck(); canEditCheck()" required
                     >
                 </div>
                 <div class="evidence_form_element align-content-center col-5">
@@ -34,15 +38,15 @@
                     </div>
                     <div id="category_multiselect_items" class="category_box" style="display: none">
                         <label for="category_quantitative" class="category_item" style="display: block">
-                            <input type="checkbox" autocomplete="off" class="category_item" value="Quantitative Skills" id="category_quantitative" onchange="updateCategories(this)"/>
+                            <input type="checkbox" autocomplete="off" class="category_item" value="Quantitative Skills" id="category_quantitative" onchange="updateCategories(this); canEditCheck()"/>
                             Quantitative Skills
                         </label>
                         <label for="category_qualitative" class="category_item" style="display: block">
-                            <input type="checkbox" autocomplete="off" class="category_item" value="Qualitative Skills" id="category_qualitative" onchange="updateCategories(this)"/>
+                            <input type="checkbox" autocomplete="off" class="category_item" value="Qualitative Skills" id="category_qualitative" onchange="updateCategories(this); canEditCheck()"/>
                             Qualitative Skills
                         </label>
                         <label for="category_service" class="category_item" style="display: block">
-                            <input type="checkbox" autocomplete="off" class="category_item" value="Service" id="category_service" onchange="updateCategories(this)"/>
+                            <input type="checkbox" autocomplete="off" class="category_item" value="Service" id="category_service" onchange="updateCategories(this); canEditCheck()"/>
                             Service
                         </label>
                     </div>
@@ -52,16 +56,20 @@
             <br>
             <br>
             <br>
+            <br>
+            <br>
 
             <div class="row-1">
                 <div>
                     <b class="evidence_head setWide">Description*:</b>
-                    <br>
+                    <p style="display:none;" id="description_error">Description must contain at least two non-symbol characters or be a single emoji</p>
                     <textarea type="text" maxlength="2000" id="evidence_desc" th:text="${evidence.getDescription}"
                               class=" description-input project_edit_data horizontal_field bio setWide"
                               th:name="descriptionInput"
+                              oninput="updateDesc(); canEditCheck()"
+                              required
                     ></textarea>
-                    <label class="project_inputAlertBlue" id="descCharCount">Characters Remaining: 2000</label>
+                    <label class="project_inputAlertBlue" id="descCharCount" th:text="${'Characters Remaining: ' + (2000 - evidence.getDescription().length)}"></label>
                 </div>
                 <!-- When enter is pressed, default form action is to submit the first button. As our form contains buttons, this empty button exists to consume the default action. -->
                 <button onclick="return false;" style="display: none"></button>
@@ -76,11 +84,11 @@
                     <div class="evidence_form_element_wide">
                         <div class="autocomplete evidence_form_element_wide">
                             <input type="hidden" id="userHidden" th:name="userInput">
-                            <input type="text" autocomplete="off" id="add_user_input" maxlength=65 class="evidence_form_element_wide project_edit_data">
+                            <input type="text" autocomplete="off" id="add_user_input" maxlength=65 class="evidence_form_element_wide project_edit_data" oninput="updateUsers(); canEditCheck()" onchange="canEditCheck()">
                             </input>
                         </div>
                     </div>
-                    <button id="add_user_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add"></button>
+                    <button id="add_user_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="canEditCheck()"></button>
                 </div>
                 <label class="project_inputAlertBlue" id="userCharCount" style="padding-left: 5px">Characters Remaining: 65</label>
                 <br>
@@ -98,11 +106,11 @@
                     <div class="evidence_form_element_wide">
                         <div class="autocomplete evidence_form_element_wide">
                             <input type="hidden" id="skillHidden" th:name="skillInput">
-                            <input type="text" autocomplete="off" id="add_skill_input" maxlength=100 class="evidence_form_element_wide project_edit_data">
+                            <input type="text" autocomplete="off" id="add_skill_input" maxlength=100 class="evidence_form_element_wide project_edit_data" oninput="updateSkills();">
                             </input>
                         </div>
                     </div>
-                    <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add"></button>
+                    <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="canEditCheck()"></button>
                 </div>
                 <label class="project_inputAlertBlue" id="skillCharCount" style="padding-left: 5px">Characters Remaining: 50</label>
                 <br>
@@ -112,15 +120,18 @@
                 <!-- Start of link section of the form, which includes the 1. "Links" title, 2. input, and 3. list of inputted links -->
                 <div class="col-12">
                     <!-- 1. "Links" title-->
-                    <b class="evidence_head setWide" id="links_input">Links:</b><br>
+                    <b class="evidence_head setWide" id="links_input">Links:</b>
+                    <p style="display:none;" id="link_error">Link is not valid, please ensure link includes http(s):// protocol</p>
 
                     <!-- 2. Input field where user can add links -->
                     <div class="col-12" id="links_div" style="display: flex; justify-content: center; align-items: center;">
                         <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
                         <input type="text" id="add_link_input" class="evidence_form_element_wide project_edit_data">
-                        <button id="add_link_button" type="button" style="margin-left: 1em" class="table_text user_role_table" onclick="addLink(); return false;" th:text="Add"></button>
+                        <button id="add_link_button" type="button" style="margin-left: 1em" class="table_text user_role_table" onclick="addLink(); return false; canEditCheck()" th:text="Add"></button>
                         </input>
                     </div><br>
+
+                    <div th:replace="fragments/evidenceCommit.html :: evidenceCommit"></div>
 
                     <input type="hidden" id="evidenceId" th:name="evidenceId" th:value="${evidence.getId}">
                     <input type="hidden" id="projectId" th:name="projectId" th:value="${evidence.getAssociatedProject.getId}">
@@ -129,15 +140,15 @@
                     <input type="hidden" id="skillEditInput" th:name="skillEditInput">
                     <input type="hidden" id="skillNewInput" th:name="skillNewInput">
 
-                    <div class="row-1" id="links_and_submit" style="display: flex">
+                    <div id="links_and_submit" style="display: flex">
 
                         <!-- 3. List of all the links the user added from the input field -->
                         <div id="links_container" style="width: 85%; display: block">
                         </div>
 
-                        <div class="col-2" id="submit_and_cancel" style="margin-right:60px;">
-                            <button class="cancel_evidence"><a th:href="@{evidence}" id="cancelButton" type="button" style="text-align: center; color: #FFFFFF;">CANCEL</a></button>
-                            <button class="save_evidence" id="projectSave" type="submit">SAVE</button>
+                        <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
+                            <button class="cancel_edit_evidence"><a th:href="@{evidence}" id="cancelButton" type="button" style="text-align: center; color: #FFFFFF;">CANCEL</a></button>
+                            <button class="save_edit_evidence" id="projectSave" type="submit" style="background-color: #AAAAAA;" disabled>SAVE</button>
                         </div>
                     </div>
                 </div>
@@ -146,8 +157,6 @@
 
         <script type="text/javascript" th:src="@{js/autocomplete.js}"></script>
         <script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>
-
-        <script type="text/javascript" th:src="@{js/autocomplete.js}"></script>
 
         <script th:inline="javascript">
 
@@ -315,7 +324,6 @@
             parent.remove()
 
             storeSkills()
-
             return false;
         }
 
@@ -341,6 +349,7 @@
             editButton = document.getElementById("edit_" + event.target.value)
 
             editButton.parentNode.replaceChild(saveButton, editButton)
+
 
             return false;
         }
@@ -368,6 +377,7 @@
             skillDelete.className = "fa fa-trash each_link_delete"
             skillDelete.value = editedSkill.value
             skillDelete.onclick = removeSkill;
+
             skillDelete.id = "delete_" + editedSkill.value
 
             oldDelete = document.getElementById("delete_" + event.target.value)
@@ -407,6 +417,7 @@
             editedSkill.parentNode.replaceChild(newSkill, editedSkill)
 
             storeSkills()
+            canEditCheck()
 
             return false;
         }
@@ -449,6 +460,7 @@
             }
             document.getElementById("add_skill_input").value = ""
             appendSkill(newSkill)
+            canEditCheck();
         }
 
         // update the hidden inputs to return correct values to the controller
@@ -463,6 +475,7 @@
             skillEditInput.value = editList
             const newList = Array.from(newSkills).join(' ');
             skillNewInput.value = newList
+            canEditCheck();
         }
 
         editedSkills = new Set()
@@ -484,9 +497,40 @@
             }
         }
 
+        //Returns the users
+        function storeUsers() {
+            let userStore = document.getElementById("userHidden")
+            const userList = Array.from(users).join('~');
+            userStore.value = userList
+            canEditCheck()
+        }
+
+        // Store the javascript set of links into a hidden HTML divider,
+        // which can be retrieved in Java from the linkInput ID
+        // This is to transfer the frontend set of links into the backend.
+        function storeLinks() {
+            let linksInput = document.getElementById("linksInput")
+            const linkList = Array.from(links).join(' ');
+            linksInput.value = linkList
+            canEditCheck()
+        }
+
+        // update the form property to contain all commit hashes
+        function storeCommits() {
+            let commitsStore = document.getElementById("commitsInput")
+            const commitList = Array.from(commits).join('~');
+            commitsStore.value = commitList
+            canEditCheck()
+        }
+
+        let originalLinks = new Set()
+        originalUsers = new Set()
+        originalCommits = new Set()
+
         // set the existing links and skills
         for (const link of [[${links}]]) {
             links.add(link)
+            originalLinks.add(link)
             appendLink(link)
         }
 
@@ -494,13 +538,60 @@
             appendSkill(skill, true)
         }
 
-        for (const user of [[${users}]]) {
+        setTimeout(() => {for (const user of [[${users}]]) {
+            originalUsers.add(user)
             appendUser(user, user.split(":")[1] == [[${username}]])
-            console.log(user)
+        }}, 20)
+
+        for (const commit of [[${existingCommits}]]) {
+            originalCommits.add(commit.hash)
+            commits.add(commit.hash)
         }
 
-        </script>
+        function canEditCheck() {
+            const originalTitle = [[${evidence.getTitle()}]];
+            let originalCategory = [[${evidence.getCategoryStrings()}]].sort().toString();
+            const originalDate =[[${evidence.getDate()}]].toString();
+            const originalDesc = [[${evidence.getDescription()}]];
+            const originalSkills = [[${skillsTitleList}]].sort().toString();
 
+
+            if(originalCategory.length === 0) {
+                originalCategory = "Select Categories";
+            }
+
+            const saveButton = document.getElementById("projectSave");
+            const currentTitle = document.getElementById("evidence_title").value;
+            const currentDate = document.getElementById("date_input").value;
+            const currentCategory = (document.getElementById("evidence_category").innerText).split(', ').sort().toString();
+            const currentDesc = document.getElementById("evidence_desc").value;
+            const currentSkills = document.getElementById("skills_container").innerText.split('\n').sort().toString();
+
+
+            // https://stackoverflow.com/questions/31128855/comparing-ecma6-sets-for-equality
+            const eqSet = (xs, ys) =>
+                xs.size === ys.size &&
+                [...xs].every((x) => ys.has(x));
+
+            if (
+                originalTitle === currentTitle &&
+                originalDate === currentDate &&
+                originalDesc === currentDesc &&
+                originalCategory === currentCategory &&
+                originalSkills === currentSkills &&
+                eqSet(originalLinks, links) &&
+                eqSet(originalCommits, commits) &&
+                eqSet(originalUsers, users)
+            ) {
+                saveButton.style = "background-color: #AAAAAA;"
+                saveButton.setAttribute("disabled","disabled");
+
+            } else {
+                canSaveCheck();
+            }
+        }
+        canEditCheck()
+        </script>
     </div>
 </div>
 </body>

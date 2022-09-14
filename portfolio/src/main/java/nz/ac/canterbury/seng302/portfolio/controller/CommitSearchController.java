@@ -59,28 +59,11 @@ public class CommitSearchController {
         @RequestParam(value = "author-email") Optional<String> authorEmail,
         @RequestParam(value = "date-start") Optional<String> dateRangeStart,
         @RequestParam(value = "date-end") Optional<String> dateRangeEnd,
+        @RequestParam(value = "selected-commits") Optional<String> selectedCommits,
         Model model
     ) throws Exception {
         logger.info(String.format("Attempting to carry out commit search for group id=<%d>", groupID));
-        Map<String, Object> res = new HashMap<String, Object>();
-
-
-        // TODO take this out once front-end validation is complete
-        Map<String, Object> test = new HashMap<String, Object>();
-        String testApiKey = "naz71Wwxyp31nYzaEgxZ";
-        List<Commit> testCommits = gitlabClient.getCommits(new GitLabApi(gitlabInstanceURL, testApiKey), "lra63", "example-for-api", 5);
-        for (Commit commit : testCommits) {
-            test.put(commit.getTitle(), commit);
-        }
-
-        Map<String, Object> output = new HashMap<String, Object>();
-        for (Map.Entry<String, Object> entry : test.entrySet()) {
-            if (output.size() < 5) {
-                output.put(entry.getKey(), entry.getValue());
-            }
-        }
-        model.addAttribute("commitMap", output);
-
+        List<Commit> res = new ArrayList<>();
         // Validation
         try {
             validateDetailsParameters(commitHash, authorName, authorEmail, dateRangeStart, dateRangeEnd);
@@ -113,24 +96,23 @@ public class CommitSearchController {
                     dateRangeEnd.map((dateStr) -> DateParser.stringToDate(dateStr))
             );
 
-            res.put("count", commits.size());
             // Convert each commit into a commit message.
-            List<CommitMessage> commitMessages = commits.stream().map((commit) -> new CommitMessage(commit)).toList();
-
-            ArrayList<CommitMessage> sortedCommits = new ArrayList<CommitMessage>(commitMessages);
+            res.addAll(commits);
+            //Simple lambda expression to sort commits in terms of their timestamp
             //This lambda expression sorts commits in terms of their timestamp
-            sortedCommits.sort(
+            res.sort(
                     //The negative sign before the compareTo function will reverse the sorting order
                     //Because we are comparing dates this will give a reverse chronological ordering
-                    (CommitMessage previous, CommitMessage next) -> (-previous.getTimestamp().compareTo(next.getTimestamp()))
+                    (previous, next) -> (-previous.getCommittedDate().compareTo(next.getCommittedDate()))
             );
-            res.put("commits", sortedCommits);
+
         } catch (Exception e) {
             logger.error(String.format("Could not get commits for group with ID=<%d>", groupID), e);
             model.addAttribute("errorMessage", "Communicating with the Gitlab API failed, please try again");
             return "fragments/commitDisplay.html :: commitDisplay";
         }
 
+        model.addAttribute("commitList", res);
         return "fragments/commitDisplay.html :: commitDisplay";
     }
 
@@ -218,30 +200,6 @@ public class CommitSearchController {
             authorEmail = commit.getAuthorEmail();
             title = commit.getTitle();
             message = commit.getMessage();
-        }
-
-        public String getAuthorName() {
-            return authorName;
-        }
-
-        public String getAuthorEmail() {
-            return authorEmail;
-        }
-
-        public String getHash() {
-            return hash;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public Date getTimestamp() {
-            return timestamp;
         }
     }
 }

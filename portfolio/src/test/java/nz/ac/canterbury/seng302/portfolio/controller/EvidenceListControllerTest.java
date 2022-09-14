@@ -28,7 +28,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.testUserTeacher;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateTeacher;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonProjectItems.getValidProject;
 import static org.mockito.Mockito.*;
@@ -103,6 +102,7 @@ public class EvidenceListControllerTest {
 
     // setting up and closing the mocked static authStateInformer
     static MockedStatic<AuthStateInformer> utilities;
+    static MockedStatic<EvidenceService> listReader;
     private static final MultiValueMap<String, String> validParamsEvidenceRequired = new LinkedMultiValueMap<>();
     private static final MultiValueMap<String, String> validParamsNoSkill = new LinkedMultiValueMap<>();
     private static final MultiValueMap<String, String> validParamsMultipleSkills = new LinkedMultiValueMap<>();
@@ -113,6 +113,7 @@ public class EvidenceListControllerTest {
     public static void open() {
 
         utilities = Mockito.mockStatic(AuthStateInformer.class );
+        listReader = Mockito.mockStatic(EvidenceService.class);
         validParamsEvidenceRequired.add("titleInput","Evidence One" );
         validParamsEvidenceRequired.add("dateInput", "2022-05-04");
         validParamsEvidenceRequired.add("projectId", String.valueOf(testProject.getId()));
@@ -184,7 +185,7 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(evidenceService.extractListFromHTMLStringWithTilda("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
+        listReader.when(() -> EvidenceService.extractListFromHTMLStringWithTilda("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
         when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
 
 
@@ -212,7 +213,7 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(evidenceService.extractListFromHTMLStringWithTilda("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
+        listReader.when(() -> EvidenceService.extractListFromHTMLStringWithTilda("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
         when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 7)).thenReturn(new ArrayList<>(List.of(testEvidenceAllCategories)));
 
         // Executing the mocked post request, checking that the page is displayed
@@ -239,7 +240,7 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(evidenceService.extractListFromHTMLStringWithTilda("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
+        listReader.when(() -> EvidenceService.extractListFromHTMLStringWithTilda("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
         when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
 
         // Executing the mocked post request, checking that the page is displayed
@@ -316,7 +317,7 @@ public class EvidenceListControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
         when(projectService.getProjectById(0)).thenReturn(testProject);
-        when(evidenceService.extractListFromHTMLStringWithTilda("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
+        listReader.when(() -> EvidenceService.extractListFromHTMLStringWithTilda("123456:Timmy Little")).thenReturn(new ArrayList<>(List.of("123456:Timmy Little")));
         when(evidenceService.generateEvidenceForUsers(new ArrayList<>(List.of("123456:Timmy Little")), testProject, "Evidence One", "This evidence is the first to be submitted", may4, 4)).thenReturn(new ArrayList<>(List.of(testEvidence)));
 
 

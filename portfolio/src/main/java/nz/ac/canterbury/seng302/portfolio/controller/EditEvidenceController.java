@@ -1,16 +1,30 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceUser;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +62,8 @@ public class EditEvidenceController {
     private EvidenceUserRepository evidenceUserRepository;
     @Autowired
     private WebLinkRepository webLinkRepository;
+    @Autowired
+    private GroupsClientService groupsService;
 
     Logger logger = LoggerFactory.getLogger(EditEvidenceController.class);
 
@@ -75,16 +92,18 @@ public class EditEvidenceController {
         }
 
         Evidence evidence = evidenceRepository.findById(evidenceIdActualised);
-        if (evidence == null) {
+
+        //Check is evidence is present or the user is the parent evidence user
+        if (evidence == null || evidence.getParentUserId() != id) {
             return "redirect:evidence";
         }
+
         // get the links and pass the urls to the frontend
         List<WebLink> links = evidence.getLinks();
         List<String> linkUrls = new ArrayList<>();
         for (WebLink link : links) {
             linkUrls.add(link.getUrl());
         }
-
 
         // Creating a mapping of ID: Usernames, for the users who are contributing to this evidence
         List<String> evidenceUsers = new ArrayList<>();
@@ -94,6 +113,41 @@ public class EditEvidenceController {
         model.addAttribute("users", evidenceUsers);
 
 
+        userGroups(model, accountClientService);
+
+        List<EvidenceTag> tags = evidence.getEvidenceTags();
+        List<String> skills = new ArrayList<>();
+        List<String> skillsTitleList = new ArrayList<>();
+        for (EvidenceTag tag: tags) {
+            skills.add(tag.getParentSkillTag().getId() + ":" + tag.getParentSkillTag().getTitle());
+            skillsTitleList.add(tag.getParentSkillTag().getTitle());
+        }
+
+        Set<String> skillTagList = evidenceService.getAllUniqueSkills();
+        logger.debug(skills.toString());
+        LinkedCommit temp = new LinkedCommit(evidence, //TODO REMOVE TEST DATA
+                "Test Name",
+                "Test Owner",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "lachlan",
+                "This is a commit",
+                LocalDateTime.now());
+        List<LinkedCommit> tempList = new ArrayList<>(List.of(temp)); //TODO REMOVE TEST DATA
+        model.addAttribute("existingCommits", tempList);
+        PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(evidence.getParentUserId());
+        model.addAttribute("groupList", groupList.getGroupsList());
+        model.addAttribute("allSkills", skillTagList);
+        model.addAttribute("skills", skills);
+        model.addAttribute("skillsTitleList", skillsTitleList);
+        model.addAttribute("links", linkUrls);
+        model.addAttribute("evidence", evidence);
+        model.addAttribute("project", evidence.getAssociatedProject());
+        model.addAttribute("title", "Edit Evidence: " + evidence.getTitle());
+
+        return "editEvidence";
+    }
+
+    public static void userGroups(Model model, AccountClientService accountClientService) {
         PaginatedUsersResponse response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
 
         List<String> users = new ArrayList<>();
@@ -102,23 +156,6 @@ public class EditEvidenceController {
             users.add(temp.id + ":" + temp.username);
         }
         model.addAttribute("allUsers", users);
-
-        List<EvidenceTag> tags = evidence.getEvidenceTags();
-        List<String> skills = new ArrayList<>();
-        for (EvidenceTag tag: tags) {
-            skills.add(tag.getParentSkillTag().getId() + ":" + tag.getParentSkillTag().getTitle());
-        }
-
-        Set<String> skillTagList = evidenceService.getAllUniqueSkills();
-        logger.debug(skills.toString());
-
-        model.addAttribute("allSkills", skillTagList);
-        model.addAttribute("skills", skills);
-        model.addAttribute("links", linkUrls);
-        model.addAttribute("evidence", evidence);
-        model.addAttribute("title", "Edit Evidence: " + evidence.getTitle());
-
-        return "editEvidence";
     }
 
     /**
@@ -139,7 +176,7 @@ public class EditEvidenceController {
      */
     @Transactional
     @PostMapping("/edit-evidence")
-    public String addEvidence(
+    public String editEvidence(
         @AuthenticationPrincipal AuthState principal,
         @RequestParam(value = "titleInput") String title,
         @RequestParam(value = "dateInput") String date,
@@ -155,6 +192,10 @@ public class EditEvidenceController {
         Model model) throws MalformedURLException {
 
         Evidence evidence = evidenceRepository.findById((int) id);
+        if (evidence == null || AuthStateInformer.getId(principal) != evidence.getParentUserId()) {
+            return "redirect:evidence";
+        }
+        evidence.setCategories(Evidence.categoryStringToInt(categories));
 
         // Validating the mandatory fields from U7
         Evidence.validateProperties(evidence.getAssociatedProject(), title, description, LocalDate.parse(date));
@@ -166,7 +207,7 @@ public class EditEvidenceController {
 
         // delete all past users from this user's evidence, then add all modified users for this user's evidence
         evidenceUserRepository.deleteAllByEvidence(evidence);
-        evidenceService.addUsersToExistingEvidence(evidenceService.extractListFromHTMLStringWithTilda(users), evidence);
+        evidenceService.addUsersToExistingEvidence(EvidenceService.extractListFromHTMLStringWithTilda(users), evidence);
 
         // delete all past weblinks from this user's evidence, then add all modified weblinks for this user's evidence
         webLinkRepository.deleteAllByEvidence(evidence);
