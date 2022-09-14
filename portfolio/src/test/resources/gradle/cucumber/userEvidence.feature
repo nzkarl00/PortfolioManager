@@ -1,4 +1,4 @@
-Feature: U11 - Users linked to pieces of evidenceU11 - Users linked to pieces of evidence
+Feature: U11 - Users linked to pieces of evidence
   @Close
   Scenario: AC3 When the evidence is saved, the users’ names and mine appear on the piece of evidence.
     Given User is logged in.

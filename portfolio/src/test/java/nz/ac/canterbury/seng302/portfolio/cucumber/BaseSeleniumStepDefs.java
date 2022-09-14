@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.cucumber;
 
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
@@ -9,6 +10,8 @@ import nz.ac.canterbury.seng302.portfolio.integration.SeleniumLogins;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.JavascriptExecutor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,6 +26,11 @@ public class BaseSeleniumStepDefs {
 
     private boolean registered = false;
 
+    @Before("@Admin")
+    public void adminIsLoggedIn() throws FileNotFoundException, InterruptedException {
+        iAmAuthenticatedAsAAdmin();
+    }
+
     @Given("User is logged in.")
     public void userIsLoggedIn() {
         seleniumExample = new SeleniumExample("");
@@ -31,6 +39,18 @@ public class BaseSeleniumStepDefs {
             registered = true;
         }
         SeleniumLogins.whenPortfolioIsLoaded_thenLoginWorks(seleniumExample);
+    }
+
+    /**
+     *Can be used to scroll window to element
+     * @Param element webElement that the window is to scroll too
+     **/
+    public static void scrollWindowToElement(WebDriver driver, WebElement element)
+            throws InterruptedException {
+        //https://learn-automation.com/how-to-scroll-into-view-in-selenium-webdriver/
+        JavascriptExecutor je = (JavascriptExecutor) driver;
+        je.executeScript("arguments[0].scrollIntoView(true);",element);
+        Thread.sleep(300);
     }
 
     /**

@@ -92,13 +92,21 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row-1" style="display: flex">
+                        <form th:if="${evidence.getParentUserId() == userId}" th:action="@{edit-evidence}" method="get">
+                            <input style="display:none;" th:name="id" th:value="${evidence.getId()}" type="number">
+                            <button
+                                    th:id="${'editButton' + evidence.getId()}"
+                                    class="fa fa-edit edit_evidence"
+                                    type="submit"></button>
+                        </form>
                         <button
                                 th:if="${evidence.getParentUserId() == userId}"
                                 type="button" th:style="${displayDeleteButton}" th:value="${evidence.getId()}"
                                 th:id="${'deleteButton' + evidence.getId()}" data-toggle="modal"
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
-                                class="fa fa-trash group_delete_button"
-                        />
+                                class="fa fa-trash delete_button"></button>
+                        </div>
                     </div>
                     <!-- Modal -->
                     <div class="modal fade" th:id="${'deleteModal'+evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -113,7 +121,7 @@
                                 <div class="modal-body"
                                      th:text="${'Are you sure you want to delete this piece of evidence (' + evidence.getTitle()+ ') from your portfolio?'}"
                                 />
-                                <form method="post" th:action="@{/delete-evidence}">
+                                <form method="post" th:action="@{delete-evidence}">
                                     <div class="modal-footer">
                                         <input type="number" th:name="evidenceId" th:value="${evidence.getId()}" style="display: none">
                                         <input type="number" th:name="projectId" th:value="${evidence.getAssociatedProject().getId()}" style="display: none">
@@ -125,7 +133,6 @@
                         </div>
 
                     </div>
-                    <br>
                 </div>
             </div>
 
