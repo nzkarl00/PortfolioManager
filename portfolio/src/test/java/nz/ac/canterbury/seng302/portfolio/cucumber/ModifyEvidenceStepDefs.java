@@ -7,6 +7,8 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -359,5 +361,38 @@ public class ModifyEvidenceStepDefs {
         // Write code here that turns the phrase above into concrete actions
         throw new io.cucumber.java.PendingException();
     }
+
+    @Then("I edit the piece of evidence")
+    public void i_edit_the_piece_of_evidence() throws InterruptedException {
+        WebElement evidenceId = seleniumExample.config.getDriver().findElement(By.cssSelector(".bio.evidence_head"));
+        seleniumExample.config.getDriver().get(seleniumExample.url + "/edit-evidence?id=" + evidenceId.getAttribute("id"));
+        Thread.sleep(100);
+    }
+
+
+    @When("I remove the title field")
+    public void i_remove_the_title_field() {
+        WebElement title = seleniumExample.config.getDriver().findElement(By.id("evidence_title"));
+        title.clear();
+    }
+
+    @When("I remove the description field")
+    public void i_remove_the_description_field() {
+        WebElement description = seleniumExample.config.getDriver().findElement(By.id("evidence_desc"));
+        description.clear();
+    }
+
+    @When("User enters {string} into the {string}")
+    public void user_enters_into_the(String stringInput, String attributeId) throws InterruptedException {
+        WebElement attribute = seleniumExample.config.getDriver().findElement(By.id(attributeId));
+        attribute.sendKeys(stringInput);
+    }
+
+    @Then("The save button is enabled")
+    public void the_save_button_is_enabled() {
+        WebElement saveButton = seleniumExample.config.getDriver().findElement(By.id("projectSave"));
+        Assertions.assertTrue(saveButton.isEnabled());
+    }
+
 }
 

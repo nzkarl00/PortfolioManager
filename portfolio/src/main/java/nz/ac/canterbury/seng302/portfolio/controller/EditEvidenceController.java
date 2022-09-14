@@ -1,11 +1,19 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceUser;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
+import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
@@ -84,16 +92,18 @@ public class EditEvidenceController {
         }
 
         Evidence evidence = evidenceRepository.findById(evidenceIdActualised);
-        if (evidence == null || AuthStateInformer.getId(principal) != evidence.getParentUserId()) {
+
+        //Check is evidence is present or the user is the parent evidence user
+        if (evidence == null || evidence.getParentUserId() != id) {
             return "redirect:evidence";
         }
+
         // get the links and pass the urls to the frontend
         List<WebLink> links = evidence.getLinks();
         List<String> linkUrls = new ArrayList<>();
         for (WebLink link : links) {
             linkUrls.add(link.getUrl());
         }
-
 
         // Creating a mapping of ID: Usernames, for the users who are contributing to this evidence
         List<String> evidenceUsers = new ArrayList<>();
@@ -107,8 +117,10 @@ public class EditEvidenceController {
 
         List<EvidenceTag> tags = evidence.getEvidenceTags();
         List<String> skills = new ArrayList<>();
+        List<String> skillsTitleList = new ArrayList<>();
         for (EvidenceTag tag: tags) {
             skills.add(tag.getParentSkillTag().getId() + ":" + tag.getParentSkillTag().getTitle());
+            skillsTitleList.add(tag.getParentSkillTag().getTitle());
         }
 
         Set<String> skillTagList = evidenceService.getAllUniqueSkills();
@@ -126,6 +138,7 @@ public class EditEvidenceController {
         model.addAttribute("groupList", groupList.getGroupsList());
         model.addAttribute("allSkills", skillTagList);
         model.addAttribute("skills", skills);
+        model.addAttribute("skillsTitleList", skillsTitleList);
         model.addAttribute("links", linkUrls);
         model.addAttribute("evidence", evidence);
         model.addAttribute("project", evidence.getAssociatedProject());
@@ -163,7 +176,7 @@ public class EditEvidenceController {
      */
     @Transactional
     @PostMapping("/edit-evidence")
-    public String addEvidence(
+    public String editEvidence(
         @AuthenticationPrincipal AuthState principal,
         @RequestParam(value = "titleInput") String title,
         @RequestParam(value = "dateInput") String date,
