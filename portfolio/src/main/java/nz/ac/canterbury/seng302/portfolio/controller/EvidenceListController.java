@@ -94,7 +94,7 @@ public class EvidenceListController {
     setTitle(model, userId, projectId, categoryName, skillName);
 
     //TODO get rid of once this is actually used
-    logger.debug("[EVIDENCE] getting all the groups for user");
+    logger.info("[EVIDENCE] getting all the groups for user");
     logger.info(groupsClientService.getAllGroupsForUser(id).toString());
     List<Evidence> evidenceList = new ArrayList<>();
 
@@ -134,8 +134,6 @@ public class EvidenceListController {
       showForm = true;
       logger.debug("[EVIDENCE] Getting specific project and attaching to model");
       Project project = projectService.getProjectById(projectId);
-
-
       model.addAttribute("project", project);
     }
     model.addAttribute("showForm", showForm);
@@ -198,13 +196,7 @@ public class EvidenceListController {
 
       model.addAttribute("sprintList", sprintList);
 
-      PaginatedUsersResponse response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
-      List<String> users = new ArrayList<>();
-      for (UserResponse user: response.getUsersList()) {
-          User temp = new User(user);
-          users.add(temp.id + ":" + temp.username);
-      }
-      model.addAttribute("allUsers", users);
+      EditEvidenceController.userGroups(model, accountClientService);
 
       Set<String> skillTagListNoSkill = evidenceService.getAllUniqueSkills();
       skillTagListNoSkill.remove("No_skills");

@@ -29,67 +29,23 @@
 <body>
 
 
-<div th:fragment="commitDisplay">
-
-    <input form="evidenceCreateForm" type="hidden" id="commitsInput" th:name="commitsInput">
-
-    <div class="commit_data no-gutters commit_search_result_body" id="commit_search_result_box">
+<div th:fragment="commitDisplay" id="commit_search_result_box" class="commit_search_result_container">
+        <div class="commit_data no-gutters commit_search_result_body">
         <div th:each="commit: ${commitMap}">
             <div th:id="${commit.value.getId}" class="row">
                 <div class="row commit_display_small" th:text="${'[' + commit.value.getId + ']'}"></div>
                 <div class="row commit_display_large" th:text="${commit.key}"></div>
                 <div class="row commit_display_small" th:text="${'(' + commit.value.getAuthorName + ') ' + '(' + commit.value.getCommittedDate + ')'}"></div>
-                <button class="addCommit" type="button" th:parent-id="${commit.value.getId}" onclick="repositionCommit(this.getAttribute('parent-id'))">+</button>
+                <button class="addCommit" type="button" th:parent-id="${commit.value.getId}" onclick="repositionCommit(this.getAttribute('parent-id')); searchCommits();">+</button>
                 <div></div>
                 <br>
             </div>
         </div>
-        <div th:if="${commitMap.size() == 5}"><br>Only 5 commits are being shown, filter with more specific options to get more</div>
+        <div th:if="${commitMap.size() == 50}"><br>Only 50 commits are being shown, filter with more specific options to get more</div>
+            <div th:if="${commitMap.size() == 0}"><br>No result from this search condition. Expand your commit filter(s) wider to try searching again.</div>
+        <p th:text="${errorMessage}"></p>
     </div>
-
-    <script>
-        let commits = new Set()
-
-        // move the commit referenced by the hash to the current commits container
-        // and change the button styling
-        function repositionCommit(id) {
-            let commit = document.getElementById(id)
-            const newContainer = document.getElementById("commit_container")
-            // if the commit already exists reassign the commit variable to the old one
-            if (newContainer.querySelector("#moved" + id)) {
-                commit.remove()
-                commit = newContainer.querySelector("#moved" + id)
-            } else {
-                newContainer.appendChild(commit)
-            }
-            // find the button to change it from an add button to a delete button
-            const button = commit.querySelector(".addCommit")
-            button.className = "fa fa-trash group_delete_button"
-            button.innerText = ""
-            button.setAttribute('onclick', "deleteCommit('" + id + "')")
-            // allow for showing a commit already added in the search without overlapping the ids
-            commit.id = "moved" + id
-            commits.add(id)
-            storeCommits()
-        }
-
-        // remove the commit from the added commit list
-        function deleteCommit(id) {
-            const commit = document.getElementById("moved" + id)
-            commit.remove()
-            commits.delete(id)
-            storeCommits()
-        }
-
-        // update the form property to contain all commit hashes
-        function storeCommits() {
-            let commitsStore = document.getElementById("commitsInput")
-            const commitList = Array.from(commits).join('~');
-            commitsStore.value = commitList
-        }
-
-    </script>
 </div>
-
+<script type="text/javascript" th:src="@{js/commitHandler.js}"></script>
 </body>
 </html>

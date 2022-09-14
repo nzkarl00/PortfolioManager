@@ -9,8 +9,14 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +54,8 @@ public class EditEvidenceController {
     private EvidenceUserRepository evidenceUserRepository;
     @Autowired
     private WebLinkRepository webLinkRepository;
+    @Autowired
+    private GroupsClientService groupsService;
 
     Logger logger = LoggerFactory.getLogger(EditEvidenceController.class);
 
@@ -75,7 +84,7 @@ public class EditEvidenceController {
         }
 
         Evidence evidence = evidenceRepository.findById(evidenceIdActualised);
-        if (evidence == null) {
+        if (evidence == null || AuthStateInformer.getId(principal) != evidence.getParentUserId()) {
             return "redirect:evidence";
         }
         // get the links and pass the urls to the frontend
@@ -94,14 +103,7 @@ public class EditEvidenceController {
         model.addAttribute("users", evidenceUsers);
 
 
-        PaginatedUsersResponse response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
-
-        List<String> users = new ArrayList<>();
-        for (UserResponse user: response.getUsersList()) {
-            User temp = new User(user);
-            users.add(temp.id + ":" + temp.username);
-        }
-        model.addAttribute("allUsers", users);
+        userGroups(model, accountClientService);
 
         List<EvidenceTag> tags = evidence.getEvidenceTags();
         List<String> skills = new ArrayList<>();
@@ -111,14 +113,36 @@ public class EditEvidenceController {
 
         Set<String> skillTagList = evidenceService.getAllUniqueSkills();
         logger.debug(skills.toString());
-
+        LinkedCommit temp = new LinkedCommit(evidence, //TODO REMOVE TEST DATA
+                "Test Name",
+                "Test Owner",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "lachlan",
+                "This is a commit",
+                LocalDateTime.now());
+        List<LinkedCommit> tempList = new ArrayList<>(List.of(temp)); //TODO REMOVE TEST DATA
+        model.addAttribute("existingCommits", tempList);
+        PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(evidence.getParentUserId());
+        model.addAttribute("groupList", groupList.getGroupsList());
         model.addAttribute("allSkills", skillTagList);
         model.addAttribute("skills", skills);
         model.addAttribute("links", linkUrls);
         model.addAttribute("evidence", evidence);
+        model.addAttribute("project", evidence.getAssociatedProject());
         model.addAttribute("title", "Edit Evidence: " + evidence.getTitle());
 
         return "editEvidence";
+    }
+
+    public static void userGroups(Model model, AccountClientService accountClientService) {
+        PaginatedUsersResponse response = accountClientService.getPaginatedUsers(-1, 0, "", 0);
+
+        List<String> users = new ArrayList<>();
+        for (UserResponse user: response.getUsersList()) {
+            User temp = new User(user);
+            users.add(temp.id + ":" + temp.username);
+        }
+        model.addAttribute("allUsers", users);
     }
 
     /**
@@ -155,6 +179,10 @@ public class EditEvidenceController {
         Model model) throws MalformedURLException {
 
         Evidence evidence = evidenceRepository.findById((int) id);
+        if (evidence == null || AuthStateInformer.getId(principal) != evidence.getParentUserId()) {
+            return "redirect:evidence";
+        }
+        evidence.setCategories(Evidence.categoryStringToInt(categories));
 
         // Validating the mandatory fields from U7
         Evidence.validateProperties(evidence.getAssociatedProject(), title, description, LocalDate.parse(date));
@@ -166,7 +194,7 @@ public class EditEvidenceController {
 
         // delete all past users from this user's evidence, then add all modified users for this user's evidence
         evidenceUserRepository.deleteAllByEvidence(evidence);
-        evidenceService.addUsersToExistingEvidence(evidenceService.extractListFromHTMLStringWithTilda(users), evidence);
+        evidenceService.addUsersToExistingEvidence(EvidenceService.extractListFromHTMLStringWithTilda(users), evidence);
 
         // delete all past weblinks from this user's evidence, then add all modified weblinks for this user's evidence
         webLinkRepository.deleteAllByEvidence(evidence);

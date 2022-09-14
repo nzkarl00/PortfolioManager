@@ -122,6 +122,8 @@
                         </input>
                     </div><br>
 
+                    <div th:replace="fragments/evidenceCommit.html :: evidenceCommit"></div>
+
                     <input type="hidden" id="evidenceId" th:name="evidenceId" th:value="${evidence.getId}">
                     <input type="hidden" id="projectId" th:name="projectId" th:value="${evidence.getAssociatedProject.getId}">
                     <input type="hidden" id="linksInput" th:name="linksInput">
