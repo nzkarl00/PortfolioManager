@@ -165,7 +165,7 @@
         function openSearchCommit(id) {
             var alertMessage = document.getElementById("commit_group_alert_message");
 
-            $.get("/repoCheck", {"groupId":id}).done(function (isRepo) {
+            $.get("repo-check", {"group-id":id}).done(function (isRepo) {
                 if (isRepo === true) {
                     alertMessage.style.display = "none";
                     $('#collapseCommit').collapse('show')

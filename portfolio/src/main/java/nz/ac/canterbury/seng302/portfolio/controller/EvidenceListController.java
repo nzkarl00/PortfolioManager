@@ -216,12 +216,12 @@ public class EvidenceListController {
 
 
     /**
-     * Sends all the deadlines in JSON for a given project
+     * Checks if the group repo is accessible.
      * @param groupId the id of the group to
-     * @return the list of deadlines in JSON
+     * @return true if the repo can be reached.
      */
-    @GetMapping("/repoCheck")
-    public ResponseEntity<Boolean> getProjectDeadlines(@RequestParam(value = "groupId") Integer groupId) {
+    @GetMapping("/repo-check")
+    public ResponseEntity<Boolean> repoCheck(@RequestParam(value = "group-id") Integer groupId) {
         GroupRepo groupRepo;
         Optional<GroupRepo> existingGroupRepo = groupRepoRepository.findByParentGroupId(groupId);
         if (groupId == -1 || existingGroupRepo.isEmpty()) {
