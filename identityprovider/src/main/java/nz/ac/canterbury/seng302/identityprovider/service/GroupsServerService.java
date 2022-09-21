@@ -113,7 +113,8 @@ public class GroupsServerService extends GroupsServiceImplBase {
                 for (GroupMembership groupMembership : groupMemberships) {
                     groupMembershipRepo.deleteByGroupMembershipId(groupMembership.getGroupMembershipId());
                 }
-                if (user.getRoles().stream().map(role -> role.getRole()).collect(Collectors.toList()).contains(TEACHER_ROLE)){
+
+                if (user.getRoles().contains(TEACHER_ROLE)){
                     List<Role> rolesOfUser = roleRepo.findAllByRegisteredUser(user); // List of roles held by that user
                     for (Role role: rolesOfUser) {
                         // Out of the roles held by that user, update the repos with the requested role to be removed.
