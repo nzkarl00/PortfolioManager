@@ -26,13 +26,13 @@ public class AuthenticateClientService {
      * @return
      */
     public AuthenticateResponse authenticate(final String username, final String password)  {
-        logger.info("[Authenticate] attempting to authenticate user with IDP, username: " + username);
+        logger.info("[Authenticate] attempting to authenticate user with IDP, username: " + username.replaceAll("[\n\r\t]", "_"));
         AuthenticateRequest authRequest = AuthenticateRequest.newBuilder()
                 .setUsername(username)
                 .setPassword(password)
                 .build();
         AuthenticateResponse authRes = authenticationStub.authenticate(authRequest); // creates the token for the cookie here
-        logger.info("[Authenticate] received authentication response from IDP, username: " + username);
+        logger.info("[Authenticate] received authentication response from IDP, username: " + username.replaceAll("[\n\r\t]", "_"));
         return authRes;
     }
 

@@ -7,7 +7,6 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 
 import java.time.Instant;
-import java.util.Date;
 
 /**
  * Responsible for having common usage attributes for the controller tests

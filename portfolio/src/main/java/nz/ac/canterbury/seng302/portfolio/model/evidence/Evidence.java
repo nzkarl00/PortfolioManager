@@ -2,15 +2,12 @@ package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import javax.transaction.Transactional;
-import javax.ws.rs.core.Link;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,7 +108,6 @@ public class Evidence {
         int categories
     ) {
         this.parentUserId = parentUserId;
-        this.evidenceUsersId = evidenceUsersId;
         this.associatedProject = associatedProject;
         this.title = title;
         this.description = description;
@@ -172,7 +168,6 @@ public class Evidence {
 
     /**
      * Sets the associated project to which the piece of evidence is associated
-     * @param associatedProject
      */
     public void setAssociatedProject(Project associatedProject) throws IllegalArgumentException {
         newAssociatedProjectIsValid(associatedProject);
@@ -189,7 +184,6 @@ public class Evidence {
 
     /**
      * Set the description of the evidence.
-     * @param description
      */
     public void setDescription(String description) {
         this.description = description;
@@ -197,16 +191,14 @@ public class Evidence {
 
     /**
      * Set the date of the piece of evidence.
-     * @param date
      */
     public void setDate(LocalDate date) throws IllegalArgumentException {
         newDateIsValid(date);
         this.date = date;
-    };
+    }
 
     /**
      * Get the ID of the piece of evidence
-     * @return
      */
     public int getId() {
         return id;
@@ -214,7 +206,6 @@ public class Evidence {
 
     /**
      * Get the ID of the parent user to which the piece of evidence belongs
-     * @return
      */
     public int getParentUserId() {
         return parentUserId;
@@ -222,7 +213,6 @@ public class Evidence {
 
     /**
      * Get the associated project to which the piece of evidence is associated.
-     * @return
      */
     public Project getAssociatedProject() {
         return associatedProject;
@@ -231,7 +221,6 @@ public class Evidence {
 
     /**
      * Get the title
-     * @return
      */
     public String getTitle() {
         return title;
@@ -239,7 +228,6 @@ public class Evidence {
 
     /**
      * Get the description
-     * @return
      */
     public String getDescription() {
         return description;
@@ -247,11 +235,10 @@ public class Evidence {
 
     /**
      * Get the date
-     * @return
      */
     public LocalDate getDate() {
         return date;
-    };
+    }
 
     public List<EvidenceTag> getEvidenceTags() { return evidenceTags; }
 
@@ -317,10 +304,9 @@ public class Evidence {
         if (e == this) {
             return true;
         }
-        if (!(e instanceof Evidence)) {
+        if (!(e instanceof Evidence toComp)) {
             return false;
         }
-        Evidence toComp = (Evidence) e;
         return toComp.id == this.id;
     }
 
@@ -336,7 +322,6 @@ public class Evidence {
 
     /**
      * Removes an evidence tag from the associated evidence tags.
-     * @param evidenceTag
      */
     @Transactional
     public void removeEvidenceTag(EvidenceTag evidenceTag) {
@@ -345,7 +330,6 @@ public class Evidence {
 
     /**
      * Add an evidence tag to the evidence.
-     * @param evidenceTag
      */
     @Transactional
     public void addEvidenceTag(EvidenceTag evidenceTag) {
@@ -354,7 +338,6 @@ public class Evidence {
 
     /**
      * Get the linked commits associated with a piece of Evidence
-     * @return
      */
     public List<LinkedCommit> getLinkedCommit() {
         return linkedCommit;
