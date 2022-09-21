@@ -232,8 +232,7 @@ function addSkill() {
     }
 
     // check to see if it matches the correct skill format
-    const validate = newSkill.match(skillPattern)
-    if (!validate || !validate.length == 1 || newSkill.length > skillCharLimit || newSkill.toLowerCase() == "no_skills" || /^([_-])+$/.test(newSkill)) {
+    if(validateSkill(newSkill)) {
         document.getElementById("skill_error").style = "color:red;";
         return
     }
@@ -247,6 +246,13 @@ function addSkill() {
     }
     document.getElementById("add_skill_input").value = ""
     appendSkill(newSkill)
+}
+
+function validateSkill(newSkill) {
+    const validate = newSkill.match(skillPattern)
+    console.log(newSkill.toLowerCase().includes("no_skill"));
+    console.log(newSkill.toLowerCase());
+    return (!validate || !validate.length == 1 || newSkill.length > skillCharLimit || newSkill.toLowerCase().includes("no_skill") || /^([_-])+$/.test(newSkill));
 }
 
 function updateSkills() {
