@@ -99,7 +99,7 @@
                 <!-- Start of skills section of the form-->
                 <div class="row-1">
                     <b class="evidence_head setWide" id="skills_input">Skills:</b>
-                    <p style="display:none;" id="skill_error">Only letters, underscores, hyphens, and numbers are allowed. No more than 50 characters.</p>
+                    <p style="display:none;" id="skill_error">Only letters, underscores, hyphens, and numbers are allowed. No more than 50 characters. No duplicates allowed.</p>
                 </div>
                 <div class="col-12" id="skills_div" style="display: flex; justify-content: center; align-items: center;">
                     <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
@@ -276,6 +276,7 @@
             } else {
                 skillText = skillTextBase
             }
+            skills.add(skillText)
             let skillBox = document.createElement("div");
             document.getElementById("skills_container").appendChild(skillBox)
             skillBox.className = "trim_text"
@@ -362,6 +363,13 @@
         // when the check button is pressed save the edited skill
         function saveSkill(event) {
             editedSkill = document.getElementById("skill_" + event.target.value)
+
+            console.log(editedSkill.value)
+            if (skills.has(editedSkill.value)) {
+                document.getElementById("skill_error").style = "color:red;";
+                return false;
+            }
+            document.getElementById("skill_error").style = "display:none;";
 
             let newSkill = document.createElement("button");
             newSkill.id = "skill_" + editedSkill.value
@@ -543,7 +551,6 @@
                 originalSkills.add(skill)
                 appendSkill(skill, true)
             }
-            console.log(originalSkills)
 
             for (const user of [[${users}]]) {
                 originalUsers.add(user)

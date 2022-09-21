@@ -250,8 +250,6 @@ function addSkill() {
 
 function validateSkill(newSkill) {
     const validate = newSkill.match(skillPattern)
-    console.log(newSkill.toLowerCase().includes("no_skill"));
-    console.log(newSkill.toLowerCase());
     return (!validate || !validate.length == 1 || newSkill.length > skillCharLimit || newSkill.toLowerCase().includes("no_skill") || /^([_-])+$/.test(newSkill));
 }
 
