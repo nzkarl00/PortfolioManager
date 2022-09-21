@@ -3,9 +3,9 @@ package nz.ac.canterbury.seng302.portfolio.model.evidence;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
-import java.util.regex.Pattern;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 /**
  * The entity representation for web links.

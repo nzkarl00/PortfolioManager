@@ -116,9 +116,18 @@ public class GitlabClient {
      * @throws GitLabApiException if there is an error finding the commit
      */
     public Commit getSingleCommit(String commitHash, GroupRepo groupRepo) throws GitLabApiException {
-        logger.info("Getting commit with hash: " + commitHash + " from GitLabAPI");
         GitLabApi api = new GitLabApi(gitlabInstanceURL, groupRepo.getApiKey());
-        return api.getCommitsApi().getCommit(genRepoName(groupRepo.getOwner(), groupRepo.getName()), commitHash);
+        try {
+            logger.info("Getting commit with hash: " + commitHash + " from GitLabAPI");
+            Commit commit = api.getCommitsApi().getCommit(genRepoName(groupRepo.getOwner(), groupRepo.getName()), commitHash);
+            return commit;
+        } catch (Exception e) {
+            throw new GitLabApiException("Failed to get commit " + commitHash);
+        } finally {
+            api.close();
+        }
+
+
     }
 
     /**

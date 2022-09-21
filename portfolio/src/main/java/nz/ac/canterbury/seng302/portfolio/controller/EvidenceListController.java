@@ -1,20 +1,17 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.AuthenticatedUser;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
+import nz.ac.canterbury.seng302.portfolio.model.AuthenticatedUser;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.gitlab4j.api.GitLabApiException;
-import org.openqa.selenium.InvalidArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +23,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
@@ -346,12 +344,12 @@ public class EvidenceListController {
                                @AuthenticationPrincipal AuthState principal) {
       Evidence targetEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
       if (targetEvidence == null) {
-          logger.debug("[EVIDENCE] Redirecting, evidence id " + evidenceId + " does not exist");
+          logger.debug("[EVIDENCE] Redirecting, evidence id " + Integer.parseInt(evidenceId) + " does not exist");
           return "redirect:evidence?pi=" + projectId;
       }
       Integer accountID = AuthStateInformer.getId(principal);
       if (!principal.getIsAuthenticated() || accountID != targetEvidence.getParentUserId()) {
-          logger.debug("[EVIDENCE] Redirecting, user does not have permissions to delete evidence " + evidenceId);
+          logger.debug("[EVIDENCE] Redirecting, user does not have permissions to delete evidence " + Integer.parseInt(evidenceId));
           return "redirect:evidence?pi=" + projectId;
       }
       evidenceService.deleteEvidence(targetEvidence);

@@ -29,8 +29,9 @@ public class EditAccountController {
     @Autowired
     private NavController navController;
 
-    String editErrorShow = "display:none;";
-    String editSuccessShow = "display:none;";
+    private final String displayNone = "display:none;";
+    String editErrorShow = displayNone;
+    String editSuccessShow = displayNone;
     String editSuccessCode = "successCode";
 
     /**
@@ -60,8 +61,8 @@ public class EditAccountController {
         model.addAttribute("editSuccessShow", editSuccessShow);
         model.addAttribute("editSuccessCode", editSuccessCode);
 
-        editErrorShow = "display:none;";
-        editSuccessShow = "display:none;";
+        editErrorShow = displayNone;
+        editSuccessShow = displayNone;
         editSuccessCode = "successCode";
 
         /* Return the name of the Thymeleaf template */
@@ -96,11 +97,11 @@ public class EditAccountController {
 
         editSuccessCode = editUserResponse.getMessage();
         if (editUserResponse.getIsSuccess()) {
-            editErrorShow = "display:none;";
+            editErrorShow = displayNone;
             editSuccessShow = "";
         } else {
             editErrorShow = "";
-            editSuccessShow = "display:none;";
+            editSuccessShow = displayNone;
         }
 
         return "redirect:edit-account";
