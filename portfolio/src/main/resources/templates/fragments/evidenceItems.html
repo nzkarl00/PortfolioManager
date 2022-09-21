@@ -106,6 +106,15 @@
                                 th:id="${'deleteButton' + evidence.getId()}" data-toggle="modal"
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
                                 class="fa fa-trash delete_button"></button>
+                        <div id="high_five_container">
+                        <form th:if="${evidence.getParentUserId() == userId}" th:action="@{high-five}" method="post">
+                            <input style="display:none;" th:name="id" th:value="${evidence.getId()}" type="number">
+                            <button
+                                    th:id="${'highFiveButton' + evidence.getId()}"
+                                    class="fa fa-edit edit_evidence"
+                                    type="submit"></button>
+                        </form>
+                        </div>
                         </div>
                     </div>
                     <!-- Modal -->
