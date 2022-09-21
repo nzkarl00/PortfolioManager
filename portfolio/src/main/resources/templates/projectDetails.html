@@ -568,6 +568,7 @@
         // Sets the starting date for in-between sections and starting id
         let initialDate = [[${project.getStartDate()}]];
         let initialFalseId = 0.5;
+        let sprintNum = 1;
 
         for (const sprint of sprintList) {
             if (initialFalseId == 0.5) {
@@ -575,7 +576,8 @@
             } else {
                 buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId, deadlineList, eventList, milestoneList, sprint.parentProjectId, "middle")
             }
-            buildSprint(sprint)
+            buildSprint(sprint, sprintNum)
+            sprintNum += 1
             initialDate = sprint.endDate;
             initialFalseId += 1;
 
