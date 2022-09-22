@@ -92,6 +92,7 @@
                                 </div>
                             </div>
                         </div>
+                        <br>
                         <div class="row-1" style="display: flex">
                         <form th:if="${evidence.getParentUserId() == userId}" th:action="@{edit-evidence}" method="get">
                             <input style="display:none;" th:name="id" th:value="${evidence.getId()}" type="number">
@@ -105,13 +106,13 @@
                                 type="button" th:style="${displayDeleteButton}" th:value="${evidence.getId()}"
                                 th:id="${'deleteButton' + evidence.getId()}" data-toggle="modal"
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
-                                class="fa fa-trash delete_button"></button>
-                        <div id="high_five_container">
+                                class="fa fa-trash delete_evidence"></button>
+                        <div id="high_five_container" style="width:100%; text-align: right">
                         <form th:if="${evidence.getParentUserId() == userId}" th:action="@{high-five}" method="post">
                             <input style="display:none;" th:name="id" th:value="${evidence.getId()}" type="number">
                             <button
                                     th:id="${'highFiveButton' + evidence.getId()}"
-                                    class="fa fa-edit edit_evidence"
+                                    class="high_five fa fa-hand-paper-o fa-2x"
                                     type="submit"></button>
                         </form>
                         </div>
