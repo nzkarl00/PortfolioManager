@@ -36,7 +36,7 @@
                 <div class="row commit_display_small" th:text="${'[' + commit.getId + ']'}"></div>
                 <div class="row commit_display_large" th:text="${commit.getTitle}"></div>
                 <div class="row commit_display_small" th:text="${'(' + commit.getAuthorName + ') ' + '(' + commit.getCommittedDate + ')'}"></div>
-                <button class="addCommit" type="button" th:parent-id="${commit.getId}" onclick="commitEditCheck();repositionCommit(this.getAttribute('parent-id')); searchCommits();">+</button>
+                <button class="addCommit" type="button" th:parent-id="${commit.getId}" onclick="repositionCommit(this.getAttribute('parent-id')); searchCommits();">+</button>
                 <div></div>
                 <br>
             </div>

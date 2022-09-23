@@ -19,7 +19,7 @@ function repositionCommit(id) {
     const button = commit.querySelector(".addCommit")
     button.className = "fa fa-trash group_delete_button"
     button.innerText = ""
-    button.setAttribute('onclick', "commitEditCheck();deleteCommit('" + id + "')")
+    button.setAttribute('onclick', "deleteCommit('" + id + "')")
     // allow for showing a commit already added in the search without overlapping the ids
     commit.id = "moved" + id
     commits.add(id + "+" + document.getElementById("commit_group").value)
