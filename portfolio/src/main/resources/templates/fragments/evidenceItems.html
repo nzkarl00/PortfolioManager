@@ -108,7 +108,7 @@
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
                                 class="fa fa-trash delete_evidence"></button>
                         <div id="high_five_container" style="width:100%; text-align: right">
-                        <form th:if="${evidence.getParentUserId() == userId}" th:action="@{high-five}" method="post">
+                        <form th:action="@{high-five}" method="post">
                             <input style="display:none;" th:name="id" th:value="${evidence.getId()}" type="number">
                             <button
                                     th:id="${'highFiveButton' + evidence.getId()}"
