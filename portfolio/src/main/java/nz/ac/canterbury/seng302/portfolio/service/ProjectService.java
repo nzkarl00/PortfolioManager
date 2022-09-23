@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ public class ProjectService {
     @Autowired
     private ProjectRepository repository;
 
+    Logger logger = LoggerFactory.getLogger(ProjectService.class);
+
     /**
      * Get list of all projects
      */
@@ -29,7 +33,7 @@ public class ProjectService {
      * Get project by id
      */
     public Project getProjectById(Integer id) throws CustomExceptions.ProjectItemNotFoundException {
-
+        logger.trace(String.format("Getting project by ID=<%d>", id));
         Optional<Project> project = repository.findById(id);
         if(project.orElse(null)!=null) {
             return project.get();

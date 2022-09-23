@@ -1,7 +1,7 @@
 stages:
   #- tagChecking
   - publishProtosToLocalMavenRepo
-  - build
+  #- build
   #- test
   #- lint
   #- sonarqube
@@ -46,21 +46,21 @@ publish-protos-to-maven-local:
     - ./gradlew publishToMavenLocal
 
 # builds all branches, except dev and master
-branch-build:
- stage: build
- script:
-   - cd identityprovider
-   - ./gradlew bootJar
-   - cd ../portfolio
-   - ./gradlew bootJar
- artifacts:
-   paths:
-     - identityprovider/build/libs
-     - portfolio/build/libs
- except:
-   - tags
-   - master
-   - dev
+#branch-build:
+# stage: build
+# script:
+#   - cd identityprovider
+#   - ./gradlew bootJar
+#   - cd ../portfolio
+#   - ./gradlew bootJar
+# artifacts:
+#   paths:
+#     - identityprovider/build/libs
+#     - portfolio/build/libs
+# except:
+#   - tags
+#   - master
+#   - dev
 
 deploy-staging-identityprovider:
   stage: deploy

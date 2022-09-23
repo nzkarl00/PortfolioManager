@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.util.Optional;
 public class SprintService {
     @Autowired
     private SprintRepository repository;
+
+    Logger logger = LoggerFactory.getLogger(SprintService.class);
 
     /**
      * Get list of all sprints
@@ -40,9 +44,10 @@ public class SprintService {
     }
     /**
      * Get sprint by parent id, where parent id is the project that is parent for the sprints.
+     * @param id, the id of the parent project
      */
     public List<Sprint> getSprintByParentId(Integer id) throws CustomExceptions.ProjectItemNotFoundException {
-
+        logger.trace("Getting all sprints by parent project ID");
         List<Sprint> sprints = repository.findByParentProjectId(id);
         if(sprints!=null) {
             return sprints;

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import io.netty.util.concurrent.CompleteFuture;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.AuthenticatedUser;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
@@ -28,6 +29,7 @@ import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * responsible for the main/landing page of the project(s)
@@ -178,6 +180,34 @@ public class EvidenceListController {
           evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence));
           evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
       }
+
+      evidenceList.stream().map((Evidence evidence) -> {
+          return CompletableFuture.supplyAsync(() -> {
+              List<String> v = evidenceService.getSkillTagStringsByEvidenceId(evidence);
+              try {
+                  Thread.sleep(1000);
+              } catch (Exception e) {
+                  logger.error("msd", e);
+              }
+              return v;
+          });
+      }).forEach((CompletableFuture<List<String>> fut) -> {
+          logger.info("waiting");
+          try {
+              List<String> s = fut.get();
+              logger.info(s.toString());
+              evidenceSkillMap.put(1, s);
+          } catch (Exception e) {
+              logger.error("Something", e);
+          }
+//          evidenceCategoryMap.put(1, evidence.getCategoryStrings());
+      });
+
+//      evidenceList.parallelStream().forEach((Evidence evidence) -> {
+//          evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence));
+//          evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
+//      });
+
       model.addAttribute("skillMap", evidenceSkillMap);
       model.addAttribute("categoryMap", evidenceCategoryMap);
       model.addAttribute("username", AuthStateInformer.getUsername(principal));

@@ -62,6 +62,7 @@ public class EvidenceService {
      * Get a list of all unique skill tag names
      */
     public Set<String> getAllUniqueSkills() {
+        logger.trace("Getting all unique skill tag names");
         List<SkillTag> tagList = skillTagRepository.findAll();
         Set<String> skillList = new HashSet<>();
         tagList.forEach(tag -> skillList.add(tag.getTitle()));

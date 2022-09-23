@@ -1,8 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import nz.ac.canterbury.seng302.portfolio.controller.EvidenceListController;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.PaginationRequestOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
@@ -14,6 +17,8 @@ public class GroupsClientService extends GroupsServiceGrpc.GroupsServiceImplBase
 
     @GrpcClient("identity-provider-grpc-server")
     GroupsServiceGrpc.GroupsServiceBlockingStub groupServiceStub;
+
+    Logger logger = LoggerFactory.getLogger(GroupsClientService.class);
 
 
     /**
@@ -128,6 +133,7 @@ public class GroupsClientService extends GroupsServiceGrpc.GroupsServiceImplBase
      * @return A list of all the groups that the user is a part of
      */
     public PaginatedGroupsResponse getAllGroupsForUser(int userId) {
+        logger.trace(String.format("Getting all groups for user with ID=<%d>", userId));
         // set the user id
         GetPaginatedGroupsForUserRequest.Builder request = GetPaginatedGroupsForUserRequest.newBuilder();
         request.setUserId(userId);
