@@ -13,7 +13,7 @@ public class HighFive {
     private int id;
 
     /**
-     * A high five can be associated with one or more parent piece of evidence.
+     * A high five can be associated with one piece of evidence.
      * An evidence can have one or more high five
      */
     @ManyToOne
