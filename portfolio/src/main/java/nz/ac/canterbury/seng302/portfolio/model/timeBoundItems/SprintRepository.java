@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.model.timeBoundItems;
 
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +10,8 @@ public interface SprintRepository extends CrudRepository<Sprint, Integer> {
     List<Sprint> findBySprintName(String sprintName);
     Sprint findById(int id);
     List<Sprint> findByParentProjectId(int parentProjectId);
+
+    List<Sprint> findByParentProjectIdOrderBySprintStartDate(int parentProjectId);
+
+    List<Sprint> getSprintByParentProjectIdOrderBySprintStartDateAsc(Integer projectId);
 }

@@ -2,16 +2,17 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
-
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Responsible for the account details page
@@ -34,13 +35,22 @@ public class AccountController {
     @GetMapping("/account")
     public String account(
         @AuthenticationPrincipal AuthState principal,
+        @RequestParam(value = "id") Optional<Integer> userId,
         Model model
-    ) throws IOException {
-        Integer id = AuthStateInformer.getId(principal);
+    ) {
+        int id = userId.orElse(AuthStateInformer.getId(principal));
 
         // Attributes For header
         UserResponse userReply;
-        userReply = accountClientService.getUserById(id); // Get the user
+        try {
+            userReply = accountClientService.getUserById(id); // Get the user
+        } catch(Exception e) {
+            userReply = accountClientService.getUserById(AuthStateInformer.getId(principal)); // Get the user
+            id = AuthStateInformer.getId(principal);
+        }
+
+
+        model.addAttribute("isSelf",id == AuthStateInformer.getId(principal));
 
         // Put the users details into the page
         String roles = "";
@@ -58,6 +68,7 @@ public class AccountController {
 
         String name = userReply.getFirstName() + " " +  userReply.getLastName();
         model.addAttribute("roles", roles);
+        model.addAttribute("userId", userReply.getId());
         model.addAttribute("pronouns", userReply.getPersonalPronouns());
         model.addAttribute("name",  name);
         model.addAttribute("nickname",  userReply.getNickname());
@@ -66,5 +77,13 @@ public class AccountController {
         model.addAttribute("bio", userReply.getBio());
 
         return "account";
+    }
+
+    @GetMapping("/evidenceList")
+    public String getAccountEvidence(@AuthenticationPrincipal AuthState principal,
+                                     Model model) {
+        Integer user_id = AuthStateInformer.getId(principal);
+        return "redirect:evidence?ui=" + String.valueOf(user_id);
+
     }
 }

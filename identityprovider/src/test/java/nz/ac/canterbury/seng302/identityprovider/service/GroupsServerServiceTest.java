@@ -3,10 +3,12 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.identityprovider.model.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.PaginationRequestOptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.mockito.internal.matchers.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -16,7 +18,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
 class GroupsServerServiceTest {
 
@@ -720,4 +721,45 @@ class GroupsServerServiceTest {
         assertEquals(response.getMessage(), "Users: " + request.getUserIdsList() + " added.");
     }
 
+    /**
+     * test to get all valid set of groups
+     */
+    @Test
+    void getPaginatedGroupsUser_validRequest_blueSky() {
+        Groups group =  new Groups("The Society of Pompous Rapscallions", "SPR");
+        AccountProfile user = new AccountProfile();
+        when(accountProfileRepo.findById(1)).thenReturn(user);
+        when(groupMembershipRepo.findAllByRegisteredGroupUser(user)).thenReturn(new ArrayList<>(List.of(new GroupMembership(user, group))));
+
+        GetPaginatedGroupsForUserRequest request = GetPaginatedGroupsForUserRequest.newBuilder().setUserId(1).setPaginationRequestOptions(PaginationRequestOptions.newBuilder().setLimit(-1).build()).build();
+        gss.getPaginatedGroupsForUser(request, groupsObserver);
+
+        verify(groupsObserver, times(1)).onCompleted();
+        ArgumentCaptor<PaginatedGroupsResponse> captor = ArgumentCaptor.forClass(PaginatedGroupsResponse.class);
+        verify(groupsObserver, times(1)).onNext(captor.capture());
+        PaginatedGroupsResponse response = captor.getValue();
+        assertEquals(1, response.getGroupsCount()); // we have one group
+        assertEquals(0, response.getGroups(0).getMembersCount()); //there are no members in the group
+    }
+
+    /**
+     * test to get some valid set of groups
+     */
+    @Test
+    void getPaginatedGroupsUser_validRequest_subset() {
+        Groups group =  new Groups("The Society of Pompous Rapscallions", "SPR");
+        AccountProfile user = new AccountProfile();
+        when(accountProfileRepo.findById(1)).thenReturn(user);
+        when(groupMembershipRepo.findAllByRegisteredGroupUser(user, PageRequest.of(0, 1))).thenReturn(new ArrayList<>(List.of(new GroupMembership(user, group))));
+
+        GetPaginatedGroupsForUserRequest request = GetPaginatedGroupsForUserRequest.newBuilder().setUserId(1).setPaginationRequestOptions(PaginationRequestOptions.newBuilder().setLimit(1).setOffset(0).build()).build();
+        gss.getPaginatedGroupsForUser(request, groupsObserver);
+
+        verify(groupsObserver, times(1)).onCompleted();
+        ArgumentCaptor<PaginatedGroupsResponse> captor = ArgumentCaptor.forClass(PaginatedGroupsResponse.class);
+        verify(groupsObserver, times(1)).onNext(captor.capture());
+        PaginatedGroupsResponse response = captor.getValue();
+        assertEquals(1, response.getGroupsCount()); // we have one group
+        assertEquals(0, response.getGroups(0).getMembersCount()); //there are no members in the group
+    }
 }

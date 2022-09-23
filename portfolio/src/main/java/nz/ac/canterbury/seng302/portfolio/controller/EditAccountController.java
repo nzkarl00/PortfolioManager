@@ -2,23 +2,18 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.DateParser;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 
 /**
@@ -34,8 +29,9 @@ public class EditAccountController {
     @Autowired
     private NavController navController;
 
-    String editErrorShow = "display:none;";
-    String editSuccessShow = "display:none;";
+    private final String displayNone = "display:none;";
+    String editErrorShow = displayNone;
+    String editSuccessShow = displayNone;
     String editSuccessCode = "successCode";
 
     /**
@@ -65,8 +61,8 @@ public class EditAccountController {
         model.addAttribute("editSuccessShow", editSuccessShow);
         model.addAttribute("editSuccessCode", editSuccessCode);
 
-        editErrorShow = "display:none;";
-        editSuccessShow = "display:none;";
+        editErrorShow = displayNone;
+        editSuccessShow = displayNone;
         editSuccessCode = "successCode";
 
         /* Return the name of the Thymeleaf template */
@@ -101,11 +97,11 @@ public class EditAccountController {
 
         editSuccessCode = editUserResponse.getMessage();
         if (editUserResponse.getIsSuccess()) {
-            editErrorShow = "display:none;";
+            editErrorShow = displayNone;
             editSuccessShow = "";
         } else {
             editErrorShow = "";
-            editSuccessShow = "display:none;";
+            editSuccessShow = displayNone;
         }
 
         return "redirect:edit-account";

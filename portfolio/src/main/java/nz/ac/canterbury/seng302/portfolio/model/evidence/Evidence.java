@@ -1,13 +1,17 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
-import org.checkerframework.checker.units.qual.Length;
-import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+
+import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validateEnoughCharacters;
 
 /**
  * An abstract class designed to provide a base for the three specific types of time bound items related to a project.
@@ -20,8 +24,9 @@ import java.util.List;
 public class Evidence {
     public static final int MAX_TITLE_LENGTH = 100;
     public static final int MAX_DESCRIPTION_LENGTH = 2000;
-    public static final DateTimeFormatter htmlDateFormat = DateTimeFormatter.ofPattern("YYYY-MM-dd");
-
+    public static final int QUALITATIVE_SKILLS = 1; // 2^0
+    public static final int QUANTITATIVE_SKILLS = 2; // 2^1
+    public static final int SERVICE = 4; // 2^2
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="id", unique = true)
@@ -36,6 +41,16 @@ public class Evidence {
     protected int parentUserId;
 
     /**
+     * A list of all users for this piece of evidence
+     * Creates a relationship with evidence and users, where evidence may be associated to many users
+     * We cannot create a direct mapping as they are in different databases so this is a work around
+     */
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
+    @JsonBackReference
+    protected List<EvidenceUser> evidenceUsersId;
+
+    /**
      * The project the piece of evidence belongs to.
      * Note that the parent user is the identifying property.
      */
@@ -43,9 +58,9 @@ public class Evidence {
     @JoinColumn(name="associated_project_id", nullable=false)
     protected Project associatedProject;
 
-    @OneToMany
-    @JoinColumn(name="evidence_tag_id")
-    protected List<EvidenceTag> evidenceTags;
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    protected List<EvidenceTag> evidenceTags = List.of();
 
     @Column(name="title", length = MAX_TITLE_LENGTH, nullable = false)
     protected String title = "";
@@ -53,6 +68,24 @@ public class Evidence {
     protected String description = "";
     @Column(name="date", nullable = false)
     protected LocalDate date;
+    @Column(name="categories")
+    protected int categories = 0;
+
+    /**
+     * The list of links associated with this piece of evidence
+     */
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
+    protected List<WebLink> links;
+
+    /**
+     * The list of linkCommit associated with this piece of evidence
+     * A linkCommit can be associated with one or more parent piece of evidence.
+     * An evidence can have one or more linkCommit
+     */
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
+    protected List<LinkedCommit> linkedCommit;
 
     public Evidence() {}
 
@@ -71,13 +104,15 @@ public class Evidence {
         Project associatedProject,
         String title,
         String description,
-        LocalDate date
+        LocalDate date,
+        int categories
     ) {
         this.parentUserId = parentUserId;
         this.associatedProject = associatedProject;
         this.title = title;
         this.description = description;
         this.date = date;
+        this.categories = categories;
     }
 
     /**
@@ -101,6 +136,8 @@ public class Evidence {
         } else if (date.isBefore(parentProject.getLocalStartDate())) {
             throw new IllegalArgumentException("Evidence date is before parent project start date");
         }
+        validateEnoughCharacters(title);
+        validateEnoughCharacters(description);
     }
 
     /**
@@ -131,7 +168,6 @@ public class Evidence {
 
     /**
      * Sets the associated project to which the piece of evidence is associated
-     * @param associatedProject
      */
     public void setAssociatedProject(Project associatedProject) throws IllegalArgumentException {
         newAssociatedProjectIsValid(associatedProject);
@@ -148,7 +184,6 @@ public class Evidence {
 
     /**
      * Set the description of the evidence.
-     * @param description
      */
     public void setDescription(String description) {
         this.description = description;
@@ -156,16 +191,14 @@ public class Evidence {
 
     /**
      * Set the date of the piece of evidence.
-     * @param date
      */
     public void setDate(LocalDate date) throws IllegalArgumentException {
         newDateIsValid(date);
         this.date = date;
-    };
+    }
 
     /**
      * Get the ID of the piece of evidence
-     * @return
      */
     public int getId() {
         return id;
@@ -173,7 +206,6 @@ public class Evidence {
 
     /**
      * Get the ID of the parent user to which the piece of evidence belongs
-     * @return
      */
     public int getParentUserId() {
         return parentUserId;
@@ -181,7 +213,6 @@ public class Evidence {
 
     /**
      * Get the associated project to which the piece of evidence is associated.
-     * @return
      */
     public Project getAssociatedProject() {
         return associatedProject;
@@ -190,7 +221,6 @@ public class Evidence {
 
     /**
      * Get the title
-     * @return
      */
     public String getTitle() {
         return title;
@@ -198,7 +228,6 @@ public class Evidence {
 
     /**
      * Get the description
-     * @return
      */
     public String getDescription() {
         return description;
@@ -206,13 +235,111 @@ public class Evidence {
 
     /**
      * Get the date
-     * @return
      */
     public LocalDate getDate() {
         return date;
-    };
+    }
 
-    public List<EvidenceTag> getEvidenceTags() {
-        return evidenceTags;
+    public List<EvidenceTag> getEvidenceTags() { return evidenceTags; }
+
+    /**
+     * Gets a list of all the links associated with this evidence
+     * @return links
+     */
+    public List<WebLink> getLinks() { return links; }
+
+    /**
+     * Extracts which categories are present in the bit representation
+     * @return A list of string representations of the categories on a given piece of evidence
+     */
+    public List<String> getCategoryStrings() {
+        List<String> categoryStrings = new ArrayList<>();
+        if ((categories & QUALITATIVE_SKILLS) > 0) { // Checks if category int has a 1 in the first position
+            categoryStrings.add("Qualitative Skills");
+        }
+        if ((categories & QUANTITATIVE_SKILLS) > 0) { // Checks if category int has a 1 in the second position
+            categoryStrings.add("Quantitative Skills");
+        }
+        if ((categories & SERVICE) > 0) { // Checks if category int has a 1 in the third position
+            categoryStrings.add("Service");
+        }
+        return categoryStrings;
+    }
+
+    public static int categoryStringToInt(String categories) {
+        int categoryInt = 0;
+        if (categories.contains("Qualitative Skills")) {
+            categoryInt += QUALITATIVE_SKILLS;
+        }
+        if (categories.contains("Quantitative Skills")) {
+            categoryInt += QUANTITATIVE_SKILLS;
+        }
+        if (categories.contains("Service")) {
+            categoryInt += SERVICE;
+        }
+        return categoryInt;
+    }
+
+    public void setCategories(int categories) {
+        this.categories = categories;
+    }
+
+    @Override
+    public String toString() {
+        return title + "\n"
+            + id + "\n"
+            + parentUserId + "\n"
+            + associatedProject + "\n"
+            + description + "\n"
+            + categories + "\n"
+            + evidenceUsersId + "\n";
+    }
+
+    public List<EvidenceUser> getEvidenceUsersId() {
+        return evidenceUsersId;
+    }
+
+    @Override
+    public boolean equals(Object e) {
+        if (e == this) {
+            return true;
+        }
+        if (!(e instanceof Evidence toComp)) {
+            return false;
+        }
+        return toComp.id == this.id;
+    }
+
+    @Override
+    public final int hashCode() {
+        return this.id;
+    }
+
+    @Transactional
+    public void setEvidenceTags(List<EvidenceTag> evidenceTags) {
+        this.evidenceTags = evidenceTags;
+    }
+
+    /**
+     * Removes an evidence tag from the associated evidence tags.
+     */
+    @Transactional
+    public void removeEvidenceTag(EvidenceTag evidenceTag) {
+        this.evidenceTags.removeIf((EvidenceTag tag) -> tag.getId() == evidenceTag.id);
+    }
+
+    /**
+     * Add an evidence tag to the evidence.
+     */
+    @Transactional
+    public void addEvidenceTag(EvidenceTag evidenceTag) {
+        this.evidenceTags.add(evidenceTag);
+    }
+
+    /**
+     * Get the linked commits associated with a piece of Evidence
+     */
+    public List<LinkedCommit> getLinkedCommit() {
+        return linkedCommit;
     }
 }

@@ -1,12 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import com.google.protobuf.Descriptors;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class AuthStateInformerTest {
 
@@ -47,11 +46,11 @@ class AuthStateInformerTest {
     @Test
     void getUsernameTest() {
         String expected = "yaboi";
-        ClaimDTO claimDTO = ClaimDTO.newBuilder().setType("name").setValue(expected).build();
+        ClaimDTO claimDTO = ClaimDTO.newBuilder().setType("unique_name").setValue(expected).build();
         AuthState authState = AuthState.newBuilder().addClaims(claimDTO).build();
         assertEquals(expected, AuthStateInformer.getUsername(authState));
 
-        claimDTO = ClaimDTO.newBuilder().setType("name").setValue("fail").build();
+        claimDTO = ClaimDTO.newBuilder().setType("unique_name").setValue("fail").build();
         authState = AuthState.newBuilder().addClaims(claimDTO).build();
         assertNotEquals(expected, AuthStateInformer.getUsername(authState));
     }

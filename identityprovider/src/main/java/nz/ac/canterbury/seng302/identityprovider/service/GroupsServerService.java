@@ -1,20 +1,21 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import com.google.protobuf.Message;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.*;
-import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupsServiceGrpc.GroupsServiceImplBase;
+import nz.ac.canterbury.seng302.shared.util.PaginationRequestOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
-import java.util.List;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,8 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
     @Autowired
     RolesRepository roleRepo;
+
+    Logger logger = LoggerFactory.getLogger(GroupsServerService.class);
 
     // Constant strings to set.
     public static String TEACHER_GROUP_NAME_LONG = "Teachers Group";
@@ -380,4 +383,64 @@ public class GroupsServerService extends GroupsServiceImplBase {
         return response.build();
     }
 
+    /**
+     * build a group response to send to portfolio
+     * @param group the group to build the response from
+     * @return the build response
+     */
+    public GroupDetailsResponse buildGroupNoUsers(Groups group) {
+        // set the group details
+        GroupDetailsResponse.Builder response = GroupDetailsResponse.newBuilder()
+            .setGroupId(group.getId())
+            .setLongName(group.getGroupLongName())
+            .setShortName(group.getGroupShortName());
+
+        return response.build();
+    }
+
+    /**
+     * get the pagiantion specified groups that belong to a specified user
+     * @param request the request containing the pagination options and the userId
+     * @param observer the place to send the response to
+     * @throws Exception service exception
+     */
+    @Override
+    public void getPaginatedGroupsForUser(GetPaginatedGroupsForUserRequest request, StreamObserver<PaginatedGroupsResponse> observer) {
+        AccountProfile user = null;
+
+        PaginatedGroupsResponse.Builder reply = PaginatedGroupsResponse.newBuilder();
+        try {
+            user = repo.findById(request.getUserId());
+
+            PaginationRequestOptions options = request.getPaginationRequestOptions();
+            logger.info("[GetPaginatedGroupsForUser] Getting all the group memberships for the given user");
+            List<GroupMembership> memberships;
+            // allow for -1 to specify get all groups that the user is a part of.
+            if (options.getLimit() < 0) {
+                memberships = groupMembershipRepo.findAllByRegisteredGroupUser(user);
+            } else {
+                memberships = groupMembershipRepo.findAllByRegisteredGroupUser(user, PageRequest.of(options.getOffset(), options.getLimit()));
+            }
+
+            reply.setResultSetSize(memberships.size());
+
+            logger.info("[GetPaginatedGroupsForUser] Building paginated groups response");
+            // build the group responses for the paginated response
+            for (GroupMembership group: memberships) {
+                GroupDetailsResponse response = buildGroupNoUsers(group.getRegisteredGroups());
+                reply.addGroups(response);
+            }
+        } catch (Exception e) {
+
+            logger.error(e.getMessage());
+            // If an error occurs e.g not provided a user id that is registered
+            reply.setResultSetSize(-1);
+        }
+
+        logger.info("[GetPaginatedGroupsForUser] Sending response");
+        observer.onNext(reply.build());
+        observer.onCompleted();
+        logger.info("[GetPaginatedGroupsForUser] Response sent");
+
+    }
 }

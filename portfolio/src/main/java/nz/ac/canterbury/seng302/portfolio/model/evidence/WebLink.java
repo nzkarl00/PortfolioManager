@@ -1,8 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
-import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.regex.Pattern;
 import java.util.regex.Pattern;
 
 /**
@@ -24,14 +27,15 @@ public class WebLink {
     private static final Pattern protocolPattern = Pattern.compile("^https?://.*$");
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="id", unique = true)
     private int id;
 
     /**
      * Every web link is associated with a parent piece of evidence.
      */
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name="parent_evidence_id", nullable=false)
     protected Evidence parentEvidence;
 
@@ -39,7 +43,7 @@ public class WebLink {
      * The URL of the link.
      */
     @Column(name="url", length = MAX_URL_LENGTH, nullable = false)
-    public String url;
+    public URL url;
 
     /**
      * Whether or not the Link has been fetched with a client, to check if it is secure or not found
@@ -67,10 +71,56 @@ public class WebLink {
      * - url must be a valid URL, use urlIsValid to check
      * @param url the URL of the link
      */
-    public WebLink (String url, Evidence parentEvidence) {
+    public WebLink (String url, Evidence parentEvidence) throws MalformedURLException {
         urlIsValid(url);
-        this.url = url;
+        this.url = new URL(url);
         this.parentEvidence = parentEvidence;
+    }
+
+    /**
+     * Gets the URL of the WebLink,
+     * This URL is clickable, with a protocol, eg. https://www.google.com/
+     * @return url the URL of the link
+     */
+    public String getUrl() {
+        return this.url.toString();
+    }
+
+    /**
+     * Gets a cleaner version of the URL without protocols
+     * This has the HTTP:// and HTTPS:// removed so is not clickable
+     * eg. www.google.com/
+     * @return
+     */
+    public String getUrlWithoutProtocol() {
+        return this.url.toString().substring(this.url.toString().indexOf("://") + 3);
+    }
+
+    /**
+     * Checks if the supplied URL is valid
+     * @param url
+     * @return true if valid
+     * @throws MalformedURLException if URL is invalid, specifying the reason
+     */
+    public static boolean urlIsValid(String url) throws MalformedURLException {
+        if (!urlHasProtocol(url)) {
+            throw new MalformedURLException("URL must contain an HTTP(s) protocol definition");
+        }
+        try {
+            new URL(url);
+        } catch(MalformedURLException e) {
+            throw new MalformedURLException("URL is not properly formed");
+        }
+        return true;
+    }
+
+    /**
+     * True if the URL has http as the protocol
+     * @param url
+     * @return
+     */
+    public static boolean urlHasProtocol(String url) {
+        return protocolPattern.matcher(url).matches();
     }
 
     /**
@@ -127,7 +177,7 @@ public class WebLink {
      * @return true if the link is a secure link
      */
     public boolean isSecure() {
-        return urlIsHttps(url);
+        return url.getProtocol().equals("https");
     }
 
     /**
@@ -149,6 +199,14 @@ public class WebLink {
      */
     public Evidence getParentEvidence() {
         return parentEvidence;
+    }
+
+    /**
+     * Set the ID of the link
+     * @param id
+     */
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**

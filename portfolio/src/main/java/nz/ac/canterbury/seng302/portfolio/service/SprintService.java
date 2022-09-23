@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,28 +21,27 @@ public class SprintService {
      * Get list of all sprints
      */
     public List<Sprint> getAllSprints() {
-        List<Sprint> list = (List<Sprint>) repository.findAll();
-        return list;
+        return (List<Sprint>) repository.findAll();
     }
 
     /**
      * Get sprint by its id.
      */
-    public Sprint getSprintById(Integer id) throws Exception {
+    public Sprint getSprintById(Integer id) throws CustomExceptions.ProjectItemNotFoundException {
 
         Optional<Sprint> sprint = repository.findById(id);
-        if(sprint!=null) {
+        if(sprint.isPresent()) {
             return sprint.get();
         }
         else
         {
-            throw new Exception("Project not found");
+            throw new CustomExceptions.ProjectItemNotFoundException("Sprint not found");
         }
     }
     /**
      * Get sprint by parent id, where parent id is the project that is parent for the sprints.
      */
-    public List<Sprint> getSprintByParentId(Integer id) throws Exception {
+    public List<Sprint> getSprintByParentId(Integer id) throws CustomExceptions.ProjectItemNotFoundException {
 
         List<Sprint> sprints = repository.findByParentProjectId(id);
         if(sprints!=null) {
@@ -49,7 +49,7 @@ public class SprintService {
         }
         else
         {
-            throw new Exception("Project not found");
+            throw new CustomExceptions.ProjectItemNotFoundException("Sprint not found");
         }
     }
 

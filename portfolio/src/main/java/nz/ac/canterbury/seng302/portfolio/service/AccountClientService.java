@@ -1,22 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import nz.ac.canterbury.seng302.shared.identityprovider.ChangePasswordRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.ChangePasswordResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.ModifyRoleOfUserRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
 
 /**
  * The GRPC client side service class
@@ -27,6 +16,8 @@ public class AccountClientService
 
     @GrpcClient("identity-provider-grpc-server")
     UserAccountServiceGrpc.UserAccountServiceBlockingStub accountServiceStub;
+
+    Logger logger = LoggerFactory.getLogger(AccountClientService.class);
 
     /**
      * makes a UserRegisterRequest to receive a UserRegisterResponse
@@ -43,6 +34,7 @@ public class AccountClientService
                                          String firstName, String lastName,
                                          String personalPronouns,
                                          String email) {
+        logger.info("[REGISTER] Attempting to register user with IDP, username: " + username.replaceAll("[\n\r\t]", "_"));
         UserRegisterRequest registerRequest = UserRegisterRequest.newBuilder()
                 .setUsername(username)
                 .setPassword(password)
@@ -51,7 +43,9 @@ public class AccountClientService
                 .setPersonalPronouns(personalPronouns)
                 .setEmail(email)
                 .build();
-        return accountServiceStub.register(registerRequest);
+        UserRegisterResponse res = accountServiceStub.register(registerRequest);
+        logger.info("[REGISTER] Received register response for user from IDP, username: " + username.replaceAll("[\n\r\t]", "_"));
+        return res;
     }
 
     /**
@@ -134,6 +128,26 @@ public class AccountClientService
                 .setOffset(offset)
                 .setOrderBy(order);
         return accountServiceStub.getPaginatedUsers(request.build());
+    }
+
+    /**
+     * @return A hashmap of every user in the system, from their ID to their username
+     */
+    public HashMap<String, Integer> getUsernameMap() {
+        HashMap<String, Integer> usernameMap = new HashMap<String, Integer>();
+        //Keeps track of how many users have been retrieved from the database
+        int retrievedMembers = 0;
+        //Keeps track of how many users request to the database
+        int expectedMembers = 0;
+        //Stop the loop when no more members can be retrieved
+        PaginatedUsersResponse response = getPaginatedUsers(10, 0, "username", 1);
+        for(int page = 0; page < response.getResultSetSize(); page++) {
+            for (UserResponse userResponse : response.getUsersList()) {
+                usernameMap.put(userResponse.getUsername(), userResponse.getId());
+            }
+            response = getPaginatedUsers(10, page * 10, "username", 1);
+        }
+        return usernameMap;
     }
 
     /**

@@ -13,11 +13,11 @@ import java.time.format.DateTimeFormatter;
  * in the interface to ensure we can treat all three classes similarly in some application code.
  * Each concrete implementation is free to implement the methods as most appropriate.
  */
-@Entity
+@MappedSuperclass
 public abstract class ProjectTimeBoundItem {
     public static final int MAX_NAME_LENGTH = 60;
     public static final int MAX_DESCRIPTION_LENGTH = 240;
-    public static final DateTimeFormatter htmlDateFormat = DateTimeFormatter.ofPattern("YYYY-MM-dd");
+    public static final DateTimeFormatter htmlDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

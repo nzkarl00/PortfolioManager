@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Event;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Milestone;
@@ -35,7 +36,10 @@ public class EditDatesController {
     @Autowired
     private NavController navController;
 
-    String errorShow = "display:none;";
+    final String displayNone = "display:none;";
+    final String teacher = "teacher";
+    final String detailsRedirect = "redirect:details?id=";
+    String errorShow = displayNone;
     String errorCode = "";
     String redirect = "";
     Integer dateId;
@@ -63,7 +67,7 @@ public class EditDatesController {
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
         navController.updateModelForNav(principal, model, userReply, id);
-        if (role.equals("teacher") || role.equals("admin")) {
+        if (role.equals(teacher) || role.equals("admin")) {
             this.dateId = dateId;
             ProjectTimeBoundItem projectItem = projectItemService.getProjectItemByIdAndType(type, dateId);
             Project project = projectService.getProjectById(projectId);
@@ -71,13 +75,13 @@ public class EditDatesController {
             model.addAttribute("dateStart", projectItem.getStartDate());
             model.addAttribute("dateEnd", projectItem.getEndDate());
             model.addAttribute("dateDesc", projectItem.getDescription());
-            model.addAttribute("roleName", "teacher");
+            model.addAttribute("roleName", teacher);
             model.addAttribute("type", type);
             model.addAttribute("date", projectItem);
             model.addAttribute("project", project);
             model.addAttribute("errorShow",errorShow);
             model.addAttribute("errorCode",errorCode);
-            errorShow ="display:none;";
+            errorShow =displayNone;
             errorCode ="";
             return "editDates";
         } else {
@@ -114,7 +118,7 @@ public class EditDatesController {
     ) throws Exception {
         String role = AuthStateInformer.getRole(principal);
         redirect = "redirect:edit-date?id=" + projectId + "&ids=" + dateId;
-        if (role.equals("teacher") || role.equals("admin")) {
+        if (role.equals(teacher) || role.equals("admin")) {
            Project project = projectService.getProjectById(projectId);
             if (dateName.isBlank()) {
                 errorCode = "Project date requires a name";
@@ -128,9 +132,11 @@ public class EditDatesController {
                     return editMilestone(project, dateId, dateName, dateDescription, dateStartDate);
                 case "Event":
                     return editEvent(project, dateId, dateName, dateDescription, dateStartDate, dateEndDate);
+                default:
+                    throw new CustomExceptions.ProjectItemTypeException("Invalid project item type: " + dateType);
             }
         }
-        return "redirect:details?id=" + projectId;
+        return detailsRedirect + projectId;
     }
 
     /**
@@ -149,13 +155,13 @@ public class EditDatesController {
             errorCode = "Deadline is outside of the project's timeline";
             return redirect;
         }
-        errorShow = "display:none;";
+        errorShow = displayNone;
         deadline.setName(name);
         deadline.setDescription(description);
         deadline.setStartDate(dateStart);
         projectItemService.saveDeadlineEdit(deadline);
-        dateSocketService.sendDeadlineCalendarChange(project, deadline);
-        return "redirect:details?id=" + project.getId();
+        dateSocketService.sendDeadlineCalendarChange(project);
+        return detailsRedirect + project.getId();
     }
 
     /**
@@ -182,14 +188,14 @@ public class EditDatesController {
             errorCode = "End date for event must occur after start date";
             return "redirect:edit-date?projectId=" + project.getId() + "&dateId=" + dateId + "&itemType=Event";
         }
-        errorShow = "display:none;";
+        errorShow = displayNone;
         event.setName(name);
         event.setDescription(description);
         event.setStartDate(dateStart);
         event.setEndDate(dateEnd);
         projectItemService.saveEventEdit(event);
-        dateSocketService.sendEventCalendarChange(project, event);
-        return "redirect:details?id=" + project.getId();
+        dateSocketService.sendEventCalendarChange(project);
+        return detailsRedirect + project.getId();
     }
 
     /**
@@ -208,12 +214,12 @@ public class EditDatesController {
             errorCode = "Milestone is outside of the project's timeline";
             return redirect;
         }
-        errorShow = "display:none;";
+        errorShow = displayNone;
         milestone.setName(name);
         milestone.setDescription(description);
         milestone.setStartDate(dateStart);
         projectItemService.saveMilestoneEdit(milestone);
-        dateSocketService.sendMilestoneCalendarChange(project, milestone);
-        return "redirect:details?id=" + project.getId();
+        dateSocketService.sendMilestoneCalendarChange(project);
+        return detailsRedirect + project.getId();
     }
 }

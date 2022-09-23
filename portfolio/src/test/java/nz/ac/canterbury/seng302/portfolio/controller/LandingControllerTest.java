@@ -1,8 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.DeadlineRepository;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
+import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.DeadlineRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
@@ -101,7 +101,7 @@ public class LandingControllerTest {
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
                 .andExpect(view().name("landing"))
                 .andExpect(model().attribute("projects", projectService.getAllProjects()));
-        verify(projectRepository, times(1)).save(any(Project.class));
+        verify(projectRepository, times(0)).save(any(Project.class));
     }
     @Test
     public void getLandingPageWithValidTeacherCredentials() throws Exception {
@@ -122,7 +122,7 @@ public class LandingControllerTest {
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
                 .andExpect(view().name("landing"))
                 .andExpect(model().attribute("projects", projectService.getAllProjects()));
-        verify(projectRepository, times(1)).save(any(Project.class));
+        verify(projectRepository, times(0)).save(any(Project.class));
     }
 
     @Test
@@ -145,7 +145,7 @@ public class LandingControllerTest {
                 .andExpect(view().name("landing"))
                 .andExpect(model().attribute("projects", projectService.getAllProjects()))
                 .andExpect(model().attribute("display", "display:none;"));
-        verify(projectRepository, times(1)).save(any(Project.class));
+        verify(projectRepository, times(0)).save(any(Project.class));
     }
 
 

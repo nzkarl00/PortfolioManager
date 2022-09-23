@@ -1,9 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import io.grpc.StatusRuntimeException;
-import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.slf4j.Logger;
@@ -11,18 +8,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import java.util.regex.*;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class SignupController {
-
-    @Autowired
-    private AuthenticateClientService authenticateClientService;
 
     @Autowired
     private AccountClientService accountClientService;
@@ -99,12 +93,11 @@ public class SignupController {
 
         // Tries to auto authenticate a login after signing up
         AuthenticateResponse authenticateResponse = loginController.authenticateLogin(username, password, model);
-        logger.trace("[LOGIN] Result from authenticateResponse: " + authenticateResponse);
+        logger.trace("[LOGIN] Authenticate Response received");
 
         if (authenticateResponse == null) {
             return "redirect:signup";
         }
-
         // If authenticating a login is successful, then the cookie will be set in the domain.
         if (authenticateResponse.getSuccess()) {
             loginController.setCookie(request, response, authenticateResponse);
@@ -112,7 +105,7 @@ public class SignupController {
         }
 
         model.addAttribute("loginMessage", authenticateResponse.getMessage());
-        logger.info("[SIGNUP] Signup successful for user: " + username);
+        logger.info("[SIGNUP] Signup successful for user: " + username.replaceAll("[\n\r\t]", "_"));
         return "redirect:signup";
     }
 }

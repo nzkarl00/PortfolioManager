@@ -1,27 +1,26 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.Group;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
-import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.GitlabClient;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.beans.factory.annotation.Value;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -38,6 +37,9 @@ public class EditGroupController {
 
     @Autowired
     private GroupRepoRepository groupRepoRepository;
+
+    @Autowired
+    private GitlabClient gitlabClient;
 
     String errorShow = "display:none;";
     String errorCode = "";
@@ -195,9 +197,8 @@ public class EditGroupController {
             groupRepo.setAlias(repoAlias);
 
             // Check with Gitlab client that the repo exists.
-            GitlabClient client = new GitlabClient(gitlabInstanceURL, apiKey);
             try {
-                client.getProject(repoOwner, repoName);
+                gitlabClient.getProject(apiKey, repoOwner, repoName);
             } catch (Exception e) {
                 logger.warn(String.format(
                         "Provided API integration did not work: repoOwner=%s repoName=%s apiKey=%s",

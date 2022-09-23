@@ -77,8 +77,49 @@ By default, the Portfolio will run on local port 9000 (`http://localhost:9000`)
 
 Navigate with your browser to 'http://localhost:9000/login'.
 From here you may either register a user or login to the default user account.
-Default user account credentials: (Username: USER, Password: **Password123!**)
 
+## Default Account Credentials
+#### UserName:
+admin, teacher, student. Each account is for the corresponding roles
+
+#### Password:
+Password123!
+
+## Dependencies
+
+### Bootstrap
+Bootstrap is an open-source CSS framework used in this application for development of the front-end of the application.
+It's CSS and JS libraries allow for a responsive and flexible user interface that can be created significantly faster than
+doing so without the use of existing bootstrap classes/scripts. We use version Bootstrap 5.1
+
+### Fullcalendar
+Fullcalendar is a JS library that allows for the creation of a reactive calendar on the webpage that
+it utilized here to display project details and visually show the dates for sprints, deadlines, events, and
+milestones to the user. The application uses version 5.11.2 of Fullcalendar.
+
+### Axios
+A library to make API calls simple and easy to use.
+We use the latest version sourced from https://unpkg.com/axios/dist/axios.min.js
+
+### Websockets
+A set of libraries that allow for live updating through the web protocol that is web sockets.
+This allows for live updating of our project page.
+We use version 'org.webjars:stomp-websocket:2.3.4'
+
+### DataTables
+Datatables converts a html table to a datatable which will sort, paginate, search automatically.
+We use version 1.12
+## Test Dependencies
+
+### Selenium
+Selenium webdriver is a tool that allows for the automation of frontend-web-app-testing. Using selenium allows us
+to automate manual testing that sees if the user of the application can see the correct data, at the correct time, when 
+the correct actions are performed. This is used as a part of the integrationTest part of our pipeline. The application uses version 3.4.0.
+
+### JUnit
+Junit is a library to unit test classes in an automatic manner, in combination with the gitlab pipeline
+any branch that is merged to dev must pass all tests.
+We use version 7.2.3
 
 ## Contributors
 

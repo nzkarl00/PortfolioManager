@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import org.slf4j.Logger;
@@ -10,10 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import java.util.regex.*;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -91,7 +90,7 @@ public class LoginController {
     ) {
 
         AuthenticateResponse authenticateResponse = authenticateLogin(username, password, model);
-        logger.trace("[LOGIN] Result from authenticateResponse: " + authenticateResponse);
+        logger.trace("[LOGIN] Authenticate Response received");
 
         if (authenticateResponse == null) {
             return "redirect:login";
@@ -114,7 +113,7 @@ public class LoginController {
      * @param model to display feedback to user
      */
     public AuthenticateResponse authenticateLogin(String username, String password, Model model) {
-        logger.trace("[LOGIN] Attempting to authenticate user: " + username);
+        logger.trace("[LOGIN] Attempting to authenticate user: " + username.replaceAll("[\n\r\t]", "_"));
         try {
             return authenticateClientService.authenticate(username, password);
         } catch (StatusRuntimeException e){

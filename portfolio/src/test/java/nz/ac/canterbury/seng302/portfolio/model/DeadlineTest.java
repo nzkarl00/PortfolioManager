@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Deadline;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
 import java.time.LocalDateTime;
 
 public class DeadlineTest {

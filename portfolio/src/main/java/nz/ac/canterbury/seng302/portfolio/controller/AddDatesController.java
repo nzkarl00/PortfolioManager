@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -43,14 +45,15 @@ public class AddDatesController {
     String errorShow = "display:none;";
     String errorCode = "";
     Integer nameLen = 0;
-
+    final String addDatesRedirectUrl = "redirect:add-dates?projectId=";
+    final String detailsRedirectUrl = "redirect:details?id=";
+    
     /**
      * Gets the page for adding dates to a project and passes date boundaries to the model.
      * @param principal auth token
      * @param projectId id for the project dates will be added to
      * @param model webpage model to hold data
      * @return the date adding page
-     * @throws Exception
      */
     @GetMapping("/add-dates")
     public String addDates(
@@ -59,7 +62,7 @@ public class AddDatesController {
             Model model
     ) throws Exception {
         Project project = projectService.getProjectById(projectId);
-        Integer id = AuthStateInformer.getId(principal);
+        int id = AuthStateInformer.getId(principal);
         // Attributes For header
         UserResponse userReply;
         userReply =accountClientService.getUserById(id);
@@ -92,7 +95,6 @@ public class AddDatesController {
      * @param eventEndDate event end date
      * @param eventDescription event description
      * @return project details page on successful update, redirect to add dates again on failure
-     * @throws Exception
      */
     @PostMapping("/add-dates")
     public String newSprint(
@@ -108,19 +110,17 @@ public class AddDatesController {
 
         String role = AuthStateInformer.getRole(principal);
         Project project = projectService.getProjectById(projectId);
-        String messageReturned = "redirect:details?id=";
+        String messageReturned = detailsRedirectUrl;
 
         String event = eventType.orElse("");
 
         if (role.equals("teacher") || role.equals("admin")) {
-            if (event.equals("Deadline")) {
-                messageReturned = addDeadlines(project, eventName, eventDescription, eventStartDate, eventEndDate);
-            } else if (event.equals("Sprint") || event.equals("")){
-                messageReturned = addSprint(project, eventName, eventDescription, eventStartDate, eventEndDate);
-            } else if (event.equals("Milestone")) {
-                messageReturned = addMilestone(project, eventName, eventDescription, eventStartDate);
-            } else if (event.equals("Event")) {
-                messageReturned = addEvent(project, eventName, eventDescription, eventStartDate, eventEndDate);
+            switch (event) {
+                case "Deadline" -> messageReturned = addDeadlines(project, eventName, eventDescription, eventStartDate, eventEndDate);
+                case "Sprint", "" -> messageReturned = addSprint(project, eventName, eventDescription, eventStartDate, eventEndDate);
+                case "Milestone" -> messageReturned = addMilestone(project, eventName, eventDescription, eventStartDate);
+                case "Event" -> messageReturned = addEvent(project, eventName, eventDescription, eventStartDate, eventEndDate);
+                default -> throw new CustomExceptions.ProjectItemTypeException("Project item type does not exist: " + event);
             }
         }
 
@@ -135,29 +135,29 @@ public class AddDatesController {
      * @param eventEndDate event end date
      * @param eventDescription event description
      * @return project details page on successful update, return string to indicate success or failure
-     * @throws Exception
      */
     private String addSprint(Project project, String eventName, String eventDescription, String eventStartDate, String eventEndDate) throws Exception {
         Date projStart = project.getStartDate();
         Date projEnd = project.getEndDate();
-        Integer projectId = project.getId();
+        int projectId = project.getId();
         List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
         Date newStart = DateParser.stringToDate(eventStartDate);
         Date newEnd = DateParser.stringToDate(eventEndDate);
 
-        if (eventName == "") {
+        if (eventName.equals("")) {
             eventName = "Sprint " + (sprints.size() + 1);
         }
-        if (!sprintService.areNewSprintDatesValid(newStart, newEnd, projectId) || newStart.before(projStart) || newEnd.after(projEnd)) {
+        assert newStart != null;
+        if (!sprintService.areNewSprintDatesValid(newStart, newEnd, projectId) || newStart.before(projStart) || Objects.requireNonNull(newEnd).after(projEnd)) {
             errorShow="";
             errorCode="Invalid dates";
-            return "redirect:add-dates?projectId=";
+            return addDatesRedirectUrl;
         }
         
         Sprint sprint = new Sprint(projectId, eventName, eventName, eventDescription, newStart, newEnd);
         repository.save(sprint);
         dateSocketService.sendSprintCalendarChange(projectId);
-        return "redirect:details?id=";
+        return detailsRedirectUrl;
     }
 
     /**
@@ -180,16 +180,17 @@ public class AddDatesController {
             eventName = "Deadline " + (deadlines.size() + 1);
         }
 
+        assert checkForValidationDate != null;
         if (checkForValidationDate.before(projStart) || checkForValidationDate.after(projEnd)){
             errorShow="";
             errorCode="Deadline date must be within the project dates";
-            return "redirect:add-dates?projectId=";
+            return addDatesRedirectUrl;
         }
 
         Deadline deadline = new Deadline(project, eventName, eventDescription, endDate);
         deadlineRepository.save(deadline);
-        dateSocketService.sendDeadlineCalendarChange(project, deadline);
-        return "redirect:details?id=";
+        dateSocketService.sendDeadlineCalendarChange(project);
+        return detailsRedirectUrl;
     }
 
     /**
@@ -211,16 +212,17 @@ public class AddDatesController {
             eventName = "Milestone " + (milestones.size() + 1);
         }
 
+        assert checkForValidationDate != null;
         if (checkForValidationDate.before(projStart) || checkForValidationDate.after(projEnd)){
             errorShow="";
             errorCode="Milestone date must be within the project dates";
-            return "redirect:add-dates?projectId=";
+            return addDatesRedirectUrl;
         }
 
         Milestone milestone = new Milestone(project, eventName, eventDescription, endDate);
         milestoneRepository.save(milestone);
-        dateSocketService.sendMilestoneCalendarChange(project, milestone);
-        return "redirect:details?id=";
+        dateSocketService.sendMilestoneCalendarChange(project);
+        return detailsRedirectUrl;
     }
 
     /**
@@ -245,16 +247,17 @@ public class AddDatesController {
             eventName = "Event " + (events.size() + 1);
         }
 
+        assert checkForValidationDate != null;
         if (checkForValidationDate.before(projStart) || checkForValidationDate.after(projEnd)){
             errorShow="";
             errorCode="Event dates must be within the project dates";
-            return "redirect:add-dates?projectId=";
+            return addDatesRedirectUrl;
         }
 
         Event event = new Event(project, eventName, eventDescription, startDate, endDate);
         eventRepository.save(event);
-        dateSocketService.sendEventCalendarChange(project, event);
-        return "redirect:details?id=";
+        dateSocketService.sendEventCalendarChange(project);
+        return detailsRedirectUrl;
     }
 
 

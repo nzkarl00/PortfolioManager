@@ -123,11 +123,9 @@
             $('#groupUserTable' + /*[[${group.shortName}]]*/ + ' tbody').on('click', 'tr', function () {
                 if ($(this).hasClass('selected')) {
                     $(this).removeClass('selected');
-                    console.log("working")
                 }
                 else {
                     $(this).addClass('selected');
-                    console.log("still working")
                 }
             });
         });

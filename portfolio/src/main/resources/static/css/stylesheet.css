@@ -115,6 +115,17 @@
 
 }
 
+.portion_body_tall {
+
+  font-family: nexa !important;
+  background-color: #D9F9FF !important;
+  border-radius: 35px  !important;
+  height: 500% !important;
+  padding: 2rem !important;
+    padding-bottom: 6rem !important;
+
+}
+
 .login_error {
 
   font-family: nexaBold !important;
@@ -563,7 +574,21 @@
     font-family: nexaLight !important;
 
 }
-.save:hover {
+
+.addCommit {
+
+    border: none;
+    padding: 4px 10px;
+    background: #26D20F !important;
+    width: 80% !important;
+    margin-left: 10% !important;
+    margin-right: 10% !important;
+    border-radius: 10px;
+    color: white;
+
+}
+
+.save_hover:hover {
 
     background: #08F722 !important;
     color: #ffffff !important;
@@ -639,7 +664,7 @@
     color: #FFFFFF !important;
 
 }
-.button_a: hover {
+.button_a:hover {
 
     color: #FFFFFF !important;
 
@@ -662,7 +687,7 @@
 }
 
 
-.project_a: hover {
+.project_a:hover {
 
     font-color: #056BFA !important;
 
@@ -1055,7 +1080,7 @@
     color: white;
 }
 
-.group_delete_button {
+.delete_button {
     border: none;
     margin-left: 10px;
     padding: 4px 10px;
@@ -1106,29 +1131,22 @@
     font-size: 125% !important;
 }
 
+
 .evidence_top {
 
     background: #D9F9FF !important;
     border-radius: 20px 20px 0px 0px;
     padding: 10px !important;
     padding-left: 15px !important;
-    padding-right: 15px !important;
-
-
 }
 
 .evidence_bot {
-
     background: #D9F9FF !important;
     border-radius: 0px 0px 20px 20px;
-
-
 }
 
 
 .evidence_data {
-
-
     font-family: nexa !important;
     color: #000000 !important;
     font-size: 110% !important;
@@ -1140,12 +1158,159 @@
     padding-right: 20px !important;
 }
 
+.commit_top {
+
+    background: #19DAFF !important;
+    border-radius: 20px 20px 0px 0px;
+    padding: 10px !important;
+    padding-left: 15px !important;
+}
+
+.commit_bot {
+    background: #19DAFF !important;
+    border-radius: 0px 0px 20px 20px;
+}
+
+.commit_display_small {
+    font-size: 80% !important;
+    color: #555555 !important;
+    overflow-wrap: break-word;
+    border-radius: 0px 0px 0px 0px !important;
+    margin-bottom:  0px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    margin-left: 5px !important;
+}
+
+
+.group_delete_button {
+    border: none;
+    margin-left: 10px;
+    padding: 4px 10px;
+    background: #FF202E !important;
+    border-radius: 10px;
+    color: white;
+}
+
+.commit_display_smaller {
+    font-size: 70% !important;
+    color: #999999 !important;
+    overflow-wrap: break-word;
+    border-radius: 0px 0px 0px 0px !important;
+    margin-bottom:  0px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    margin-left: 5px !important;
+}
+
+.commit_display_large {
+    font-size: 100% !important;
+    overflow-wrap: break-word;
+    border-radius: 0px 0px 0px 0px !important;
+    margin-bottom:  0px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    margin-left: 5px !important;
+}
+
+.commit_data {
+    font-family: nexa !important;
+    color: #000000 !important;
+    font-size: 110% !important;
+    background-color: #19DAFF !important;
+    overflow-wrap: break-word;
+    border-radius: 0px 0px 0px 0px !important;
+    margin-bottom:  0px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
+
+.commit_edit_data {
+  font-family: nexa !important;
+  color: #000000 !important;
+  font-size: 100% !important;
+  background-color: #F7FEFF !important;
+  border-style: solid !important;
+    width: 75% !important;
+  border-color: #056BFA !important;
+  border-width: 10px !important;
+  border-radius: 10px 20px 20px 20px !important;
+}
+.commit_edit_data_small {
+  font-family: nexa !important;
+  color: #000000 !important;
+  font-size: 100% !important;
+  background-color: #F7FEFF !important;
+  border-style: solid !important;
+  border-color: #056BFA !important;
+  border-width: 10px !important;
+  width: 100% !important;
+  border-radius: 10px 20px 20px 20px !important;
+}
+.commit_edit_data_smaller {
+  font-family: nexa !important;
+  color: #000000 !important;
+  font-size: 100% !important;
+  background-color: #F7FEFF !important;
+  border-style: solid !important;
+  border-color: #056BFA !important;
+  border-width: 10px !important;
+  width: 95% !important;
+  border-radius: 10px 20px 20px 20px !important;
+}
+
+.commit_search_result_body {
+  background-color: #D9F9FF !important;
+  border-radius: 20px 20px 20px 20px !important;
+  font-size: 100% !important;
+  padding:15px !important;
+    max-height: 100%;
+    overflow: auto;
+}
+
+.commit_search_result_container {
+    height:20em !important;
+    position: relative; !important
+}
+
+
+.commit_head_small {
+    font-family: nexaBold !important;
+    color: #056BFA !important;
+    font-size: 150% !important;
+
+}
+
+
+.commit_head {
+    font-family: nexaBold !important;
+    color: #056BFA !important;
+    font-color: #056BFA !important;
+    font-size: 175% !important;
+}
+
+
+.commit_alert {
+    font-family: nexaLight !important;
+    color: #FF202E !important;
+    font-color: #FF202E !important;
+    font-size: 100% !important;
+
+}
+
+.commit_text {
+    margin-left: -0.5em !important;
+}
+.commit_text_alert {
+    padding-left: 1.25em !important;
+}
+
 .fa-arrow-down {
     color: #19DAFF !important;
 }
 
 .alignRight {
-
     align: right !important;
 }
 
@@ -1154,13 +1319,21 @@
     font-family: nexaBold !important;
     color: #19DAFF !important;
     font-size: 175% !important;
-
+    font-size: 200% !important;
 }
+
+.evidence_title {
+    font-family: nexaBold !important;
+    color: #19DAFF !important;
+    font-size: 125% !important;
+}
+
+
+
 .evidence_date {
     font-family: nexaLight !important;
     color: #19DAFF !important;
     font-size: 175% !important;
-
 }
 
 .evidence_text {
@@ -1240,6 +1413,14 @@ select.form-control {
     cursor: pointer;
 }
 
+.evidence_link {
+    background: none;
+    border: none;
+    margin: 0;
+    padding-left: 0.5em;
+    cursor: pointer;
+}
+
 .skill_tag {
     background-color:#19DAFF; !important;
     border-radius: 15px !important;
@@ -1277,13 +1458,31 @@ select.form-control {
     font-size: 100% !important;
     padding: 0.5rem !important;
     margin: 1rem !important;
+    margin-left: 6rem !important;
+    margin-top: 0rem !important;
+    font-family: nexaLight !important;
+
+}
+.cancel_edit_evidence {
+
+    background-color: #FF202E !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    margin-left: 0rem !important;
+    margin-top: 0rem !important;
     font-family: nexaLight !important;
 
 }
 
 .save_evidence {
 
-    background-color: #26D20F !important;
+    background-color: #26D20F;
     border-radius: 15px !important;
     border-style: none !important;
     color: #ffffff !important;
@@ -1293,8 +1492,52 @@ select.form-control {
     font-colour: #FFFFFF !important;
     padding: 0.5rem !important;
     margin: 1rem !important;
+    margin-left: 6rem !important;
+    margin-top: 0rem !important;
     font-family: nexaLight !important;
 
+}
+
+.save_edit_evidence {
+
+    background-color: #26D20F;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-colour: #FFFFFF !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    margin-left: 0rem !important;
+    margin-top: 0rem !important;
+    font-family: nexaLight !important;
+
+}
+
+.add_evidence {
+
+    background-color: #26D20F;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    align: center !important;
+    font-size: 100% !important;
+    font-colour: #FFFFFF !important;
+    padding: 0.5rem !important;
+    font-family: nexaLight !important;
+
+}
+
+.edit_evidence {
+    height: 100%;
+    border: none;
+    margin-left: 10px;
+    padding: 4px 10px;
+    background: #FF48CF  !important;
+    border-radius: 10px;
+    color: white;
 }
 
 .trim_text {
@@ -1303,7 +1546,7 @@ select.form-control {
     white-space: nowrap;
 }
 
-.each_link {
+.each_link_delete {
     border: none;
     padding: 1px 10px;
     text-decoration: none !important;
@@ -1312,4 +1555,217 @@ select.form-control {
     margin-bottom: 2px;
     border-radius: 10px;
     color: white;
+}
+
+.each_link_edit {
+    border: none;
+    padding: 1px 10px;
+    text-decoration: none !important;
+    background: #FF48CF  !important;
+    margin-left: 10px;
+    margin-bottom: 2px;
+    border-radius: 10px;
+    color: white;
+}
+
+.each_link_save {
+    border: none;
+    padding: 1px 10px;
+    text-decoration: none !important;
+    background: #26D20F  !important;
+    margin-left: 10px;
+    margin-bottom: 2px;
+    border-radius: 10px;
+    color: white;
+}
+
+.autocomplete {
+    /*the container must be positioned relative:*/
+    position: relative;
+    display: flex;
+    width: 90%;
+}
+
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    /*position the autocomplete items to be the same width as the container:*/
+    top: 100%;
+    left: 0;
+    right: 0;
+    font-family: nexaLight !important;
+
+}
+.autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+    /*when hovering an item:*/
+    background-color: #e9e9e9;
+}
+.autocomplete-active {
+    /*when navigating through the items using the arrow keys:*/
+    background-color: DodgerBlue !important;
+    color: #ffffff;
+}
+
+.slight_pad {
+    margin-right: 5% !important;
+
+}
+
+.search {
+
+    background-color: #19DAFF !important;
+    border-radius: 20px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    height: 200% !important;
+    align: center !important;
+    padding-top: 10% !important;
+    font-size: 250% !important;
+    font-colour: #FFFFFF !important;
+    font-family: nexaLight !important;
+
+}
+.search:hover {
+
+    background: #056BFA !important;
+    color: #ffffff !important;
+
+}
+
+.searchCommit {
+
+    background-color: #056BFA !important;
+    border-radius: 20px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    align: center !important;
+    font-size: 250% !important;
+    font-colour: #FFFFFF !important;
+    font-family: nexaLight !important;
+
+}
+.searchCommit:hover:not([disabled]) {
+
+    background: #0046C9 !important;
+    color: #ffffff !important;
+
+}
+
+.evidence_si_tag {
+    background-color: rgba(13, 110, 253, 0.75); !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    padding: 0.3rem 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+}
+
+.evidence_si_tag:hover {
+    background-color: #26D20F !important;
+}
+
+.author_tag{
+    text-decoration: underline;
+    background-color: #6E4F94; !important;
+    border-style: none !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    padding: 0.3rem 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+    font-size: 80% !important;
+}
+
+.contributor_tag{
+    text-decoration: underline;
+    background-color: #8F41C5; !important;
+    border-style: none !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    padding: 0.3rem 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+    font-size: 80% !important;
+}
+
+
+
+.contributor_tag:hover {
+    text-decoration: underline;
+    background-color: #FF202E; !important;
+    border-style: none !important;
+    border-radius: 3px !important;
+    color: #ffffff !important;
+    padding: 0.3rem 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+    font-size: 80% !important;
+}
+
+.evidence_ci_tag {
+    background-color: rgba(115, 5, 250, 0.75); !important;
+    border-style: none !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    padding: 0.3rem 1rem;
+    display: inline-block !important;
+    margin-bottom: 0.3rem;
+    margin-left: 0.3rem;
+    font-size: 80% !important;
+}
+
+.evidence_ci_tag:hover {
+    background-color: #26D20F !important;;
+}
+
+.wrapper {
+    position: relative;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+}
+
+.category_box {
+    border: 1px #000000 solid;
+    position: absolute;
+    z-index: 99;
+    width: 27em;
+}
+
+.category_item {
+    background-color: #FFF;
+    padding: 0.2em;
+    margin: 0;
+}
+
+.category_item:hover {
+    background-color: #c1c1c1;
+}
+
+.project_selector {
+    background-color: #FFF;
+    border-style: hidden;
+    text-align: center;
+    font-family: NexaBold;
+    font-size: 200%;
+    color: #19DAFF !important;
+    padding-bottom: 5px;
 }

@@ -3,10 +3,11 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
-import nz.ac.canterbury.seng302.portfolio.service.GitlabClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -14,12 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.beans.factory.annotation.Value;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class AddGroupController {
@@ -33,9 +28,9 @@ public class AddGroupController {
     private AccountClientService accountClientService;
 
     Logger logger = LoggerFactory.getLogger(AddGroupController.class);
-
-    String errorShow = "display:none;";
-    String successShow = "display:none;";
+    final String displayNone = "display:none;";
+    String errorShow = displayNone;
+    String successShow = displayNone;
     String successCode = "successCode";
 
     /**
@@ -93,11 +88,11 @@ public class AddGroupController {
             createReply = groupsService.create(shortName, longName);
             successCode = createReply.getMessage();
             if (createReply.getIsSuccess()) {
-                errorShow = "display:none;";
+                errorShow = displayNone;
                 successShow = "";
             } else {
                 errorShow = "";
-                successShow = "display:none;";
+                successShow = displayNone;
             }
 
             return "redirect:addGroup";

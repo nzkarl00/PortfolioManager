@@ -1,6 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.junit.Before;
@@ -49,9 +49,6 @@ public class DetailsControllerTest {
 
     @MockBean
     SprintRepository sprintRepo;
-
-    @MockBean
-    DeadlineService deadlineService;
 
     @MockBean
     ProjectService projectService;

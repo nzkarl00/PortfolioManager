@@ -1,10 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -14,18 +17,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.time.ZoneId;
-import java.util.*;
 
 /**
  * Controller for the display project details page
@@ -55,11 +52,13 @@ public class DetailsController {
     @Value("${portfolio.base-url}")
     private String baseUrl;
 
-    String errorShow = "display:none;";
+    private final String displayNone = "display:none;";
+    private final String detailsRedirect = "redirect:details?id=";
+    String errorShow = displayNone;
     String errorCode = "";
-    String successCalendarShow = "display:none;";
+    String successCalendarShow = displayNone;
     String successCalendarCode = "";
-    String errorCalendarShow = "display:none;";
+    String errorCalendarShow = displayNone;
     String errorCalendarCode = "";
 
     Logger logger = LoggerFactory.getLogger(DetailsController.class);
@@ -88,8 +87,17 @@ public class DetailsController {
 
         navController.updateModelForNav(principal, model, userReply, id);
 
-        List<Sprint> sprintList = sprintService.getSprintByParentId(projectId);
+        // setup the default lists of timeBoundItems
+        List<Sprint> sprintList = repository.getSprintByParentProjectIdOrderBySprintStartDateAsc(projectId);
         model.addAttribute("sprints", sprintList);
+        List<Event> eventList = eventRepo.findAllByParentProjectOrderByStartDateAsc(project);
+        model.addAttribute("events", eventList);
+        List<Milestone> milestoneList = milestoneRepo.findAllByParentProjectOrderByStartDateAsc(project);
+        model.addAttribute("milestones", milestoneList);
+        List<Deadline> deadlineList = deadlineRepo.findAllByParentProjectOrderByStartDateAsc(project);
+        model.addAttribute("deadlines", deadlineList);
+
+
         model.addAttribute("errorShow", errorShow);
         model.addAttribute("errorCode", errorCode);
         model.addAttribute("successCalendarShow", successCalendarShow);
@@ -99,11 +107,11 @@ public class DetailsController {
         model.addAttribute("baseUrl", baseUrl);
 
         // Reset for the next display of the page
-        errorShow = "display:none;";
+        errorShow = displayNone;
         errorCode = "";
-        successCalendarShow = "display:none;";
+        successCalendarShow = displayNone;
         successCalendarCode = "";
-        errorCalendarShow = "display:none;";
+        errorCalendarShow = displayNone;
         errorCalendarCode = "";
 
         // Below code is just begging to be added as a method somewhere...
@@ -115,7 +123,7 @@ public class DetailsController {
             model.addAttribute("display", "");
             model.addAttribute("role", role);
         } else {
-            model.addAttribute("display", "display:none;");
+            model.addAttribute("display", displayNone);
             model.addAttribute("role", role);
         }
         return "projectDetails";
@@ -137,7 +145,7 @@ public class DetailsController {
             @RequestParam(value = "deleteprojectId") Integer projectId,
             @RequestParam(value = "sprintId") Integer sprintId,
             Model model
-    ) throws Exception {
+    ) throws CustomExceptions.ProjectItemNotFoundException {
         String role = AuthStateInformer.getRole(principal);
 
         if (role.equals("teacher") || role.equals("admin")) {
@@ -156,7 +164,7 @@ public class DetailsController {
             dateSocketService.sendSprintCalendarChange(projectId);
         }
 
-        return "redirect:details?id=" + projectId;
+        return detailsRedirect + projectId;
     }
 
     /**
@@ -175,7 +183,7 @@ public class DetailsController {
             @RequestParam(value = "projectId") Integer projectId,
             @RequestParam(value = "dateId") Integer eventId,
             Model model
-    ) throws Exception {
+    ) throws CustomExceptions.ProjectItemNotFoundException {
         String role = AuthStateInformer.getRole(principal);
 
         if (role.equals("teacher") || role.equals("admin")) {
@@ -183,7 +191,7 @@ public class DetailsController {
             dateSocketService.sendEventCalendarChange(projectService.getProjectById(projectId));
         }
 
-        return "redirect:details?id=" + projectId;
+        return detailsRedirect + projectId;
     }
     /**
      * The mapping to delete a deadline
@@ -193,7 +201,6 @@ public class DetailsController {
      * @param deadlineId  deadline id under project to delete
      * @param model     the model to add attributes to
      * @return A location of where to go next
-     * @throws Exception
      */
     @PostMapping("delete-deadline")
     public String deadlineDelete(
@@ -201,7 +208,7 @@ public class DetailsController {
             @RequestParam(value = "projectId") Integer projectId,
             @RequestParam(value = "dateId") Integer deadlineId,
             Model model
-    ) throws Exception {
+    ) throws CustomExceptions.ProjectItemNotFoundException {
         String role = AuthStateInformer.getRole(principal);
 
         if (role.equals("teacher") || role.equals("admin")) {
@@ -209,7 +216,7 @@ public class DetailsController {
             dateSocketService.sendDeadlineCalendarChange(projectService.getProjectById(projectId));
         }
 
-        return "redirect:details?id=" + projectId;
+        return detailsRedirect + projectId;
     }
     /**
      * The mapping to delete a milestone
@@ -227,7 +234,7 @@ public class DetailsController {
             @RequestParam(value = "projectId") Integer projectId,
             @RequestParam(value = "dateId") Integer milestoneId,
             Model model
-    ) throws Exception {
+    ) throws CustomExceptions.ProjectItemNotFoundException {
         String role = AuthStateInformer.getRole(principal);
 
         if (role.equals("teacher") || role.equals("admin")) {
@@ -235,7 +242,7 @@ public class DetailsController {
             dateSocketService.sendMilestoneCalendarChange(projectService.getProjectById(projectId));
         }
 
-        return "redirect:details?id=" + projectId;
+        return detailsRedirect + projectId;
     }
 
     @PostMapping("/details")
@@ -243,10 +250,10 @@ public class DetailsController {
                                          @RequestParam(value="id") Integer projectId,
                                          @RequestParam(value="sprintId") Integer sprintId,
                                          @RequestParam(value="start") Date sprintStartDate,
-                                         @RequestParam(value="end") Date sprintEndDate) throws Exception {
+                                         @RequestParam(value="end") Date sprintEndDate) throws CustomExceptions.ProjectItemNotFoundException {
 
         String role = AuthStateInformer.getRole(principal);
-        String redirect = "redirect:details?id=" + projectId;
+        String redirect = detailsRedirect + projectId;
         sprintEndDate = new Date(sprintEndDate.getTime() - Duration.ofDays(1).toMillis());
         if (role.equals("teacher") || role.equals("admin")) {
             List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
@@ -262,7 +269,7 @@ public class DetailsController {
             if (!checkStartDate.after(projStartDate) || !checkEndDate.before(projEndDate)) {
                 // check to is if the sprint isn't equal to the project start and end date
                 if (!checkStartDate.equals(projStartDate) && !checkEndDate.equals(projEndDate)) {
-                    successCalendarShow = "display:none;";
+                    successCalendarShow = displayNone;
                     successCalendarCode = "";
                     errorCalendarShow = "";
                     errorCalendarCode = "Sprints must be between "  + project.getStartDateString() + " - " + project.getEndDateString() + "";
@@ -272,7 +279,7 @@ public class DetailsController {
 
             // check if sprint start is before sprint end
             if (!checkStartDate.before(checkEndDate)) {
-                successCalendarShow = "display:none;";
+                successCalendarShow = displayNone;
                 successCalendarCode = "";
                 errorCalendarShow = "";
                 errorCalendarCode = "A sprint's start date must be before " + sprint.getEndDateString();
@@ -280,7 +287,7 @@ public class DetailsController {
             }
 
             if (!DateParser.sprintDateCheck(sprints, sprint, checkStartDate, checkEndDate)) {
-                successCalendarShow = "display:none;";
+                successCalendarShow = displayNone;
                 successCalendarCode = "";
                 errorCalendarShow = "";
                 errorCalendarCode = "A sprint cannot overlap with another sprint";
@@ -288,7 +295,7 @@ public class DetailsController {
             }
             sprint.setStartDate(new Date(sprintStartDate.getTime()));
             sprint.setEndDate(sprintEndDate);
-            errorCalendarShow = "display:none;";
+            errorCalendarShow = displayNone;
             errorCalendarCode = "";
             successCalendarShow = "";
             successCalendarCode = "Sprint time edited to: " + sprint.getStartDateString() + " - " + sprint.getEndDateString() + "";
@@ -307,7 +314,7 @@ public class DetailsController {
     @GetMapping("/sprints")
     public ResponseEntity<List<Sprint>> getProjectSprints(@AuthenticationPrincipal AuthState principal,
                                             @RequestParam(value="id") Integer projectId) {
-        return ResponseEntity.ok(repository.findByParentProjectId(projectId));
+        return ResponseEntity.ok(repository.findByParentProjectIdOrderBySprintStartDate(projectId));
     }
 
     /**
@@ -318,208 +325,10 @@ public class DetailsController {
      */
     @GetMapping("/deadlines")
     public ResponseEntity<List<Deadline>> getProjectDeadlines(@AuthenticationPrincipal AuthState principal,
-                                                              @RequestParam(value="id") Integer projectId,
-                                                              @RequestParam(value="sprintId") Integer sprintId) throws Exception {
+                                                              @RequestParam(value="id") Integer projectId) throws Exception {
         List<Deadline> deadlines = deadlineRepo.findAllByParentProjectOrderByStartDateAsc(projectService.getProjectById(projectId));
-        Optional<Sprint> sprint = repository.findById(sprintId);
-        List<Deadline> sendingDeadlines = new ArrayList<>();
-        for (Deadline deadline : deadlines) {
-            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
-            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
-            if ((!deadline.getStartDate().isBefore(startDate)) && (deadline.getStartDate().isBefore(endDate))) {
-                sendingDeadlines.add(deadline);
-            }
-        }
-        return ResponseEntity.ok(sendingDeadlines);
-    }
 
-    /**
-     * Sends all the deadlines in JSON for a given project in a given timeframe
-     * @param principal authstate to validate the user
-     * @param stringStartDate date value of the calendar day in string form
-     * @param stringEndDate date value of the calendar day in string form
-     * @param projectId the project ID being checked
-     * @return the list of deadlines in JSON
-     */
-    @GetMapping("/deadlines-between")
-    public ResponseEntity<List<Deadline>> getInBetweenDeadlines(@AuthenticationPrincipal AuthState principal,
-                                                          @RequestParam(value="dateStart") String stringStartDate,
-                                                          @RequestParam(value="dateEnd") String stringEndDate,
-                                                          @RequestParam(value="project") Integer projectId) throws Exception {
-        String formattedDate = stringStartDate.substring(0, 10) + " 00:00:00";
-        String formattedEndDate = stringEndDate.substring(0, 10) + " 23:59:59";
-        SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = formatter.parse(formattedDate);
-        Date end = formatter.parse(formattedEndDate);
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, 0);
-        date = cal.getTime();
-        cal.setTime(end);
-        cal.add(Calendar.DATE, 0);
-        end = cal.getTime();
-
-        List<Deadline> sendingDeadlines = deadlineRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
-        return ResponseEntity.ok(sendingDeadlines);
-    }
-
-    /**
-     * Sends all the milestones in JSON for a given project on a given day
-     * @param principal authstate to validate the user
-     * @param stringStartDate date value of the calendar day in string form
-     * @param stringEndDate date value of the calendar day in string form
-     * @param projectId the project ID being checked
-     * @return the list of deadlines in JSON
-     */
-    @GetMapping("/milestones-between")
-    public ResponseEntity<List<Milestone>> getInBetweenMilestones(@AuthenticationPrincipal AuthState principal,
-                                                                  @RequestParam(value="dateStart") String stringStartDate,
-                                                                  @RequestParam(value="dateEnd") String stringEndDate,
-                                                                  @RequestParam(value="project") Integer projectId) throws Exception {
-        String formattedDate = stringStartDate.substring(0, 10) + " 00:00:00";
-        String formattedEndDate = stringEndDate.substring(0, 10) + " 23:59:59";
-        SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = formatter.parse(formattedDate);
-        Date end = formatter.parse(formattedEndDate);
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, 0);
-        date = cal.getTime();
-        cal.setTime(end);
-        cal.add(Calendar.DATE, -1);
-        end = cal.getTime();
-
-        List<Milestone> sendingMilestones = milestoneRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
-        return ResponseEntity.ok(sendingMilestones);
-    }
-
-    /**
-     * Sends all the events in JSON for a given project on a given day
-     * @param principal authstate to validate the user
-     * @param stringStartDate date value of the calendar day in string form
-     * @param stringEndDate date value of the calendar day in string form
-     * @param projectId the project ID being checked
-     * @return the list of deadlines in JSON
-     */
-    @GetMapping("/events-between")
-    public ResponseEntity<List<Event>> getInBetweenEvents(@AuthenticationPrincipal AuthState principal,
-                                                          @RequestParam(value="dateStart") String stringStartDate,
-                                                          @RequestParam(value="dateEnd") String stringEndDate,
-                                                          @RequestParam(value="project") Integer projectId) throws Exception {
-        String formattedDate = stringStartDate.substring(0, 10) + " 00:00:00";
-        String formattedEndDate = stringEndDate.substring(0, 10) + " 23:59:59";
-        SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = formatter.parse(formattedDate);
-        Date end = formatter.parse(formattedEndDate);
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, 0);
-        date = cal.getTime();
-        cal.setTime(end);
-        cal.add(Calendar.DATE, -1);
-        end = cal.getTime();
-
-        List<Event> sendingEvents = eventRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
-        return ResponseEntity.ok(sendingEvents);
-    }
-
-    /**
-     * Sends all the deadlines in JSON for a given project on a given day
-     * @param principal authstate to validate the user
-     * @param stringDate date value of the calendar day in string form
-     * @param projectId the project ID being checked
-     * @return the list of deadlines in JSON
-     */
-    @GetMapping("/deadlines-count")
-    public ResponseEntity<List<Deadline>> getDayDeadlines(@AuthenticationPrincipal AuthState principal,
-                                                          @RequestParam(value="date") String stringDate,
-                                                          @RequestParam(value="project") Integer projectId) throws Exception {
-        String formattedDate = stringDate.substring(0, 10) + " 00:00:00";
-        String formattedEndDate = stringDate.substring(0, 10) + " 23:59:59";
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = formatter.parse(formattedDate);
-        Date ending = formatter.parse(formattedEndDate);
-
-        LocalDateTime start = date.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime().minusDays(-1);
-
-        LocalDateTime end = ending.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime().minusDays(-1);
-
-        // get all the deadlines corresponding to the project
-        List<Deadline> deadlines = deadlineRepo.findAllByParentProjectOrderByStartDateAsc(projectService.getProjectById(projectId));
-        List<Deadline> sendingDeadlines = new ArrayList<>();
-        for (Deadline deadline : deadlines) {
-            // loop through the deadlines and check is they are in the expected range, if so send them
-            if (deadline.getEndDate().isAfter(start) && deadline.getEndDate().isBefore(end)) {
-                sendingDeadlines.add(deadline);
-            }
-        }
-
-        return ResponseEntity.ok(sendingDeadlines);
-    }
-
-    /**
-     * Sends all the milestones in JSON for a given project on a given day
-     * @param principal authstate to validate the user
-     * @param stringDate date value of the calendar day in string form
-     * @param projectId the project ID being checked
-     * @return the list of milestones in JSON
-     */
-    @GetMapping("/milestones-count")
-    public ResponseEntity<List<Milestone>> getDayMilestones(@AuthenticationPrincipal AuthState principal,
-                                                          @RequestParam(value="date") String stringDate,
-                                                          @RequestParam(value="project") Integer projectId) throws Exception {
-        String formattedDate = stringDate.substring(0, 10) + " 00:00:00";
-        String formattedEndDate = stringDate.substring(0, 10) + " 23:59:59";
-        SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = formatter.parse(formattedDate);
-        Date end = formatter.parse(formattedEndDate);
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, 1);
-        date = cal.getTime();
-        cal.setTime(end);
-        cal.add(Calendar.DATE, 1);
-        end = cal.getTime();
-
-        List<Milestone> sendingMilestones = milestoneRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
-        return ResponseEntity.ok(sendingMilestones);
-    }
-
-    /**
-     * Sends all the events in JSON for a given project on a given day
-     * @param principal authstate to validate the user
-     * @param stringDate date value of the calendar day in string form
-     * @param projectId the project ID being checked
-     * @return the list of events in JSON
-     */
-    @GetMapping("/events-count")
-    public ResponseEntity<List<Event>> getDayEvents(@AuthenticationPrincipal AuthState principal,
-                                                          @RequestParam(value="date") String stringDate,
-                                                          @RequestParam(value="project") Integer projectId) throws Exception {
-        String formattedDate = stringDate.substring(0, 10) + " 00:00:00";
-        String formattedEndDate = stringDate.substring(0, 10) + " 23:59:59";
-        SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = formatter.parse(formattedDate);
-        Date end = formatter.parse(formattedEndDate);
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, 1);
-        date = cal.getTime();
-        cal.setTime(end);
-        cal.add(Calendar.DATE, 1);
-        end = cal.getTime();
-
-        List<Event> sendingEvents = eventRepo.findAllByParentProjectAndStartDateBetweenOrderByStartDateAsc(projectService.getProjectById(projectId), convertToLocalDateTimeViaInstant(date), convertToLocalDateTimeViaInstant(end));
-        return ResponseEntity.ok(sendingEvents);
+        return ResponseEntity.ok(deadlines);
     }
 
     public LocalDateTime convertToLocalDateTimeViaInstant(Date dateToConvert) {
@@ -536,19 +345,10 @@ public class DetailsController {
      */
     @GetMapping("/milestones")
     public ResponseEntity<List<Milestone>> getProjectMilestones(@AuthenticationPrincipal AuthState principal,
-                                                          @RequestParam(value="id") Integer projectId,
-                                                              @RequestParam(value="sprintId") Integer sprintId) throws Exception {
+                                                                @RequestParam(value="id") Integer projectId) throws Exception {
         List<Milestone> milestones = milestoneRepo.findAllByParentProjectOrderByStartDateAsc(projectService.getProjectById(projectId));
-        Optional<Sprint> sprint = repository.findById(sprintId);
-        List<Milestone> sendingMilestones = new ArrayList<>();
-        for (Milestone milestone : milestones) {
-            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
-            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
-            if ((!milestone.getStartDate().isBefore(startDate)) && (milestone.getStartDate().isBefore(endDate))) {
-                sendingMilestones.add(milestone);
-            }
-        }
-        return ResponseEntity.ok(sendingMilestones);
+
+        return ResponseEntity.ok(milestones);
     }
 
 
@@ -560,18 +360,9 @@ public class DetailsController {
      */
     @GetMapping("/events")
     public ResponseEntity<List<Event>> getProjectEvents(@AuthenticationPrincipal AuthState principal,
-                                                                @RequestParam(value="id") Integer projectId,
-                                                                @RequestParam(value="sprintId") Integer sprintId) throws Exception {
+                                                        @RequestParam(value="id") Integer projectId) throws Exception {
         List<Event> events = eventRepo.findAllByParentProjectOrderByStartDateAsc(projectService.getProjectById(projectId));
-        Optional<Sprint> sprint = repository.findById(sprintId);
-        List<Event> sendingEvents = new ArrayList<>();
-        for (Event event : events) {
-            LocalDateTime startDate = DateParser.convertToLocalDateTime(sprint.get().getStartDate());
-            LocalDateTime endDate = DateParser.convertToLocalDateTime(sprint.get().getEndDate());
-            if (((event.getStartDate().isAfter(startDate)) && (event.getStartDate().isBefore(endDate))) || (event.getEndDate().isAfter(startDate)) && (event.getEndDate().isBefore(endDate))) {
-                sendingEvents.add(event);
-            }
-        }
-        return ResponseEntity.ok(sendingEvents);
+
+        return ResponseEntity.ok(events);
     }
 }

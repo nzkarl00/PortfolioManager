@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="headerfiles">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{css/stylesheet.css}" rel="stylesheet">
+
+    <!-- For dropdown to work -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>
+    <link
+            href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css"
+            rel="stylesheet"  type='text/css'>
+
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+</head>
+
+<body>
+
+
+<div th:fragment="evidenceCommit" style="display:flex;">
+
+    <!-- Start of commit section of the form, which includes the 1. current commits, 2. add commits -->
+        <!-- 1. Current Commit -->
+        <div class="col-6">
+            <b class="evidence_head setWide">Current Commits:</b>
+
+            <div style="display: flex">
+
+                <!-- 3. List of all the links the user added from the input field -->
+                <div id="commit_container" style="width: 85%; display: block;">
+                    <div th:each="commit: ${existingCommits}" >
+                        <div th:id="'moved' + ${commit.getHash}" class="row">
+                            <div class="row commit_display_small" th:text="${'[' + commit.getHash + ']'}"></div>
+                            <div class="row commit_display_large" th:text="${commit.getTitle}"></div>
+                            <div class="row commit_display_small" th:text="${'(' + commit.getAuthor + ') ' + '(' + commit.getTimeStamp + ')'}"></div>
+                            <button class="fa fa-trash group_delete_button" type="button" th:parent-id="${commit.getHash}" onclick="deleteCommit(this.getAttribute('parent-id')); searchCommits();"></button>
+                            <div></div>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 2. Add Commit -->
+        <div class="col-6">
+            <b class="evidence_head setWide">Add Commits:</b>
+            <form id="commitSearchForm" onsubmit="searchCommits()">
+            <div>
+                <div class="row-1 commit_top" style="display:flex;">
+                    <div class="btn commit_text float-end">
+                        <b class="commit_head">Link Group:</b>
+                    </div>
+                    <select class="commit_edit_data"  id="commit_group" th:name="commit_group" th:onChange="openSearchCommit(value); canSearchCheck(); searchCommits();">
+                        <option value="-1" selected> Select A Group</option>
+                        <option th:each="group: ${groupList}" th:value="${group.getGroupId()}" th:text="${group.getLongName()}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- 2. evidence information that can be expanded or collapsed  -->
+                <div class="row-1">
+
+                    <div class="collapse commit_data no-gutters" th:id="'collapseCommit'">
+                        <div>
+                            <div class="row-1" style="display:flex;">
+                                <div class="col-6" >
+                                    <b class="commit_head_small setWide">User:</b><br>
+                                    <input form="commitSearchForm" type="text" id="userCommitInput" maxlength="100" oninput="canSearchCheck()" oncut="canSearchCheck()" onchange="canSearchCheck()" class="commit_edit_data_smaller" th:name="userCommitInput" >
+                                </div>
+                                <div class="col-6" >
+                                    <b class="commit_head_small setWide">Hash:</b><br>
+                                    <input form="commitSearchForm" type="text" id="hashCommitInput" maxlength="100" oninput="canSearchCheck()" oncut="canSearchCheck()" onchange="canSearchCheck()" class="commit_edit_data_small" th:name="hashCommitInput" >
+                                </div>
+                            </div>
+                            <div class="row-1">
+                                <div class="align-content-center col-12">
+                                    <b class="commit_head_small">Sprint:</b><br>
+                                    <select form="commitSearchForm"  id="commit_sprint_multiselect_items" th:onChange="setDates(value); canSearchCheck();" class="commit_edit_data_small">
+                                        <option value="defaultStart" selected disabled> Select A Sprint</option>
+                                        <div th:each="sprint: ${sprintList}">
+                                            <option th:value="${sprint}" th:text="${sprint.getLabel()}"></option>
+                                        </div>
+                                    </select>
+                                </div>
+                                <input type="hidden" form="commitSearchForm" id="commit_sprint_hidden" th:name="commit_sprint_hidden">
+                            </div>
+                            <div class="row-1">
+                                <div id="date_container" class="col-12" >
+                                    <b class="commit_head_small">Date:</b> <br>
+                                    <div style="display:flex;">
+                                        <input form="commitSearchForm" type="date" th:name="dateInput"
+                                               th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}"
+                                               class="commit_edit_data" id="commit_date_start_input" onchange="clearSprint(); canSearchCheck();"
+                                        >
+                                        <b class="commit_head"> - </b> <br>
+                                        <input form="commitSearchForm" type="date" th:name="dateInput"
+                                               th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}"
+                                               class="commit_edit_data" id="commit_date_end_input" onchange="clearSprint(); canSearchCheck();"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br>
+
+                            <div class="row-1" >
+                                <div class="evidence_form_element align-content-center col-12">
+                                    <button id="searchCommit" form="commitSearchForm" class="searchCommit" type="submit" onclick="searchCommits()"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                            <br>
+                            <br>
+                            <div class="row-1">
+                                <div id="commit_search_result_box"></div>
+                                <input type="hidden" id="commitsInput" th:name="commitsInput">
+                                <input type=hidden id="commitsDelete" th:name="commitsDelete">
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3.. evidence bottom  -->
+                <div class="row-1">
+                    <div class="commit_bot">
+
+                        <div class="commit_text_alert">
+                            <b id="commit_group_alert_message" class="commit_alert">Please link a group with a repository connection.</b>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </div>
+
+
+    <script th:inline="javascript">
+
+
+        window.onload = function() {
+        setTimeout(function(){
+            canSearchCheck();
+            }, 500);
+        };
+
+        // Checks if a group with the ID provided exists and has a repo, if yes it opens the search option if
+        // not closes it and displays the alert error
+        function openSearchCommit(id) {
+            var alertMessage = document.getElementById("commit_group_alert_message");
+
+            $.get("repo-check", {"group-id":id}).done(function (isRepo) {
+                if (isRepo === true) {
+                    alertMessage.style.display = "none";
+                    $('#collapseCommit').collapse('show')
+                } else {
+                    alertMessage.style.display = "";
+                    $('#collapseCommit').collapse('hide')
+                }
+            })
+        }
+
+        function setDates(sprint) {
+
+            widgetStart = document.getElementById("commit_date_start_input")
+            widgetEnd = document.getElementById("commit_date_end_input")
+
+            widgetStart.value = (sprint.slice(92,102));
+            widgetEnd.value = (sprint.slice(131,141));
+
+        }
+
+        function clearSprint() {
+            var select = document.getElementById('commit_sprint_multiselect_items');
+            select.selectedIndex = 0;
+        }
+
+        function canSearchCheck() {
+
+            userInput = document.getElementById("userCommitInput")
+            hashInput = document.getElementById("hashCommitInput")
+            widgetStart = document.getElementById("commit_date_start_input")
+            widgetEnd = document.getElementById("commit_date_end_input")
+            select = document.getElementById('commit_sprint_multiselect_items');
+            const searchButton = document.getElementById("searchCommit")
+
+            cleanUserInput = userInput.value.replace(/\s/g, "")
+            cleanHashInput = hashInput.value.replace(/\s/g, "")
+
+            if (cleanUserInput === "" & cleanHashInput === "" & select.value === "defaultStart" & (!widgetStart.value || !widgetEnd.value)) {
+                searchButton.style = "background-color: #AAAAAA !important;"
+                searchButton.setAttribute("disabled","disabled");
+            } else {
+                searchButton.style = "background-color: #056BFA !important;"
+                searchButton.removeAttribute("disabled");
+            }
+        }
+
+        function searchCommits() {
+            const commitGroup = document.getElementById("commit_group");
+            const hash = document.getElementById("hashCommitInput");
+            const author = document.getElementById("userCommitInput");
+            const start = document.getElementById("commit_date_start_input");
+            const end = document.getElementById("commit_date_end_input");
+            const selectedCommits = document.getElementById("commitsInput");
+
+            let params = {'group-id':commitGroup.value}
+            if (selectedCommits && selectedCommits.value) {
+                params['selected-commits'] = selectedCommits.value
+            }
+            if (hash.value) {
+                params['commit-hash'] = hash.value
+            }
+            if (author.value) {
+                params['author-name'] = author.value
+            }
+            if (start.value) {
+                params['date-start'] = start.value
+            }
+            if (end.value) {
+                params['date-end'] = end.value
+            }
+
+            $.get("evidence/search-commits", params).done(function (commits) {
+                $("#commit_search_result_box").replaceWith(commits)
+            })
+        }
+
+    </script>
+    <script type="text/javascript" th:src="@{js/commitHandler.js}"></script>
+    <script th:inline="javascript">let existingCommits = [[${existingCommits}]]; console.log(existingCommits); existingCommits.forEach(commit => existing.add(commit.hash));</script>
+</div>
+
+</body>
+</html>

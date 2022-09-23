@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng302.portfolio.model.timeBoundItems;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 
 import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 /**
@@ -12,7 +11,6 @@ import java.time.LocalDateTime;
  * The startDate and endDate concept of ProjectItem class, are treated as the same thing, only one date exists.
  */
 @Entity
-@Table(name="event")
 public class Event extends ProjectTimeBoundItem {
 
     protected Event() {}

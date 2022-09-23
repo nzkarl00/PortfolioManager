@@ -1,12 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.DeadlineRepository;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.EventRepository;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.MilestoneRepository;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.SprintRepository;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.Group;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
-import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -26,33 +24,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class GroupDetailsController {
 
     @Autowired
-    private DeadlineRepository deadlineRepo;
-    @Autowired
-    private MilestoneRepository milestoneRepo;
-    @Autowired
-    private EventRepository eventRepo;
-    @Autowired
-    private DateSocketService dateSocketService;
-    @Autowired
-    private SprintRepository repository;
-    @Autowired
-    private ProjectService projectService;
-    @Autowired
-    private SprintService sprintService;
-    @Autowired
     private AccountClientService accountClientService;
     @Autowired
     private NavController navController;
     @Autowired
     private GroupsClientService groupsService;
-
-
-    String errorShow = "display:none;";
-    String errorCode = "";
-    String successCalendarShow = "display:none;";
-    String successCalendarCode = "";
-    String errorCalendarShow = "display:none;";
-    String errorCalendarCode = "";
 
     Logger logger = LoggerFactory.getLogger(GroupDetailsController.class);
 
@@ -62,10 +38,9 @@ public class GroupDetailsController {
      * @param principal the auth token
      * @param model     The model to be used by the application for web integration
      * @return The html page to direct to
-     * @throws Exception
      */
     @GetMapping("/group")
-    public String details(@AuthenticationPrincipal AuthState principal, @RequestParam(value = "id") Integer groupId, Model model) throws Exception {
+    public String details(@AuthenticationPrincipal AuthState principal, @RequestParam(value = "id") Integer groupId, Model model) {
         logger.info(String.format("Fetching details for group=<%s>", groupId));
 
         Integer id = AuthStateInformer.getId(principal);
@@ -98,14 +73,13 @@ public class GroupDetailsController {
     }
 
     @GetMapping("/edit-group")
-    public String editGroup(@AuthenticationPrincipal AuthState principal, @RequestParam(value = "id") Integer groupId, Model model) throws Exception {
+    public String editGroup(@AuthenticationPrincipal AuthState principal, @RequestParam(value = "id") Integer groupId, Model model) {
 
         Integer id = AuthStateInformer.getId(principal);
         UserResponse userReply;
         userReply = accountClientService.getUserById(id);
         GroupDetailsResponse response = groupsService.getGroup(groupId);
         String role = AuthStateInformer.getRole(principal);
-        System.out.println();
 
         if (response.getGroupId() == 2) {
             if (role.equals("teacher") || role.equals("admin")) {

@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Event;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,10 +12,16 @@ import java.util.List;
  */
 @Repository
 public interface EvidenceRepository extends CrudRepository<Evidence, Integer> {
-    Event findById(int id);
-    List<Evidence> findByParentUserId(int parentUserId);
-    List<Evidence> findAll();
-
-    // NOTE: In future, create a custom getter to fetch a list of evidence based on parent user id and
-    // the associated project id.
+    Evidence findById(int id);
+    List<Evidence> findAllByOrderByDateDesc();
+    List<Evidence> findAllByAssociatedProjectOrderByDateDesc(Project parent_project);
+    List<Evidence> findAllByParentUserIdOrderByDateDesc(Integer valueOf);
+    List<Evidence> findAllByAssociatedProjectAndParentUserIdOrderByDateDesc(Project project, Integer userId);
+    // This query selects all the evidence the includes the category denoted by the categoryInt constants Evidence.QUALITATIVE_SKILLS etc..
+    // The value from the database is divided by the constant, which is a binary column 2^X to shift the bits right by X for comparison
+    // If the shifted value MOD 2 is equal to 1 it means the role is present in that piece of evidence, so it will be selected
+    @Query(value="select * from evidence where MOD(evidence.categories/:categoryInt, 2) = 1", nativeQuery = true)
+    List<Evidence> getEvidenceByCategoryInt(Integer categoryInt);
+    List<Evidence> findAllByAssociatedProject(Project parentProject);
+    List<Evidence> findAllByParentUserId(Integer parentUserId);
 }

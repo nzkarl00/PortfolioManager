@@ -1,25 +1,22 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import com.google.protobuf.Timestamp;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.*;
+import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc.UserAccountServiceImplBase;
-import nz.ac.canterbury.seng302.identityprovider.util.FileSystemUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,14 +49,14 @@ public class AccountServerService extends UserAccountServiceImplBase{
     @Autowired
     GroupRepository groupRepo;
 
-
+    Logger logger = LoggerFactory.getLogger(AccountServerService.class);
     /**
      * The chance limiting the number of users we add by default into our database
      * 0.98 means 1/50 of the possible users will be added
      * meaning ~1000 users will be added from the 50,000 combinations
      * from 50 lastnames and 1000 firstnames
      */
-    static final Double CHANCE = 0.90;
+    static final Double CHANCE = 0.99;
 
     /**
      * if there are no users in the db, build a set of 5001 default users
@@ -87,8 +84,6 @@ public class AccountServerService extends UserAccountServiceImplBase{
             // if a malicious user gets into this server
             // an admin privileged user shouldn't aid them in their attacks
 
-            // System.outs here are fine in my books currently as this will only be run once
-            // feel free to disagree though
             try {
                 File admin = new File(System.getProperty("user.dir") + "/defaultAdminPassword.txt");
                 // make sure new file can be made
@@ -96,17 +91,17 @@ public class AccountServerService extends UserAccountServiceImplBase{
                     admin.delete();
                 }
                 if (admin.createNewFile()) {
-                    System.out.println("default admin file created: " + admin.getName());
-                    System.out.println(generatedString);
+                   logger.debug("default admin file created: " + admin.getName());
+                    logger.debug(generatedString);
                     FileWriter myWriter = new FileWriter(System.getProperty("user.dir") + "/defaultAdminPassword.txt");
                     myWriter.write(generatedString);
                     myWriter.close();
                     createNewUsers(hashedPassword);
                 } else {
-                    System.out.println("default admin file already exists.");
+                    logger.warn("default admin file already exists.");
                 }
             } catch (IOException e) {
-                System.out.println("An error occurred in creating the default admin file.");
+                logger.error("An error occurred in creating the default admin file.");
                 e.printStackTrace();
             }
         }
@@ -125,10 +120,10 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         try {
             // open the names to build users from
-            File firstNames = new ClassPathResource("buildUsers/firstNames.txt").getFile();
+            InputStream firstNames = new ClassPathResource("/buildUsers/firstNames.txt", this.getClass().getClassLoader()).getInputStream();
             Scanner firstNamesReader = new Scanner(firstNames);
 
-            File lastNames = new ClassPathResource("buildUsers/lastNames.txt").getFile();
+            InputStream lastNames = new ClassPathResource("/buildUsers/lastNames.txt", this.getClass().getClassLoader()).getInputStream();
             Scanner lastNamesReader = new Scanner(lastNames);
 
             Groups MWAG = groupRepo.findAllByGroupShortName("MWAG").get(0);
@@ -147,11 +142,12 @@ public class AccountServerService extends UserAccountServiceImplBase{
                         groupMembershipRepo.save(new GroupMembership(newAccount, MWAG));
                     }
                 }
-                lastNamesReader = new Scanner(lastNames);
+                // input stream can only be read once, so recall the entire thing
+                lastNamesReader = new Scanner(new ClassPathResource("/buildUsers/lastNames.txt", this.getClass().getClassLoader()).getInputStream());
             }
             firstNamesReader.close();
         } catch (FileNotFoundException e) {
-            System.out.println("File could not be found");
+           logger.error("File could not be found");
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
@@ -334,7 +330,19 @@ public class AccountServerService extends UserAccountServiceImplBase{
 
         Boolean isSorted = false;
 
-        if (request.getOrderBy().equals("roles_asc")) {
+        // if there is a negative limit assume the request wants all the users
+        if (request.getLimit() < 0) {
+            usersSorted = repo.findAll();
+            //build the response
+            for (AccountProfile user : usersSorted) {
+                reply.addUsers(accountService.buildUserResponse(user));
+            }
+            // send the response and exit the function
+            responseObserver.onNext(reply.build());
+            responseObserver.onCompleted();
+            return;
+
+        } else if (request.getOrderBy().equals("roles_asc")) {
             updateUsersSorted(sortUsers(request), usersSorted, true);
 
         } else if (request.getOrderBy().equals("roles_desc")) {

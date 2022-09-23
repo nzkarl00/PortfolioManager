@@ -43,12 +43,12 @@
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" id="eventStartDateLabel" for="eventStartDate">Date Start</label> <br/>
-                        <input class="project_edit_data" id="eventStartDate" type="date" th:value="*{date.getHTMLStartDate()}" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventStartDate" required>
+                        <input class="project_edit_data" id="eventStartDate" type="date" th:value="*{date.getHTMLStartDate()}" th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}" th:name="eventStartDate" required>
                     </div>
                     <!-- https://dzone.com/articles/disable-dates-in-datepicker -->
                     <div class="horizontal-group-element" >
                         <label class="project_subhead" id="eventEndDateLabel" for="eventEndDate">Date End</label> <br/>
-                        <input class="project_edit_data" id="eventEndDate" type="date" th:value="*{date.getStartDate().toLocalTime()}" th:attr="min=${project.getStartDate()}, max=${project.getEndDate()}" th:name="eventEndDate" required>
+                        <input class="project_edit_data" id="eventEndDate" type="date" th:value="*{date.getStartDate().toLocalTime()}" th:attr="min=${project.getStartDateStringHtml()}, max=${project.getEndDateStringHtml()}" th:name="eventEndDate" required>
                     </div>
                 </div>
                 <div>
@@ -80,7 +80,7 @@
         <script type="text/javascript" th:inline="javascript">
             let editType = "editing " + [[${type}]] + ": " + [[${date.getName()}]]
             function sendEditStatus() {
-                axios.post("/edit", null, {params:{"projectId":[[${project.getId()}]], "type":editType}})
+                axios.post("edit", null, {params:{"projectId":[[${project.getId()}]], "type":editType}})
                 setTimeout(sendEditStatus, 1250)
             }
 

@@ -1,12 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.UserPreference;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.UserPreferenceRepository;
-import nz.ac.canterbury.seng302.portfolio.service.*;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
-
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -19,9 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Optional;
-
 import java.util.List;
+import java.util.Optional;
 
 /**
  * controller responsible for displaying and processing the user table
@@ -274,11 +275,7 @@ public class TableController {
                     }
                     // Performs deletion if it passes all checks
                     UserRoleChangeResponse response = accountClientService.addRole(roleAdd, userId);
-                    if (response.getIsSuccess()) {
-                        return "redirect:user-list";
-                    } else {
-                        return "redirect:user-list";
-                    }
+                    return "redirect:user-list";
                 }
 
             }

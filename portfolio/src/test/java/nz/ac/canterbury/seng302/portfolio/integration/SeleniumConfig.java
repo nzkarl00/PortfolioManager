@@ -1,10 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.integration;
 
-import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
