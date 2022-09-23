@@ -261,6 +261,7 @@ public class EvidenceListController {
           @RequestParam(value = "titleInput") String title,
           @RequestParam(value = "dateInput") String date,
           @RequestParam(value = "projectId") Integer projectId,
+          @RequestParam(value = "userID") Integer userId,
           @RequestParam(value = "categoryInput") String categories,
           @RequestParam(value = "skillInput") String skills,
           @RequestParam(value = "userInput") Optional <String> users,
@@ -335,12 +336,13 @@ public class EvidenceListController {
               }
           }
       }
-      return "redirect:evidence?pi=" + projectId;
+      return "redirect:evidence?ui=" + userId + "&pi=" + projectId;
   }
 
   @PostMapping("/delete-evidence")
   public String deleteEvidence(@RequestParam(required = false, value = "projectId") String projectId,
                                @RequestParam(value = "evidenceId") String evidenceId,
+                               @RequestParam(value = "userID") Integer userId,
                                @AuthenticationPrincipal AuthState principal) {
       Evidence targetEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
       if (targetEvidence == null) {
@@ -353,7 +355,7 @@ public class EvidenceListController {
           return "redirect:evidence?pi=" + projectId;
       }
       evidenceService.deleteEvidence(targetEvidence);
-      return "redirect:evidence?pi=" + projectId;
+      return "redirect:evidence?ui=" + userId + "&pi=" + projectId;
   }
 
   private void noSkillsCheck(Evidence evidence) {

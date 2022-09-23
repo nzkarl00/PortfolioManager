@@ -556,6 +556,11 @@
         }
 
         function canEditCheck() {
+
+            console.log('please')
+
+
+            let originalCommits = [[${existingCommits}]];
             const originalTitle = [[${evidence.getTitle()}]];
             let originalCategory = [[${evidence.getCategoryStrings()}]].sort().toString();
             const originalDate =[[${evidence.getDate()}]].toString();

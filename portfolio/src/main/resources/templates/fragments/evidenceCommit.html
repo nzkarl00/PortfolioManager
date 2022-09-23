@@ -46,7 +46,7 @@
                             <div class="row commit_display_small" th:text="${'[' + commit.getHash + ']'}"></div>
                             <div class="row commit_display_large" th:text="${commit.getTitle}"></div>
                             <div class="row commit_display_small" th:text="${'(' + commit.getAuthor + ') ' + '(' + commit.getTimeStamp + ')'}"></div>
-                            <button class="fa fa-trash group_delete_button" type="button" th:parent-id="${commit.getHash}" onclick="deleteCommit(this.getAttribute('parent-id')); searchCommits();"></button>
+                            <button class="fa fa-trash group_delete_button" type="button" th:parent-id="${commit.getHash}" onclick="commitEditCheck();deleteCommit(this.getAttribute('parent-id')); searchCommits();"></button>
                             <div></div>
                             <br>
                         </div>
@@ -127,7 +127,7 @@
                             <br>
                             <div class="row-1">
                                 <div id="commit_search_result_box"></div>
-                                <input type="hidden" id="commitsInput" th:name="commitsInput">
+                                <input type="hidden" id="commitsInput" th:name="commitsInput"  >
                                 <input type=hidden id="commitsDelete" th:name="commitsDelete">
                             </div>
 
@@ -150,6 +150,20 @@
             </form>
         </div>
 
+
+    <script th:inline="javascript">
+
+
+        function commitEditCheck() {
+            try {
+                canEditCheck();
+            } catch (error) {
+
+            }
+        }
+
+
+    </script>
 
     <script th:inline="javascript">
 
