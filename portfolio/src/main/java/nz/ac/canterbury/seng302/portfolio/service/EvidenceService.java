@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
@@ -77,6 +78,7 @@ public class EvidenceService {
      * @return List of evidence matching all the given criteria
      * @throws CustomExceptions.ProjectItemNotFoundException If the project with this ID does not exist, throws an exception
      */
+    @Transactional
     public List<Evidence> getEvidenceList(Integer userId, Integer projectId,
                                           String categoryName, String skillName)
             throws CustomExceptions.ProjectItemNotFoundException {
@@ -143,14 +145,14 @@ public class EvidenceService {
         return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
     }
 
+    @Transactional
     public List<Evidence> filterBySkill(List<Evidence> evidenceList,
                                         String skillName) {
         List<Evidence> filteredEvidence = new ArrayList<>();
         for (Evidence evidence : evidenceList) {
             boolean isValid = false;
             List<EvidenceTag> tagList =
-                    evidenceTagRepository.findAllByParentEvidenceId(
-                            evidence.getId());
+                    evidence.getEvidenceTags();
             for (EvidenceTag tag : tagList) {
                 if (tag.getParentSkillTag().getTitle().equals(skillName)) {
                     isValid = true;
@@ -308,9 +310,10 @@ public class EvidenceService {
      * @param evidenceId The evidence ID to be checked against
      * @return List of skill tag title strings
      */
-    public List<String> getSkillTagStringsByEvidenceId(int evidenceId) {
+    @Transactional
+    public List<String> getSkillTagStringsByEvidenceId(Evidence evidence) {
         List<EvidenceTag> evidenceTagList =
-                evidenceTagRepository.findAllByParentEvidenceId(evidenceId);
+                evidence.getEvidenceTags();
         return evidenceTagList.stream()
                 .map(evidenceTag -> evidenceTag.getParentSkillTag().getTitle())
                 .collect(Collectors.toList());

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
@@ -78,6 +79,7 @@ public class EvidenceListController {
    * @return redirects to the landing page
    * @throws Exception which is raised by the repositories having a potential failure when reading objects from the DB
    */
+  @Transactional
   @GetMapping("/evidence")
   public String evidenceListController( @AuthenticationPrincipal AuthState principal,
                                         @RequestParam(required = false , value="ui") Integer userId,
@@ -97,11 +99,10 @@ public class EvidenceListController {
     //TODO get rid of once this is actually used
     logger.info("[EVIDENCE] getting all the groups for user");
     logger.info(groupsClientService.getAllGroupsForUser(id).toString());
-    List<Evidence> evidenceList = new ArrayList<>();
 
 
     logger.debug("[EVIDENCE] Getting evidence for user");
-    evidenceList = evidenceService.getEvidenceForUser(userId);
+    List<Evidence> evidenceList = evidenceService.getEvidenceForUser(userId);
 
 
     logger.debug("[EVIDENCE] Filtering evidence for user");
@@ -146,6 +147,7 @@ public class EvidenceListController {
   }
 
   @PostMapping("evidence-project")
+  @Transactional
   public String sendProjectEvidence(@AuthenticationPrincipal AuthState principal,
                                     @RequestParam(required = false , value="ui") Integer userId,
                                     @RequestParam(required = false , value="pi") Integer projectId,
@@ -173,7 +175,7 @@ public class EvidenceListController {
       HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
       HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
       for (Evidence evidence: evidenceList) {
-          evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
+          evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence));
           evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
       }
       model.addAttribute("skillMap", evidenceSkillMap);
