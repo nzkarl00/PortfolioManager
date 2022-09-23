@@ -311,10 +311,9 @@ public class EvidenceService {
      * @param evidenceId The evidence ID to be checked against
      * @return List of skill tag title strings
      */
-    @Transactional
     public List<String> getSkillTagStringsByEvidenceId(Evidence evidence) {
-        List<EvidenceTag> evidenceTagList =
-                evidence.getEvidenceTags();
+        List<EvidenceTag> evidenceTagList = evidence.getEvidenceTags();
+        System.out.println(evidenceTagList);
         return evidenceTagList.stream()
                 .map(evidenceTag -> evidenceTag.getParentSkillTag().getTitle())
                 .collect(Collectors.toList());

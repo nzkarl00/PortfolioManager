@@ -13,6 +13,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.gitlab4j.api.GitLabApiException;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
@@ -175,16 +177,31 @@ public class EvidenceListController {
 
 
       model.addAttribute("evidenceList", evidenceList);
+      List<Pair<Integer, List<String>>> skillTemp = new ArrayList<>();
+      List<Pair<Integer, List<String>>> categoryTemp = new ArrayList<>();
       final HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
       final HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
 
       // this throws different errors more often if you want to give this approach a shot
       Consumer<Evidence> putEvidenceIntoMap = (evidence) -> {
-          evidenceSkillMap.put(evidence.getId(), this.evidenceService.getSkillTagStringsByEvidenceId(evidence));
-          evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
+          skillTemp.add(new Pair<>(evidence.getId(), this.evidenceService.getSkillTagStringsByEvidenceId(evidence)));
+          categoryTemp.add(new Pair<>(evidence.getId(), evidence.getCategoryStrings()));
       };
 
       evidenceList.parallelStream().forEach(putEvidenceIntoMap::accept);
+
+      System.out.println(skillTemp);
+      System.out.println(categoryTemp);
+
+      skillTemp.stream().forEach((pair) -> {
+          evidenceSkillMap.put(pair.getValue0(), pair.getValue1());
+      });
+      categoryTemp.stream().forEach((pair) -> {
+          evidenceCategoryMap.put(pair.getValue0(), pair.getValue1());
+      });
+
+      System.out.println(evidenceCategoryMap);
+      System.out.println(evidenceSkillMap);
 
 //      for (Evidence evidence: evidenceList) {
 //          evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence));
