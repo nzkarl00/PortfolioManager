@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 /**
  * responsible for the main/landing page of the project(s)
@@ -174,38 +175,42 @@ public class EvidenceListController {
 
 
       model.addAttribute("evidenceList", evidenceList);
-      HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
-      HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
-      for (Evidence evidence: evidenceList) {
-          evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence));
+      final HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
+      final HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
+
+      // this throws different errors more often if you want to give this approach a shot
+      Consumer<Evidence> putEvidenceIntoMap = (evidence) -> {
+          evidenceSkillMap.put(evidence.getId(), this.evidenceService.getSkillTagStringsByEvidenceId(evidence));
           evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
-      }
+      };
 
-      evidenceList.stream().map((Evidence evidence) -> {
-          return CompletableFuture.supplyAsync(() -> {
-              List<String> v = evidenceService.getSkillTagStringsByEvidenceId(evidence);
-              try {
-                  Thread.sleep(1000);
-              } catch (Exception e) {
-                  logger.error("msd", e);
-              }
-              return v;
-          });
-      }).forEach((CompletableFuture<List<String>> fut) -> {
-          logger.info("waiting");
-          try {
-              List<String> s = fut.get();
-              logger.info(s.toString());
-              evidenceSkillMap.put(1, s);
-          } catch (Exception e) {
-              logger.error("Something", e);
-          }
-//          evidenceCategoryMap.put(1, evidence.getCategoryStrings());
-      });
+      evidenceList.parallelStream().forEach(putEvidenceIntoMap::accept);
 
-//      evidenceList.parallelStream().forEach((Evidence evidence) -> {
+//      for (Evidence evidence: evidenceList) {
 //          evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence));
 //          evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
+//      }
+
+//      evidenceList.stream().map((Evidence evidence) -> {
+//          return CompletableFuture.supplyAsync(() -> {
+//              List<String> v = evidenceService.getSkillTagStringsByEvidenceId(evidence);
+//              try {
+//                  Thread.sleep(1000);
+//              } catch (Exception e) {
+//                  logger.error("msd", e);
+//              }
+//              return v;
+//          });
+//      }).forEach((CompletableFuture<List<String>> fut) -> {
+//          logger.info("waiting");
+//          try {
+//              List<String> s = fut.get();
+//              logger.info(s.toString());
+//              evidenceSkillMap.put(1, s);
+//          } catch (Exception e) {
+//              logger.error("Something", e);
+//          }
+////          evidenceCategoryMap.put(1, evidence.getCategoryStrings());
 //      });
 
       model.addAttribute("skillMap", evidenceSkillMap);
