@@ -87,6 +87,9 @@ public class Evidence {
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     protected List<LinkedCommit> linkedCommit;
 
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
+    protected List<HighFive> highFives;
+
     public Evidence() {}
 
     /**
