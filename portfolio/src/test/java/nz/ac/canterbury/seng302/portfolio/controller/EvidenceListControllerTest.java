@@ -121,6 +121,7 @@ public class EvidenceListControllerTest {
         validParamsEvidenceRequired.add("projectId", String.valueOf(testProject.getId()));
         validParamsEvidenceRequired.add("descriptionInput", "This evidence is the first to be submitted");
         validParamsEvidenceRequired.add("categoryInput", "Service");
+        validParamsEvidenceRequired.add("userID", "1");
         validParamsEvidenceRequired.add("skillInput", "SkillA~SkillB~SkillC");
         validParamsEvidenceRequired.add("userInput", "123456:Timmy Little");
 
@@ -129,6 +130,7 @@ public class EvidenceListControllerTest {
         validParamsAllCategories.add("projectId", String.valueOf(testProject.getId()));
         validParamsAllCategories.add("descriptionInput", "This evidence is the first to be submitted");
         validParamsAllCategories.add("categoryInput", "Service~Quantitative Skills~Qualitative Skills");
+        validParamsAllCategories.add("userID", "1");
         validParamsAllCategories.add("skillInput", "SkillA~SkillB~SkillC");
         validParamsAllCategories.add("userInput", "123456:Timmy Little");
 
@@ -136,6 +138,7 @@ public class EvidenceListControllerTest {
         validParamsNoSkill.add("dateInput", "2022-05-04");
         validParamsNoSkill.add("projectId", String.valueOf(testProject.getId()));
         validParamsNoSkill.add("descriptionInput", "This evidence is the first to be submitted");
+        validParamsNoSkill.add("userID", "1");
         validParamsNoSkill.add("categoryInput", "Service");
         validParamsNoSkill.add("skillInput", "SkillA~SkillB~SkillC");
         validParamsNoSkill.add("userInput", "123456:Timmy Little");
@@ -143,6 +146,7 @@ public class EvidenceListControllerTest {
         validParamsMultipleSkills.add("titleInput","Evidence One" );
         validParamsMultipleSkills.add("dateInput", "2022-05-04");
         validParamsMultipleSkills.add("projectId", String.valueOf(testProject.getId()));
+        validParamsMultipleSkills.add("userID", "1");
         validParamsMultipleSkills.add("descriptionInput", "This evidence is the first to be submitted");
         validParamsMultipleSkills.add("categoryInput", "Service");
         validParamsMultipleSkills.add("skillInput", "SkillA~SKILLA");
@@ -151,6 +155,7 @@ public class EvidenceListControllerTest {
         InvalidParamsEvidenceRequired.add("titleInput","" );
         InvalidParamsEvidenceRequired.add("dateInput", "2022-05-04");
         InvalidParamsEvidenceRequired.add("projectId", String.valueOf(testProject.getId()));
+        InvalidParamsEvidenceRequired.add("userID", "1");
         InvalidParamsEvidenceRequired.add("descriptionInput", "This evidence is the first to be submitted");
         InvalidParamsEvidenceRequired.add("categoryInput", "Service");
         InvalidParamsEvidenceRequired.add("skillInput", "SkillA~SkillB~SkillC");
@@ -161,6 +166,7 @@ public class EvidenceListControllerTest {
         InvalidParamsEvidenceDate.add("projectId", String.valueOf(testProject.getId()));
         InvalidParamsEvidenceDate.add("descriptionInput", "This evidence is the first to be submitted");
         InvalidParamsEvidenceDate.add("categoryInput", "Service");
+        InvalidParamsEvidenceDate.add("userID", "1");
         InvalidParamsEvidenceDate.add("skillInput", "SkillA~SkillB~SkillC");
         InvalidParamsEvidenceDate.add("userInput", "123456:Timmy Little");
     }
@@ -194,7 +200,7 @@ public class EvidenceListControllerTest {
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsEvidenceRequired))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?ui=1&pi=" + 0)); // Redirected to add dates page
         //verify(evidencerepository, times(1)).save(Mockito.any(Evidence.class)); // Verifies evidence was saved
         verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidence), Mockito.any(String.class));
     }
@@ -221,7 +227,7 @@ public class EvidenceListControllerTest {
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsAllCategories))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?ui=1&pi=" + 0)); // Redirected to add dates page
         // Verifies evidence was saved
         verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidenceAllCategories), Mockito.any(String.class));
     }
@@ -248,7 +254,7 @@ public class EvidenceListControllerTest {
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsNoSkill))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?ui=1&pi=" + 0)); // Redirected to add dates page
         //verify(evidencerepository, times(1)).save(Mockito.any(Evidence.class)); // Verifies evidence was saved
 
         verify(evidenceTagRepository, times(1)).save(Mockito.any(EvidenceTag.class));
@@ -326,7 +332,7 @@ public class EvidenceListControllerTest {
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsNoSkill))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?ui=1&pi=" + 0)); // Redirected to add dates page
         verify(evidenceTagRepository, times(1)).save(Mockito.any(EvidenceTag.class));
     }
 
@@ -353,7 +359,7 @@ public class EvidenceListControllerTest {
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsMultipleSkills))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?ui=1&pi=" + 0)); // Redirected to add dates page
 
         verify(evidenceTagRepository, atMostOnce()).save(refEq(testEvidenceTag));
         verify(evidenceTagRepository, never()).save(refEq(testEvidenceTagDuplicate));

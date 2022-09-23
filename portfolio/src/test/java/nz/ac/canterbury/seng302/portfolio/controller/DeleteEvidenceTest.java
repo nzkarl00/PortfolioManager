@@ -96,6 +96,7 @@ public class DeleteEvidenceTest {
         utilities = Mockito.mockStatic(AuthStateInformer.class );
         DeleteEvidenceParams.add("projectId", String.valueOf(testProject.getId()));
         DeleteEvidenceParams.add("evidenceId", "1");
+        DeleteEvidenceParams.add("userID", "1");
     }
 
     @AfterAll
@@ -121,7 +122,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?ui=1&pi=0"));
         verify(evidenceService).deleteEvidence(refEq(testEvidence));
     }
 
