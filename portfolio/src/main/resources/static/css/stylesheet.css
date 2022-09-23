@@ -1531,11 +1531,21 @@ select.form-control {
 }
 
 .edit_evidence {
-    height: 100%;
+    height: 2em;
+    min-width: 2em;
     border: none;
     margin-left: 10px;
-    padding: 4px 10px;
     background: #FF48CF  !important;
+    border-radius: 10px;
+    color: white;
+}
+
+.delete_evidence {
+    height: 2em;
+    min-width: 2em;
+    border: none;
+    margin-left: 10px;
+    background: #FF202E !important;
     border-radius: 10px;
     color: white;
 }
@@ -1768,4 +1778,13 @@ select.form-control {
     font-size: 200%;
     color: #19DAFF !important;
     padding-bottom: 5px;
+}
+
+.high_five {
+    height: 100%;
+    border: none;
+    margin-left: 10px;
+    padding: -4px;
+    background: #D9F9FF !important;
+    border-radius: 10px;
 }

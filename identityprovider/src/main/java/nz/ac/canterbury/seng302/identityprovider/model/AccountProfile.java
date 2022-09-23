@@ -30,7 +30,7 @@ public class AccountProfile {
     private Date registerDate;
     @Column(name = "bio", length = 1024)
     private String bio;
-    @Column(name = "email", length = 30)
+    @Column(name = "email", length = 320)
     private String email;
     @Column(name = "photo_path", length = 100)
     private String photoPath;
