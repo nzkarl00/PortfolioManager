@@ -2,6 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFive;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFiveRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,7 +24,11 @@ import java.time.LocalDate;
 
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateTeacher;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonProjectItems.getValidProject;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = HighFiveController.class)
@@ -30,6 +37,10 @@ public class HighFiveControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    HighFiveRepository highFiveRepository;
+    @Autowired
+    EvidenceRepository evidenceRepository;
 
     static MockedStatic<AuthStateInformer> utilities;
 
@@ -44,10 +55,8 @@ public class HighFiveControllerTest {
             Evidence.SERVICE
     );
 
-
     @BeforeAll
     public static void open() {
-
         utilities = Mockito.mockStatic(AuthStateInformer.class);
     }
 
@@ -59,5 +68,10 @@ public class HighFiveControllerTest {
                 .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
-        utilities.when(() -> AuthStateInformer.getRole(validAuthStateTeacher)).thenReturn("teacher");
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
+        mockMvc.perform(post("/high-five").param("evidenceId", String.valueOf(123456)))
+                .andExpect(status().isOk());
+        // Verifies evidence was saved
+        verify(highFiveRepository).save(any(HighFive.class));
+    }
 }

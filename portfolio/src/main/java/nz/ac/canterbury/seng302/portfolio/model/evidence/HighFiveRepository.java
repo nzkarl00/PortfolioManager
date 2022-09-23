@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HighFiveRepository extends CrudRepository<HighFive, Integer> {
-    LinkedCommit findById(int id);
+    HighFive findById(int id);
 }
