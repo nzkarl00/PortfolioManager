@@ -86,6 +86,7 @@ deploy-staging-identityprovider:
       - identityprovider/build/libs
   only:
     - dev
+    - feat/U38-T352/eager-fetch-fix
 
 deploy-staging-portfolio:
   stage: deploy
@@ -109,6 +110,7 @@ deploy-staging-portfolio:
       - portfolio/build/libs
   only:
     - dev
+    - feat/U38-T352/eager-fetch-fix
 
 deploy-production-identityprovider:
   stage: deploy

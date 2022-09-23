@@ -137,7 +137,7 @@ public class WebLink {
      * @return
      */
     public boolean isFetched() {
-        return true;
+        return fetched;
     }
 
     /**
@@ -183,6 +183,7 @@ public class WebLink {
      */
     public void setFetchResult(boolean notFound) {
         this.notFound = notFound;
+        this.fetched = true;
     }
 
     /**
@@ -192,5 +193,13 @@ public class WebLink {
     public void setNotFound(boolean notFound) {
         assert(fetched);
         this.notFound = notFound;
+    }
+
+    /**
+     * Set whether the link has been fetched or not.
+     * @param fetched, true if has been fetched
+     */
+    public void setFetched(boolean fetched) {
+        this.fetched = fetched;
     }
 }
