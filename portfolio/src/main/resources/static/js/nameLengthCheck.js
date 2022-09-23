@@ -1,7 +1,5 @@
 function updateTitle(element_id, maxlen_num, text_id) {
     let maxLen = maxlen_num;
-
-    document.getElementById("longName").maxLength = maxLen;
     let titleVal = (document.getElementById(element_id));
     let titleLen = titleVal.value.length;
 
