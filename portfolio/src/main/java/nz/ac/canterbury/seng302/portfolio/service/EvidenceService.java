@@ -5,16 +5,6 @@ import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTagRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceUser;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceUserRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLinkRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Commit;
@@ -25,16 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -164,16 +145,16 @@ public class EvidenceService {
 
     public List<Evidence> filterBySkill(List<Evidence> evidenceList,
                                         String skillName) {
-        List<Evidence> unfilteredEvidence = evidenceList;
         List<Evidence> filteredEvidence = new ArrayList<>();
-        for (Evidence evidence : unfilteredEvidence) {
-            Boolean isValid = false;
+        for (Evidence evidence : evidenceList) {
+            boolean isValid = false;
             List<EvidenceTag> tagList =
                     evidenceTagRepository.findAllByParentEvidenceId(
                             evidence.getId());
             for (EvidenceTag tag : tagList) {
                 if (tag.getParentSkillTag().getTitle().equals(skillName)) {
                     isValid = true;
+                    break;
                 }
             }
             if (isValid) {
@@ -185,15 +166,15 @@ public class EvidenceService {
 
     public List<Evidence> filterByCategory(List<Evidence> evidenceList,
                                            String categoryName) {
-        List<Evidence> unfilteredEvidence = evidenceList;
         List<Evidence> filteredEvidence = new ArrayList<>();
-        for (Evidence evidence : unfilteredEvidence) {
-            Boolean isValid = false;
+        for (Evidence evidence : evidenceList) {
+            boolean isValid = false;
 
             List<String> evidenceCats = evidence.getCategoryStrings();
             for (String catString : evidenceCats) {
                 if (catString.equals(categoryName)) {
                     isValid = true;
+                    break;
                 }
             }
 
@@ -283,7 +264,6 @@ public class EvidenceService {
      * @param title         The title that all pieces of evidence will relate to
      * @param description   The description that all pieces of evidence will relate to
      * @param evidenceDate  The evidenceDate that all pieces of evidence will relate to
-     * @return
      */
     public List<Evidence> generateEvidenceForUsers(List<String> userStrings,
                                                    Project parentProject,
@@ -483,14 +463,16 @@ public class EvidenceService {
         for (String hashAndGroupString: hashAndGroupStrings) {
             List<String> hashAndGroup = Arrays.asList(hashAndGroupString.split("\\+"));
             Optional<GroupRepo> optionalGroupRepo = groupRepoRepository.findByParentGroupId(Integer.parseInt(hashAndGroup.get(1)));
+            GroupRepo groupRepo;
             if (optionalGroupRepo.isEmpty()) {
-                logger.warn("No repository found for the group id=<%d>", hashAndGroup.get(1));
+                logger.warn("No repository found for the group id " + hashAndGroup.get(1));
+            } else {
+                groupRepo = optionalGroupRepo.get();
+                Commit foundCommit = gitlabClient.getSingleCommit(hashAndGroup.get(0), groupRepo);
+                logger.info(foundCommit.toString());
+                constructedCommits.add(new LinkedCommit(parentEvidence, groupRepo.getName(), groupRepo.getOwner(), hashAndGroup.get(0),
+                        foundCommit.getAuthorName(), foundCommit.getTitle(), DateParser.convertToLocalDateTime(foundCommit.getCreatedAt())));
             }
-            GroupRepo groupRepo = optionalGroupRepo.get();
-            Commit foundCommit = gitlabClient.getSingleCommit(hashAndGroup.get(0), groupRepo);
-            logger.info(foundCommit.toString());
-            constructedCommits.add(new LinkedCommit(parentEvidence, groupRepo.getName(), groupRepo.getOwner(), hashAndGroup.get(0),
-                foundCommit.getAuthorName(), foundCommit.getTitle(), DateParser.convertToLocalDateTime(foundCommit.getCreatedAt())));
         }
         return constructedCommits;
     }
@@ -500,7 +482,6 @@ public class EvidenceService {
      *
      * @param links    String list of links to be constructed into WebLink() and added to the evidence
      * @param evidence An existing piece of evidence to be modified by adding a list of links to it
-     * @throws MalformedURLException
      */
     public void addLinksToEvidence(List<String> links, Evidence evidence)
             throws MalformedURLException {
@@ -527,7 +508,7 @@ public class EvidenceService {
         List<EvidenceTag> evidenceTags = evidence.getEvidenceTags();
         List<SkillTag> skillTags = evidenceTags.stream()
                 .map(EvidenceTag::getParentSkillTag)
-                .filter(skillTag -> skillTag.getTitle() != "No_skills")
+                .filter(skillTag -> !Objects.equals(skillTag.getTitle(), "No_skills"))
                 .toList(); // All skill tags associated with deleted evidence
         evidenceRepository.delete(evidence);
         for (SkillTag skillTag : skillTags) {
@@ -551,7 +532,7 @@ public class EvidenceService {
                 evidenceRepository.findAllByParentUserIdOrderByDateDesc(id);
         // A hashset of tag IDs that have been found already, to determine if
         // The tag should be added to the tag list.
-        HashSet<Integer> tagIDs = new HashSet<Integer>();
+        HashSet<Integer> tagIDs = new HashSet<>();
         ArrayList<SkillTag> tagList = new ArrayList<>();
         for (Evidence evidence : evidenceList) {
             List<EvidenceTag> tagsForEvidence = evidence.getEvidenceTags();
@@ -581,7 +562,6 @@ public class EvidenceService {
      * This code is significantly janky, largely due to the weirdness of hibernate/JPA
      * and me trying to not refactor everything.
      *
-     * @return
      */
     public void handleSkillTagEditsForEvidence(final ParsedEditSkills input,
                                                Evidence evidence) {
@@ -610,9 +590,7 @@ public class EvidenceService {
 
         // Now manage tag renames.
         logger.debug("Handling skill tag modifications");
-        input.skillsToModify.forEach((id, newTitle) -> {
-            modifySkillTag(evidence.getId(), id, newTitle);
-        });
+        input.skillsToModify.forEach((id, newTitle) -> modifySkillTag(evidence.getId(), id, newTitle));
 
         // Finally, apply or remove no skills tag.
         optionallyApplyNoSkillsTag(evidence.getId());
@@ -631,7 +609,7 @@ public class EvidenceService {
         SkillTag skillTag = skillTagOption.get();
 
         // If the skill tag is no skills, do nothing
-        if (skillTag.getTitle() == "No_skills") {
+        if (Objects.equals(skillTag.getTitle(), "No_skills")) {
             return;
         }
 
@@ -660,7 +638,7 @@ public class EvidenceService {
                             evidence.getParentUserId());
 
             evidenceForUser.stream().collect(Collectors.groupingBy(
-                    (evidenceItem) -> evidenceItem.getAssociatedProject())
+                    Evidence::getAssociatedProject)
             ).forEach((project, evidenceInProject) -> {
                 logger.info(String.format(
                         "Creating new skill tag for Project=<%d>, contains %d piece of evidence",
@@ -672,7 +650,7 @@ public class EvidenceService {
                                 newTagTitle, project);
                 SkillTag newSkillTag;
                 // set newSkillTag to the existing skill tag or create a new one
-                if (!trySkillTag.isPresent()) {
+                if (trySkillTag.isEmpty()) {
                     newSkillTag = new SkillTag(project, newTagTitle);
                     skillTagRepository.save(newSkillTag);
                 } else {
@@ -681,7 +659,7 @@ public class EvidenceService {
 
                 // Now for each piece of evidence, remove the existing evidence tag
                 // And link to the new tag.
-                evidenceInProject.stream().forEach((Evidence evidenceItem) -> {
+                evidenceInProject.forEach((Evidence evidenceItem) -> {
                     // Delete current tag linking to old skill tag
                     // There won't always be a link between evidence and skill
                     // Only delete existing tags
@@ -707,9 +685,6 @@ public class EvidenceService {
 
     /**
      * Removes the evidenece tag linking a skill tag to the piece of evidence.
-     *
-     * @param evidence
-     * @param skillID
      */
     private void deleteSkillTagFromEvidence(final Evidence evidence,
                                             final Integer skillID) {
@@ -722,8 +697,6 @@ public class EvidenceService {
     /**
      * Checks if a skill tag is 'orphaned'
      * ie. no longer in use by any EvidenceTag and if so, deletes it.
-     *
-     * @param skillID
      */
     private void deleteOrphanedSkillTag(final Integer skillID) {
         // Now read the skill tag and see how many evidence tags it has
@@ -739,8 +712,6 @@ public class EvidenceService {
     /**
      * Given a piece of evidence, adds or removes the no_skills tag appropriately
      * depending on whether any other tags are set.
-     *
-     * @param evidenceID
      */
     private void optionallyApplyNoSkillsTag(final Integer evidenceID) {
         Optional<Evidence> evidenceOption = evidenceRepository.findById(

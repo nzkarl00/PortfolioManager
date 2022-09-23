@@ -28,9 +28,9 @@ public class AddGroupController {
     private AccountClientService accountClientService;
 
     Logger logger = LoggerFactory.getLogger(AddGroupController.class);
-
-    String errorShow = "display:none;";
-    String successShow = "display:none;";
+    final String displayNone = "display:none;";
+    String errorShow = displayNone;
+    String successShow = displayNone;
     String successCode = "successCode";
 
     /**
@@ -88,11 +88,11 @@ public class AddGroupController {
             createReply = groupsService.create(shortName, longName);
             successCode = createReply.getMessage();
             if (createReply.getIsSuccess()) {
-                errorShow = "display:none;";
+                errorShow = displayNone;
                 successShow = "";
             } else {
                 errorShow = "";
-                successShow = "display:none;";
+                successShow = displayNone;
             }
 
             return "redirect:addGroup";

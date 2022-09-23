@@ -1,15 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * The GRPC client side service class
@@ -38,7 +34,7 @@ public class AccountClientService
                                          String firstName, String lastName,
                                          String personalPronouns,
                                          String email) {
-        logger.info("[REGISTER] Attempting to register user with IDP, username: " + username);
+        logger.info("[REGISTER] Attempting to register user with IDP, username: " + username.replaceAll("[\n\r\t]", "_"));
         UserRegisterRequest registerRequest = UserRegisterRequest.newBuilder()
                 .setUsername(username)
                 .setPassword(password)
@@ -48,7 +44,7 @@ public class AccountClientService
                 .setEmail(email)
                 .build();
         UserRegisterResponse res = accountServiceStub.register(registerRequest);
-        logger.info("[REGISTER] Received register response for user from IDP, username: " + username);
+        logger.info("[REGISTER] Received register response for user from IDP, username: " + username.replaceAll("[\n\r\t]", "_"));
         return res;
     }
 

@@ -113,7 +113,7 @@ public class LoginController {
      * @param model to display feedback to user
      */
     public AuthenticateResponse authenticateLogin(String username, String password, Model model) {
-        logger.trace("[LOGIN] Attempting to authenticate user: " + username);
+        logger.trace("[LOGIN] Attempting to authenticate user: " + username.replaceAll("[\n\r\t]", "_"));
         try {
             return authenticateClientService.authenticate(username, password);
         } catch (StatusRuntimeException e){
