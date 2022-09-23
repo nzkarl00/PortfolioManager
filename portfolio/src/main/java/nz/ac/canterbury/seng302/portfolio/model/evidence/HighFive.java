@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 
 @Entity()
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"parent_evidence_id", "parent_user_id"})})
 public class HighFive {
 
     @Id

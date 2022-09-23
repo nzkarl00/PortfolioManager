@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HighFiveRepository extends CrudRepository<HighFive, Integer> {
-    HighFive findById(int id);
+    HighFive findByParentEvidenceAndParentUserId(Evidence parentEvidence, int userId);
 }

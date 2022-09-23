@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -37,10 +38,10 @@ public class HighFiveControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    HighFiveRepository highFiveRepository;
-    @Autowired
-    EvidenceRepository evidenceRepository;
+    @MockBean
+    private HighFiveRepository highFiveRepository;
+    @MockBean
+    private EvidenceRepository evidenceRepository;
 
     static MockedStatic<AuthStateInformer> utilities;
 

@@ -109,8 +109,8 @@
                                 class="fa fa-trash delete_evidence"></button>
                         <div id="high_five_container" style="width:100%; text-align: right">
                         <button th:id="${'highFiveButton' + evidence.getId()}"
-                                class="high_five fa fa-hand-paper-o fa-2x"
-                                type="submit" th:onclick="toggleHighFive(${evidence.getId()})">
+                                class="high_five fa fa-hand-paper-o fa-2x" th:value="${evidence.getId()}"
+                                type="submit" onclick="toggleHighFive(this)">
                         </button>
                         </div>
                         </div>
@@ -201,9 +201,8 @@
             }
         }
 
-        function toggleHighFive(id) {
-            console.log(id)
-            $.post("high-five", {evidenceId: id}).done(function (result) {
+        function toggleHighFive(event) {
+            $.post("high-five", {evidenceId: event.value}).done(function (result) {
                 console.log(result)
             })
         }

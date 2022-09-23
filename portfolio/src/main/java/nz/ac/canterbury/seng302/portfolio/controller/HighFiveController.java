@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFive;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFiveRepository;
@@ -38,10 +39,14 @@ public class HighFiveController {
     @ResponseBody
     public String deleteEvidence(@RequestParam(value = "evidenceId") String evidenceId,
                                  @AuthenticationPrincipal AuthState principal) {
-        if (highFiveRepository.findById(Integer.parseInt(evidenceId)) == null) {
-            highFiveRepository.save(new HighFive(evidenceRepository.findById(Integer.parseInt(evidenceId)), AuthStateInformer.getId(principal)));
-            return "true";
+        int userId = AuthStateInformer.getId(principal);
+        Evidence parentEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
+        if (parentEvidence != null) {
+            if (highFiveRepository.findByParentEvidenceAndParentUserId(parentEvidence, userId) == null) {
+                highFiveRepository.save(new HighFive(parentEvidence, userId));
+                return "added";
+            }
         }
-        return "false";
+        return "error";
     }
 }
