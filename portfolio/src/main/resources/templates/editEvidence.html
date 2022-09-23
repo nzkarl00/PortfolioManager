@@ -165,6 +165,8 @@
 
         <script th:inline="javascript">
 
+            // Changes the text of a link to an input provided by the user
+            // Changes the edit button to a save button
             function editLink(event) {
                 link = document.getElementById("link_" + event.target.value)
                 editingLink = document.createElement("input")
@@ -172,6 +174,8 @@
                 editingLink.className = "evidence_form_element_wide project_edit_data"
                 editingLink.type = "text"
                 editingLink.value = event.target.value
+
+                // Replace old link with new link
                 link.parentNode.replaceChild(editingLink, link)
 
                 saveButton = document.createElement("button");
@@ -184,7 +188,7 @@
                 return false;
             }
 
-            // use the data from the edit input to save a new link
+            // Use the data from the edit link input textbox to overwrite a link
             function saveLink(event) {
                 editedLink = document.getElementById("link_edit_" + event.target.value)
 
@@ -214,6 +218,7 @@
 
                 oldSave = document.getElementById("save_" + event.target.value)
 
+                // TODO Change to conform to usual style
                 if (!validateLink(editedLink.value)) {
                     alert('Link is not valid, please ensure link includes http(s):// protocol');
                     return false;
@@ -316,6 +321,7 @@
             return false;
         }
 
+        // Delete a skill from a piece of evidence, or from the new skill set
         function removeSkill(event) {
             parent = event.target.parentNode
             skill = document.getElementById("skill_" + event.target.value)
@@ -333,6 +339,7 @@
             return false;
         }
 
+        // Use the data from the edit skill input textbox to overwrite a skill
         function editSkill(event) {
             skill = document.getElementById("skill_" + event.target.value)
             editingSkill = document.createElement("input")
@@ -355,8 +362,6 @@
             editButton = document.getElementById("edit_" + event.target.value)
 
             editButton.parentNode.replaceChild(saveButton, editButton)
-
-
             return false;
         }
 
@@ -409,7 +414,8 @@
             }
             document.getElementById("skill_error").style = "display:none;";
 
-            // edit sets
+            // Edit the skills sets by removing skill if it exists and replacing it
+            // with the appropriate skill in newSkills or editedSkills
             original = editedSkill.getAttribute("original")
             if (skill.getAttribute("original")) {
                 loopAndDeleteEdited(original)
@@ -564,6 +570,8 @@
             commits.add(commit.hash)
         }
 
+        // Enables the save button only if something has been changed, disables it when
+        // The content is set back to the original form
         function canEditCheck() {
             const originalTitle = [[${evidence.getTitle()}]];
             let originalCategory = [[${evidence.getCategoryStrings()}]].sort().toString();
