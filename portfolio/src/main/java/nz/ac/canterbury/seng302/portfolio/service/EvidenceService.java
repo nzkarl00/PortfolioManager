@@ -313,7 +313,6 @@ public class EvidenceService {
      */
     public List<String> getSkillTagStringsByEvidenceId(Evidence evidence) {
         List<EvidenceTag> evidenceTagList = evidence.getEvidenceTags();
-        System.out.println(evidenceTagList);
         return evidenceTagList.stream()
                 .map(evidenceTag -> evidenceTag.getParentSkillTag().getTitle())
                 .collect(Collectors.toList());

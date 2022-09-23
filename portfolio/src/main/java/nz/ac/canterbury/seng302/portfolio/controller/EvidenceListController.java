@@ -172,10 +172,6 @@ public class EvidenceListController {
           model.addAttribute("project", project);
       }
 
-      PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(userId);
-      model.addAttribute("groupList", groupList.getGroupsList());
-
-
       model.addAttribute("evidenceList", evidenceList);
       List<Pair<Integer, List<String>>> skillTemp = new ArrayList<>();
       List<Pair<Integer, List<String>>> categoryTemp = new ArrayList<>();
@@ -190,18 +186,12 @@ public class EvidenceListController {
 
       evidenceList.parallelStream().forEach(putEvidenceIntoMap::accept);
 
-      System.out.println(skillTemp);
-      System.out.println(categoryTemp);
-
       skillTemp.stream().forEach((pair) -> {
           evidenceSkillMap.put(pair.getValue0(), pair.getValue1());
       });
       categoryTemp.stream().forEach((pair) -> {
           evidenceCategoryMap.put(pair.getValue0(), pair.getValue1());
       });
-
-      System.out.println(evidenceCategoryMap);
-      System.out.println(evidenceSkillMap);
 
 //      for (Evidence evidence: evidenceList) {
 //          evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence));
@@ -393,6 +383,7 @@ public class EvidenceListController {
   }
 
   @PostMapping("/delete-evidence")
+  @Transactional
   public String deleteEvidence(@RequestParam(required = false, value = "projectId") String projectId,
                                @RequestParam(value = "evidenceId") String evidenceId,
                                @AuthenticationPrincipal AuthState principal) {
