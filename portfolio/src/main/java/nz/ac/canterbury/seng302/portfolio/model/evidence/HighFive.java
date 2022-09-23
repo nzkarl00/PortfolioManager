@@ -14,7 +14,7 @@ public class HighFive {
 
     /**
      * A high five can be associated with one or more parent piece of evidence.
-     * An evidence can have one or more LinkedCommit
+     * An evidence can have one or more high five
      */
     @ManyToOne
     @JsonBackReference // This prevents infinite reference looping between tables
@@ -30,8 +30,8 @@ public class HighFive {
     public HighFive() {}
 
     /**
-     * A link commit to a parent evidence
-     * @param parentEvidence that this LinkedCommit is associated with
+     * A high five on a parent evidence
+     * @param parentEvidence that this high five is associated with
      * @param parentUserId that made the high five
      */
     public HighFive(
