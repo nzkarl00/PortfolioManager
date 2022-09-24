@@ -86,7 +86,7 @@ deploy-staging-identityprovider:
       - identityprovider/build/libs
   only:
     - dev
-    - spike/parrallelistation
+    - spike/parrallelisation
 
 deploy-staging-portfolio:
   stage: deploy
@@ -110,7 +110,7 @@ deploy-staging-portfolio:
       - portfolio/build/libs
   only:
     - dev
-    - spike/parrallelistation
+    - spike/parrallelisation
 
 deploy-production-identityprovider:
   stage: deploy
