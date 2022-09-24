@@ -1,11 +1,11 @@
 stages:
   - tagChecking
   - publishProtosToLocalMavenRepo
-  - build
   - test
   - lint
-  - sonarqube
+  - build
   - deploy
+  - sonarqube
 
 tag-checker:
  stage: tagChecking
@@ -19,24 +19,52 @@ lint-portfolio:
  script:
    - cd portfolio
    - ./gradlew check
+ cache:
+   key: build-dirs-$GIT_COMMIT_REF_SLUG
+   paths:
+    - identityprovider/.gradle/
+    - identityprovider/build/
+    - portfolio/.gradle/
+    - portfolio/build/
 
 lint-identityprovider:
  stage: lint
  script:
    - cd identityprovider
    - ./gradlew check
+ cache:
+   key: build-dirs-$GIT_COMMIT_REF_SLUG
+   paths:
+    - identityprovider/.gradle/
+    - identityprovider/build/
+    - portfolio/.gradle/
+    - portfolio/build/
 
 junit-portfolio:
  stage: test
  script:
    - cd portfolio
    - ./gradlew test
+ cache:
+   key: build-dirs-$GIT_COMMIT_REF_SLUG
+   paths:
+    - identityprovider/.gradle/
+    - identityprovider/build/
+    - portfolio/.gradle/
+    - portfolio/build/
 
 junit-identityprovider:
  stage: test
  script:
    - cd identityprovider
    - ./gradlew test
+ cache:
+   key: build-dirs-$GIT_COMMIT_REF_SLUG
+   paths:
+    - identityprovider/.gradle/
+    - identityprovider/build/
+    - portfolio/.gradle/
+    - portfolio/build/
 
 publish-protos-to-maven-local:
   stage: publishProtosToLocalMavenRepo
@@ -44,6 +72,13 @@ publish-protos-to-maven-local:
     - cd shared
     - ./gradlew clean
     - ./gradlew publishToMavenLocal
+  cache:
+   key: build-dirs-$GIT_COMMIT_REF_SLUG
+   paths:
+    - identityprovider/.gradle/
+    - identityprovider/build/
+    - portfolio/.gradle/
+    - portfolio/build/
 
 # builds all branches, except dev and master
 branch-build:
@@ -57,6 +92,13 @@ branch-build:
    paths:
      - identityprovider/build/libs
      - portfolio/build/libs
+ cache:
+   key: build-dirs-$GIT_COMMIT_REF_SLUG
+   paths:
+    - identityprovider/.gradle/
+    - identityprovider/build/
+    - portfolio/.gradle/
+    - portfolio/build/
  except:
    - tags
    - master
