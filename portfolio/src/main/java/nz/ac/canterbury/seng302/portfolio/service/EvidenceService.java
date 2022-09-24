@@ -312,10 +312,13 @@ public class EvidenceService {
      * @return List of skill tag title strings
      */
     public List<String> getSkillTagStringsByEvidenceId(Evidence evidence) {
-        List<EvidenceTag> evidenceTagList = evidence.getEvidenceTags();
-        return evidenceTagList.stream()
-                .map(evidenceTag -> evidenceTag.getParentSkillTag().getTitle())
+        List<SkillTag> tags = skillTagRepository.findByParentEvidence(evidence);
+        return tags.stream().map((SkillTag tag) -> tag.getTitle())
                 .collect(Collectors.toList());
+//        List<EvidenceTag> evidenceTagList = evidence.getEvidenceTags();
+//        return evidenceTagList.stream()
+//                .map(evidenceTag -> evidenceTag.getParentSkillTag().getTitle())
+//                .collect(Collectors.toList());
     }
 
     /**

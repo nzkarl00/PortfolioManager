@@ -179,18 +179,18 @@
         }
 
         skillMap = [[${skillMap}]]
-        for (const evidence of [[${evidenceList}]]) {
-            addTagRowToEvidence(evidence.id, "si")
-            for (const evidenceSkill of skillMap[evidence.id]) {
-                addTagToEvidence(evidenceSkill, evidence.id, "si")
+        for (const id of [[${evidenceIdList}]]) {
+            addTagRowToEvidence(id, "si")
+            for (const evidenceSkill of skillMap[id]) {
+                addTagToEvidence(evidenceSkill, id, "si")
             }
         }
 
         categoryMap = [[${categoryMap}]]
-        for (const evidence of [[${evidenceList}]]) {
-            addTagRowToEvidence(evidence.id, "ci")
-            for (const evidenceCategory of categoryMap[evidence.id].sort()) {
-                addTagToEvidence(evidenceCategory, evidence.id, "ci")
+        for (const id of [[${evidenceIdList}]]) {
+            addTagRowToEvidence(id, "ci")
+            for (const evidenceCategory of categoryMap[id].sort()) {
+                addTagToEvidence(evidenceCategory, id, "ci")
             }
         }
     </script>

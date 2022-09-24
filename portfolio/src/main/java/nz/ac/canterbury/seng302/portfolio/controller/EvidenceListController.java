@@ -4,7 +4,14 @@ import io.netty.util.concurrent.CompleteFuture;
 import nz.ac.canterbury.seng302.portfolio.CustomExceptions;
 import nz.ac.canterbury.seng302.portfolio.model.AuthenticatedUser;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTagRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.LinkedCommitRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTagRepository;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLinkRepository;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
@@ -33,6 +40,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * responsible for the main/landing page of the project(s)
@@ -172,6 +180,10 @@ public class EvidenceListController {
           model.addAttribute("project", project);
       }
 
+      List<Integer> evidenceIDs = evidenceList.stream().map((Evidence evidence) -> {
+          return evidence.getId();
+      }).collect(Collectors.toList());
+      model.addAttribute("evidenceIdList", evidenceIDs);
       model.addAttribute("evidenceList", evidenceList);
       List<Pair<Integer, List<String>>> skillTemp = new ArrayList<>();
       List<Pair<Integer, List<String>>> categoryTemp = new ArrayList<>();
@@ -179,46 +191,83 @@ public class EvidenceListController {
       final HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
 
       // this throws different errors more often if you want to give this approach a shot
-      Consumer<Evidence> putEvidenceIntoMap = (evidence) -> {
-          skillTemp.add(new Pair<>(evidence.getId(), this.evidenceService.getSkillTagStringsByEvidenceId(evidence)));
-          categoryTemp.add(new Pair<>(evidence.getId(), evidence.getCategoryStrings()));
-      };
+//      Consumer<Evidence> putEvidenceIntoMap = (Evidence evidence) -> {
+//          skillTemp.add(new Pair<>(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence)));
+//          categoryTemp.add(new Pair<>(evidence.getId(), evidence.getCategoryStrings()));
+//      };
+////
+//      evidenceList.spliterator().forEachRemaining(putEvidenceIntoMap::accept);
+//
+//      skillTemp.stream().forEach((pair) -> {
+//          evidenceSkillMap.put(pair.getValue0(), pair.getValue1());
+//      });
+//      categoryTemp.stream().forEach((pair) -> {
+//          evidenceCategoryMap.put(pair.getValue0(), pair.getValue1());
+//      });
 
-      evidenceList.parallelStream().forEach(putEvidenceIntoMap::accept);
+      for (Evidence evidence: evidenceList) {
+          evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence));
+          evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
+      }
+      logger.info("HERE WE COME");
 
-      skillTemp.stream().forEach((pair) -> {
-          evidenceSkillMap.put(pair.getValue0(), pair.getValue1());
-      });
-      categoryTemp.stream().forEach((pair) -> {
-          evidenceCategoryMap.put(pair.getValue0(), pair.getValue1());
-      });
-
-//      for (Evidence evidence: evidenceList) {
-//          evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence));
-//          evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
-//      }
-
-//      evidenceList.stream().map((Evidence evidence) -> {
-//          return CompletableFuture.supplyAsync(() -> {
+//      evidenceList.stream().map((Evidence evidence) -> CompletableFuture.supplyAsync(() -> {
 //              List<String> v = evidenceService.getSkillTagStringsByEvidenceId(evidence);
 //              try {
-//                  Thread.sleep(1000);
+//                  Thread.sleep(2000);
 //              } catch (Exception e) {
 //                  logger.error("msd", e);
 //              }
-//              return v;
+//              return new Pair<Integer, List<String>>(evidence.getId(), v);
+//      })).forEach((CompletableFuture<Pair<Integer, List<String>>> future) -> {
+//          future.thenAccept((Pair<Integer, List<String>> result) -> {
+//              logger.info("waiting");
+//              try {
+//                  logger.info(result.getValue1().toString());
+//                  Integer id = result.getValue0();
+//                  evidenceSkillMap.put(1, result.getValue1());
+////                  evidenceSkillMap.add(new Pair<>(id, this.evidenceService.getSkillTagStringsByEvidenceId(evidence)));
+////                  evidenceCategoryMap.add(new Pair<>(evidence.getId(), evidence.getCategoryStrings()));
+//              } catch (Exception e) {
+//                  logger.error("Something", e);
+//              }
 //          });
-//      }).forEach((CompletableFuture<List<String>> fut) -> {
-//          logger.info("waiting");
-//          try {
-//              List<String> s = fut.get();
-//              logger.info(s.toString());
-//              evidenceSkillMap.put(1, s);
-//          } catch (Exception e) {
-//              logger.error("Something", e);
-//          }
-////          evidenceCategoryMap.put(1, evidence.getCategoryStrings());
 //      });
+
+      evidenceList.stream().map((Evidence evidence) -> {
+          return CompletableFuture.supplyAsync(() -> {
+              logger.info("starting");
+              List<String> skillTagStrings = evidenceService.getSkillTagStringsByEvidenceId(evidence);
+//              try {
+//                  Thread.sleep(3000);
+//              } catch (Exception e) {
+//                  logger.error("msd", e);
+//              }
+              return new Pair<Integer, List<String>>(
+                      evidence.getId(),
+                      skillTagStrings
+              );
+          }).thenAccept((Pair<Integer, List<String>> result) -> {
+              logger.info("waiting");
+              try {
+                  logger.info(result.getValue1().toString());
+                  Integer id = result.getValue0();
+                  List<String> skillTagStrings = result.getValue1();
+                  //                  List<String> categoryStrings = result.getValue0().getCategoryStrings();
+                  evidenceSkillMap.put(id, skillTagStrings);
+                  //                  evidenceCategoryMap.put(id, categoryStrings);
+              } catch (Exception e) {
+                  logger.error("Something", e);
+              }
+              return;
+          });
+      }).forEach((CompletableFuture<Void> future) -> {
+          try {
+              future.get();
+          } catch(Exception e) {
+              logger.error("Concurrent fetching failed", e);
+          }
+      });
 
       model.addAttribute("skillMap", evidenceSkillMap);
       model.addAttribute("categoryMap", evidenceCategoryMap);
