@@ -1080,6 +1080,15 @@
     color: white;
 }
 
+.edit_button {
+    border: none;
+    margin-left: 10px;
+    padding: 4px 10px;
+    background: #FF48CF !important;
+    border-radius: 10px;
+    color: white;
+}
+
 .delete_button {
     border: none;
     margin-left: 10px;
