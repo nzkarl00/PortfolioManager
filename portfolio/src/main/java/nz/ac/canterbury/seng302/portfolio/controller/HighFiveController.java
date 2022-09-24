@@ -45,6 +45,8 @@ public class HighFiveController {
             if (highFiveRepository.findByParentEvidenceAndParentUserId(parentEvidence, userId) == null) {
                 highFiveRepository.save(new HighFive(parentEvidence, userId));
                 return "added";
+            } else {
+                return "exists";
             }
         }
         return "error";

@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFive;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFiveRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,15 +21,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
 
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateTeacher;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonProjectItems.getValidProject;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -62,7 +65,7 @@ public class HighFiveControllerTest {
     }
 
     @Test
-    public void postValidEvidence_WithMultipleSkillTags() throws Exception {
+    public void postHighFive_OnValidEvidence() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication())
@@ -70,9 +73,50 @@ public class HighFiveControllerTest {
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
-        mockMvc.perform(post("/high-five").param("evidenceId", String.valueOf(123456)))
-                .andExpect(status().isOk());
-        // Verifies evidence was saved
+        when(evidenceRepository.findById(123456)).thenReturn(testEvidence);
+        when(highFiveRepository.findByParentEvidenceAndParentUserId(testEvidence, 1)).thenReturn(null);
+        MvcResult result = mockMvc.perform(post("/high-five").param("evidenceId", String.valueOf(123456)))
+                .andExpect(status().isOk()).andReturn();
+        // Verifies response is "added"
+        Assertions.assertEquals("added", result.getResponse().getContentAsString());
+        // Verifies high five was saved
         verify(highFiveRepository).save(any(HighFive.class));
+    }
+
+    @Test
+    public void postHighFive_OnValidEvidence_WithExistingHighFive() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
+        when(evidenceRepository.findById(123456)).thenReturn(testEvidence);
+        // High five exists
+        when(highFiveRepository.findByParentEvidenceAndParentUserId(testEvidence, 1)).thenReturn(new HighFive());
+        MvcResult result = mockMvc.perform(post("/high-five").param("evidenceId", String.valueOf(123456)))
+                .andExpect(status().isOk()).andReturn();
+        Assertions.assertEquals("exists", result.getResponse().getContentAsString());
+        // Verifies high five was not saved
+        verify(highFiveRepository, never()).save(any(HighFive.class));
+    }
+
+    @Test
+    public void postHighFive_OnInvalidEvidence() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
+        when(evidenceRepository.findById(123456)).thenReturn(null);
+        when(highFiveRepository.findByParentEvidenceAndParentUserId(testEvidence, 1)).thenReturn(null);
+        MvcResult result = mockMvc.perform(post("/high-five").param("evidenceId", String.valueOf(123456)))
+                .andExpect(status().isOk()).andReturn();
+        Assertions.assertEquals("error", result.getResponse().getContentAsString());
+        // Verifies high five was not saved
+        verify(highFiveRepository, never()).save(any(HighFive.class));
     }
 }
