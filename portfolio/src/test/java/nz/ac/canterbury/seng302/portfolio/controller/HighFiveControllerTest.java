@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFive;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFiveRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -62,6 +63,11 @@ public class HighFiveControllerTest {
     @BeforeAll
     public static void open() {
         utilities = Mockito.mockStatic(AuthStateInformer.class);
+    }
+
+    @AfterAll
+    public static void close() {
+        utilities.close();
     }
 
     @Test
