@@ -142,11 +142,13 @@ public class GroupController {
         model.addAttribute("cutboard", cutboard);
 
         String role = AuthStateInformer.getRole(principal);
-
         // if you are a teacher or an admin you can add a new group
-        if (role.equals("teacher") || role.equals("admin")) {
+        if (role.equals("teacher")) {
             model.addAttribute("display", "");
             model.addAttribute("role", "teacher");
+        } else if (role.equals("admin")) {
+            model.addAttribute("display", "");
+            model.addAttribute("role", "admin");
         } else {
             model.addAttribute("display", "display:none;");
             model.addAttribute("role", "student");

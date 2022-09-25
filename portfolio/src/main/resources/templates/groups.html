@@ -48,13 +48,16 @@
 
                     </a>
                     <br>
-                    <div class="row-1" style="display: flex">
-                    <select th:id="${'select_field_'+group.getId()}" class="project_edit_data horizontal_field">
+                    <div th:if="${role == 'admin' or (role == 'teacher' and group.longName != 'Teachers Group')}" class="row-1" style="display: flex">
+                    <select th:if="${role == 'admin'}" th:id="${'select_field_'+group.getId()}" class="project_edit_data horizontal_field">
                         <option th:each="g : ${groups}" th:value="${g.getId()}" th:text="${'(' + (g.shortName) + ') ' + g.longName}"></option>
                     </select>
-                        <button th:id="${'edit_button_'+group.getId()}" class="edit_button">Move</button>
+                    <select th:if="${role == 'teacher'}" th:id="${'select_field_'+group.getId()}" class="project_edit_data horizontal_field">
+                    <option th:each="g : ${groups.?[longName != 'Teachers Group']}" th:value="${g.getId()}" th:text="${'(' + (g.shortName) + ') ' + g.longName}"></option>
+                    </select>
+                        <button th:id="${'edit_button_'+group.getId()}" th:value="${group.getId()}" onclick="moveUsersToGroup(this); return false;" style="white-space: nowrap" class="edit_button fa fa-arrow-left">&nbsp;ADD TO</button>
                         <div style="width: 50%"></div>
-                        <button th:id="${'delete_button_'+group.getId()}" class="delete_button">Remove</button>
+                        <button th:if="${group.longName != 'Members Without a Group'}" th:value="${group.getId()}" onclick="removeUsersFromGroup(this); return false;" th:id="${'delete_button_'+group.getId()}" class="delete_button fa fa-trash">&nbsp;REMOVE</button>
                     </div>
                     <h5
                         th:if="${!group.isDefaultGroup()}"
@@ -68,14 +71,13 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete (' + (group.shortName) + ') ' + group.longName} + '?'"/>
+                                <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete (' + (group.shortName) + ') ' + group.longName} + '?'"></h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body"
-                                 th:text="${'Deleting this group will remove all members from that group (users will not be deleted). This operation cannot be undone. Are you sure you want to delete (' + (group.shortName) + ') ' + group.longName} + '?'"}
-                            />
+                                 th:text="${'Deleting this group will remove all members from that group (users will not be deleted). This operation cannot be undone. Are you sure you want to delete (' + (group.shortName) + ') ' + group.longName} + '?'"}></div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                 <form th:action="@{delete-group}" method="post">
@@ -163,7 +165,6 @@ let selected = [];
 let latest;
 
 document.addEventListener("click", function (e) {
-    console.log(e.target.tagName  === ("DIV") || e.target.tagName  === ("BODY"))
     if (e.target.tagName === ("DIV") || e.target.tagName  === ("BODY")) {
         clearSelected()
     }
@@ -182,6 +183,27 @@ function removeFromSelected(item) {
 
 function setLatest(id) {
     latest = id
+}
+
+function moveUsersToGroup(event) {
+    const toMove = selected.map(user => parseInt(user[1]))
+    const selectedGroup = document.getElementById("select_field_"+event.value).value
+    client.post("/ctrlv", toMove, {"params":{"groupId": selectedGroup}})
+    setTimeout(() => window.location.reload(), 500);
+}
+
+function removeUsersFromGroup(event) {
+    const toRemove = {}
+    toRemove[-1] = [];
+    for (const user of selected) {
+        toRemove[-1].push(user[1])
+        if (!(user[0] in toRemove)) {
+            toRemove[user[0]] = [];
+        }
+        toRemove[user[0]].push(user[1])
+    }
+    client.post("/ctrlx", toRemove, null);
+    setTimeout(() => window.location.reload(), 500);
 }
 
 // https://www.geeksforgeeks.org/how-to-detect-copy-paste-commands-ctrlv-ctrlc-using-javascript/
