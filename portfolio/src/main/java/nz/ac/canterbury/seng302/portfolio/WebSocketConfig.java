@@ -30,7 +30,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/gs-guide-websocket")
                 .setAllowedOriginPatterns("*")
-                .withSockJS();
+                .withSockJS()
+                .setClientLibraryUrl("https://unpkg.com/sockjs-client@1.5.1/lib/entry.js");
     }
 
 }
