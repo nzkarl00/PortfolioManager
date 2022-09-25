@@ -31,7 +31,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/gs-guide-websocket")
                 .setAllowedOriginPatterns("*")
                 .withSockJS()
-                .setClientLibraryUrl("https://unpkg.com/sockjs-client@1.5.1/lib/entry.js");
+                .setClientLibraryUrl("/webjars/sockjs-client/1.5.1/sockjs.js");
     }
 
 }
