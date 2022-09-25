@@ -226,7 +226,7 @@
         let socket = new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
         stompClient = await Stomp.over(socket);
         // connect to the portfolio server
-        stompClient.connect({}, function (frame) {
+        stompClient.connect({reconnectDelay: 50}, function (frame) {
             // subscribe to the global topic
             stompClient.subscribe('/topic/' + subTopic + '/' + [[${project.getId()}]], function (update) {
                 let updateType = JSON.parse(update.body).updateType
