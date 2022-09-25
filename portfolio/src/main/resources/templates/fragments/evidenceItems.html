@@ -108,13 +108,10 @@
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
                                 class="fa fa-trash delete_evidence"></button>
                         <div id="high_five_container" style="width:100%; text-align: right">
-                        <form th:action="@{high-five}" method="post">
-                            <input style="display:none;" th:name="id" th:value="${evidence.getId()}" type="number">
-                            <button
-                                    th:id="${'highFiveButton' + evidence.getId()}"
-                                    class="high_five fa fa-hand-paper-o fa-2x"
-                                    type="submit"></button>
-                        </form>
+                        <button th:id="${'highFiveButton' + evidence.getId()}"
+                                class="high_five fa fa-hand-paper-o fa-2x" th:value="${evidence.getId()}"
+                                type="submit" onclick="toggleHighFive(this)">
+                        </button>
                         </div>
                         </div>
                     </div>
@@ -203,6 +200,14 @@
                 addTagToEvidence(evidenceCategory, evidence.id, "ci")
             }
         }
+
+        function toggleHighFive(event) {
+            $.post("high-five", {evidenceId: event.value}).done(function (result) {
+                console.log(result)
+            })
+        }
+
+
     </script>
     <br>
 </div>
