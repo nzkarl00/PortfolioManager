@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,9 +60,9 @@ public class HighFiveController {
     }
 
     @RequestMapping("/highFiveList/{id}")
-    public String highFiveList(@PathVariable("id") String evidenceId, ModelMap model) {
+    public String highFiveList(@PathVariable("id") String evidenceId, Model model) {
         System.out.println("herer");
-        model.addAttribute("here", "hell");
-        return "evidenceList :: view";
+        model.addAttribute("here123", "hello I am new");
+        return "fragments/highFiveModal :: view";
     }
 }

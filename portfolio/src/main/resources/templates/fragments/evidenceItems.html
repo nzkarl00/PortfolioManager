@@ -4,6 +4,7 @@
 <head th:replace="fragments/head.html :: head('Evidence')">
 <body>
 <div th:fragment="evidenceItems" id="evidence_item_list">
+    <div id="HighFivesHolder" />
     <div class="row" th:each="evidence: ${evidenceList}">
 
         <div class="col-1">
@@ -126,26 +127,27 @@
                     </div>
 
 
-                    <!-- Modal -->
-                    <div class="modal fade" th:fragment="view" th:id="${'HighFives' + evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">High Five Summary</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    ...
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary">Save changes</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
+<!--                    &lt;!&ndash; Modal &ndash;&gt;-->
+<!--                    <div class="modal fade" th:fragment="view" th:id="${'HighFives' + evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">-->
+<!--                        <div class="modal-dialog" role="document">-->
+<!--                            <div class="modal-content">-->
+<!--                                <div class="modal-header">-->
+<!--                                    <h5 class="modal-title" id="exampleModalLabel" th:text="${here123 + ' working '}"></h5>-->
+<!--                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                                        <span aria-hidden="true">&times;</span>-->
+<!--                                    </button>-->
+<!--                                </div>-->
+<!--                                <div class="modal-body">-->
+<!--                                    ...-->
+<!--                                </div>-->
+<!--                                <div class="modal-footer">-->
+<!--                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+<!--                                    <button type="button" class="btn btn-primary">Save changes</button>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
 
 
@@ -239,9 +241,9 @@
                 url: "/highFiveList/" + id,
                 success: function (response) {
                     console.log(response)
-
-                    $('#HighFives'+id).modal();
-                    $('#HighFives'+id).modal('show');
+                    $('#HighFivesHolder').html(response);
+                    $('#HighFives').modal();
+                    $('#HighFives').modal('open');
                 }
             })
         }
