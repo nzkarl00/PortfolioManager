@@ -12,9 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 
@@ -57,5 +56,12 @@ public class HighFiveController {
             }
         }
         return "error";
+    }
+
+    @RequestMapping("/highFiveList/{id}")
+    public String highFiveList(@PathVariable("id") String evidenceId, ModelMap model) {
+        System.out.println("herer");
+        model.addAttribute("here", "hell");
+        return "evidenceList :: view";
     }
 }
