@@ -223,14 +223,17 @@
     let timeoutDict = {};
 
     async function connect(subTopic) {
-        let socket = new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
-        stompClient = await Stomp.over(socket);
-        // connect to the portfolio server
-        stompClient.connect({reconnectDelay: 50}, function (frame) {
+        let stompFailureCallback = function (error) {
+            console.log('STOMP: ' + error);
+            setTimeout(connect(subTopic), 10000);
+            console.log('STOMP: Reconnecting in 10 seconds');
+        };
+
+        let stompSuccessCallback = function () {
             // subscribe to the global topic
             stompClient.subscribe('/topic/' + subTopic + '/' + [[${project.getId()}]], function (update) {
                 let updateType = JSON.parse(update.body).updateType
-                if (updateType == "EDIT") {
+                if (updateType === "EDIT") {
                     let editMessage = JSON.parse(update.body).message
                     clearTimeout(timeoutDict[editMessage])
                     timeoutDict[editMessage] = setTimeout(resetEditStatus, 2500, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
@@ -239,28 +242,28 @@
                     }
                     displayEdits()
                 } else {
-                    if (updateType == "SPRINT") {
+                    if (updateType === "SPRINT") {
                         $.get("sprints", {"id":[[${project.getId()}]]})
                             .then((response) => {
                                 sprintList = response.data
                                 buildAll(sprintList, deadlineList, eventList, milestoneList)
                                 renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                             })
-                    } else if (updateType == "DEADLINE") {
+                    } else if (updateType === "DEADLINE") {
                         $.get("deadlines", {"id":[[${project.getId()}]]})
                             .then((response) => {
                                 deadlineList = response.data
                                 buildAll(sprintList, deadlineList, eventList, milestoneList)
                                 renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                             })
-                    } else if (updateType == "EVENT") {
+                    } else if (updateType === "EVENT") {
                         $.get("events", {"id":[[${project.getId()}]]})
                             .then((response) => {
                                 eventList = response.data
                                 buildAll(sprintList, deadlineList, eventList, milestoneList)
                                 renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                             })
-                    } else if (updateType == "MILESTONE") {
+                    } else if (updateType === "MILESTONE") {
                         $.get("milestones", {"id":[[${project.getId()}]]})
                             .then((response) => {
                                 milestoneList = response.data
@@ -270,7 +273,11 @@
                     }
                 }
             });
-        });
+        }
+        let socket = new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
+        stompClient = await Stomp.over(socket);
+        // connect to the portfolio server
+        stompClient.connect({}, stompSuccessCallback, stompFailureCallback);
     }
 
     /**
