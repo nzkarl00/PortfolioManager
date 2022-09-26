@@ -280,7 +280,7 @@ public class EvidenceListControllerTest {
 
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(InvalidParamsEvidenceRequired))
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?ui=1&pi=" + 0)); // Redirected to add dates page
         verify(evidenceRepository, never()).save(Mockito.any(Evidence.class)); // Verifies evidence was not saved
 
     }
@@ -306,7 +306,7 @@ public class EvidenceListControllerTest {
 
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(InvalidParamsEvidenceDate))
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?ui=1&pi=" + 0)); // Redirected to add dates page
         verify(evidenceRepository, never()).save(Mockito.any(Evidence.class)); // Verifies evidence was not saved
 
     }
