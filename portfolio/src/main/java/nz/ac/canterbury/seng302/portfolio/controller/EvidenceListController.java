@@ -175,6 +175,7 @@ public class EvidenceListController {
       for (Evidence evidence: evidenceList) {
           evidenceSkillMap.put(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence.getId()));
           evidenceCategoryMap.put(evidence.getId(), evidence.getCategoryStrings());
+          logger.info("[HERE YIYANG] "+ evidence.getHighFives());
       }
       model.addAttribute("skillMap", evidenceSkillMap);
       model.addAttribute("categoryMap", evidenceCategoryMap);
