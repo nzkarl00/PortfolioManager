@@ -554,15 +554,22 @@
         let commitChange = "N";
 
         function commitRecheck(commits, commitDelete) {
-
+            const originalCommits = [[${existingCommits}]]
 
             if (commitDelete === "") {
                 if (commits === "") {
                     commitChange = "N"
                 } else {
                     commitChange = "N"
+                    const myArray = commits.split("~");
+                    for (const hash of myArray) {
+                        for (const ogCommit of originalCommits) {
+                            if (ogCommit.hash != hash) {
+                                commitChange = "Y"
+                            }
+                        }
+                    }
                 }
-
             } else {
                 commitChange = "Y"
             }
