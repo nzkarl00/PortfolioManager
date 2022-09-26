@@ -162,7 +162,20 @@ public class GroupController {
         @RequestParam("groupId") Integer groupId,
         Model model
     ) throws InterruptedException {
-        groupsClientService.addUserToGroup(groupId, (ArrayList<Integer>) ids);
+
+        List<Integer> userArray = new ArrayList<Integer>();
+        if (groupId == 2) {
+            for (Integer userId : ids){
+                // If they are removing themselves, dont add the user unless they are an admin
+                if ((userId.equals(AuthStateInformer.getId(principal))) && !(AuthStateInformer.getRole(principal).equals("admin"))) {
+                } else {
+                    userArray.add(userId);
+                }
+            }
+        } else {
+            userArray = ids;
+        }
+        groupsClientService.addUserToGroup(groupId, (ArrayList<Integer>) userArray);
         clipboard = ids;
         return "redirect:groups";
     }
