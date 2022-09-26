@@ -286,11 +286,12 @@ public class EvidenceListController {
         Model model
     ) throws CustomExceptions.ProjectItemNotFoundException {
         logger.info("[EVIDENCE] Attempting to add new evidence");
+        Integer accountID = AuthStateInformer.getId(principal);
+        String redirect = "redirect:evidence?pi=" + projectId.toString() + "&ui=" + accountID;
         if (!principal.getIsAuthenticated()) {
             logger.debug("[EVIDENCE] Redirecting, user not authenticated");
-            return "redirect:evidence?pi=" + projectId.toString();
+            return redirect;
         }
-        Integer accountID = AuthStateInformer.getId(principal);
         model.addAttribute("authorId", accountID);
         AuthenticatedUser thisUser = new AuthenticatedUser(principal);
         model.addAttribute("authorUserName", thisUser.getUsername());
@@ -299,7 +300,7 @@ public class EvidenceListController {
             logger.debug("[EVIDENCE] Attempted to add evidence to a project that could not be found");
             // In future we can use a 404 here
             errorMessage = "Project does not exist";
-            return "redirect:evidence";
+            return "redirect:evidence?ui=" + accountID;
         }
 
         // Extract then validate links
@@ -313,7 +314,7 @@ public class EvidenceListController {
         // If error occurs, return early
         if (!errorMessage.equals("")) {
             model.addAttribute("errorMessage", errorMessage);
-            return "redirect:evidence?pi=" + projectId;
+            return redirect;
         }
 
         int categoriesInt = Evidence.categoryStringToInt(categories);
@@ -350,7 +351,7 @@ public class EvidenceListController {
                 }
             }
         }
-        return "redirect:evidence?pi=" + projectId;
+        return redirect;
     }
 
     @PostMapping("/delete-evidence")
@@ -359,17 +360,18 @@ public class EvidenceListController {
                                  @RequestParam(value = "evidenceId") String evidenceId,
                                  @AuthenticationPrincipal AuthState principal) {
         Evidence targetEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
+        int accountID = AuthStateInformer.getId(principal);
+        String redirect = "redirect:evidence?pi=" + projectId.toString() + "&ui=" + accountID;
         if (targetEvidence == null) {
             logger.debug("[EVIDENCE] Redirecting, evidence id " + Integer.parseInt(evidenceId) + " does not exist");
-            return "redirect:evidence?pi=" + projectId;
+            return redirect;
         }
-        Integer accountID = AuthStateInformer.getId(principal);
         if (!principal.getIsAuthenticated() || accountID != targetEvidence.getParentUserId()) {
             logger.debug("[EVIDENCE] Redirecting, user does not have permissions to delete evidence " + Integer.parseInt(evidenceId));
-            return "redirect:evidence?pi=" + projectId;
+            return redirect;
         }
         evidenceService.deleteEvidence(targetEvidence);
-        return "redirect:evidence?pi=" + projectId;
+        return redirect;
     }
 
     private void noSkillsCheck(Evidence evidence) {

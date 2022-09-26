@@ -120,6 +120,7 @@
                         <div class="col-lg-8 col-md-10 col-sm-12">
                             <form th:action="@{evidence}" method="get">
                                 <input th:name="pi" id="pi" th:value="${project.getId}" type="number" style="display: none">
+                                <input th:name="ui" id="ui" th:value="${userId}" type="number" style="display: none">
                                 <button class="add" type="submit">
                                     <i class="fa fa-plus"></i>&nbsp;
                                     Add Evidence
