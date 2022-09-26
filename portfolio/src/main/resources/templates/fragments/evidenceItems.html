@@ -112,6 +112,10 @@
                                 class="high_five fa fa-hand-paper-o fa-2x" th:value="${evidence.getId()}"
                                 type="submit" onclick="toggleHighFive(this)">
                         </button>
+
+<!--                        <a style="text-decoration: underline; color: #337ab7" th:text="${evidence.getHighFivesSize() + ' High-Fives'}">-->
+<!--                        </a>-->
+
                         </div>
                         </div>
                     </div>
@@ -203,7 +207,7 @@
 
         function toggleHighFive(event) {
             $.post("high-five", {evidenceId: event.value}).done(function (result) {
-                console.log(result)
+                console.log(result, "hereiam")
             })
         }
 

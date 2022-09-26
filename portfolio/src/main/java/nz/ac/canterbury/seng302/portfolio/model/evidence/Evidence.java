@@ -345,4 +345,15 @@ public class Evidence {
     public List<LinkedCommit> getLinkedCommit() {
         return linkedCommit;
     }
+
+//    /**
+//     * Get the high-fives associated with a piece of Evidence
+//     */
+//    public List<HighFive> getHighFives() { return highFives; }
+//
+    /**
+     * Get the high-fives size associated with a piece of Evidence
+     */
+    @Transactional
+    public int getHighFivesSize() { return this.highFives.size(); }
 }
