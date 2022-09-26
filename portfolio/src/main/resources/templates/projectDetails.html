@@ -223,8 +223,7 @@
     let timeoutDict = {};
 
     async function connect(subTopic) {
-        console.log([[${baseUrl}]])
-        let socket = new SockJS('https://' + [[${baseUrl}]] + '/gs-guide-websocket');
+        let socket = new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
         stompClient = await Stomp.over(socket);
         // connect to the portfolio server
         stompClient.connect({reconnectDelay: 50}, function (frame) {
