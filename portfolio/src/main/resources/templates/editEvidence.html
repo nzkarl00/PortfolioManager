@@ -529,7 +529,6 @@
 
         let originalLinks = new Set()
         originalUsers = new Set()
-        originalCommits = new Set()
         // wait for the page to load
         setTimeout(() => {
             // set the existing links and skills
@@ -552,9 +551,9 @@
 
 
         let commitChange = "N";
+        const originalCommits = [[${existingCommits}]]
 
         function commitRecheck(commits, commitDelete) {
-            const originalCommits = [[${existingCommits}]]
 
             if (commitDelete === "") {
                 if (commits === "") {
@@ -563,9 +562,14 @@
                     commitChange = "N"
                     const myArray = commits.split("~");
                     for (const hash of myArray) {
+                        const newHash = hash.replace(/\+[0-9]+/gi, "");
+                        let checkVal = "N"
                         for (const ogCommit of originalCommits) {
-                            if (ogCommit.hash != hash) {
+                            if ((ogCommit.hash != newHash) && (checkVal == "N")) {
                                 commitChange = "Y"
+                            } else {
+                                commitChange = "N"
+                                checkVal = "Y"
                             }
                         }
                         if (originalCommits.length == 0) {

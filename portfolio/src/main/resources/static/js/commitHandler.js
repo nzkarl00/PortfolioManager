@@ -23,7 +23,7 @@ function repositionCommit(id) {
     button.setAttribute('onclick', "deleteCommit('" + id + "')")
     // allow for showing a commit already added in the search without overlapping the ids
     commit.id = "moved" + id
-    commits.add(id)
+    commits.add(id  + "+" + document.getElementById("commit_group").value)
     removedCommits.delete(id)
     let commitsStore = document.getElementById("commitsInput")
 
