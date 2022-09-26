@@ -130,15 +130,19 @@
                     <div class="modal fade" id="highFiveUserListModal" tabindex="-1" role="dialog" aria-labelledby="highFiveUserListModalCenterTitle" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
+
                                 <div class="modal-header">
-                                    <span class="modal-title align-middle">High Five(s) from User(s)</span>
+                                    <h3>High Five(s) from User(s)</h3>
                                 </div>
+
                                 <div class="modal-body d-flex justify-content-center">
-                                    LIST OF USERS TO IMPLEMENT TODO
+                                    <p>LIST OF USERS TO IMPLEMENT TODO</p>
                                 </div>
+
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary align-baseline" data-dismiss="modal">Close</button>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -210,6 +214,11 @@
         <br>
     </div>
     <script th:inline="javascript">
+        $(document).on("click", ".open-AddBookDialog", function () {
+            var myBookId = $(this).data('id');
+            $(".modal-body #bookId").val( myBookId );
+        });
+
         function addTagToEvidence(value, evidenceId, type) {
             let newItem = document.createElement("button");
             newItem.className = "table_text evidence_" + type + "_tag"
