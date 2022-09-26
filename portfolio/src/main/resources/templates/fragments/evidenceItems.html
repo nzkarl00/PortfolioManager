@@ -113,13 +113,42 @@
                                 type="submit" onclick="toggleHighFive(this)">
                         </button>
 
-                        <a style="text-decoration: underline; color: #337ab7" th:id="${'High-Five_' + evidence.getId()}" th:value="${evidence.getHighFivesSize()}"
-                           th:text="${evidence.getHighFivesSize() + ' High-Fives'}">
-                        </a>
+                        <a
+                                style="text-decoration: underline; color: #337ab7" th:id="${'High-Five_' + evidence.getId()}" th:value="${evidence.getHighFivesSize()}"
+                                th:text="${evidence.getHighFivesSize() + ' High-Fives'}"
+                                type="button"
+                                data-toggle="modal"
+                                th:data-target="${'#HighFive' + evidence.getId()}"
+                        ></a>
 
                         </div>
                         </div>
                     </div>
+
+
+                    <!-- Modal -->
+                    <div class="modal fade" th:id="${'HighFive' + evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">High Five Summary</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    ...
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
                     <!-- Modal -->
                     <div class="modal fade" th:id="${'deleteModal'+evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -143,7 +172,6 @@
                                 </form>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -208,7 +236,7 @@
 
         function toggleHighFive(event) {
             $.post("high-five", {evidenceId: event.value}).done(function (result) {
-                console.log(result, "hereiam")
+                console.log(result)
                 let currentCount = parseInt(document.getElementById('High-Five_'+event.value).getAttribute("value"))
 
                 if(result === "added") {

@@ -106,7 +106,7 @@ public class HighFiveControllerTest {
         Assertions.assertEquals("deleted", result.getResponse().getContentAsString());
         // Verifies high five was not saved
         verify(highFiveRepository, never()).save(any(HighFive.class));
-        verify(highFiveRepository).delete(any(HighFive.class));
+        verify(highFiveRepository, atMostOnce()).delete(any((HighFive.class)));
     }
 
     @Test
