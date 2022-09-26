@@ -1,5 +1,5 @@
 // build a sprint in html from js
-function buildSprint(sprint, sprintNum) {
+function buildSprint(sprint) {
     const mainDiv = document.getElementById("sprints")
     // make the main container for all the sprints
     const sprintDiv = document.createElement("div")
@@ -17,7 +17,7 @@ function buildSprint(sprint, sprintNum) {
 
     const label = document.createElement("div")
     label.className = "portion_sprintbody project_sprinthead "
-    label.innerText = "Sprint " + sprintNum
+    label.innerText = sprint.label
     col1.appendChild(label)
 
     const editButton = document.createElement("button")

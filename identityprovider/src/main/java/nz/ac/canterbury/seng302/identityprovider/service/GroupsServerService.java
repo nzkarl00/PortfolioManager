@@ -113,17 +113,6 @@ public class GroupsServerService extends GroupsServiceImplBase {
                 for (GroupMembership groupMembership : groupMemberships) {
                     groupMembershipRepo.deleteByGroupMembershipId(groupMembership.getGroupMembershipId());
                 }
-
-                if (user.getRoles().contains(TEACHER_ROLE)){
-                    List<Role> rolesOfUser = roleRepo.findAllByRegisteredUser(user); // List of roles held by that user
-                    for (Role role: rolesOfUser) {
-                        // Out of the roles held by that user, update the repos with the requested role to be removed.
-                        if (role.getRole().equals(TEACHER_ROLE)) {
-                            Long roleIdToRemove = role.getUserRoleId();
-                            roleRepo.deleteById(roleIdToRemove);
-                        }
-                    }
-                }
             }
 
             // if the user being added is not already in the group, aka it is not a duplicate group member
