@@ -168,7 +168,7 @@
 <!-- Javascript for the calendar -->
 <script th:src="@{webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{webjars/sockjs-client/sockjs.min.js}"></script>
-<script src="https://cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
+<script th:src="@{webjars/stomp-websocket/stomp.min.js}"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script th:src="@{js/get-time-bound.js}"></script>
 <script th:src="@{js/project-building.js}"></script>
@@ -222,62 +222,65 @@
     let currentEdits = [];
     let timeoutDict = {};
 
-    async function connect(subTopic) {
-        let stompFailureCallback = function (error) {
-            console.log('STOMP: ' + error);
-            setTimeout(connect(subTopic), 10000);
-            console.log('STOMP: Reconnecting in 10 seconds');
-        };
-
-        let stompSuccessCallback = function () {
-            // subscribe to the global topic
-            stompClient.subscribe('/topic/' + subTopic + '/' + [[${project.getId()}]], function (update) {
-                let updateType = JSON.parse(update.body).updateType
-                if (updateType === "EDIT") {
-                    let editMessage = JSON.parse(update.body).message
-                    clearTimeout(timeoutDict[editMessage])
-                    timeoutDict[editMessage] = setTimeout(resetEditStatus, 2500, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
-                    if (currentEdits.includes(editMessage) === false) {
-                        currentEdits.push(editMessage)
-                    }
-                    displayEdits()
-                } else {
-                    if (updateType === "SPRINT") {
-                        $.get("sprints", {"id":[[${project.getId()}]]})
-                            .then((response) => {
-                                sprintList = response.data
-                                buildAll(sprintList, deadlineList, eventList, milestoneList)
-                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
-                            })
-                    } else if (updateType === "DEADLINE") {
-                        $.get("deadlines", {"id":[[${project.getId()}]]})
-                            .then((response) => {
-                                deadlineList = response.data
-                                buildAll(sprintList, deadlineList, eventList, milestoneList)
-                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
-                            })
-                    } else if (updateType === "EVENT") {
-                        $.get("events", {"id":[[${project.getId()}]]})
-                            .then((response) => {
-                                eventList = response.data
-                                buildAll(sprintList, deadlineList, eventList, milestoneList)
-                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
-                            })
-                    } else if (updateType === "MILESTONE") {
-                        $.get("milestones", {"id":[[${project.getId()}]]})
-                            .then((response) => {
-                                milestoneList = response.data
-                                buildAll(sprintList, deadlineList, eventList, milestoneList)
-                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
-                            })
-                    }
-                }
-            });
-        }
-        let socket = new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
+    async function connect() {
+        let socket = await getSocket()
         stompClient = await Stomp.over(socket);
         // connect to the portfolio server
-        stompClient.connect({}, stompSuccessCallback, stompFailureCallback);
+        stompClient.connect({}, stompSuccessCallback(), stompFailureCallback());
+    }
+
+    async function getSocket() {
+        return new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
+    }
+
+    async function stompFailureCallback() {
+        setTimeout(connect, 10000);
+    };
+
+    async function stompSuccessCallback() {
+        // subscribe to the global topic
+        await stompClient.subscribe('/topic/calendar/' + [[${project.getId()}]], function (update) {
+            let updateType = JSON.parse(update.body).updateType
+            if (updateType == "EDIT") {
+                let editMessage = JSON.parse(update.body).message
+                clearTimeout(timeoutDict[editMessage])
+                timeoutDict[editMessage] = setTimeout(resetEditStatus, 2500, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
+                if (currentEdits.includes(editMessage) === false) {
+                    currentEdits.push(editMessage)
+                }
+                displayEdits()
+            } else {
+                if (updateType == "SPRINT") {
+                    $.get("sprints", {"id":[[${project.getId()}]]})
+                        .then((response) => {
+                            sprintList = response.data
+                            buildAll(sprintList, deadlineList, eventList, milestoneList)
+                            renderCalendar(sprintList, deadlineList, eventList, milestoneList)
+                        })
+                } else if (updateType == "DEADLINE") {
+                    $.get("deadlines", {"id":[[${project.getId()}]]})
+                        .then((response) => {
+                            deadlineList = response.data
+                            buildAll(sprintList, deadlineList, eventList, milestoneList)
+                            renderCalendar(sprintList, deadlineList, eventList, milestoneList)
+                        })
+                } else if (updateType == "EVENT") {
+                    $.get("events", {"id":[[${project.getId()}]]})
+                        .then((response) => {
+                            eventList = response.data
+                            buildAll(sprintList, deadlineList, eventList, milestoneList)
+                            renderCalendar(sprintList, deadlineList, eventList, milestoneList)
+                        })
+                } else if (updateType == "MILESTONE") {
+                    $.get("milestones", {"id":[[${project.getId()}]]})
+                        .then((response) => {
+                            milestoneList = response.data
+                            buildAll(sprintList, deadlineList, eventList, milestoneList)
+                            renderCalendar(sprintList, deadlineList, eventList, milestoneList)
+                        })
+                }
+            }
+        });
     }
 
     /**
