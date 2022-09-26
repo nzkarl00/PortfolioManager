@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.transaction.Transactional;
+
 /**
  * Responsible for high five network requests
  */
@@ -37,6 +39,7 @@ public class HighFiveController {
      */
     @PostMapping("/high-five")
     @ResponseBody
+    @Transactional
     public String deleteEvidence(@RequestParam(value = "evidenceId") String evidenceId,
                                  @AuthenticationPrincipal AuthState principal) {
         int userId = AuthStateInformer.getId(principal);
