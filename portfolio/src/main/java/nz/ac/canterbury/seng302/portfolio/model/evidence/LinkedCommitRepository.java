@@ -11,6 +11,7 @@ import java.util.List;
 public interface LinkedCommitRepository extends CrudRepository<LinkedCommit, Integer> {
     LinkedCommit findById(int id);
     List<LinkedCommit> findByParentEvidence(int parentEvidenceId);
+    List<LinkedCommit> findByParentEvidence(Evidence parentEvidence);
 
 
     @Modifying
