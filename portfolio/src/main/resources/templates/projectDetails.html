@@ -224,7 +224,7 @@
 
     async function connect(subTopic) {
         console.log([[${baseUrl}]])
-        let socket = new SockJS('https://localhost:9000/gs-guide-websocket');
+        let socket = new SockJS('http://localhost:9000/gs-guide-websocket');
         stompClient = await Stomp.over(socket);
         // connect to the portfolio server
         stompClient.connect({reconnectDelay: 50}, function (frame) {
