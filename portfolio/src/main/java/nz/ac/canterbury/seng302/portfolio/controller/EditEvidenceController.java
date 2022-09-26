@@ -172,6 +172,7 @@ public class EditEvidenceController {
      * @return the html template to give to the user
      */
     @GetMapping("/edit-evidence")
+    @Transactional
     public String editEvidence(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "id") Optional<Integer> evidenceId,
@@ -193,6 +194,7 @@ public class EditEvidenceController {
         }
 
         Evidence evidence = evidenceRepository.findById(evidenceIdActualised);
+        logger.info(evidence.getEvidenceTags().toString());
 
         //Check is evidence is present or the user is the parent evidence user
         if (evidence == null || evidence.getParentUserId() != id) {
