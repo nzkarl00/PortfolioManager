@@ -199,4 +199,10 @@ public class EvidenceServiceTest {
         Assertions.assertEquals(new ArrayList<>(List.of("A", "B", "C")),
             result);
     }
+
+    @Test
+    void optionallyApplyNoSkillsTagToEvidenceWithoutSkills() {
+        Evidence testEvidence = getValidEvidence();
+        evidenceService.handleSkillTagEditsForEvidence(getParsedEditSkillsAddSkill(), testEvidence);
+    }
 }
