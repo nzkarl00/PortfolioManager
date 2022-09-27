@@ -4,12 +4,11 @@
 <head th:replace="fragments/head.html :: head('Evidence')">
 <body>
 <div th:fragment="evidenceItems" id="evidence_item_list">
-    <div id="HighFivesHolder" />
+
     <div class="row" th:each="evidence: ${evidenceList}">
 
         <div class="col-1">
         </div>
-
 
         <!-- Evidence Section which includes 1. heading, 2. infom and 3. bottom -->
         <div class="col-lg-10 col-md-12 col-sm-12">
@@ -118,64 +117,14 @@
                             </button>
 
                             <a
-                                data-toggle="modal"
-                                data-target="#highFiveUserListModal"
-                                data-high-five-users="YIYANG ATTEMPT TO SEND OVER DATA"
                                 style="text-decoration: underline; color: #337ab7" th:id="${'High-Five_' + evidence.getId()}" th:value="${evidence.getHighFivesSize()}"
                                 th:text="${evidence.getHighFivesSize() + ' High-Fives'}"
                                 type="button"
                                 th:onclick="'javascript:openHighFiveList(\'' + ${evidence.getId()} + '\');'"
-
                             ></a>
                         </div>
                         </div>
                     </div>
-
-                    <!-- High Five UserList Modal -->
-                    <div class="modal fade" id="highFiveUserListModal" tabindex="-1" role="dialog" aria-labelledby="highFiveUserListModalCenterTitle" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-
-                                <div class="modal-header">
-                                    <h3>High Five(s) from User(s)</h3>
-                                </div>
-
-                                <div class="modal-body d-flex justify-content-center">
-                                    <p>LIST OF USERS TO IMPLEMENT TODO</p>
-                                    <input type="text" name="highFiveUsers" value=""/>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary align-baseline" data-dismiss="modal">Close</button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-
-<!--                    &lt;!&ndash; Modal &ndash;&gt;-->
-<!--                    <div class="modal fade" th:fragment="view" th:id="${'HighFives' + evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">-->
-<!--                        <div class="modal-dialog" role="document">-->
-<!--                            <div class="modal-content">-->
-<!--                                <div class="modal-header">-->
-<!--                                    <h5 class="modal-title" id="exampleModalLabel" th:text="${here123 + ' working '}"></h5>-->
-<!--                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-<!--                                        <span aria-hidden="true">&times;</span>-->
-<!--                                    </button>-->
-<!--                                </div>-->
-<!--                                <div class="modal-body">-->
-<!--                                    ...-->
-<!--                                </div>-->
-<!--                                <div class="modal-footer">-->
-<!--                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
-<!--                                    <button type="button" class="btn btn-primary">Save changes</button>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-
 
                     <!-- Modal -->
                     <div class="modal fade" th:id="${'deleteModal'+evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -269,24 +218,14 @@
 
         function openHighFiveList(id) {
             $.ajax({
-                url: "/highFiveList/" + id,
+                url: "highFiveList/" + id,
                 success: function (response) {
                     console.log(response)
-                    $('#HighFivesHolder').html(response);
-                    $('#HighFives').modal();
-                    $('#HighFives').modal('open');
+                    $('#highFivesHolder').html(response);
+                    $('#highFives').modal('show');
                 }
             })
         }
-
-        // <a
-        //     style="text-decoration: underline; color: #337ab7" th:id="${'High-Five_' + evidence.getId()}" th:value="${evidence.getHighFivesSize()}"
-        //     th:text="${evidence.getHighFivesSize() + ' High-Fives'}"
-        //     type="button"
-        //     data-toggle="modal"
-        //     th:data-target="${'#HighFive' + evidence.getId()}"
-        //     th:onclick="'javascript:openHighFiveList(\'' + ${evidence.getId()} + '\');'"
-        // ></a>
 
         function toggleHighFive(event) {
             $.post("high-five", {evidenceId: event.value}).done(function (result) {

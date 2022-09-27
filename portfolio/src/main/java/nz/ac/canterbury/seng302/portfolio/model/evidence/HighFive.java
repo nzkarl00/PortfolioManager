@@ -28,6 +28,9 @@ public class HighFive {
     @Column(name="parent_user_id", nullable=false)
     protected int parentUserId;
 
+    String firstName;
+    String lastName;
+
     public HighFive() {}
 
     /**

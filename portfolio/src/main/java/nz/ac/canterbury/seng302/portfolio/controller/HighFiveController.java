@@ -61,7 +61,6 @@ public class HighFiveController {
 
     @RequestMapping("/highFiveList/{id}")
     public String highFiveList(@PathVariable("id") String evidenceId, Model model) {
-        System.out.println("herer");
         model.addAttribute("here123", "hello I am new");
         return "fragments/highFiveModal :: view";
     }
