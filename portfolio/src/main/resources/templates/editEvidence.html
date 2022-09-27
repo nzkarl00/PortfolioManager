@@ -333,6 +333,7 @@
             } else {
                 newSkills.delete(event.target.value)
             }
+            skills.delete(event.target.value)
             parent.remove()
 
             storeSkills()
@@ -341,6 +342,7 @@
 
         // Use the data from the edit skill input textbox to overwrite a skill
         function editSkill(event) {
+            skills.delete(event.target.value)
             skill = document.getElementById("skill_" + event.target.value)
             editingSkill = document.createElement("input")
             editingSkill.id = "skill_" + event.target.value
@@ -369,11 +371,13 @@
         function saveSkill(event) {
             editedSkill = document.getElementById("skill_" + event.target.value)
 
-            console.log(editedSkill.value)
-            if (skills.has(editedSkill.value)) {
-                document.getElementById("skill_error").style = "color:red;";
-                return false;
+            for (const skill of skills) {
+                if (skill.toLowerCase() == event.target.value.toLowerCase()) {
+                    document.getElementById("skill_error").style = "color:red;";
+                    return false;
+                }
             }
+
             document.getElementById("skill_error").style = "display:none;";
 
             let newSkill = document.createElement("button");
@@ -458,10 +462,13 @@
                 newSkill = newSkill.slice(0, -1);
             }
 
-            if (skills.has(newSkill)) {
-                document.getElementById("add_skill_input").value = "";
-                return;
+            for (const skill of skills) {
+                if (skill.toLowerCase() == newSkill.toLowerCase()) {
+                    document.getElementById("add_skill_input").value = "";
+                    return;
+                }
             }
+
 
             // check to see if it matches the correct skill format
             if (validateSkill(newSkill)) {
