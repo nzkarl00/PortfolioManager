@@ -101,6 +101,7 @@ public class EvidenceService {
             }
         }
         if (!Objects.equals(categoryName, "")) {
+            categoryName = categoryName.replace("%20", " ");
             if (!evidenceList.isEmpty()) {
                 // Intersection of current list and query
                 evidenceList = evidenceList.stream()
@@ -186,6 +187,7 @@ public class EvidenceService {
         }
         return filteredEvidence;
     }
+
 
     /**
      * This function loops through the provided evidences from the filtering
