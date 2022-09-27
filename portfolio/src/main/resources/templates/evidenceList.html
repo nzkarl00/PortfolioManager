@@ -166,7 +166,10 @@
       const url = constructUrl(projectId, userId, categoryId, skillId)
       $.post("evidence-project", {pi: projectId, ui: userId, ci: categoryId, si: skillId}).done(function (evidenceItems) {
           $("#evidence_item_list").replaceWith(evidenceItems)
-          if (projectId !== -1) {
+          if (userId !== [[${userID}]] && userId !== null) { // userId is the ID of the user in the query, userID is the authenticated user added in the model
+              $("#evidence_form_container").replaceWith("<div id='evidence_form_container'></div>")
+          }
+          else if (projectId !== -1) {
               window.history.pushState(null, '', url.toString())
               $("#evidence_form_container").load("evidence-form" + window.location.search)
           } else {

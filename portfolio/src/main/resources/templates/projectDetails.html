@@ -120,6 +120,7 @@
                         <div class="col-lg-8 col-md-10 col-sm-12">
                             <form th:action="@{evidence}" method="get">
                                 <input th:name="pi" id="pi" th:value="${project.getId}" type="number" style="display: none">
+                                <input th:name="ui" id="ui" th:value="${userId}" type="number" style="display: none">
                                 <button class="add" type="submit">
                                     <i class="fa fa-plus"></i>&nbsp;
                                     Add Evidence
@@ -568,6 +569,7 @@
         // Sets the starting date for in-between sections and starting id
         let initialDate = [[${project.getStartDate()}]];
         let initialFalseId = 0.5;
+        let sprintNum = 1;
 
         for (const sprint of sprintList) {
             if (initialFalseId == 0.5) {
@@ -575,7 +577,8 @@
             } else {
                 buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId, deadlineList, eventList, milestoneList, sprint.parentProjectId, "middle")
             }
-            buildSprint(sprint)
+            buildSprint(sprint, sprintNum)
+            sprintNum += 1
             initialDate = sprint.endDate;
             initialFalseId += 1;
 

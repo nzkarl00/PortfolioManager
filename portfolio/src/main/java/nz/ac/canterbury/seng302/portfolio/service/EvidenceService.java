@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
@@ -35,11 +36,11 @@ public class EvidenceService {
     @Autowired
     GroupRepoRepository groupRepoRepository;
     @Autowired
-    private GitlabClient gitlabClient;
+    GitlabClient gitlabClient;
+    @Autowired
+    SkillTagRepository skillTagRepository;
 
     Logger logger = LoggerFactory.getLogger(EvidenceService.class);
-    @Autowired
-    private SkillTagRepository skillTagRepository;
 
     /**
      * Splits an HTML form input list, into multiple array elements.
@@ -77,6 +78,7 @@ public class EvidenceService {
      * @return List of evidence matching all the given criteria
      * @throws CustomExceptions.ProjectItemNotFoundException If the project with this ID does not exist, throws an exception
      */
+    @Transactional
     public List<Evidence> getEvidenceList(Integer userId, Integer projectId,
                                           String categoryName, String skillName)
             throws CustomExceptions.ProjectItemNotFoundException {
@@ -99,6 +101,7 @@ public class EvidenceService {
             }
         }
         if (!Objects.equals(categoryName, "")) {
+            categoryName = categoryName.replace("%20", " ");
             if (!evidenceList.isEmpty()) {
                 // Intersection of current list and query
                 evidenceList = evidenceList.stream()
@@ -143,14 +146,14 @@ public class EvidenceService {
         return evidenceRepository.findAllByParentUserIdOrderByDateDesc(userId);
     }
 
+    @Transactional
     public List<Evidence> filterBySkill(List<Evidence> evidenceList,
                                         String skillName) {
         List<Evidence> filteredEvidence = new ArrayList<>();
         for (Evidence evidence : evidenceList) {
             boolean isValid = false;
             List<EvidenceTag> tagList =
-                    evidenceTagRepository.findAllByParentEvidenceId(
-                            evidence.getId());
+                    evidence.getEvidenceTags();
             for (EvidenceTag tag : tagList) {
                 if (tag.getParentSkillTag().getTitle().equals(skillName)) {
                     isValid = true;
@@ -184,6 +187,7 @@ public class EvidenceService {
         }
         return filteredEvidence;
     }
+
 
     /**
      * This function loops through the provided evidences from the filtering
@@ -308,9 +312,10 @@ public class EvidenceService {
      * @param evidenceId The evidence ID to be checked against
      * @return List of skill tag title strings
      */
-    public List<String> getSkillTagStringsByEvidenceId(int evidenceId) {
+    @Transactional
+    public List<String> getSkillTagStringsByEvidenceId(Evidence evidence) {
         List<EvidenceTag> evidenceTagList =
-                evidenceTagRepository.findAllByParentEvidenceId(evidenceId);
+                evidence.getEvidenceTags();
         return evidenceTagList.stream()
                 .map(evidenceTag -> evidenceTag.getParentSkillTag().getTitle())
                 .collect(Collectors.toList());
@@ -343,7 +348,7 @@ public class EvidenceService {
         List<EvidenceTag> evidenceTagList =
                 evidenceTagRepository.findAllByParentEvidenceId(
                         evidence.getId());
-        if (evidenceTagList.size() == 0) {
+        if (evidenceTagList.isEmpty()) {
             logger.info(
                     "[EVIDENCE_SERVICE] Attempted to create new evidence tag using 'No_Skill' tag and save it to evidenceTagRepository");
             SkillTag noSkillTag = skillTagRepository.findByTitle("No_skills");
@@ -505,20 +510,20 @@ public class EvidenceService {
      * @param evidence The evidence to be deleted
      */
     public void deleteEvidence(Evidence evidence) {
-        List<EvidenceTag> evidenceTags = evidence.getEvidenceTags();
+        List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+        System.out.println(evidenceTags);
         List<SkillTag> skillTags = evidenceTags.stream()
-                .map(EvidenceTag::getParentSkillTag)
-                .filter(skillTag -> !Objects.equals(skillTag.getTitle(), "No_skills"))
-                .toList(); // All skill tags associated with deleted evidence
+            .map(EvidenceTag::getParentSkillTag)
+            .filter(skillTag -> !Objects.equals(skillTag.getTitle(), "No_skills"))
+            .toList(); // All skill tags associated with deleted evidence
+        evidenceTags.forEach(tag -> evidenceTagRepository.deleteById(tag.getId()));
         evidenceRepository.delete(evidence);
         for (SkillTag skillTag : skillTags) {
             if (evidenceTags.containsAll(skillTag.getEvidenceTags())) {
                 // If every evidence tag associated with a skill tag also belongs to deleted evidence
-                skillTag.clearEvidenceTags();
                 skillTagRepository.delete(skillTag);
             }
         }
-
     }
 
     /**

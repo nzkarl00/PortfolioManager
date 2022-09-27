@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nz.ac.canterbury.seng302.identityprovider.service.GroupsServerService.TEACHER_ROLE;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -559,6 +560,8 @@ class GroupsServerServiceTest {
         mwagGroup.setMembers(new ArrayList<>(List.of(mwagMembership)));
         List<Groups> noMembers = new ArrayList<>(List.of(mwagGroup));
 
+        testUser.addRoleTestingOnly(new Role(testUser, "1student"));
+
         when(groupRepo.findByGroupId(2)).thenReturn(mwagGroup);
 
         when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
@@ -650,6 +653,7 @@ class GroupsServerServiceTest {
         mwagGroup.setMembers(new ArrayList<>(List.of(mwagMembership)));
         List<Groups> noMembers = new ArrayList<>(List.of(mwagGroup));
 
+        testUser.addRoleTestingOnly(new Role(testUser, "1student"));
         when(groupRepo.findByGroupId(2)).thenReturn(mwagGroup);
 
         when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
@@ -708,6 +712,7 @@ class GroupsServerServiceTest {
         GroupMembership duplicateGroupMembership = new GroupMembership(mwagGroup, testUser);
         when(groupMembershipRepo.findAllByRegisteredGroupsAndRegisteredGroupUser(mwagGroup,testUser)).thenReturn(new ArrayList<>(List.of(duplicateGroupMembership)));
 
+        testUser.addRoleTestingOnly(new Role(testUser, "1student"));
         AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(2).addUserIds(1).build();
         gss.addGroupMembers(request, testAddGroupMembersObserver);
 

@@ -50,7 +50,7 @@ public class WebLink {
     // For those seeing Transient for the first time.
     // It stops JPA persisting this property, which is desired as we should fetch everytime.
     @Transient
-    private boolean fetched = false;
+    private boolean fetched = true;
 
     /**
      * Whether or not the Link results in a 404 error, ie. it is not found
@@ -182,8 +182,8 @@ public class WebLink {
      * @param notFound whether the fetch resulted in a 404
      */
     public void setFetchResult(boolean notFound) {
-        this.fetched = true;
         this.notFound = notFound;
+        this.fetched = true;
     }
 
     /**
@@ -193,5 +193,13 @@ public class WebLink {
     public void setNotFound(boolean notFound) {
         assert(fetched);
         this.notFound = notFound;
+    }
+
+    /**
+     * Set whether the link has been fetched or not.
+     * @param fetched, true if has been fetched
+     */
+    public void setFetched(boolean fetched) {
+        this.fetched = fetched;
     }
 }

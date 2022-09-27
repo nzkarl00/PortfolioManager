@@ -2,20 +2,23 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static nz.ac.canterbury.seng302.portfolio.common.CommonProjectItems.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,13 +27,26 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class EvidenceServiceTest {
 
-    @Mock
-    SkillTagRepository skillTagRepository;
+    @MockBean
+    EvidenceRepository evidenceRepository = mock(EvidenceRepository.class);
+    @MockBean
+    EvidenceTagRepository evidenceTagRepository = mock(EvidenceTagRepository.class);
+    @MockBean
+    ProjectService projectService = mock(ProjectService.class);
+    @MockBean
+    EvidenceUserRepository evidenceUserRepository = mock(EvidenceUserRepository.class);
+    @MockBean
+    WebLinkRepository webLinkRepository = mock(WebLinkRepository.class);
+    @MockBean
+    AccountClientService accountClientService = mock(AccountClientService.class);
+    @MockBean
+    GroupRepoRepository groupRepoRepository = mock(GroupRepoRepository.class);
+    @MockBean
+    GitlabClient gitlabClient = mock(GitlabClient.class);
+    @MockBean
+    SkillTagRepository skillTagRepository = mock(SkillTagRepository.class);
 
-    @Mock
-    EvidenceRepository evidenceRepository;
-
-    @InjectMocks
+    @Autowired
     EvidenceService evidenceService = new EvidenceService();
 
     static SkillTag skillTagCSharp, skillTagC, skillTagCPlusPlus, skillTagCSS, skillTagReactNative;
@@ -39,7 +55,15 @@ public class EvidenceServiceTest {
 
     @BeforeEach
     public void init() {
-        MockitoAnnotations.openMocks(this); // This is required for Mockito annotations to work
+        evidenceService.evidenceRepository = evidenceRepository;
+        evidenceService.evidenceTagRepository = evidenceTagRepository;
+        evidenceService.projectService = projectService;
+        evidenceService.evidenceUserRepository = evidenceUserRepository;
+        evidenceService.webLinkRepository = webLinkRepository;
+        evidenceService.gitlabClient = gitlabClient;
+        evidenceService.groupRepoRepository = groupRepoRepository;
+        evidenceService.accountClientService = accountClientService;
+        evidenceService.skillTagRepository = skillTagRepository;
     }
 
 
@@ -127,17 +151,19 @@ public class EvidenceServiceTest {
     @Test
     void deleteEvidenceWithOneSkill() {
         Evidence testEvidence = getValidEvidence();
-        testEvidence.setEvidenceTags(List.of(getEvidenceTagA(testEvidence)));
+        List<EvidenceTag> evidenceList = new ArrayList<>(List.of(getEvidenceTagA(testEvidence)));
+        when(evidenceTagRepository.findAllByParentEvidenceId(testEvidence.getId())).thenReturn(evidenceList);
         evidenceService.deleteEvidence(testEvidence);
-        verify(skillTagRepository, times(1)).delete(testEvidence.getEvidenceTags().get(0).getParentSkillTag());
+        verify(skillTagRepository, times(1)).delete(evidenceList.get(0).getParentSkillTag());
     }
 
     @Test
     void deleteEvidenceWithMultipleSkills() {
         Evidence testEvidence = getValidEvidence();
-        testEvidence.setEvidenceTags(List.of(getEvidenceTagA(testEvidence), getEvidenceTagB(testEvidence), getEvidenceTagC(testEvidence)));
+        List<EvidenceTag> evidenceList = new ArrayList<>(List.of(getEvidenceTagA(testEvidence), getEvidenceTagB(testEvidence), getEvidenceTagC(testEvidence)));
+        when(evidenceTagRepository.findAllByParentEvidenceId(testEvidence.getId())).thenReturn(evidenceList);
         evidenceService.deleteEvidence(testEvidence);
-        for (EvidenceTag evidenceTag: testEvidence.getEvidenceTags()) {
+        for (EvidenceTag evidenceTag: evidenceList) {
             verify(skillTagRepository, times(1)).delete(evidenceTag.getParentSkillTag());
         }
         verifyNoMoreInteractions(skillTagRepository);
@@ -149,5 +175,28 @@ public class EvidenceServiceTest {
         testEvidence.setEvidenceTags(List.of(getEvidenceTagANotUnique(testEvidence)));
         evidenceService.deleteEvidence(testEvidence);
         verifyNoInteractions(skillTagRepository);
+    }
+
+    @Test
+    void getSkillTagStringsByEvidenceIdNoSkills() {
+        Evidence testEvidence = getValidEvidence();
+        List<EvidenceTag> tags = new ArrayList<>(List.of(new EvidenceTag(getNoSkillsSkillTag(), testEvidence)));
+        testEvidence.setEvidenceTags(tags);
+        List<String> result = evidenceService.getSkillTagStringsByEvidenceId(testEvidence);
+        Assertions.assertEquals(new ArrayList<>(List.of("No_skills")), result);
+    }
+
+    @Test
+    void getSkillTagStringsByEvidenceIdBlueSky() {
+        Evidence testEvidence = getValidEvidence();
+        List<EvidenceTag> tags = new ArrayList<>(
+            List.of(new EvidenceTag(getSkillTagA(), testEvidence)));
+        tags.add(new EvidenceTag(getSkillTagB(), testEvidence));
+        tags.add(new EvidenceTag(getSkillTagC(), testEvidence));
+        testEvidence.setEvidenceTags(tags);
+        List<String> result =
+            evidenceService.getSkillTagStringsByEvidenceId(testEvidence);
+        Assertions.assertEquals(new ArrayList<>(List.of("A", "B", "C")),
+            result);
     }
 }

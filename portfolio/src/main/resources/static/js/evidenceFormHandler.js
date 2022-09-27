@@ -195,9 +195,12 @@ function clearUsers() {
 
 // Event listener to add skills when enter is pressed and the skill input is selected
 setTimeout(() => {document.querySelector("#add_skill_input").addEventListener("keyup", event => {
-                      if (event.key !== "Enter" && event.key !== " ") return;
-                      addSkill()
-                  })}, 20)
+    if (event.key === "Enter" || event.key === " ") {
+        addSkill()
+    } else if (event.key === "Delete") {
+        skillRow.children.item(skillRow.children.length-1).click() // Negative index doesn't work for htmlcollection
+    }
+})}, 20)
 
 
 //Returns the skills
