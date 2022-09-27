@@ -166,10 +166,11 @@
       const url = constructUrl(projectId, userId, categoryId, skillId)
       $.post("evidence-project", {pi: projectId, ui: userId, ci: categoryId, si: skillId}).done(function (evidenceItems) {
           $("#evidence_item_list").replaceWith(evidenceItems)
+          console.log(userId)
           if (userId !== [[${userID}]] && userId !== null) { // userId is the ID of the user in the query, userID is the authenticated user added in the model
               $("#evidence_form_container").replaceWith("<div id='evidence_form_container'></div>")
           }
-          else if (projectId !== -1) {
+          else if (projectId !== -1 && (userId === null || userId === [[${userID}]] )) {
               window.history.pushState(null, '', url.toString())
               $("#evidence_form_container").load("evidence-form" + window.location.search)
           } else {
@@ -203,7 +204,7 @@
   if (existingProjectId.length > 0) {
       document.getElementById("project_selector").value = existingProjectId[0].split("=")[1] // Sets the value of the project selector to the value in the query if there is one
   }
-  if ([[${projectList}]].length == 1) {
+  if ([[${projectList}]].length === 1) {
       document.getElementById("project_selector").selectedIndex = 1
   }
   updateProject()
