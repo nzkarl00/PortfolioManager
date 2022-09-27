@@ -105,19 +105,16 @@
                                 type="button" th:style="${displayDeleteButton}" th:value="${evidence.getId()}"
                                 th:id="${'deleteButton' + evidence.getId()}" data-toggle="modal"
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
-                                class="fa fa-trash delete_evidence">
-                        </button>
-
-                        <!-- High Five Container -->
+                                class="fa fa-trash delete_evidence"></button>
                         <div id="high_five_container" style="width:100%; text-align: right">
                             <button th:id="${'highFiveButton' + evidence.getId()}"
                                     class="high_five fa fa-hand-paper-o fa-2x" th:value="${evidence.getId()}"
-                                    type="submit" onclick="toggleHighFive(this)">
+                                    type="submit" onclick="toggleHighFive(this)"
+                                    onload="displayHighFiveStatus(this)">
                             </button>
-
                             <a
-                                style="text-decoration: underline; color: #337ab7" th:id="${'High-Five_' + evidence.getId()}" th:value="${evidence.getHighFivesSize()}"
-                                th:text="${evidence.getHighFivesSize() + ' High-Fives'}"
+                                    style="text-decoration: underline; color: #337ab7" th:id="${'High-Five_' + evidence.getId()}" th:value="${evidence.getHighFivesSize()}"
+                                    th:text="${evidence.getHighFivesSize() + ' High-Fives'}"
                             ></a>
                         </div>
                         </div>
@@ -167,11 +164,6 @@
         <br>
     </div>
     <script th:inline="javascript">
-        $('#highFiveUserListModal').on('show.bs.modal', function(e) {
-            const highFiveUsers = $(e.relatedTarget).data('hi-five-users');
-            $(e.currentTarget).find('input[name="highFiveUsers"]').val(highFiveUsers);
-        });
-
         function addTagToEvidence(value, evidenceId, type) {
             let newItem = document.createElement("button");
             newItem.className = "table_text evidence_" + type + "_tag"
@@ -210,26 +202,38 @@
             addTagRowToEvidence(evidence.id, "ci")
             for (const evidenceCategory of categoryMap[evidence.id].sort()) {
                 addTagToEvidence(evidenceCategory, evidence.id, "ci")
-            }}
+            }
+        }
 
+        function displayHighFiveStatus(event) {
+            highFiveList = [[${highFiveList}]]
+            if (event.value in highFiveList) {
+                document.getElementById("highFiveButton" + event.value).className = "high_five fa fa-sign-language fa-2x";
+            }
+        }
 
+        highFiveList = [[${highFiveList}]]
+        for (const evidenceId of highFiveList) {
+            document.getElementById("highFiveButton" + evidenceId).className = "high_five fa fa-sign-language fa-2x";
+        }
 
         function toggleHighFive(event) {
             $.post("high-five", {evidenceId: event.value}).done(function (result) {
-                console.log(result)
                 let currentCount = parseInt(document.getElementById('High-Five_'+event.value).getAttribute("value"))
-
-                if(result === "added") {
+                if (result === "added") {
+                    document.getElementById("highFiveButton" + event.value).classList.remove("high_five.fa.fa-hand-paper-o.fa-2x");
+                    document.getElementById("highFiveButton" + event.value).className = "high_five fa fa-sign-language fa-2x";
                     currentCount = currentCount + 1
-                } else {
+                } else if (result === "deleted") {
+                    document.getElementById("highFiveButton" + event.value).classList.remove("high_five.fa.fa-sign-language.fa-2x");
+                    document.getElementById("highFiveButton" + event.value).className = "high_five fa fa-hand-paper-o fa-2x";
                     currentCount = Math.max(0,currentCount - 1)
                 }
                 document.getElementById('High-Five_'+event.value).innerText = currentCount + " High-Fives";
                 document.getElementById('High-Five_'+event.value).setAttribute('value', currentCount)
 
-            })}
-
-
+            })
+        }
     </script>
     <br>
 </div>
