@@ -26,8 +26,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static sun.nio.cs.Surrogate.is;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = LoginController.class)
@@ -53,6 +53,10 @@ public class LoginControllerTest {
 //        utilities.close();
 //    }
 
+    /**
+     * Testing if the login page shows
+     * @throws Exception
+     */
     @Test
     public void loginMessageIsEmptyOnNavigation() throws Exception {
         mockMvc.perform(get("/login"))
@@ -61,6 +65,51 @@ public class LoginControllerTest {
                 .andExpect(MockMvcResultMatchers.model().attributeExists("loginMessage"))
                 .andExpect(MockMvcResultMatchers.model().attribute("loginMessage", ""));
     }
+
+    /**
+     * Testing if the default page takes you to the login page
+     * @throws Exception
+     */
+    @Test
+    public void loginWhenDefaultPageLoads() throws Exception {
+        mockMvc.perform(get("/"))
+            .andExpect(status().isOk())
+            .andExpect(MockMvcResultMatchers.view().name("login"))
+            .andExpect(MockMvcResultMatchers.model().attributeExists("loginMessage"))
+            .andExpect(MockMvcResultMatchers.model().attribute("loginMessage", ""));
+    }
+
+    /**
+     * Testing when a failed login attempt will redirect users back to the login page to attempt again
+     * @throws Exception
+     */
+    @Test
+    public void loginRedirectionWhenFailAuthentication() throws Exception {
+        mockMvc.perform(post("/login")
+                .param("username", "invalid_username")
+                .param("password", "invalid_password")
+            )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(MockMvcResultMatchers.view().name("redirect:login"))
+            .andExpect(redirectedUrl("login"));
+
+    }
+
+//    /**
+//     * Testing when a successful login attempt will redirect users to their account page
+//     * @throws Exception
+//     */
+//    @Test
+//    public void accountRedirectionWhenSuccessfulAuthenticationLogin() throws Exception {
+//        mockMvc.perform(post("/login")
+//                .param("username", "invalid_username")
+//                .param("password", "invalid_password")
+//            )
+//            .andExpect(status().is3xxRedirection())
+//            .andExpect(MockMvcResultMatchers.view().name("redirect:account"))
+//            .andExpect(redirectedUrl("account"));
+//
+//    }
 
 //    @Test
 //    public void loginHasSuccessMessageAfterValidLogin() throws Exception {
