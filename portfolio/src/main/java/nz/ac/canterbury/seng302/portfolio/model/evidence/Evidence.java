@@ -354,12 +354,4 @@ public class Evidence {
      */
     @Transactional
     public int getHighFivesSize() { return this.highFives.size(); }
-
-    public List<String> getHighFives() {
-        List<String> highFiveUserList = new ArrayList<>();
-        for (HighFive highFive: highFives) {
-            highFiveUserList.add(String.valueOf(highFive.getParentUserId()));
-        }
-        return highFiveUserList;
-    }
 }

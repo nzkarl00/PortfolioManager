@@ -4,7 +4,6 @@
 <head th:replace="fragments/head.html :: head('Evidence')">
 <body>
 <div th:fragment="evidenceItems" id="evidence_item_list">
-
     <div class="row" th:each="evidence: ${evidenceList}">
 
         <div class="col-1">
@@ -119,8 +118,6 @@
                             <a
                                 style="text-decoration: underline; color: #337ab7" th:id="${'High-Five_' + evidence.getId()}" th:value="${evidence.getHighFivesSize()}"
                                 th:text="${evidence.getHighFivesSize() + ' High-Fives'}"
-                                type="button"
-                                th:onclick="'javascript:openHighFiveList(\'' + ${evidence.getId()} + '\');'"
                             ></a>
                         </div>
                         </div>
@@ -213,19 +210,9 @@
             addTagRowToEvidence(evidence.id, "ci")
             for (const evidenceCategory of categoryMap[evidence.id].sort()) {
                 addTagToEvidence(evidenceCategory, evidence.id, "ci")
-            }
-        }
+            }}
 
-        function openHighFiveList(id) {
-            $.ajax({
-                url: "highFiveList/" + id,
-                success: function (response) {
-                    console.log(response)
-                    $('#highFivesHolder').html(response);
-                    $('#highFives').modal('show');
-                }
-            })
-        }
+
 
         function toggleHighFive(event) {
             $.post("high-five", {evidenceId: event.value}).done(function (result) {
@@ -240,8 +227,7 @@
                 document.getElementById('High-Five_'+event.value).innerText = currentCount + " High-Fives";
                 document.getElementById('High-Five_'+event.value).setAttribute('value', currentCount)
 
-            })
-        }
+            })}
 
 
     </script>

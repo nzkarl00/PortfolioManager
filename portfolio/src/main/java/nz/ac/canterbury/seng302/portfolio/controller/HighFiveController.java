@@ -58,10 +58,4 @@ public class HighFiveController {
         }
         return "error";
     }
-
-    @RequestMapping("/highFiveList/{id}")
-    public String highFiveList(@PathVariable("id") String evidenceId, Model model) {
-        model.addAttribute("here123", "hello I am new");
-        return "fragments/highFiveModal :: view";
-    }
 }
