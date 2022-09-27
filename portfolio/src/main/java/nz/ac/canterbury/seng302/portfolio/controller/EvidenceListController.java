@@ -67,6 +67,7 @@ public class EvidenceListController {
     @Value("${portfolio.base-url}")
     private String baseUrl;
 
+
     private String errorMessage = "";
 
     Logger logger = LoggerFactory.getLogger(EvidenceListController.class);
@@ -95,16 +96,8 @@ public class EvidenceListController {
         }
         setTitle(model, userId, projectId, categoryName, skillName);
 
-        logger.debug("[EVIDENCE] Getting evidence for user");
-        List <Evidence> evidenceList = evidenceService.getEvidenceForUser(userId);
-
-        logger.debug("[EVIDENCE] Filtering evidence for user");
-        if (skillName != null) {
-            evidenceList = evidenceService.filterBySkill(evidenceList, skillName);
-        }
-        if (categoryName != null) {
-            evidenceList = evidenceService.filterByCategory(evidenceList, categoryName);
-        }
+        // Use empty evidence list, as we re-fetch evidence client side anyway.
+        List<Evidence> evidenceList = List.of();
 
         logger.debug("[EVIDENCE] Getting all projects");
         List <Project> allProjects = projectService.getAllProjects();
@@ -151,8 +144,6 @@ public class EvidenceListController {
         if (projectId != -1) {
             model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
             Project project = projectService.getProjectById(projectId);
-            model.addAttribute("project", project);
-
             model.addAttribute("project", project);
         }
 
