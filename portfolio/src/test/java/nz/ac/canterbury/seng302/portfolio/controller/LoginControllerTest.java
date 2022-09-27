@@ -102,8 +102,8 @@ public class LoginControllerTest {
 //    @Test
 //    public void accountRedirectionWhenSuccessfulAuthenticationLogin() throws Exception {
 //        mockMvc.perform(post("/login")
-//                .param("username", "invalid_username")
-//                .param("password", "invalid_password")
+//                .param("username", valid_username)
+//                .param("password", valid_password)
 //            )
 //            .andExpect(status().is3xxRedirection())
 //            .andExpect(MockMvcResultMatchers.view().name("redirect:account"))
