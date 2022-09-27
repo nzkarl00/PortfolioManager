@@ -18,46 +18,43 @@
         </div>
 
         <!-- Profile Data -->
-
-        <div class="row">
-
             <!-- Profile photo display and form Submission for editing -->
-            <div class="col-lg-3 col-md-2 col-sm-3 col-2 align-items-end text-center" style="text-align:center;">
-                <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{${photo}}" width=200em height=200em alt="">
+            <div class="row col-lg-3 col-md-2 col-sm-3 col-2 align-items-end text-center">
+                <img class="img-fluid rounded-circle border border-primary rounded-circle" th:src="@{${photo}}" width=200em height=200em alt="Profile picture">
 
                 <!-- Edit Profile Buttons -->
-                <div class="row px-md-5 justify-content-start constrain-overflow">
-                    <br><br>
-
-                    <div th:if="${isSelf}" class="col-7" id="edit_account_button">
-                        <form th:action="@{edit-account}" method="get">
-                            <input style="display:none;" th:name="id" id="id" type="number">
-                            <button class="edit_wide" style="padding-top:0rem;" type="submit">
-                                EDIT PROFILE
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="col-7">
-                    <form th:if="${isSelf}" th:action="@{edit-password}" id="edit_password_button" method="get">
-                        <input style="display:none;" th:name="id" id="id" type="number">
-                        <button class="edit_wide" style="padding-top:0rem;" type="submit">
+                <div th:if="${isSelf}" class="col-sm">
+                    <form th:action="@{edit-account}" id="edit_account_button" method="get">
+                        <input style="display:none;" th:name="id" id="edit_account" type="number">
+                        <button class="edit_wide" style="padding-top:0rem; display: inline-block !important;" type="submit">
+                            EDIT PROFILE
+                        </button>
+                    </form>
+                </div>
+                <div class="col-sm">
+                    <form th:action="@{edit-password}"method="get" id="edit_password_button">
+                        <input style="display:none;" th:name="id" id="edit_password" type="number">
+                        <button class="edit_wide" style="padding-top:0rem; display: inline-block !important;"  type="submit">
                             EDIT PASSWORD
                         </button>
                     </form>
-                    </div>
-
-                    <div class="col-7">
-                    <form th:if="${isSelf}" th:action="@{edit-photo}" method="get" id="edit_photo_button">
-                        <input style="display:none;" th:name="id" id="id" type="number">
-                        <button class="edit_wide" style="padding-top:0rem;" type="submit">
+                </div>
+                <div class="col-sm">
+                    <form th:action="@{edit-photo}" method="get" id="edit_photo_button">
+                        <input style="display:none;" th:name="id" id="edit_photo" type="number">
+                        <button class="edit_wide" style="padding-top:0rem; display: inline-block !important;" type="submit">
                             EDIT PHOTO
                         </button>
                     </form>
-                    </div>
-
                 </div>
-
+                <div class="col-sm">
+                    <form th:action="@{evidence(ui=${userId})}" method="get" id="view_evidence_button">
+                    <input style="display:none;" th:name="id" id="view_evidence" type="number">
+                        <button class="edit_wide" style="padding-top:0rem; display: inline-block !important;" >
+                            VIEW EVIDENCE
+                        </button>
+                    </form>
+                </div>
             </div>
 
             <div class="col-lg-7 col-md-8 col-sm-12  portion_body">
@@ -117,27 +114,7 @@
                         <p class="data"><span th:text="${roles}" ></span></p>
                     </div>
                 </div>
-
             </div>
-
-            <!-- View Evidence Button -->
-            <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
-                <a th:href="@{evidence(ui=${userId})}">
-                    <button class="edit_wide" style="padding-top:0rem;">
-                        VIEW EVIDENCE
-                    </button>
-                </a>
-            </div>
-
-
-            <div class="col-2"></div>
-
-        </div>
-
-        <div class="row-1">
-            <br><br><br>
-        </div>
-
     </div>
 </div>
 

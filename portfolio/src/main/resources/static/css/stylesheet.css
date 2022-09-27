@@ -540,6 +540,7 @@
 
 .edit_wide {
 
+    display: inline-block !important;
     background-color: #DF5DC0 !important;
     border-radius: 15px !important;
     border-style: none !important;
