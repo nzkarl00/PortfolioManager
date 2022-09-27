@@ -28,6 +28,7 @@ class WebLinkTest {
 
     @Test
     public void isFetched() {
+        link.setFetched(false);
         assertFalse(link.isFetched());
         link.setFetchResult(true);
         assertTrue(link.isFetched());
@@ -67,13 +68,15 @@ class WebLinkTest {
     public void isNotFound_throwsOnUnfetchedLink() {
         String expectedMessage = "Link must be fetched first";
 
+        link.setFetched(false);
+
         Exception argumentException = Assertions.assertThrows(IllegalStateException.class, () -> link.isNotFound());
         Assertions.assertEquals(expectedMessage, argumentException.getMessage());
     }
 
     @Test
     public void isNotFound_doesNotThrowOnFetched() {
-        link.setFetchResult(true);
+        link.setFetched(true);
         Assertions.assertDoesNotThrow(() -> {
             link.isNotFound();
         });
@@ -111,6 +114,7 @@ class WebLinkTest {
 
     @Test
     public void setNotFound_throwsIfNotAlreadyFetched() {
-            assertThrows(AssertionError.class, () -> link.setNotFound(true));
+        link.setFetched(false);
+        assertThrows(AssertionError.class, () -> link.setNotFound(true));
     }
 }

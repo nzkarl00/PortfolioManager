@@ -121,7 +121,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?pi=0&ui=123456"));
         verify(evidenceService).deleteEvidence(refEq(testEvidence));
     }
 
@@ -142,7 +142,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?pi=0&ui=654321"));
         verifyNoInteractions(evidenceService);
     }
 
@@ -163,7 +163,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?pi=0&ui=123456"));
         verifyNoInteractions(evidenceService);
     }
 
@@ -184,7 +184,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?pi=0&ui=0"));
         verifyNoInteractions(evidenceService);
     }
 }

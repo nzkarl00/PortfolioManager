@@ -194,7 +194,7 @@ public class EvidenceListControllerTest {
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsEvidenceRequired))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?pi=0&ui=0")); // Redirected to add dates page
         //verify(evidencerepository, times(1)).save(Mockito.any(Evidence.class)); // Verifies evidence was saved
         verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidence), Mockito.any(String.class));
     }
@@ -221,7 +221,7 @@ public class EvidenceListControllerTest {
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsAllCategories))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?pi=0&ui=0")); // Redirected to add dates page
         // Verifies evidence was saved
         verify(evidenceService).addSkillsToRepo(Mockito.any(Project.class), refEq(testEvidenceAllCategories), Mockito.any(String.class));
     }
@@ -248,7 +248,7 @@ public class EvidenceListControllerTest {
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsNoSkill))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?pi=0&ui=0")); // Redirected to add dates page
         //verify(evidencerepository, times(1)).save(Mockito.any(Evidence.class)); // Verifies evidence was saved
 
         verify(evidenceTagRepository, times(1)).save(Mockito.any(EvidenceTag.class));
@@ -274,7 +274,7 @@ public class EvidenceListControllerTest {
 
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(InvalidParamsEvidenceRequired))
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?pi=0&ui=0")); // Redirected to add dates page
         verify(evidenceRepository, never()).save(Mockito.any(Evidence.class)); // Verifies evidence was not saved
 
     }
@@ -300,7 +300,7 @@ public class EvidenceListControllerTest {
 
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(InvalidParamsEvidenceDate))
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?pi=0&ui=0")); // Redirected to add dates page
         verify(evidenceRepository, never()).save(Mockito.any(Evidence.class)); // Verifies evidence was not saved
 
     }
@@ -326,7 +326,7 @@ public class EvidenceListControllerTest {
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsNoSkill))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?pi=0&ui=0")); // Redirected to add dates page
         verify(evidenceTagRepository, times(1)).save(Mockito.any(EvidenceTag.class));
     }
 
@@ -353,7 +353,7 @@ public class EvidenceListControllerTest {
         // Executing the mocked post request, checking that the page is displayed
         mockMvc.perform(post("/add-evidence").params(validParamsMultipleSkills))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:evidence?pi=" + 0)); // Redirected to add dates page
+                .andExpect(view().name("redirect:evidence?pi=0&ui=0")); // Redirected to add dates page
 
         verify(evidenceTagRepository, atMostOnce()).save(refEq(testEvidenceTag));
         verify(evidenceTagRepository, never()).save(refEq(testEvidenceTagDuplicate));

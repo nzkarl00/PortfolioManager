@@ -59,8 +59,8 @@ public class Evidence {
     protected Project associatedProject;
 
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    protected List<EvidenceTag> evidenceTags = List.of();
+    @LazyCollection(LazyCollectionOption.TRUE)
+    protected List<EvidenceTag> evidenceTags;
 
     @Column(name="title", length = MAX_TITLE_LENGTH, nullable = false)
     protected String title = "";
@@ -244,6 +244,7 @@ public class Evidence {
         return date;
     }
 
+    @Transactional
     public List<EvidenceTag> getEvidenceTags() { return evidenceTags; }
 
     /**

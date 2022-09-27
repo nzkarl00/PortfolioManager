@@ -86,6 +86,7 @@ public class DetailsController {
         userReply = accountClientService.getUserById(id);
 
         navController.updateModelForNav(principal, model, userReply, id);
+        model.addAttribute("userId", AuthStateInformer.getId(principal));
 
         // setup the default lists of timeBoundItems
         List<Sprint> sprintList = repository.getSprintByParentProjectIdOrderBySprintStartDateAsc(projectId);
