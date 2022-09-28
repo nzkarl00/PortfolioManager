@@ -370,8 +370,9 @@
         // when the check button is pressed save the edited skill
         function saveSkill(event) {
             editedSkill = document.getElementById("skill_" + event.target.value)
-
+            console.log(event.target.value)
             for (const skill of skills) {
+                console.log(skill)
                 if (skill.toLowerCase() == event.target.value.toLowerCase()) {
                     document.getElementById("skill_error").style = "color:red;";
                     return false;
