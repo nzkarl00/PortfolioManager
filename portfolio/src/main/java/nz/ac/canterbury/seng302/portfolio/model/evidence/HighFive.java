@@ -28,6 +28,9 @@ public class HighFive {
     @Column(name="parent_user_id", nullable=false)
     protected int parentUserId;
 
+    protected String firstName;
+    protected String lastName;
+
     public HighFive() {}
 
     /**
@@ -41,6 +44,21 @@ public class HighFive {
     ) {
         this.parentEvidence = parentEvidence;
         this.parentUserId = parentUserId;
+    }
+
+    public HighFive(Evidence parentEvidence, int userId, String firstName, String lastName) {
+        this.parentEvidence = parentEvidence;
+        this.parentUserId = parentUserId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 
     public int getId() {
