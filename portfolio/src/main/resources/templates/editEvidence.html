@@ -370,14 +370,15 @@
         // when the check button is pressed save the edited skill
         function saveSkill(event) {
             editedSkill = document.getElementById("skill_" + event.target.value)
-            console.log(event.target.value)
             for (const skill of skills) {
-                console.log(skill)
-                if (skill.toLowerCase() == event.target.value.toLowerCase()) {
+                console.log(skill);
+                //Retrieve what the value the user has edited the skill to, to compare to all other skills currently on this evidence
+                if (skill.toLowerCase() == editedSkill.value.toLowerCase()) {
                     document.getElementById("skill_error").style = "color:red;";
                     return false;
                 }
             }
+            skills.add(event.target.value);
 
             document.getElementById("skill_error").style = "display:none;";
 
