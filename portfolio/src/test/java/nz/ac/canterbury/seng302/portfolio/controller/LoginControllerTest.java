@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -48,6 +50,17 @@ public class LoginControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(LoginController.class).build();
     }
 
+//    private AuthenticateResponse authenticateResponse = AuthenticateResponse.newBuilder()
+//        .setMessage()
+//        .setToken()
+//        .setSuccess()
+//        .setUserId()
+//        .setFirstName()
+//        .setLastName()
+//        .setUsername()
+//        .setEmail()
+//        .build();
+
 //    @AfterAll
 //    public static void close() {
 //        utilities.close();
@@ -92,7 +105,6 @@ public class LoginControllerTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(MockMvcResultMatchers.view().name("redirect:login"))
             .andExpect(redirectedUrl("login"));
-
     }
 
 //    /**
@@ -101,9 +113,20 @@ public class LoginControllerTest {
 //     */
 //    @Test
 //    public void accountRedirectionWhenSuccessfulAuthenticationLogin() throws Exception {
+//
+//        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+//        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+//        Mockito.when(mockedSecurityContext.getAuthentication())
+//            .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateStudent, ""));
+//
+//        // Configuring Spring to use the mocked SecurityContext
+//        SecurityContextHolder.setContext(mockedSecurityContext);
+//
+//        when(authenticateClientService.authenticate("Timmy Little", "currentPassword")).thenReturn(changePasswordResponse);
+//
 //        mockMvc.perform(post("/login")
-//                .param("username", valid_username)
-//                .param("password", valid_password)
+//                .param("username", "Timmy Little")
+//                .param("password", "currentPassword")
 //            )
 //            .andExpect(status().is3xxRedirection())
 //            .andExpect(MockMvcResultMatchers.view().name("redirect:account"))
