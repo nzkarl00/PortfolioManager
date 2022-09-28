@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.testUserStudent;
@@ -52,16 +54,16 @@ public class LoginControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(LoginController.class).build();
     }
 
-//    private AuthenticateResponse authenticateResponse = AuthenticateResponse.newBuilder()
-//        .setMessage()
-//        .setToken()
-//        .setSuccess()
-//        .setUserId()
-//        .setFirstName()
-//        .setLastName()
-//        .setUsername()
-//        .setEmail()
-//        .build();
+    private AuthenticateResponse authenticateResponse = AuthenticateResponse.newBuilder()
+        .setMessage("Logged in successfully!")
+        .setToken("validtesttoken")
+        .setSuccess(true)
+        .setUserId(123456)
+        .setFirstName("TODO: FETCH NAME")
+        .setLastName("TODO: FETCH NAME")
+        .setUsername("Timmy Little")
+        .setEmail("test@email")
+        .build();
 
 //    @AfterAll
 //    public static void close() {
@@ -109,18 +111,35 @@ public class LoginControllerTest {
             .andExpect(redirectedUrl("login"));
     }
 
-//    public void cookieCreatedSuccessful() {
+//    /**
+//     * Testing if the Portfolio server is creating and encoding the cookie as expected
+//     */
+//    @Test
+//    public void cookieCreatedSuccessful() throws Exception {
+//
+//        String cookieName = "lens-session-token";
+//        Cookie cookie = new Cookie(cookieName, authenticateResponse.getToken());
+//
+//        // Make a mock HttpServletResponse
 //        HttpServletResponse httpServletResponse = Mockito.mock(HttpServletResponse.class);
+//
+//        // Set up a argument captor for the HttpServletResponse.addCookie() method
 //        Mockito.when(httpServletResponse.addCookie(cookie)).thenReturn(null);
 //
+//        // Call Cookie.create()
 //        CookieUtil.create(httpServletResponse,
-//            "lens-session-token",
+//            cookieName,
 //            cookie,
 //            true,
 //            5 * 60 * 60, // Expires in 5 hours
 //            domain.startsWith("localhost") ? null : domain);
 //
+//        // Asset the HttpServletResponse.addCookie() method was called the expected param
+//        // (eg. that the added cookie look like expected)
+//        //  (i.e it is called with the cookie value that you would expect to see).
 //    }
+
+//
 //    /**
 //     * Testing when a successful login attempt will redirect users to their account page
 //     * @throws Exception
@@ -136,7 +155,15 @@ public class LoginControllerTest {
 //        // Configuring Spring to use the mocked SecurityContext
 //        SecurityContextHolder.setContext(mockedSecurityContext);
 //
-//        when(authenticateClientService.authenticate("Timmy Little", "currentPassword")).thenReturn(changePasswordResponse);
+//        when(authenticateClientService.authenticate("Timmy Little", "currentPassword")).thenReturn(authenticateResponse);
+//
+//        String cookieName = "lens-session-token";
+//
+//        // Make a mock HttpServletRequest, HttpServletResponse
+//        HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+//        HttpServletResponse httpServletResponse = Mockito.mock(HttpServletResponse.class);
+//
+//        LoginController.setCookie(httpServletRequest, httpServletResponse, authenticateResponse);
 //
 //        mockMvc.perform(post("/login")
 //                .param("username", "Timmy Little")
