@@ -151,17 +151,19 @@ public class EvidenceServiceTest {
     @Test
     void deleteEvidenceWithOneSkill() {
         Evidence testEvidence = getValidEvidence();
-        testEvidence.setEvidenceTags(List.of(getEvidenceTagA(testEvidence)));
+        List<EvidenceTag> evidenceList = new ArrayList<>(List.of(getEvidenceTagA(testEvidence)));
+        when(evidenceTagRepository.findAllByParentEvidenceId(testEvidence.getId())).thenReturn(evidenceList);
         evidenceService.deleteEvidence(testEvidence);
-        verify(skillTagRepository, times(1)).delete(testEvidence.getEvidenceTags().get(0).getParentSkillTag());
+        verify(skillTagRepository, times(1)).delete(evidenceList.get(0).getParentSkillTag());
     }
 
     @Test
     void deleteEvidenceWithMultipleSkills() {
         Evidence testEvidence = getValidEvidence();
-        testEvidence.setEvidenceTags(List.of(getEvidenceTagA(testEvidence), getEvidenceTagB(testEvidence), getEvidenceTagC(testEvidence)));
+        List<EvidenceTag> evidenceList = new ArrayList<>(List.of(getEvidenceTagA(testEvidence), getEvidenceTagB(testEvidence), getEvidenceTagC(testEvidence)));
+        when(evidenceTagRepository.findAllByParentEvidenceId(testEvidence.getId())).thenReturn(evidenceList);
         evidenceService.deleteEvidence(testEvidence);
-        for (EvidenceTag evidenceTag: testEvidence.getEvidenceTags()) {
+        for (EvidenceTag evidenceTag: evidenceList) {
             verify(skillTagRepository, times(1)).delete(evidenceTag.getParentSkillTag());
         }
         verifyNoMoreInteractions(skillTagRepository);

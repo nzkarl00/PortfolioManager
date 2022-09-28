@@ -63,9 +63,12 @@ public class EvidenceListController {
     private GitlabClient gitlabClient;
     @Autowired
     private LinkedCommitRepository linkedCommitRepository;
+    @Autowired
+    private HighFiveRepository highFiveRepository;
 
     @Value("${portfolio.base-url}")
     private String baseUrl;
+
 
     private String errorMessage = "";
 
@@ -73,8 +76,9 @@ public class EvidenceListController {
 
     /**
      * Directs the user to the landing project page
+     *
      * @param principal auth state for the currently authenticated user
-     * @param model The model to be used by the application for web integration
+     * @param model     The model to be used by the application for web integration
      * @return redirects to the landing page
      * @throws Exception which is raised by the repositories having a potential failure when reading objects from the DB
      */
@@ -95,19 +99,11 @@ public class EvidenceListController {
         }
         setTitle(model, userId, projectId, categoryName, skillName);
 
-        logger.debug("[EVIDENCE] Getting evidence for user");
-        List <Evidence> evidenceList = evidenceService.getEvidenceForUser(userId);
-
-        logger.debug("[EVIDENCE] Filtering evidence for user");
-        if (skillName != null) {
-            evidenceList = evidenceService.filterBySkill(evidenceList, skillName);
-        }
-        if (categoryName != null) {
-            evidenceList = evidenceService.filterByCategory(evidenceList, categoryName);
-        }
+        // Use empty evidence list, as we re-fetch evidence client side anyway.
+        List<Evidence> evidenceList = List.of();
 
         logger.debug("[EVIDENCE] Getting all projects");
-        List <Project> allProjects = projectService.getAllProjects();
+        List<Project> allProjects = projectService.getAllProjects();
         model.addAttribute("projectList", allProjects);
         model.addAttribute("filterSkills", evidenceService.getFilterSkills(evidenceList));
         model.addAttribute("userSkills", evidenceService.getUserSkills(AuthStateInformer.getId(principal)));
@@ -147,12 +143,10 @@ public class EvidenceListController {
         if (userId == null) {
             userId = AuthStateInformer.getId(principal);
         }
-        List <Evidence> evidenceList = evidenceService.getEvidenceList(userId, projectId, categoryName, skillName);
+        List<Evidence> evidenceList = evidenceService.getEvidenceList(userId, projectId, categoryName, skillName);
         if (projectId != -1) {
             model.addAttribute("date", DateParser.dateToStringHtml(new Date()));
             Project project = projectService.getProjectById(projectId);
-            model.addAttribute("project", project);
-
             model.addAttribute("project", project);
         }
 
@@ -161,9 +155,15 @@ public class EvidenceListController {
         List<Pair<Integer, List<String>>> categoryTemp = new ArrayList<>();
         final HashMap<Integer, List<String>> evidenceSkillMap = new HashMap<>();
         final HashMap<Integer, List<String>> evidenceCategoryMap = new HashMap<>();
+        List<Integer> evidenceHighFiveList = new ArrayList<>(); // list of evidenceIds that the currently logged in user has high fived
         Consumer<Evidence> putEvidenceIntoMap = (Evidence evidence) -> {
-          skillTemp.add(new Pair<>(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence)));
-          categoryTemp.add(new Pair<>(evidence.getId(), evidence.getCategoryStrings()));
+            skillTemp.add(new Pair<>(evidence.getId(), evidenceService.getSkillTagStringsByEvidenceId(evidence)));
+            categoryTemp.add(new Pair<>(evidence.getId(), evidence.getCategoryStrings()));
+
+            HighFive highFive = highFiveRepository.findByParentEvidenceAndParentUserId(evidence, AuthStateInformer.getId(principal));
+            if (highFive != null) {
+                evidenceHighFiveList.add(evidence.getId());
+            }
         };
 
         evidenceList.parallelStream().forEach(putEvidenceIntoMap);
@@ -173,6 +173,7 @@ public class EvidenceListController {
 
         model.addAttribute("skillMap", evidenceSkillMap);
         model.addAttribute("categoryMap", evidenceCategoryMap);
+        model.addAttribute("highFiveList", evidenceHighFiveList);
         model.addAttribute("username", AuthStateInformer.getUsername(principal));
         model.addAttribute("userId", AuthStateInformer.getId(principal));
         return "fragments/evidenceItems.html :: evidenceItems";
@@ -232,13 +233,14 @@ public class EvidenceListController {
 
     /**
      * Checks if the group repo is accessible.
+     *
      * @param groupId the id of the group to
      * @return true if the repo can be reached.
      */
     @GetMapping("/repo-check")
-    public ResponseEntity <Boolean> repoCheck(@RequestParam(value = "group-id") Integer groupId) {
+    public ResponseEntity<Boolean> repoCheck(@RequestParam(value = "group-id") Integer groupId) {
         GroupRepo groupRepo;
-        Optional <GroupRepo> existingGroupRepo = groupRepoRepository.findByParentGroupId(groupId);
+        Optional<GroupRepo> existingGroupRepo = groupRepoRepository.findByParentGroupId(groupId);
         if (groupId == -1 || existingGroupRepo.isEmpty()) {
             return ResponseEntity.ok(false);
         } else {
@@ -258,39 +260,41 @@ public class EvidenceListController {
 
     /**
      * Saves a new evidence if the user has permissions and the correct input is given
-     * @param principal auth state for the currently authenticated user
-     * @param title evidence title
-     * @param date evidence date
-     * @param projectId the id of the project that the evidence is linked too
-     * @param users A list of usernames of other people (not the author) who worked on this evidence
-     * @param categories the category the evidence is associated with
-     * @param skills the skills the evidence is associated with
-     * @param links are an optional list of links associated with this new piece of evidence
+     *
+     * @param principal   auth state for the currently authenticated user
+     * @param title       evidence title
+     * @param date        evidence date
+     * @param projectId   the id of the project that the evidence is linked too
+     * @param users       A list of usernames of other people (not the author) who worked on this evidence
+     * @param categories  the category the evidence is associated with
+     * @param skills      the skills the evidence is associated with
+     * @param links       are an optional list of links associated with this new piece of evidence
      * @param description evidence description
-     * @param model The model to be used by the application for web integration
+     * @param model       The model to be used by the application for web integration
      * @return redirect to the evidence page
      * @throws CustomExceptions.ProjectItemNotFoundException if the project ID is not associated with any existing project
      */
     @PostMapping("/add-evidence")
     public String addEvidence(
-        @AuthenticationPrincipal AuthState principal,
-        @RequestParam(value = "titleInput") String title,
-        @RequestParam(value = "dateInput") String date,
-        @RequestParam(value = "projectId") Integer projectId,
-        @RequestParam(value = "categoryInput") String categories,
-        @RequestParam(value = "skillInput") String skills,
-        @RequestParam(value = "userInput") Optional <String> users,
-        @RequestParam(value = "linksInput") Optional <String> links,
-        @RequestParam(value = "commitsInput") Optional <String> commitsWithGroupIds,
-        @RequestParam(value = "descriptionInput") String description,
-        Model model
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value = "titleInput") String title,
+            @RequestParam(value = "dateInput") String date,
+            @RequestParam(value = "projectId") Integer projectId,
+            @RequestParam(value = "categoryInput") String categories,
+            @RequestParam(value = "skillInput") String skills,
+            @RequestParam(value = "userInput") Optional<String> users,
+            @RequestParam(value = "linksInput") Optional<String> links,
+            @RequestParam(value = "commitsInput") Optional<String> commitsWithGroupIds,
+            @RequestParam(value = "descriptionInput") String description,
+            Model model
     ) throws CustomExceptions.ProjectItemNotFoundException {
         logger.info("[EVIDENCE] Attempting to add new evidence");
+        Integer accountID = AuthStateInformer.getId(principal);
+        String redirect = "redirect:evidence?pi=" + projectId.toString() + "&ui=" + accountID;
         if (!principal.getIsAuthenticated()) {
             logger.debug("[EVIDENCE] Redirecting, user not authenticated");
-            return "redirect:evidence?pi=" + projectId.toString();
+            return redirect;
         }
-        Integer accountID = AuthStateInformer.getId(principal);
         model.addAttribute("authorId", accountID);
         AuthenticatedUser thisUser = new AuthenticatedUser(principal);
         model.addAttribute("authorUserName", thisUser.getUsername());
@@ -299,12 +303,12 @@ public class EvidenceListController {
             logger.debug("[EVIDENCE] Attempted to add evidence to a project that could not be found");
             // In future we can use a 404 here
             errorMessage = "Project does not exist";
-            return "redirect:evidence";
+            return "redirect:evidence?ui=" + accountID;
         }
 
         // Extract then validate links
-        List <String> extractedLinks = evidenceService.extractListFromHTMLStringWithSpace(links.orElse(""));
-        Optional <String> possibleError = evidenceService.validateLinks(extractedLinks);
+        List<String> extractedLinks = evidenceService.extractListFromHTMLStringWithSpace(links.orElse(""));
+        Optional<String> possibleError = evidenceService.validateLinks(extractedLinks);
         // prioritise mandatory fields first, then link errors
         this.errorMessage = possibleError.orElse(errorMessage);
 
@@ -313,17 +317,17 @@ public class EvidenceListController {
         // If error occurs, return early
         if (!errorMessage.equals("")) {
             model.addAttribute("errorMessage", errorMessage);
-            return "redirect:evidence?pi=" + projectId;
+            return redirect;
         }
 
         int categoriesInt = Evidence.categoryStringToInt(categories);
 
-        List <String> extractedUsers = EvidenceService.extractListFromHTMLStringWithTilda(users.orElse(""));
-        List <String> extractedCommits = EvidenceService.extractListFromHTMLStringWithTilda(commitsWithGroupIds.orElse(""));
-        List <Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, LocalDate.parse(date), categoriesInt);
+        List<String> extractedUsers = EvidenceService.extractListFromHTMLStringWithTilda(users.orElse(""));
+        List<String> extractedCommits = EvidenceService.extractListFromHTMLStringWithTilda(commitsWithGroupIds.orElse(""));
+        List<Evidence> allUserEvidence = evidenceService.generateEvidenceForUsers(extractedUsers, parentProject, title, description, LocalDate.parse(date), categoriesInt);
         // If no error occurs with the mandatory fields then save the evidence to the repo and relevant skills or links
         logger.info("[EVIDENCE] Saving evidence to repo");
-        for (Evidence evidence: allUserEvidence) {
+        for (Evidence evidence : allUserEvidence) {
             logger.info(String.format("[EVIDENCE] Saved evidence to repo, id=<%s>", evidence.getId()));
             errorMessage = "Evidence has been added";
             evidenceService.addSkillsToRepo(parentProject, evidence, skills);
@@ -350,7 +354,7 @@ public class EvidenceListController {
                 }
             }
         }
-        return "redirect:evidence?pi=" + projectId;
+        return redirect;
     }
 
     @PostMapping("/delete-evidence")
@@ -359,22 +363,23 @@ public class EvidenceListController {
                                  @RequestParam(value = "evidenceId") String evidenceId,
                                  @AuthenticationPrincipal AuthState principal) {
         Evidence targetEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
+        int accountID = AuthStateInformer.getId(principal);
+        String redirect = "redirect:evidence?pi=" + projectId.toString() + "&ui=" + accountID;
         if (targetEvidence == null) {
             logger.debug("[EVIDENCE] Redirecting, evidence id " + Integer.parseInt(evidenceId) + " does not exist");
-            return "redirect:evidence?pi=" + projectId;
+            return redirect;
         }
-        Integer accountID = AuthStateInformer.getId(principal);
         if (!principal.getIsAuthenticated() || accountID != targetEvidence.getParentUserId()) {
             logger.debug("[EVIDENCE] Redirecting, user does not have permissions to delete evidence " + Integer.parseInt(evidenceId));
-            return "redirect:evidence?pi=" + projectId;
+            return redirect;
         }
         evidenceService.deleteEvidence(targetEvidence);
-        return "redirect:evidence?pi=" + projectId;
+        return redirect;
     }
 
     private void noSkillsCheck(Evidence evidence) {
         // If there's no skills, add the no_skills
-        List <EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+        List<EvidenceTag> evidenceTagList = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
         if (evidenceTagList.isEmpty()) {
             SkillTag noSkillTag = skillRepository.findByTitle("No_skills");
             EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
@@ -384,9 +389,10 @@ public class EvidenceListController {
 
     /**
      * Checks for validation, for all the mandatory fields.
-     * @param title the title field
-     * @param description the description field
-     * @param date the string representation of the date for the piece of evidence
+     *
+     * @param title         the title field
+     * @param description   the description field
+     * @param date          the string representation of the date for the piece of evidence
      * @param parentProject the Project the piece of evidence 'belongs' to
      * @return A String error message if requirement not met, else return ""
      */
@@ -399,7 +405,7 @@ public class EvidenceListController {
 
         // Check if the given evidence date is within the project date
         if (!(evidenceDate.isAfter(projectStartDate) && evidenceDate.isBefore(projectEndDate)) &&
-            !(evidenceDate.isEqual(projectEndDate) || evidenceDate.isEqual(projectStartDate))) {
+                !(evidenceDate.isEqual(projectEndDate) || evidenceDate.isEqual(projectStartDate))) {
             // Give this error priority
             return "Dates must fall within project dates";
         }
@@ -417,9 +423,9 @@ public class EvidenceListController {
 
         // Check if the given evidence date is within the project date
         if (!(evidenceDate.isAfter(projectStartDate) &&
-            evidenceDate.isBefore(projectEndDate)) &&
-            !(evidenceDate.isEqual(projectEndDate) ||
-                evidenceDate.isEqual(projectStartDate))) {
+                evidenceDate.isBefore(projectEndDate)) &&
+                !(evidenceDate.isEqual(projectEndDate) ||
+                        evidenceDate.isEqual(projectStartDate))) {
             errorMessage = "Dates must fall within project dates";
         }
 
@@ -437,11 +443,12 @@ public class EvidenceListController {
 
     /**
      * Takes the parameters and returns the appropriate evidence list based on search priority
-     * @param model The Spring model
-     * @param userId Id of user to get evidence from
-     * @param projectId Id of project to get evidence from
+     *
+     * @param model        The Spring model
+     * @param userId       Id of user to get evidence from
+     * @param projectId    Id of project to get evidence from
      * @param categoryName name of category to get evidence from
-     * @param skillName name of skill to get evidence from
+     * @param skillName    name of skill to get evidence from
      */
     private void setTitle(Model model, Integer userId, Integer projectId, String categoryName, String skillName) {
         if (categoryName != null) {
@@ -457,6 +464,7 @@ public class EvidenceListController {
 
     /**
      * Directs the user to the evidence page with required params
+     *
      * @return redirects to the landing page
      */
     @GetMapping("/search-evidence")

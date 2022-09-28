@@ -101,6 +101,7 @@ public class EvidenceService {
             }
         }
         if (!Objects.equals(categoryName, "")) {
+            categoryName = categoryName.replace("%20", " ");
             if (!evidenceList.isEmpty()) {
                 // Intersection of current list and query
                 evidenceList = evidenceList.stream()
@@ -186,6 +187,7 @@ public class EvidenceService {
         }
         return filteredEvidence;
     }
+
 
     /**
      * This function loops through the provided evidences from the filtering
@@ -508,18 +510,17 @@ public class EvidenceService {
      * @param evidence The evidence to be deleted
      */
     public void deleteEvidence(Evidence evidence) {
-        List<EvidenceTag> evidenceTags = evidence.getEvidenceTags();
+        List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
+        System.out.println(evidenceTags);
         List<SkillTag> skillTags = evidenceTags.stream()
             .map(EvidenceTag::getParentSkillTag)
             .filter(skillTag -> !Objects.equals(skillTag.getTitle(), "No_skills"))
             .toList(); // All skill tags associated with deleted evidence
-
-        evidenceTags.forEach(tag -> evidenceTagRepository.delete(tag));
+        evidenceTags.forEach(tag -> evidenceTagRepository.deleteById(tag.getId()));
         evidenceRepository.delete(evidence);
         for (SkillTag skillTag : skillTags) {
             if (evidenceTags.containsAll(skillTag.getEvidenceTags())) {
                 // If every evidence tag associated with a skill tag also belongs to deleted evidence
-                skillTag.clearEvidenceTags();
                 skillTagRepository.delete(skillTag);
             }
         }

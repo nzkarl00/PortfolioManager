@@ -69,6 +69,8 @@ public class DeleteEvidenceTest {
     private GitlabClient gitlabClient;
     @MockBean
     private LinkedCommitRepository linkedCommitRepository;
+    @MockBean
+    private HighFiveRepository highFiveRepository;
 
     private static final Project testProject = getValidProject();
     private static final LocalDate may4 = LocalDate.parse("2022-05-04");
@@ -121,7 +123,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?pi=0&ui=123456"));
         verify(evidenceService).deleteEvidence(refEq(testEvidence));
     }
 
@@ -142,7 +144,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?pi=0&ui=654321"));
         verifyNoInteractions(evidenceService);
     }
 
@@ -163,7 +165,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?pi=0&ui=123456"));
         verifyNoInteractions(evidenceService);
     }
 
@@ -184,7 +186,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?pi=0&ui=0"));
         verifyNoInteractions(evidenceService);
     }
 }
