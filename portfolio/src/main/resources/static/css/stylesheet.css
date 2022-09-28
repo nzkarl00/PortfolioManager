@@ -1080,11 +1080,25 @@
     color: white;
 }
 
-.delete_button {
+.edit_button {
+
+    font-family: Nexa !important;
     border: none;
     margin-left: 10px;
     padding: 4px 10px;
-    background: #FF202E !important;
+    background: #FF48CF;
+    border-radius: 10px;
+    color: white;
+    white-space: nowrap
+}
+
+.delete_button {
+
+    font-family: Nexa !important;
+    border: none;
+    margin-left: 10px;
+    padding: 4px 10px;
+    background: #FF202E;
     border-radius: 10px;
     color: white;
 }

@@ -52,7 +52,6 @@
                         <button class="edit" style="padding-top:0rem;" type="submit">
                             <i class="fa fa-arrow-left"></i>&nbsp;
                             Return
-                            Return
                         </button>
                     </form>
                     <form class="col-lg-4 col-md-4 col-sm-12" th:action="@{edit-project}" method="get" th:style="${display}">
@@ -120,6 +119,7 @@
                         <div class="col-lg-8 col-md-10 col-sm-12">
                             <form th:action="@{evidence}" method="get">
                                 <input th:name="pi" id="pi" th:value="${project.getId}" type="number" style="display: none">
+                                <input th:name="ui" id="ui" th:value="${userId}" type="number" style="display: none">
                                 <button class="add" type="submit">
                                     <i class="fa fa-plus"></i>&nbsp;
                                     Add Evidence
