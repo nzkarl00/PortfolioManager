@@ -5,6 +5,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -32,7 +33,7 @@ public class SkillTag {
      * There can be many Evidences with many SkillTags
      */
     @OneToMany
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinColumn(name="parent_skill_tag_id")
     protected List<EvidenceTag> evidenceTags;
 
@@ -49,6 +50,7 @@ public class SkillTag {
         this.title = title;
     }
 
+    @Transactional
     public List<EvidenceTag> getEvidenceTags() {
         return evidenceTags;
     }

@@ -103,9 +103,10 @@ public class HighFiveControllerTest {
         when(highFiveRepository.findByParentEvidenceAndParentUserId(testEvidence, 1)).thenReturn(new HighFive());
         MvcResult result = mockMvc.perform(post("/high-five").param("evidenceId", String.valueOf(123456)))
                 .andExpect(status().isOk()).andReturn();
-        Assertions.assertEquals("exists", result.getResponse().getContentAsString());
+        Assertions.assertEquals("deleted", result.getResponse().getContentAsString());
         // Verifies high five was not saved
         verify(highFiveRepository, never()).save(any(HighFive.class));
+        verify(highFiveRepository).delete(any(HighFive.class));
     }
 
     @Test

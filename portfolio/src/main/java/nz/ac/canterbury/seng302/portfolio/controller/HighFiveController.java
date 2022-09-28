@@ -42,11 +42,15 @@ public class HighFiveController {
         int userId = AuthStateInformer.getId(principal);
         Evidence parentEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
         if (parentEvidence != null) {
-            if (highFiveRepository.findByParentEvidenceAndParentUserId(parentEvidence, userId) == null) {
+            HighFive highFive = highFiveRepository.findByParentEvidenceAndParentUserId(parentEvidence, userId);
+            if (highFive == null) {
+                logger.info("[HighFiveController] adding new HighFive to evidence: " + parentEvidence.getParentUserId());
                 highFiveRepository.save(new HighFive(parentEvidence, userId));
                 return "added";
             } else {
-                return "exists";
+                logger.info("[HighFiveController] deleting HighFive: " + highFive.getId());
+                highFiveRepository.delete(highFive);
+                return "deleted";
             }
         }
         return "error";
