@@ -55,9 +55,9 @@
                     <select th:if="${role == 'teacher'}" th:id="${'select_field_'+group.getId()}" class="project_edit_data horizontal_field">
                     <option th:each="g : ${groups.?[longName != 'Teachers Group']}" th:value="${g.getId()}" th:text="${'(' + (g.shortName) + ') ' + g.longName}"></option>
                     </select>
-                        <button th:id="${'edit_button_'+group.getId()}" disabled th:value="${group.getId()}" onclick="moveUsersToGroup(this); return false;" style="background: #AAAAAA" class="edit_button fa fa-arrow-left">&nbsp;ADD TO</button>
+                        <button th:id="${'edit_button_'+group.getId()}" disabled th:value="${group.getId()}" onclick="moveUsersToGroup(this); return false;" style="background: #AAAAAA" class="edit_button "><span class="fa fa-arrow-left"/>&nbsp;ADD TO</button>
                         <div style="width: 50%"></div>
-                        <button th:if="${group.longName != 'Members Without a Group'}" disabled th:value="${group.getId()}" style="background: #AAAAAA" onclick="removeUsersFromGroup(this); return false;" th:id="${'delete_button_'+group.getId()}" class="delete_button fa fa-trash">&nbsp;REMOVE</button>
+                        <button th:if="${group.longName != 'Members Without a Group'}" disabled th:value="${group.getId()}" style="background: #AAAAAA" onclick="removeUsersFromGroup(this); return false;" th:id="${'delete_button_'+group.getId()}" class="delete_button"><span class="fa fa-trash"/>&nbsp;REMOVE</button>
                     </div>
                     <h5
                         th:if="${!group.isDefaultGroup()}"
