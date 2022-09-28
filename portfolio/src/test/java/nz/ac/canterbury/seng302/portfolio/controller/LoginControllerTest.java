@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import javax.servlet.http.HttpServletResponse;
+
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.testUserStudent;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateStudent;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -107,6 +109,18 @@ public class LoginControllerTest {
             .andExpect(redirectedUrl("login"));
     }
 
+//    public void cookieCreatedSuccessful() {
+//        HttpServletResponse httpServletResponse = Mockito.mock(HttpServletResponse.class);
+//        Mockito.when(httpServletResponse.addCookie(cookie)).thenReturn(null);
+//
+//        CookieUtil.create(httpServletResponse,
+//            "lens-session-token",
+//            cookie,
+//            true,
+//            5 * 60 * 60, // Expires in 5 hours
+//            domain.startsWith("localhost") ? null : domain);
+//
+//    }
 //    /**
 //     * Testing when a successful login attempt will redirect users to their account page
 //     * @throws Exception
