@@ -52,7 +52,10 @@ public class HighFiveController {
                 return "added";
             } else {
                 logger.info("[HighFiveController] deleting HighFive: " + highFive.getId());
-                highFiveRepository.delete(highFive.getId());
+
+                parentEvidence.removeHighFive(highFive);
+                evidenceRepository.save(parentEvidence);
+                highFiveRepository.delete(highFive);
                 return "deleted";
             }
         }

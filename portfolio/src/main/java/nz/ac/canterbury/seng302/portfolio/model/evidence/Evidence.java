@@ -349,9 +349,19 @@ public class Evidence {
     }
 
 
+    public List<HighFive> getHighFives() {
+        return this.highFives;
+    }
+
+    public void removeHighFive(HighFive highFive) {
+        this.highFives.removeIf((HighFive original) -> {
+                return original.getId() == highFive.getId();
+            });
+    }
+
     /**
      * Get the high-fives size associated with a piece of Evidence
      */
     @Transactional
-    public int getHighFivesSize() { return this.highFives.size(); }
+    public int getHighFivesSize() { return this.getHighFives().size(); }
 }

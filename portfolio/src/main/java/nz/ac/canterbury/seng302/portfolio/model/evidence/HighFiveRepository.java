@@ -9,7 +9,4 @@ import org.springframework.stereotype.Repository;
 public interface HighFiveRepository extends CrudRepository<HighFive, Integer> {
     HighFive findByParentEvidenceAndParentUserId(Evidence parentEvidence, int userId);
 
-    @Modifying
-    @Query("delete from HighFive h where h.id = ?1")
-    void delete(int id);
 }

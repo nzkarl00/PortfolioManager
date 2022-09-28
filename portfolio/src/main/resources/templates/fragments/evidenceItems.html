@@ -219,14 +219,16 @@
 
         function toggleHighFive(event) {
             $.post("high-five", {evidenceId: event.value}).done(function (result) {
+
+                let highFiveElement = document.getElementById("highFiveButton" + event.value);
                 let currentCount = parseInt(document.getElementById('High-Five_'+event.value).getAttribute("value"));
                 if (result === "added") {
-                    document.getElementById("highFiveButton" + event.value).classList.remove("high_five.fa.fa-hand-paper-o.fa-2x");
-                    document.getElementById("highFiveButton" + event.value).className = "high_five fa fa-sign-language fa-2x";
+                    highFiveElement.classList.remove("high_five.fa.fa-hand-paper-o.fa-2x");
+                    highFiveElement.className = "high_five fa fa-sign-language fa-2x";
                     currentCount = currentCount + 1;
                 } else if (result === "deleted") {
-                    document.getElementById("highFiveButton" + event.value).classList.remove("high_five.fa.fa-sign-language.fa-2x");
-                    document.getElementById("highFiveButton" + event.value).className = "high_five fa fa-hand-paper-o fa-2x";
+                    highFiveElement.classList.remove("high_five.fa.fa-sign-language.fa-2x");
+                    highFiveElement.className = "high_five fa fa-hand-paper-o fa-2x";
                     currentCount = Math.max(0,currentCount - 1);
                 }
                 document.getElementById('High-Five_'+event.value).innerText = currentCount + " High-Fives";
