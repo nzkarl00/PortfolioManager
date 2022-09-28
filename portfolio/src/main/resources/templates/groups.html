@@ -262,6 +262,8 @@ function clearSelected(event) {
     }
 }
 
+
+// Enables the move and remove buttons for the group associted with the given ID
 function enableButtonsForGroup(groupId) {
     if (groupId !== 2) {
         document.getElementById("delete_button_" + groupId).disabled = false
@@ -271,6 +273,7 @@ function enableButtonsForGroup(groupId) {
     document.getElementById("edit_button_" + groupId).style = ""
 }
 
+// Disables the move and remove buttons for the group associted with the given ID
 function disableButtonsForGroup(groupId) {
     if (groupId !== 2) {
         document.getElementById("delete_button_" + groupId).disabled = true
