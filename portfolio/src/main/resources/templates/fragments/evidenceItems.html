@@ -130,13 +130,9 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body">
-                                     <div th:each="highFive: ${evidence.getHighFives}" class="row">
-                                         <img class="img-fluid rounded-circle border border-primary rounded-circle col-1" th:src="@{profile_none.png}" width=10em height=10em alt="">
-                                         <div class="col-9" th:text="${highFive.getFirstName + ' ' + highFive.getLastName}"></div>
-                                         <button class="col-2">HI</button>
-                                     </div>
-                                </div>
+                                <div class="modal-body"
+                                    th:text="${'Are you sure you want to delete this piece of evidence (' + evidence.getTitle()+ ') from your portfolio?'}"
+                                />
                                 <form method="post" th:action="@{delete-evidence}">
                                     <div class="modal-footer">
                                         <input type="number" th:name="evidenceId" th:value="${evidence.getId()}" style="display: none">
@@ -159,9 +155,13 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body"
-                                     th:text="${'fix this zoher (' + evidence.getTitle()+ ') from your portfolio?'}"
-                                />
+                                <div class="modal-body">
+                                    <div th:each="highFive: ${evidence.getHighFives}" class="row">
+                                        <img class="img-fluid rounded-circle border border-primary rounded-circle col-1" th:src="@{profile_none.png}" width=10em height=10em alt="">
+                                        <div class="col-9" th:text="${highFive.getFirstName + ' ' + highFive.getLastName}"></div>
+                                        <button class="col-2">HI</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
