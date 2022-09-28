@@ -90,7 +90,7 @@ public class LoginController {
     ) {
 
         AuthenticateResponse authenticateResponse = authenticateLogin(username, password, model);
-        logger.trace("[LOGIN] Authenticate Response received");
+        logger.trace("[LOGIN] Authenticate Response received" + authenticateResponse);
 
         if (authenticateResponse == null) {
             return "redirect:login";
