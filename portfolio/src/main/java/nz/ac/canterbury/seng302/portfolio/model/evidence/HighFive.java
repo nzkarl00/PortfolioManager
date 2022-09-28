@@ -48,7 +48,7 @@ public class HighFive {
 
     public HighFive(Evidence parentEvidence, int userId, String firstName, String lastName) {
         this.parentEvidence = parentEvidence;
-        this.parentUserId = parentUserId;
+        this.parentUserId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
     }

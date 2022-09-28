@@ -171,6 +171,8 @@ public class EvidenceListController {
         skillTemp.forEach(pair -> evidenceSkillMap.put(pair.getValue0(), pair.getValue1()));
         categoryTemp.forEach(pair -> evidenceCategoryMap.put(pair.getValue0(), pair.getValue1()));
 
+        navController.updateModelForNav(principal, model, accountClientService.getUserById(userId), userId);
+
         model.addAttribute("skillMap", evidenceSkillMap);
         model.addAttribute("categoryMap", evidenceCategoryMap);
         model.addAttribute("highFiveList", evidenceHighFiveList);

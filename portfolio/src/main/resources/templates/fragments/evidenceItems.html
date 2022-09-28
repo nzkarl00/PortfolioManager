@@ -156,10 +156,12 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <div th:each="highFive: ${evidence.getHighFives}" class="row">
-                                        <img class="img-fluid rounded-circle border border-primary rounded-circle col-1" th:src="@{profile_none.png}" width=10em height=10em alt="">
-                                        <div class="col-9" th:text="${highFive.getFirstName + ' ' + highFive.getLastName}"></div>
-                                        <button class="col-2">HI</button>
+                                    <div th:each="highFive: ${evidence.getHighFives}" class="row" style="display:flex; text-align: center; padding-left: 1em">
+                                        <img class="img-fluid rounded-circle rounded-circle col-2 high_five_profile_picture" th:src="${photoPrefix + highFive.getParentUserId}"  alt="">
+                                        <div class="col-7 high_five_vertical_center" th:text="${highFive.getFirstName + ' ' + highFive.getLastName}"></div>
+                                        <div class="col-3 high_five_vertical_center">
+                                        <a class="table_text author_tag high_five_vertical_center" th:href="@{account(id=${highFive.getParentUserId()})}" >View Profile</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
