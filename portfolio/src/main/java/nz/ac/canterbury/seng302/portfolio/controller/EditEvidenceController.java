@@ -271,8 +271,8 @@ public class EditEvidenceController {
      * @exception MalformedURLException if an invalid link is given
      * @exception GitLabApiException if there is an issue fetching commit data from gitlab API
      */
-    @Transactional
     @PostMapping("/edit-evidence")
+    @Transactional
     public String editEvidence(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "titleInput") String title,
