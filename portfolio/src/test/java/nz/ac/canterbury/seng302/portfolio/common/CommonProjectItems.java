@@ -29,12 +29,16 @@ public final class CommonProjectItems {
         return evidence;
     }
 
-    private static final List<Integer> testDeleteSkillIDs = List.of(1);
+    public static final List<Integer> testDeleteSkillIDs = List.of(1);
     private static final List<String> testSkillsToAdd = List.of("Skill1", "Skill2");
     private static final HashMap<Integer, String> testSkillsToChange = new HashMap<Integer, String>() {{put(1, "Skill");}};
 
     public static EvidenceService.ParsedEditSkills getParsedEditSkillsAddSkill() {
         return new EvidenceService.ParsedEditSkills(testSkillsToAdd, Collections.emptyList(), new HashMap<>());
+    }
+
+    public static EvidenceService.ParsedEditSkills getParsedEditSkillsRemoveSkill() {
+        return new EvidenceService.ParsedEditSkills(Collections.emptyList(), testDeleteSkillIDs, new HashMap<>());
     }
 
     public static SkillTag getNoSkillsSkillTag() {

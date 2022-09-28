@@ -203,6 +203,13 @@ public class EvidenceServiceTest {
     @Test
     void optionallyApplyNoSkillsTagToEvidenceWithoutSkills() {
         Evidence testEvidence = getValidEvidence();
-        evidenceService.handleSkillTagEditsForEvidence(getParsedEditSkillsAddSkill(), testEvidence);
+        testEvidence.setEvidenceTags(Collections.emptyList());
+        when(evidenceRepository.findById(any(Integer.class))).thenReturn(Optional.of(testEvidence));
+        when(skillTagRepository.findByTitle("No_skills")).thenReturn(getNoSkillsSkillTag());
+        when(evidenceTagRepository.findAllByParentEvidenceId(any(Integer.class))).thenReturn(Collections.emptyList());
+        when(evidenceTagRepository.findByParentEvidenceIdAndParentSkillTagId(any(Integer.class), any(Integer.class)))
+                .thenReturn(getEvidenceTagA(testEvidence));
+        evidenceService.handleSkillTagEditsForEvidence(getParsedEditSkillsRemoveSkill(), testEvidence);
+        verify(evidenceTagRepository).save(refEq(new EvidenceTag(getNoSkillsSkillTag(), testEvidence)));
     }
 }
