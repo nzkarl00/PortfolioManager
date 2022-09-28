@@ -293,7 +293,7 @@ class GroupsServerServiceTest {
 
         gss.deleteGroup(validDeleteRequest, testDeleteObserver);
         groupRepo.deleteById(1);
-        // Main part checking that a new memebership for group B is added.
+        // Main part checking that a new mWAG membership for this user is not added as they belong to another group.
         verify(groupMembershipRepo, never()).save(refEq(new GroupMembership(mwagGroup, accountProfile)));
 
         verify(testDeleteObserver, times(1)).onCompleted();
