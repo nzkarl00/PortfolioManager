@@ -238,6 +238,7 @@
 
     async function stompSuccessCallback(subTopic) {
         // subscribe to the global topic
+        await new Promise(r => setTimeout(r, 100));
         await stompClient.subscribe('/topic/' + subTopic + '/' + [[${project.getId()}]], function (update) {
             let updateType = JSON.parse(update.body).updateType
             if (updateType === "EDIT") {
