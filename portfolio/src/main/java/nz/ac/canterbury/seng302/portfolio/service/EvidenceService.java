@@ -291,7 +291,6 @@ public class EvidenceService {
             evidenceRepository.save(userEvidence);
 
             //Loop through all associated users again so that we can associate them to the evidence we created
-            // TODO: can refactor this to use to addUsersToExistingEvidence function
             for (String[] associated : validUsers) {
                 int associatedId = Integer.parseInt(associated[0]);
                 String associatedName = associated[1];
@@ -584,9 +583,13 @@ public class EvidenceService {
         // Create
         logger.debug("Handling skill tag creations");
         for (String skillStr : input.skillsToAdd) {
-                SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase(skillStr);
+            if (!skillStr.toLowerCase().contains("no_skill")) {
+                SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase(
+                        skillStr
+                );
                 saveSkillsAndEvidenceTags(evidence.getAssociatedProject(), evidence,
                         skillStr, skillFromRepo);
+            }
         }
 
         // Now manage tag renames.

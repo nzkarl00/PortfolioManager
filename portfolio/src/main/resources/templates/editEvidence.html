@@ -110,7 +110,7 @@
                             </input>
                         </div>
                     </div>
-                    <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="canEditCheck()"></button>
+                    <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill()"></button>
                 </div>
                 <label class="project_inputAlertBlue" id="skillCharCount" style="padding-left: 5px">Characters Remaining: 50</label>
                 <br>
@@ -281,7 +281,6 @@
             } else {
                 skillText = skillTextBase
             }
-            skills.add(skillText)
             let skillBox = document.createElement("div");
             document.getElementById("skills_container").appendChild(skillBox)
             skillBox.className = "trim_text"
@@ -296,6 +295,7 @@
             newSkill.innerText = skillText
             newSkill.value = skillText
             newSkill.onclick = editSkill;
+            skills.add(newSkill.value)
             // this original tag lets us know if the skill was an original skill and what it was
             if (isOriginal) {
                 newSkill.setAttribute("original", skillId)
@@ -342,8 +342,8 @@
 
         // Use the data from the edit skill input textbox to overwrite a skill
         function editSkill(event) {
-            skills.delete(event.target.value)
             skill = document.getElementById("skill_" + event.target.value)
+            skills.delete(skill.value)
             editingSkill = document.createElement("input")
             editingSkill.id = "skill_" + event.target.value
             editingSkill.className = "evidence_form_element_wide project_edit_data"
@@ -371,7 +371,6 @@
         function saveSkill(event) {
             editedSkill = document.getElementById("skill_" + event.target.value)
             for (const skill of skills) {
-                console.log(skill);
                 //Retrieve what the value the user has edited the skill to, to compare to all other skills currently on this evidence
                 if (skill.toLowerCase() == editedSkill.value.toLowerCase()) {
                     document.getElementById("skill_error").style = "color:red;";
@@ -416,7 +415,7 @@
             // check to see if it matches the correct skill format
             if(validateSkill(editedSkill.value)) {
                 document.getElementById("skill_error").style = "color:red;";
-                return false;gradle
+                return false;
             }
             document.getElementById("skill_error").style = "display:none;";
 
@@ -466,8 +465,8 @@
 
             for (const skill of skills) {
                 if (skill.toLowerCase() == newSkill.toLowerCase()) {
-                    document.getElementById("add_skill_input").value = "";
-                    return;
+                    document.getElementById("skill_error").style = "color:red;";
+                    return false;
                 }
             }
 
@@ -574,9 +573,40 @@
 
             }, 20)
 
-        for (const commit of [[${existingCommits}]]) {
-            originalCommits.add(commit.hash)
-            commits.add(commit.hash)
+
+        let commitChange = "N";
+        const originalCommits = [[${existingCommits}]]
+
+        function commitRecheck(commits, commitDelete) {
+
+            if (commitDelete === "") {
+                if (commits === "") {
+                    commitChange = "N"
+                } else {
+                    commitChange = "N"
+                    const myArray = commits.split("~");
+                    for (const hash of myArray) {
+                        const newHash = hash.replace(/\+[0-9]+/gi, "");
+                        let checkVal = "N"
+                        for (const ogCommit of originalCommits) {
+                            if ((ogCommit.hash != newHash) && (checkVal == "N")) {
+                                commitChange = "Y"
+                            } else {
+                                commitChange = "N"
+                                checkVal = "Y"
+                            }
+                        }
+                        if (originalCommits.length == 0) {
+                            commitChange = "Y"
+                        }
+                    }
+                }
+            } else {
+                commitChange = "Y"
+            }
+
+            canEditCheck();
+
         }
 
         // Enables the save button only if something has been changed, disables it when
@@ -587,6 +617,7 @@
             const originalDate =[[${evidence.getDate()}]].toString();
             const originalDesc = [[${evidence.getDescription()}]];
             const originalSkills = [[${skillsTitleList}]].sort().toString();
+
 
 
             if(originalCategory.length === 0) {
@@ -613,8 +644,9 @@
                 originalCategory === currentCategory &&
                 originalSkills === currentSkills &&
                 eqSet(originalLinks, links) &&
-                eqSet(originalCommits, commits) &&
-                eqSet(originalUsers, users)
+                eqSet(originalUsers, users) &&
+                commitChange === "N"
+
             ) {
                 saveButton.style = "background-color: #AAAAAA;"
                 saveButton.setAttribute("disabled","disabled");
