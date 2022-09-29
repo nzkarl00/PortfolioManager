@@ -82,7 +82,7 @@
                         <br>
                         <p class="bio evidence_title" th:if="${!evidence.getLinkedCommit().isEmpty()}">Commits </p>
                         <div class="row" th:id="${'commit_list_' + evidence.getId}">
-                            <div th:each="commit: ${evidence.getLinkedCommit}" style="width: 85%; display: block; padding: 0.5rem 3rem">
+                            <div th:each="commit: ${evidence.getLinkedCommitInReverseChronologicalOrder}" style="width: 85%; display: block; padding: 0.5rem 3rem">
                                 <div th:id="${commit.getHash}" class="row">
                                     <div class="row commit_display_smaller" th:text="${'[' + commit.getHash + ']'}"></div>
                                     <div class="row commit_display_large" th:text="${commit.getTitle}"></div>

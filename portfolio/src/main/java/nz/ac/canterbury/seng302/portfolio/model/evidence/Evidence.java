@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validateEnoughCharacters;
@@ -87,7 +88,6 @@ public class Evidence {
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     protected List<LinkedCommit> linkedCommit;
 
-    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     protected List<HighFive> highFives;
 
@@ -345,6 +345,14 @@ public class Evidence {
      * Get the linked commits associated with a piece of Evidence
      */
     public List<LinkedCommit> getLinkedCommit() {
+        return linkedCommit;
+    }
+
+    /**
+     * Get the linked commits associated with a piece of Evidence in reverse chronological order
+     */
+    public List<LinkedCommit> getLinkedCommitInReverseChronologicalOrder() {
+        linkedCommit.sort(Comparator.comparing(LinkedCommit::getTimeStamp).reversed());
         return linkedCommit;
     }
 
