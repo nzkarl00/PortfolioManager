@@ -87,7 +87,7 @@
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script type="text/javascript" th:inline="javascript">
             function sendEditStatus() {
-                axios.post("/edit", null, {params:{"projectId":[[${project.getId()}]], "type":"adding a new project item"}})
+                $.post("edit", {"projectId":[[${project.getId()}]], "type":"adding a new project item"})
                 setTimeout(sendEditStatus, 1250)
             }
 

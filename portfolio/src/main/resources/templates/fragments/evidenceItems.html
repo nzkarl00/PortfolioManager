@@ -135,6 +135,7 @@
                                 <form method="post" th:action="@{delete-evidence}">
                                     <div class="modal-footer">
                                         <input type="number" th:name="evidenceId" th:value="${evidence.getId()}" style="display: none">
+                                        <input type="number" th:name="userID" th:value="${userId}" style="display: none">
                                         <input type="number" th:name="projectId" th:value="${evidence.getAssociatedProject().getId()}" style="display: none">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelButton">Cancel</button>
                                         <button type="submit" class="btn btn-primary bg-danger" id="deleteButton" >Delete</button>
