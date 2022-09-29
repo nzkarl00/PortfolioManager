@@ -47,8 +47,9 @@
                 <!-- Creating dropdown items when the profile picture dropdown is open/active -->
                 <ul class="dropdown-menu align-middle">
                     <!-- These buttons take you to other end points -->
-                    <li><a class="dropdown-item" th:href="@{'landing'}">Project</a></li>
-                    <li><a class="dropdown-item" th:href="@{'account'}">Account</a></li>
+                    <li><a class="dropdown-item" th:href="@{'account'}">My Account</a></li>
+                    <li><a class="dropdown-item" th:href="@{'evidence?ui=' + ${userId}}">Evidence</a></li>
+                    <li><a class="dropdown-item" th:href="@{'landing'}">Projects</a></li>
                     <li><a class="dropdown-item" th:href="@{'user-list'}">Users</a></li>
                     <li><a class="dropdown-item" th:href="@{'groups'}">Groups</a></li>
                     <!-- This logout button triggers the Logout Confirmation Modal to pop up -->
