@@ -93,7 +93,6 @@ public class EvidenceStepDefs {
             // add insecure weblink
             linkInput.sendKeys("http://info.cern.ch/");
             linkButton.click();
-            System.out.println("links added");
 
 
 
