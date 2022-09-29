@@ -174,7 +174,6 @@
 
 <script th:src="@{js/fullcalendar.js}"></script>
 <script type="text/javascript" th:inline="javascript">
-    let client = axios.create({baseURL: [[${baseUrl}]]});
     canEdit = false;
     if([[${role}]] === "teacher" || [[${role}]] === "admin") {
         canEdit = true;
@@ -222,54 +221,64 @@
     let currentEdits = [];
     let timeoutDict = {};
 
-    async function connect(subTopic) {
-        let socket = new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
+    async function connect() {
+        let socket = await getSocket()
         stompClient = await Stomp.over(socket);
         // connect to the portfolio server
-        stompClient.connect({}, function (frame) {
-            // subscribe to the global topic
-            stompClient.subscribe('/topic/' + subTopic + '/' + [[${project.getId()}]], function (update) {
-                let updateType = JSON.parse(update.body).updateType
-                if (updateType == "EDIT") {
-                    let editMessage = JSON.parse(update.body).message
-                    clearTimeout(timeoutDict[editMessage])
-                    timeoutDict[editMessage] = setTimeout(resetEditStatus, 2500, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
-                    if (currentEdits.includes(editMessage) === false) {
-                        currentEdits.push(editMessage)
-                    }
-                    displayEdits()
-                } else {
-                    if (updateType == "SPRINT") {
-                        client.get("/sprints", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                sprintList = response.data
-                                buildAll(sprintList, deadlineList, eventList, milestoneList)
-                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
-                            })
-                    } else if (updateType == "DEADLINE") {
-                        client.get("/deadlines", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                deadlineList = response.data
-                                buildAll(sprintList, deadlineList, eventList, milestoneList)
-                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
-                            })
-                    } else if (updateType == "EVENT") {
-                        client.get("/events", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                eventList = response.data
-                                buildAll(sprintList, deadlineList, eventList, milestoneList)
-                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
-                            })
-                    } else if (updateType == "MILESTONE") {
-                        client.get("/milestones", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                milestoneList = response.data
-                                buildAll(sprintList, deadlineList, eventList, milestoneList)
-                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
-                            })
-                    }
+        stompClient.connect({}, stompSuccessCallback(), stompFailureCallback());
+    }
+
+    async function getSocket() {
+        return new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
+    }
+
+    async function stompFailureCallback() {
+        setTimeout(connect, 10000);
+    };
+
+    async function stompSuccessCallback() {
+        // subscribe to the global topic
+        await stompClient.subscribe('/topic/calendar/' + [[${project.getId()}]], function (update) {
+            let updateType = JSON.parse(update.body).updateType
+            if (updateType === "EDIT") {
+                let editMessage = JSON.parse(update.body).message
+                clearTimeout(timeoutDict[editMessage])
+                timeoutDict[editMessage] = setTimeout(resetEditStatus, 2500, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
+                if (currentEdits.includes(editMessage) === false) {
+                    currentEdits.push(editMessage)
                 }
-            });
+                displayEdits()
+            } else {
+                if (updateType === "SPRINT") {
+                    $.get("sprints", {"id":[[${project.getId()}]]})
+                        .then((response) => {
+                            sprintList = response.data
+                            buildAll(sprintList, deadlineList, eventList, milestoneList)
+                            renderCalendar(sprintList, deadlineList, eventList, milestoneList)
+                        })
+                } else if (updateType === "DEADLINE") {
+                    $.get("deadlines", {"id":[[${project.getId()}]]})
+                        .then((response) => {
+                            deadlineList = response.data
+                            buildAll(sprintList, deadlineList, eventList, milestoneList)
+                            renderCalendar(sprintList, deadlineList, eventList, milestoneList)
+                        })
+                } else if (updateType === "EVENT") {
+                    $.get("events", {"id":[[${project.getId()}]]})
+                        .then((response) => {
+                            eventList = response.data
+                            buildAll(sprintList, deadlineList, eventList, milestoneList)
+                            renderCalendar(sprintList, deadlineList, eventList, milestoneList)
+                        })
+                } else if (updateType === "MILESTONE") {
+                    $.get("milestones", {"id":[[${project.getId()}]]})
+                        .then((response) => {
+                            milestoneList = response.data
+                            buildAll(sprintList, deadlineList, eventList, milestoneList)
+                            renderCalendar(sprintList, deadlineList, eventList, milestoneList)
+                        })
+                }
+            }
         });
     }
 
@@ -285,7 +294,7 @@
     }
 
     function calendarTryAgain() {
-        client.get("/sprints", {params:{"id":[[${project.getId()}]]}})
+        $.get("sprints", {"id":[[${project.getId()}]]})
             .then((response) => {
                 renderCalendar(response.data, deadlineList, eventList, milestoneList)
             })
@@ -561,7 +570,7 @@
     let initialDate = [[${project.getStartDate()}]];
     let initialFalseId = 0.5;
 
-    connect('calendar');
+    connect();
 
     function buildAll(sprintList, deadlineList, eventList, milestoneList) {
         deleteAllSprints();
