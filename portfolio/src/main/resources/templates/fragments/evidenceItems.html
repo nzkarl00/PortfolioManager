@@ -113,9 +113,8 @@
                                     onload="displayHighFiveStatus(this)">
                             </button>
                             <a style="text-decoration: underline; color: #337ab7"
-                               th:id="${'High-Five_' + evidence.getId()}" th:value="${evidence.getHighFivesSize()}"
-                               th:text="${evidence.getHighFivesSize() + ' High-Fives'}" data-toggle="modal"
-                               th:data-target="${'#highFiveModal'+evidence.getId()}"></a>
+                               th:id="${'High-Five_' + evidence.getId()}" th:value="${evidence.getHighFiveNames}"
+                               data-toggle="modal" th:data-target="${'#highFiveModal'+evidence.getId()}"></a>
                         </div>
                         </div>
                     </div>
@@ -125,7 +124,7 @@
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h3 class="modal-title" th:id= "${'exampleModalLongTitle'+evidence.getId()}" >High Five Summary</h3>
+                                    <h3 class="modal-title" th:id= "${'exampleModalLongTitle'+evidence.getId()}" th:text="${'Delete - ' + evidence.getTitle()+ '?' }"></h3>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -150,17 +149,18 @@
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" th:id= "${'highFiveModalLongTitle'+evidence.getId()}"  th:text="${'Something - ' + evidence.getTitle()+ '?' }">Delete?</h5>
+                                    <h5 class="modal-title" th:id= "${'highFiveModalLongTitle'+evidence.getId()}" >High Five Summary</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
                                     <div th:each="highFive: ${evidence.getHighFives}" class="row" style="display:flex; text-align: center; padding-left: 1em">
-                                        <img class="img-fluid rounded-circle rounded-circle col-2 high_five_profile_picture" th:src="${photoPrefix + highFive.getParentUserId}"  alt="">
-                                        <div class="col-7 high_five_vertical_center" th:text="${highFive.getFirstName + ' ' + highFive.getLastName}"></div>
-                                        <div class="col-3 high_five_vertical_center">
-                                        <a class="table_text author_tag high_five_vertical_center" th:href="@{account(id=${highFive.getParentUserId()})}" >View Profile</a>
+                                        <div th:if="${highFive.getParentUserId != userId}">
+                                            <img class="img-fluid rounded-circle rounded-circle col-2 high_five_profile_picture" th:src="${photoPrefix + highFive.getParentUserId}"  alt="">
+                                            <div class="col-7 high_five_vertical_center" th:text="${highFive.getFirstName + ' ' + highFive.getLastName}"></div>
+                                            <div class="col-3 high_five_vertical_center">
+                                            <a class="table_text author_tag high_five_vertical_center" th:href="@{account(id=${highFive.getParentUserId()})}" >View Profile</a>
                                         </div>
                                     </div>
                                 </div>
@@ -187,6 +187,35 @@
         <br>
     </div>
     <script th:inline="javascript">
+
+        highFiveList = [[${highFiveList}]]
+        for (const evidenceId of highFiveList) {
+            document.getElementById("highFiveButton" + evidenceId).className = "high_five fa fa-sign-language fa-2x";
+        }
+
+        evidenceList = [[${evidenceList}]]
+        for (const evidence of evidenceList) {
+            createSummary(document.getElementById("High-Five_" + evidence.id))
+        }
+
+        function createSummary(that) {
+            console.log(that.getAttribute("value"))
+            // parse the [] and ', ' into an array of firstnames without the user
+            highFiveUsers = that.getAttribute("value").replace("]", "").replace("[", "").split(", ")
+            highFiveUsers.splice(highFiveUsers.indexOf([[${username}]]), 1)
+            console.log(highFiveUsers)
+            that.textContent = "hi"
+            if (highFiveUsers.length === 0) {
+                that.textContent = "no one has high fived"
+            } else if (highFiveUsers.length === 1) {
+                that.textContent = highFiveUsers[0] + " has high fived"
+            } else if (highFiveUsers.length === 2) {
+                that.textContent = highFiveUsers[0] + " and " + highFiveUsers[1] + " have high fived"
+            } else {
+                that.textContent = highFiveUsers[0] + ", " + highFiveUsers[1] + ", and " + highFiveUsers.length-2 + " others have high fived"
+            }
+        }
+
         function addTagToEvidence(value, evidenceId, type) {
             let newItem = document.createElement("button");
             newItem.className = "table_text evidence_" + type + "_tag"
@@ -235,11 +264,6 @@
             }
         }
 
-        highFiveList = [[${highFiveList}]]
-        for (const evidenceId of highFiveList) {
-            document.getElementById("highFiveButton" + evidenceId).className = "high_five fa fa-sign-language fa-2x";
-        }
-
         function toggleHighFive(event) {
             $.post("high-five", {evidenceId: event.value}).done(function (result) {
 
@@ -254,8 +278,6 @@
                     highFiveElement.className = "high_five fa fa-hand-paper-o fa-2x";
                     currentCount = Math.max(0,currentCount - 1);
                 }
-                document.getElementById('High-Five_'+event.value).innerText = currentCount + " High-Fives";
-                document.getElementById('High-Five_'+event.value).setAttribute('value', currentCount);
 
             })
         }

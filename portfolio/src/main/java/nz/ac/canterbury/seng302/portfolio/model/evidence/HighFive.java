@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.model.evidence;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity()
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"parent_evidence_id", "parent_user_id"})})

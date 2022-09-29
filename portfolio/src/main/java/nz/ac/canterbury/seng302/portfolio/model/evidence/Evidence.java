@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validateEnoughCharacters;
 
@@ -348,6 +349,9 @@ public class Evidence {
         return linkedCommit;
     }
 
+    public List<String> getHighFiveNames() {
+        return highFives.stream().map(highFive -> highFive.firstName).collect(Collectors.toList());
+    }
 
     public List<HighFive> getHighFives() {
         return this.highFives;
