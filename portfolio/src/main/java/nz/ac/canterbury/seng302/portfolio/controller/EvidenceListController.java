@@ -274,17 +274,18 @@ public class EvidenceListController {
      */
     @PostMapping("/add-evidence")
     public String addEvidence(
-            @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value = "titleInput") String title,
-            @RequestParam(value = "dateInput") String date,
-            @RequestParam(value = "projectId") Integer projectId,
-            @RequestParam(value = "categoryInput") String categories,
-            @RequestParam(value = "skillInput") String skills,
-            @RequestParam(value = "userInput") Optional<String> users,
-            @RequestParam(value = "linksInput") Optional<String> links,
-            @RequestParam(value = "commitsInput") Optional<String> commitsWithGroupIds,
-            @RequestParam(value = "descriptionInput") String description,
-            Model model
+        @AuthenticationPrincipal AuthState principal,
+        @RequestParam(value = "titleInput") String title,
+        @RequestParam(value = "dateInput") String date,
+        @RequestParam(value = "projectId") Integer projectId,
+        @RequestParam(value = "userID") Integer userId,
+        @RequestParam(value = "categoryInput") String categories,
+        @RequestParam(value = "skillInput") String skills,
+        @RequestParam(value = "userInput") Optional <String> users,
+        @RequestParam(value = "linksInput") Optional <String> links,
+        @RequestParam(value = "commitsInput") Optional <String> commitsWithGroupIds,
+        @RequestParam(value = "descriptionInput") String description,
+        Model model
     ) throws CustomExceptions.ProjectItemNotFoundException {
         logger.info("[EVIDENCE] Attempting to add new evidence");
         Integer accountID = AuthStateInformer.getId(principal);
@@ -359,6 +360,7 @@ public class EvidenceListController {
     @Transactional
     public String deleteEvidence(@RequestParam(required = false, value = "projectId") String projectId,
                                  @RequestParam(value = "evidenceId") String evidenceId,
+                                 @RequestParam(value = "userID") Integer userId,
                                  @AuthenticationPrincipal AuthState principal) {
         Evidence targetEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
         int accountID = AuthStateInformer.getId(principal);
