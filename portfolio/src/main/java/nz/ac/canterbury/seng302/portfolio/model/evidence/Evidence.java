@@ -87,6 +87,7 @@ public class Evidence {
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     protected List<LinkedCommit> linkedCommit;
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     protected List<HighFive> highFives;
 
@@ -346,4 +347,21 @@ public class Evidence {
     public List<LinkedCommit> getLinkedCommit() {
         return linkedCommit;
     }
+
+
+    public List<HighFive> getHighFives() {
+        return this.highFives;
+    }
+
+    public void removeHighFive(HighFive highFive) {
+        this.highFives.removeIf((HighFive original) -> {
+                return original.getId() == highFive.getId();
+            });
+    }
+
+    /**
+     * Get the high-fives size associated with a piece of Evidence
+     */
+    @Transactional
+    public int getHighFivesSize() { return this.getHighFives().size(); }
 }
