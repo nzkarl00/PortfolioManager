@@ -221,11 +221,11 @@
     let currentEdits = [];
     let timeoutDict = {};
 
-    async function connect() {
+    async function connect(subTopic) {
         let socket = await getSocket()
         stompClient = await Stomp.over(socket);
         // connect to the portfolio server
-        stompClient.connect({}, stompSuccessCallback(), stompFailureCallback());
+        stompClient.connect({}, stompSuccessCallback(subTopic), stompFailureCallback());
     }
 
     async function getSocket() {
@@ -236,9 +236,9 @@
         setTimeout(connect, 10000);
     };
 
-    async function stompSuccessCallback() {
+    async function stompSuccessCallback(subTopic) {
         // subscribe to the global topic
-        await stompClient.subscribe('/topic/calendar/' + [[${project.getId()}]], function (update) {
+        await stompClient.subscribe('/topic/' + subTopic + '/' + [[${project.getId()}]], function (update) {
             let updateType = JSON.parse(update.body).updateType
             if (updateType === "EDIT") {
                 let editMessage = JSON.parse(update.body).message
@@ -570,7 +570,7 @@
     let initialDate = [[${project.getStartDate()}]];
     let initialFalseId = 0.5;
 
-    connect();
+    connect('calendar');
 
     function buildAll(sprintList, deadlineList, eventList, milestoneList) {
         deleteAllSprints();
