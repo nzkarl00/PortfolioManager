@@ -222,24 +222,25 @@
     let currentEdits = [];
     let timeoutDict = {};
 
-    async function connect() {
+    async function connect(subTopic) {
         let socket = await getSocket()
         stompClient = await Stomp.over(socket);
         // connect to the portfolio server
-        stompClient.connect({}, stompSuccessCallback(), stompFailureCallback());
+        stompClient.connect({}, stompSuccessCallback(subTopic), stompFailureCallback(subTopic));
     }
 
     async function getSocket() {
         return new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
     }
 
-    async function stompFailureCallback() {
-        setTimeout(connect, 10000);
+    async function stompFailureCallback(subTopic) {
+        setTimeout(connect, 10000, subTopic);
     };
 
-    async function stompSuccessCallback() {
+    async function stompSuccessCallback(subTopic) {
         // subscribe to the global topic
-        await stompClient.subscribe('/topic/calendar/' + [[${project.getId()}]], function (update) {
+        await new Promise(r => setTimeout(r, 200));
+        await stompClient.subscribe('/topic/' + subTopic + '/' + [[${project.getId()}]], async function (update) {
             let updateType = JSON.parse(update.body).updateType
             if (updateType == "EDIT") {
                 let editMessage = JSON.parse(update.body).message
@@ -251,28 +252,28 @@
                 displayEdits()
             } else {
                 if (updateType == "SPRINT") {
-                    $.get("sprints", {"id":[[${project.getId()}]]})
+                    $.get("sprints", {"id": [[${project.getId()}]]})
                         .then((response) => {
                             sprintList = response.data
                             buildAll(sprintList, deadlineList, eventList, milestoneList)
                             renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                         })
                 } else if (updateType == "DEADLINE") {
-                    $.get("deadlines", {"id":[[${project.getId()}]]})
+                    $.get("deadlines", {"id": [[${project.getId()}]]})
                         .then((response) => {
                             deadlineList = response.data
                             buildAll(sprintList, deadlineList, eventList, milestoneList)
                             renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                         })
                 } else if (updateType == "EVENT") {
-                    $.get("events", {"id":[[${project.getId()}]]})
+                    $.get("events", {"id": [[${project.getId()}]]})
                         .then((response) => {
                             eventList = response.data
                             buildAll(sprintList, deadlineList, eventList, milestoneList)
                             renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                         })
                 } else if (updateType == "MILESTONE") {
-                    $.get("milestones", {"id":[[${project.getId()}]]})
+                    $.get("milestones", {"id": [[${project.getId()}]]})
                         .then((response) => {
                             milestoneList = response.data
                             buildAll(sprintList, deadlineList, eventList, milestoneList)
