@@ -198,21 +198,19 @@
             createSummary(document.getElementById("High-Five_" + evidence.id))
         }
 
-        function createSummary(that) {
-            console.log(that.getAttribute("value"))
+        function createSummary(element) {
             // parse the [] and ', ' into an array of firstnames without the user
-            highFiveUsers = that.getAttribute("value").replace("]", "").replace("[", "").split(", ")
+            highFiveUsers = element.getAttribute("value").replace("]", "").replace("[", "").split(", ")
             highFiveUsers.splice(highFiveUsers.indexOf([[${username}]]), 1)
-            console.log(highFiveUsers)
-            that.textContent = "hi"
+            element.textContent = "hi"
             if (highFiveUsers.length === 0) {
-                that.textContent = "no one has high fived"
+                element.textContent = "no one has high fived"
             } else if (highFiveUsers.length === 1) {
-                that.textContent = highFiveUsers[0] + " has high fived"
+                element.textContent = highFiveUsers[0] + " has high fived"
             } else if (highFiveUsers.length === 2) {
-                that.textContent = highFiveUsers[0] + " and " + highFiveUsers[1] + " have high fived"
+                element.textContent = highFiveUsers[0] + " and " + highFiveUsers[1] + " have high fived"
             } else {
-                that.textContent = highFiveUsers[0] + ", " + highFiveUsers[1] + ", and " + highFiveUsers.length-2 + " others have high fived"
+                element.textContent = highFiveUsers[0] + ", " + highFiveUsers[1] + ", and " + highFiveUsers.length-2 + " others have high fived"
             }
         }
 
