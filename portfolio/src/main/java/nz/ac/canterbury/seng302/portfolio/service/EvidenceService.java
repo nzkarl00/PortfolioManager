@@ -584,13 +584,9 @@ public class EvidenceService {
         // Create
         logger.debug("Handling skill tag creations");
         for (String skillStr : input.skillsToAdd) {
-            if (!skillStr.toLowerCase().contains("no_skill")) {
-                SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase(
-                        skillStr
-                );
+                SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase(skillStr);
                 saveSkillsAndEvidenceTags(evidence.getAssociatedProject(), evidence,
                         skillStr, skillFromRepo);
-            }
         }
 
         // Now manage tag renames.

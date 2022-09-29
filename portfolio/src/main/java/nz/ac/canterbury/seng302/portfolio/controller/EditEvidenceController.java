@@ -100,13 +100,14 @@ public class EditEvidenceController {
         // To ensure they are valid
         String[] editTitles = skillsEdit.split("\\s?\\d+:");
         for (String skillTitle : editTitles) {
-            if (!skillTitle.isEmpty() && !SkillTag.isValidTitle(skillTitle)) {
+            //Skills that are being edited must not be empty, follow the correct format, and must not contain the substring "No_skill"
+            if ((!skillTitle.isEmpty() && !SkillTag.isValidTitle(skillTitle)) || skillTitle.toLowerCase().contains("no_skill")) {
                 throw new IllegalArgumentException(
                         "skillsEdit, skill title is invalid: " + skillTitle);
             }
         }
 
-        // SkillsNew must also be validated.
+        //Skills that are new must not be empty, follow the correct format, and must not contain the substring "No_skill"
         String[] newTitles = skillsNew.split(" ");
         for (String skillTitle : newTitles) {
             if (!skillTitle.isEmpty() && !SkillTag.isValidTitle(skillTitle)) {
