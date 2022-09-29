@@ -92,15 +92,17 @@ public class HighFiveControllerTest {
     @Test
     public void postHighFive_OnValidEvidence_WithExistingHighFive() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        Evidence mockEvidence = Mockito.mock(Evidence.class);
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication())
                 .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateTeacher, ""));
         // Configuring Spring to use the mocked SecurityContext
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
-        when(evidenceRepository.findById(123456)).thenReturn(testEvidence);
+        when(evidenceRepository.findById(123456)).thenReturn(mockEvidence);
+        doNothing().when(mockEvidence).removeHighFive(any());
         // High five exists
-        when(highFiveRepository.findByParentEvidenceAndParentUserId(testEvidence, 1)).thenReturn(new HighFive());
+        when(highFiveRepository.findByParentEvidenceAndParentUserId(mockEvidence, 1)).thenReturn(new HighFive());
         MvcResult result = mockMvc.perform(post("/high-five").param("evidenceId", String.valueOf(123456)))
                 .andExpect(status().isOk()).andReturn();
         Assertions.assertEquals("deleted", result.getResponse().getContentAsString());

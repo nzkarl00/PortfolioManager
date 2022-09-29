@@ -76,9 +76,8 @@ public class EvidenceListController {
 
     /**
      * Directs the user to the landing project page
-     *
      * @param principal auth state for the currently authenticated user
-     * @param model     The model to be used by the application for web integration
+     * @param model The model to be used by the application for web integration
      * @return redirects to the landing page
      * @throws Exception which is raised by the repositories having a potential failure when reading objects from the DB
      */
@@ -235,7 +234,6 @@ public class EvidenceListController {
 
     /**
      * Checks if the group repo is accessible.
-     *
      * @param groupId the id of the group to
      * @return true if the repo can be reached.
      */
@@ -278,17 +276,18 @@ public class EvidenceListController {
      */
     @PostMapping("/add-evidence")
     public String addEvidence(
-            @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value = "titleInput") String title,
-            @RequestParam(value = "dateInput") String date,
-            @RequestParam(value = "projectId") Integer projectId,
-            @RequestParam(value = "categoryInput") String categories,
-            @RequestParam(value = "skillInput") String skills,
-            @RequestParam(value = "userInput") Optional<String> users,
-            @RequestParam(value = "linksInput") Optional<String> links,
-            @RequestParam(value = "commitsInput") Optional<String> commitsWithGroupIds,
-            @RequestParam(value = "descriptionInput") String description,
-            Model model
+        @AuthenticationPrincipal AuthState principal,
+        @RequestParam(value = "titleInput") String title,
+        @RequestParam(value = "dateInput") String date,
+        @RequestParam(value = "projectId") Integer projectId,
+        @RequestParam(value = "userID") Integer userId,
+        @RequestParam(value = "categoryInput") String categories,
+        @RequestParam(value = "skillInput") String skills,
+        @RequestParam(value = "userInput") Optional <String> users,
+        @RequestParam(value = "linksInput") Optional <String> links,
+        @RequestParam(value = "commitsInput") Optional <String> commitsWithGroupIds,
+        @RequestParam(value = "descriptionInput") String description,
+        Model model
     ) throws CustomExceptions.ProjectItemNotFoundException {
         logger.info("[EVIDENCE] Attempting to add new evidence");
         Integer accountID = AuthStateInformer.getId(principal);
@@ -363,6 +362,7 @@ public class EvidenceListController {
     @Transactional
     public String deleteEvidence(@RequestParam(required = false, value = "projectId") String projectId,
                                  @RequestParam(value = "evidenceId") String evidenceId,
+                                 @RequestParam(value = "userID") Integer userId,
                                  @AuthenticationPrincipal AuthState principal) {
         Evidence targetEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
         int accountID = AuthStateInformer.getId(principal);
@@ -491,5 +491,4 @@ public class EvidenceListController {
         return returnString;
 
     }
-
 }

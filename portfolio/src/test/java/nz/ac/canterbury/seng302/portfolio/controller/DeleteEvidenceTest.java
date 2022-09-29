@@ -98,6 +98,7 @@ public class DeleteEvidenceTest {
         utilities = Mockito.mockStatic(AuthStateInformer.class );
         DeleteEvidenceParams.add("projectId", String.valueOf(testProject.getId()));
         DeleteEvidenceParams.add("evidenceId", "1");
+        DeleteEvidenceParams.add("userID", "1");
     }
 
     @AfterAll

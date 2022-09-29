@@ -118,7 +118,7 @@
                         </div>
                         </div>
                     </div>
-
+                    <!-- Modals -->
                     <!-- Modal Delete -->
                     <div class="modal fade" th:id="${'deleteModal'+evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -135,6 +135,7 @@
                                 <form method="post" th:action="@{delete-evidence}">
                                     <div class="modal-footer">
                                         <input type="number" th:name="evidenceId" th:value="${evidence.getId()}" style="display: none">
+                                        <input type="number" th:name="userID" th:value="${userId}" style="display: none">
                                         <input type="number" th:name="projectId" th:value="${evidence.getAssociatedProject().getId()}" style="display: none">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelButton">Cancel</button>
                                         <button type="submit" class="btn btn-primary bg-danger" id="deleteButton" >Delete</button>
@@ -276,7 +277,6 @@
                     highFiveElement.className = "high_five fa fa-hand-paper-o fa-2x";
                     currentCount = Math.max(0,currentCount - 1);
                 }
-
             })
         }
     </script>

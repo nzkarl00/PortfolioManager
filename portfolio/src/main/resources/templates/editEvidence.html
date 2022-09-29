@@ -529,7 +529,6 @@
 
         let originalLinks = new Set()
         originalUsers = new Set()
-        originalCommits = new Set()
         // wait for the page to load
         setTimeout(() => {
             // set the existing links and skills
@@ -550,9 +549,40 @@
 
             }, 20)
 
-        for (const commit of [[${existingCommits}]]) {
-            originalCommits.add(commit.hash)
-            commits.add(commit.hash)
+
+        let commitChange = "N";
+        const originalCommits = [[${existingCommits}]]
+
+        function commitRecheck(commits, commitDelete) {
+
+            if (commitDelete === "") {
+                if (commits === "") {
+                    commitChange = "N"
+                } else {
+                    commitChange = "N"
+                    const myArray = commits.split("~");
+                    for (const hash of myArray) {
+                        const newHash = hash.replace(/\+[0-9]+/gi, "");
+                        let checkVal = "N"
+                        for (const ogCommit of originalCommits) {
+                            if ((ogCommit.hash != newHash) && (checkVal == "N")) {
+                                commitChange = "Y"
+                            } else {
+                                commitChange = "N"
+                                checkVal = "Y"
+                            }
+                        }
+                        if (originalCommits.length == 0) {
+                            commitChange = "Y"
+                        }
+                    }
+                }
+            } else {
+                commitChange = "Y"
+            }
+
+            canEditCheck();
+
         }
 
         function canEditCheck() {
@@ -561,6 +591,7 @@
             const originalDate =[[${evidence.getDate()}]].toString();
             const originalDesc = [[${evidence.getDescription()}]];
             const originalSkills = [[${skillsTitleList}]].sort().toString();
+
 
 
             if(originalCategory.length === 0) {
@@ -587,8 +618,9 @@
                 originalCategory === currentCategory &&
                 originalSkills === currentSkills &&
                 eqSet(originalLinks, links) &&
-                eqSet(originalCommits, commits) &&
-                eqSet(originalUsers, users)
+                eqSet(originalUsers, users) &&
+                commitChange === "N"
+
             ) {
                 saveButton.style = "background-color: #AAAAAA;"
                 saveButton.setAttribute("disabled","disabled");
