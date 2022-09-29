@@ -29,33 +29,35 @@
                 <div class="row px-md-5 justify-content-start constrain-overflow">
                     <br><br>
 
-                    <div class="col-7" id="edit_account_button">
+                    <div th:if="${isSelf}" class="col-7" id="edit_account_button">
                         <form th:action="@{edit-account}" method="get">
                             <input style="display:none;" th:name="id" id="id" type="number">
-                            <button class="edit_wide" style="display: inline; padding-top:0rem;" type="submit">
+                            <button class="edit_wide" style="padding-top:0rem;" type="submit">
                                 EDIT PROFILE
                             </button>
                         </form>
                     </div>
 
-                    <div class="col-8">
-                        <form th:action="@{edit-password}" id="edit_password_button" method="get">
+                    <div class="col-7">
+                        <form th:if="${isSelf}" th:action="@{edit-password}" id="edit_password_button" method="get">
                             <input style="display:none;" th:name="id" id="id" type="number">
-                            <button class="edit_wide" style="display: inline; padding-top:0rem;" type="submit">
+                            <button class="edit_wide" style="padding-top:0rem;" type="submit">
                                 EDIT PASSWORD
                             </button>
                         </form>
                     </div>
 
-                    <div class="col-9">
+                    <div class="col-7">
                         <form th:if="${isSelf}" th:action="@{edit-photo}" method="get" id="edit_photo_button">
                             <input style="display:none;" th:name="id" id="id" type="number">
-                            <button class="edit_wide" style="display: inline; padding-top:0rem;" type="submit">
+                            <button class="edit_wide" style="padding-top:0rem;" type="submit">
                                 EDIT PHOTO
                             </button>
                         </form>
                     </div>
+
                 </div>
+
             </div>
 
             <div class="col-lg-7 col-md-8 col-sm-12  portion_body">
