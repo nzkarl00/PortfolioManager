@@ -47,17 +47,23 @@
                         <h3 class="project_subhead" th:text="${'(' + (group.shortName) + ') ' + group.longName}"/>
 
                     </a>
+                    <br>
+                    <div th:if="${role == 'admin' or (role == 'teacher' and group.longName != 'Teachers Group')}" class="row-1" style="display: flex">
+                    <select th:if="${role == 'admin'}" th:id="${'select_field_'+group.getId()}" class="project_edit_data horizontal_field">
+                        <option th:each="g : ${groups}" th:value="${g.getId()}" th:text="${'(' + (g.shortName) + ') ' + g.longName}"></option>
+                    </select>
+                    <select th:if="${role == 'teacher'}" th:id="${'select_field_'+group.getId()}" class="project_edit_data horizontal_field">
+                    <option th:each="g : ${groups.?[longName != 'Teachers Group']}" th:value="${g.getId()}" th:text="${'(' + (g.shortName) + ') ' + g.longName}"></option>
+                    </select>
+                        <button th:id="${'edit_button_'+group.getId()}" disabled th:value="${group.getId()}" onclick="moveUsersToGroup(this); return false;" style="background: #AAAAAA" class="edit_button "><span class="fa fa-arrow-left"/>&nbsp;ADD TO</button>
+                        <div style="width: 50%"></div>
+                        <button th:if="${group.longName != 'Members Without a Group'}" disabled th:value="${group.getId()}" style="background: #AAAAAA" onclick="removeUsersFromGroup(this); return false;" th:id="${'delete_button_'+group.getId()}" class="delete_button"><span class="fa fa-trash"/>&nbsp;REMOVE</button>
+                    </div>
                     <h5
                         th:if="${!group.isDefaultGroup()}"
                         th:text="${gitlabLinkNotices.getOrDefault(group.getId, 'Repository not linked')}"
                         th:style="${ 'color: ' + gitlabLinkColors.getOrDefault(group.getId, 'black')}"
                     ></h5>
-                    <button
-                            th:style="${ group.getId() == 1 || group.getId() == 2 ?  'display: none; ' + display  : display}"
-                            type="button" th:value="${group.shortName}"
-                            th:id="${group.shortName}" data-toggle="modal"
-                            th:data-target="${'#deleteModal'+group.getId()}" class="fa fa-trash delete_button"
-                    />
                 </div>
 
                 <!-- Modal -->
@@ -65,14 +71,13 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete (' + (group.shortName) + ') ' + group.longName} + '?'"/>
+                                <h5 class="modal-title" id="exampleModalLongTitle" th:text="${'Delete (' + (group.shortName) + ') ' + group.longName} + '?'"></h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body"
-                                 th:text="${'Deleting this group will remove all members from that group (users will not be deleted). This operation cannot be undone. Are you sure you want to delete (' + (group.shortName) + ') ' + group.longName} + '?'"}
-                            />
+                                 th:text="${'Deleting this group will remove all members from that group (users will not be deleted). This operation cannot be undone. Are you sure you want to delete (' + (group.shortName) + ') ' + group.longName} + '?'"}></div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                 <form th:action="@{delete-group}" method="post">
@@ -128,7 +133,11 @@
 
             <div class="col-2">
             </div>
-
+                <button
+                        th:style="${ group.getId() == 1 || group.getId() == 2 ?  'display: none; ' + display  : display}"
+                        type="button" th:value="${group.shortName}"
+                        th:id="${group.shortName}" data-toggle="modal"
+                        th:data-target="${'#deleteModal'+group.getId()}" class="fa fa-trash delete_button"></button>
             <div class="col-4">
                 <br>
                 <br>
@@ -155,10 +164,17 @@ let cutboard = [[${cutboard}]];
 let selected = [];
 let latest;
 
+document.addEventListener("click", function (e) {
+    if (e.target.tagName === ("DIV") || e.target.tagName  === ("BODY")) {
+        clearSelected()
+    }
+
+});
+
 function removeFromSelected(item) {
     let i = 0;
     for (const user of selected) {
-        if (user[0] == item[0] && user[1] == item[1]) {
+        if (user[0] === item[0] && user[1] === item[1]) {
             selected.splice(i, 1);
         }
         i++;
@@ -167,6 +183,27 @@ function removeFromSelected(item) {
 
 function setLatest(id) {
     latest = id
+}
+
+function moveUsersToGroup(event) {
+    const toMove = selected.map(user => parseInt(user[1]))
+    const selectedGroup = document.getElementById("select_field_"+event.value).value
+    client.post("/ctrlv", toMove, {"params":{"groupId": selectedGroup}})
+    setTimeout(() => window.location.reload(), 500);
+}
+
+function removeUsersFromGroup(event) {
+    const toRemove = {}
+    toRemove[-1] = [];
+    for (const user of selected) {
+        toRemove[-1].push(user[1])
+        if (!(user[0] in toRemove)) {
+            toRemove[user[0]] = [];
+        }
+        toRemove[user[0]].push(user[1])
+    }
+    client.post("/ctrlx", toRemove, null);
+    setTimeout(() => window.location.reload(), 500);
 }
 
 // https://www.geeksforgeeks.org/how-to-detect-copy-paste-commands-ctrlv-ctrlc-using-javascript/
@@ -179,19 +216,18 @@ document.body.addEventListener("keydown", function (ev) {
     var key = ev.which || ev.keyCode; // Detecting keyCode
 
     // Detecting Ctrl
-    var ctrl = ev.ctrlKey ? ev.ctrlKey : ((key === 17)
-        ? true : false);
+    var ctrl = ev.ctrlKey ? ev.ctrlKey : ((key === 17));
 
     // If key pressed is V and if ctrl is true.
-    if (key == 86 && ctrl) {
+    if (key === 86 && ctrl) {
         client.post("/ctrlv", clipboard, {"params":{"groupId": latest}})
         setTimeout(() => window.location.reload(), 500);
-    } else if (key == 67 && ctrl) {
+    } else if (key === 67 && ctrl) {
         clipboard = []
         for (const user of selected) {
             clipboard.push(parseInt(user[1]))
         }
-    } else if (key == 88 && ctrl) {
+    } else if (key === 88 && ctrl) {
         // When ctrl-xing users from multiple groups, multiple grpc calls are required
         // So the cutboard is a dict containing the groupIds and the userid's to delete
         cutboard = {};
@@ -211,11 +247,40 @@ document.body.addEventListener("keydown", function (ev) {
 
 let tables = []
 
-function clearSelected() {
+function clearSelected(event) {
     selected = []
+    for (const button of document.getElementsByClassName("edit_button")) {
+        button.style = "background: #AAAAAA"
+        button.disabled = true
+    }
+    for (const button of document.getElementsByClassName("delete_button")) {
+        button.style = "background: #AAAAAA"
+        button.disabled = true
+    }
     for (const table of tables) {
         table.rows( '.selected' ).deselect();
     }
+}
+
+
+// Enables the move and remove buttons for the group associted with the given ID
+function enableButtonsForGroup(groupId) {
+    if (groupId !== 2) {
+        document.getElementById("delete_button_" + groupId).disabled = false
+        document.getElementById("delete_button_" + groupId).style = ""
+    }
+    document.getElementById("edit_button_" + groupId).disabled = false
+    document.getElementById("edit_button_" + groupId).style = ""
+}
+
+// Disables the move and remove buttons for the group associted with the given ID
+function disableButtonsForGroup(groupId) {
+    if (groupId !== 2) {
+        document.getElementById("delete_button_" + groupId).disabled = true
+        document.getElementById("delete_button_" + groupId).style = "background: #AAAAAA"
+    }
+    document.getElementById("edit_button_" + groupId).disabled = true
+    document.getElementById("edit_button_" + groupId).style = "background: #AAAAAA"
 }
 
 /*<![CDATA[*/
@@ -230,7 +295,16 @@ function clearSelected() {
             tables.push(table);
 
             $("#groupUserTable" + /*[[${group.shortName}]]*/ + ' tbody').on('click', 'tr', function (e) {
-                if (!lastChecked) {
+                if ($(this).hasClass('selected') && selected.length === 1) {
+                    let id = table.row(this).data()[0].substring(25);
+                    let groupId = [[${group.id}]];
+                    latest = groupId;
+                    id = id.substring(0, id.length - 7)
+                    $(this).removeClass('selected');
+                    removeFromSelected([groupId, id])
+                    lastChecked = null
+                    disableButtonsForGroup(groupId)
+                } else if (!lastChecked) {
                     // if no item has been selected before this click in this table, add the groupId and userId
                     // and register the click
                     let id = table.row(this).data()[0].substring(25);
@@ -243,6 +317,7 @@ function clearSelected() {
                     }
                     else {
                         $(this).addClass('selected');
+                        enableButtonsForGroup(groupId);
                         selected.push([groupId, id]);
                     }
                 } else if (e.shiftKey) {
@@ -263,6 +338,7 @@ function clearSelected() {
                         id = id.substring(0, id.length - 7)
                         if (!($(newThis).hasClass('selected'))) {
                             $(newThis).addClass('selected');
+                            enableButtonsForGroup(groupId);
                             selected.push([groupId, id]);
                         }
                     }
@@ -275,9 +351,13 @@ function clearSelected() {
                     if ($(this).hasClass('selected')) {
                         $(this).removeClass('selected');
                         removeFromSelected([groupId, id])
+                        if (!selected.map(s => s[0]).includes(groupId)) {
+                            disableButtonsForGroup(groupId)
+                        }
                     }
                     else {
                         $(this).addClass('selected');
+                        enableButtonsForGroup(groupId);
                         selected.push([groupId, id]);
                     }
                 } else {
@@ -292,6 +372,7 @@ function clearSelected() {
                     }
                     else {
                         $(this).addClass('selected');
+                        enableButtonsForGroup(groupId);
                         selected.push([groupId, id]);
                     }
                 }
