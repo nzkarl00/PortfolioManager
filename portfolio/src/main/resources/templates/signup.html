@@ -22,7 +22,7 @@
 
 
         <!-- Signup Form -->
-        <form class="row" th:action="@{signup}" method="post">
+        <form class="row" th:action="@{signup}" th:object="${userForm}" method="post">
 
             <div class="col-lg-2 col-m-1 col-2"></div>
 
@@ -89,7 +89,7 @@
 
             <div class="col-2"></div>
 
-        </form>
+
 
         <br>
 
@@ -99,15 +99,9 @@
 
             <div class="col-7 text-center ">
 
-
-                <button class="signup_box" th:style="${errorShow}">
-                    <p class="signup_error" th:text="${successCode}"/>
+                <button th:if="${#fields.hasErrors('global')}" class="signup_box">
+                    <p th:each="err : ${#fields.errors('global')}" th:text="${err}" />
                 </button>
-
-                <button class="signup_box_green" th:style="${successShow}">
-                    <p class="signup_error_green" th:text="${successCode}"/>
-                </button>
-
 
             </div>
 
@@ -115,7 +109,7 @@
 
 
         </div>
-
+        </form>
         <div class="row-1">
             <br><br><br>
         </div>
