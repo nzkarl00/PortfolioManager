@@ -21,4 +21,8 @@ public interface EvidenceTagRepository  extends CrudRepository<EvidenceTag, Inte
     @Modifying
     @Query("delete from EvidenceTag e where e.id = ?1")
     void deleteById(Integer id);
+
+    @Modifying
+    @Query("delete from EvidenceTag e where e.parentEvidence = ?1 and e.parentSkillTag = ?2")
+    void deleteByParentEvidenceAndParentSkillTag(Evidence evidence, SkillTag skillTag);
 }

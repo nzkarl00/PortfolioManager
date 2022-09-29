@@ -128,7 +128,7 @@
                             <div class="row-1">
                                 <div id="commit_search_result_box"></div>
                                 <input type="hidden" id="commitsInput" th:name="commitsInput">
-                                <input type=hidden id="commitsDelete" th:name="commitsDelete">
+                                <input type="hidden" id="commitsDelete" th:name="commitsDelete">
                             </div>
 
 
@@ -152,7 +152,6 @@
 
 
     <script th:inline="javascript">
-
 
         window.onload = function() {
         setTimeout(function(){
@@ -244,7 +243,7 @@
 
     </script>
     <script type="text/javascript" th:src="@{js/commitHandler.js}"></script>
-    <script th:inline="javascript">let existingCommits = [[${existingCommits}]]; console.log(existingCommits); existingCommits.forEach(commit => existing.add(commit.hash));</script>
+    <script th:inline="javascript">let existingCommits = [[${existingCommits}]]; existingCommits.forEach(commit => existing.add(commit.hash));</script>
 </div>
 
 </body>
