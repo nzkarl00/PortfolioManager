@@ -164,6 +164,7 @@
         <script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>
 
         <script th:inline="javascript">
+            const originalCommits = [[${existingCommits}]]
 
             // Changes the text of a link to an input provided by the user
             // Changes the edit button to a save button
@@ -550,7 +551,6 @@
 
         let originalLinks = new Set()
         originalUsers = new Set()
-        originalCommits = new Set()
         originalSkills = new Set()
         // wait for the page to load
         setTimeout(() => {
@@ -575,7 +575,6 @@
 
 
         let commitChange = "N";
-        const originalCommits = [[${existingCommits}]]
 
         function commitRecheck(commits, commitDelete) {
 
@@ -588,14 +587,14 @@
                     for (const hash of myArray) {
                         const newHash = hash.replace(/\+[0-9]+/gi, "");
                         let checkVal = "N"
-                        for (const ogCommit of originalCommits) {
+                        originalCommits.forEach((ogCommit) => {
                             if ((ogCommit.hash != newHash) && (checkVal == "N")) {
                                 commitChange = "Y"
                             } else {
                                 commitChange = "N"
                                 checkVal = "Y"
                             }
-                        }
+                        });
                         if (originalCommits.length == 0) {
                             commitChange = "Y"
                         }
