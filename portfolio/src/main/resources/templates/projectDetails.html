@@ -241,7 +241,7 @@
         // subscribe to the global topic
         await stompClient.subscribe('/topic/calendar/' + [[${project.getId()}]], function (update) {
             let updateType = JSON.parse(update.body).updateType
-            if (updateType == "EDIT") {
+            if (updateType === "EDIT") {
                 let editMessage = JSON.parse(update.body).message
                 clearTimeout(timeoutDict[editMessage])
                 timeoutDict[editMessage] = setTimeout(resetEditStatus, 2500, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
@@ -250,28 +250,28 @@
                 }
                 displayEdits()
             } else {
-                if (updateType == "SPRINT") {
+                if (updateType === "SPRINT") {
                     $.get("sprints", {"id":[[${project.getId()}]]})
                         .then((response) => {
                             sprintList = response.data
                             buildAll(sprintList, deadlineList, eventList, milestoneList)
                             renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                         })
-                } else if (updateType == "DEADLINE") {
+                } else if (updateType === "DEADLINE") {
                     $.get("deadlines", {"id":[[${project.getId()}]]})
                         .then((response) => {
                             deadlineList = response.data
                             buildAll(sprintList, deadlineList, eventList, milestoneList)
                             renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                         })
-                } else if (updateType == "EVENT") {
+                } else if (updateType === "EVENT") {
                     $.get("events", {"id":[[${project.getId()}]]})
                         .then((response) => {
                             eventList = response.data
                             buildAll(sprintList, deadlineList, eventList, milestoneList)
                             renderCalendar(sprintList, deadlineList, eventList, milestoneList)
                         })
-                } else if (updateType == "MILESTONE") {
+                } else if (updateType === "MILESTONE") {
                     $.get("milestones", {"id":[[${project.getId()}]]})
                         .then((response) => {
                             milestoneList = response.data
@@ -571,7 +571,7 @@
     let initialDate = [[${project.getStartDate()}]];
     let initialFalseId = 0.5;
 
-    connect('calendar');
+    connect();
 
     function buildAll(sprintList, deadlineList, eventList, milestoneList) {
         deleteAllSprints();
