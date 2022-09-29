@@ -108,10 +108,11 @@
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
                                 class="fa fa-trash delete_evidence"></button>
                         <div id="high_five_container" style="width:100%; text-align: right">
-                        <button th:id="${'highFiveButton' + evidence.getId()}"
-                                class="high_five fa fa-hand-paper-o fa-2x" th:value="${evidence.getId()}"
-                                type="submit" onclick="toggleHighFive(this)">
-                        </button>
+                            <button th:id="${'highFiveButton' + evidence.getId()}"
+                                    class="high_five fa fa-hand-paper-o fa-2x" th:value="${evidence.getId()}"
+                                    type="submit" onclick="toggleHighFive(this)"
+                                    onload="displayHighFiveStatus(this)">
+                            </button>
                         </div>
                         </div>
                     </div>
@@ -131,6 +132,7 @@
                                 <form method="post" th:action="@{delete-evidence}">
                                     <div class="modal-footer">
                                         <input type="number" th:name="evidenceId" th:value="${evidence.getId()}" style="display: none">
+                                        <input type="number" th:name="userID" th:value="${userId}" style="display: none">
                                         <input type="number" th:name="projectId" th:value="${evidence.getAssociatedProject().getId()}" style="display: none">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelButton">Cancel</button>
                                         <button type="submit" class="btn btn-primary bg-danger" id="deleteButton" >Delete</button>
@@ -201,13 +203,30 @@
             }
         }
 
-        function toggleHighFive(event) {
-            $.post("high-five", {evidenceId: event.value}).done(function (result) {
-                console.log(result)
-            })
+        function displayHighFiveStatus(event) {
+            highFiveList = [[${highFiveList}]]
+            if (event.value in highFiveList) {
+                document.getElementById("highFiveButton" + event.value).className = "high_five fa fa-sign-language fa-2x";
+            }
         }
 
+        highFiveList = [[${highFiveList}]]
+        for (const evidenceId of highFiveList) {
+            document.getElementById("highFiveButton" + evidenceId).className = "high_five fa fa-sign-language fa-2x";
+        }
 
+        function toggleHighFive(event) {
+            $.post("high-five", {evidenceId: event.value}).done(function (result) {
+                if (result === "added") {
+                    document.getElementById("highFiveButton" + event.value).classList.remove("high_five.fa.fa-hand-paper-o.fa-2x");
+                    document.getElementById("highFiveButton" + event.value).className = "high_five fa fa-sign-language fa-2x";
+                }
+                if (result === "deleted") {
+                    document.getElementById("highFiveButton" + event.value).classList.remove("high_five.fa.fa-sign-language.fa-2x");
+                    document.getElementById("highFiveButton" + event.value).className = "high_five fa fa-hand-paper-o fa-2x";
+                }
+            })
+        }
     </script>
     <br>
 </div>

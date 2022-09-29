@@ -1,70 +1,70 @@
 stages:
   - tagChecking
   - publishProtosToLocalMavenRepo
-#  - test
-#  - lint
-#  - build
+  - test
+  - lint
+  - build
   - deploy
-#  - sonarqube
+  - sonarqube
 
-#tag-checker:
-# stage: tagChecking
-# script:
-#   - python3 tag_checker.py $CI_COMMIT_TAG
-# only:
-#   - tags
-#
-#lint-portfolio:
-# stage: lint
-# script:
-#   - cd portfolio
-#   - ./gradlew check
-# cache:
-#   key: build-dirs-$GIT_COMMIT_REF_SLUG
-#   paths:
-#    - identityprovider/.gradle/
-#    - identityprovider/build/
-#    - portfolio/.gradle/
-#    - portfolio/build/
-#
-#lint-identityprovider:
-# stage: lint
-# script:
-#   - cd identityprovider
-#   - ./gradlew check
-# cache:
-#   key: build-dirs-$GIT_COMMIT_REF_SLUG
-#   paths:
-#    - identityprovider/.gradle/
-#    - identityprovider/build/
-#    - portfolio/.gradle/
-#    - portfolio/build/
-#
-#junit-portfolio:
-# stage: test
-# script:
-#   - cd portfolio
-#   - ./gradlew test
-# cache:
-#   key: build-dirs-$GIT_COMMIT_REF_SLUG
-#   paths:
-#    - identityprovider/.gradle/
-#    - identityprovider/build/
-#    - portfolio/.gradle/
-#    - portfolio/build/
-#
-#junit-identityprovider:
-# stage: test
-# script:
-#   - cd identityprovider
-#   - ./gradlew test
-# cache:
-#   key: build-dirs-$GIT_COMMIT_REF_SLUG
-#   paths:
-#    - identityprovider/.gradle/
-#    - identityprovider/build/
-#    - portfolio/.gradle/
-#    - portfolio/build/
+tag-checker:
+  stage: tagChecking
+  script:
+    - python3 tag_checker.py $CI_COMMIT_TAG
+  only:
+    - tags
+
+lint-portfolio:
+  stage: lint
+  script:
+    - cd portfolio
+    - ./gradlew check
+  cache:
+    key: build-dirs-$GIT_COMMIT_REF_SLUG
+    paths:
+      - identityprovider/.gradle/
+      - identityprovider/build/
+      - portfolio/.gradle/
+      - portfolio/build/
+
+lint-identityprovider:
+  stage: lint
+  script:
+    - cd identityprovider
+    - ./gradlew check
+  cache:
+    key: build-dirs-$GIT_COMMIT_REF_SLUG
+    paths:
+      - identityprovider/.gradle/
+      - identityprovider/build/
+      - portfolio/.gradle/
+      - portfolio/build/
+
+junit-portfolio:
+  stage: test
+  script:
+    - cd portfolio
+    - ./gradlew test
+  cache:
+    key: build-dirs-$GIT_COMMIT_REF_SLUG
+    paths:
+      - identityprovider/.gradle/
+      - identityprovider/build/
+      - portfolio/.gradle/
+      - portfolio/build/
+
+junit-identityprovider:
+  stage: test
+  script:
+    - cd identityprovider
+    - ./gradlew test
+  cache:
+    key: build-dirs-$GIT_COMMIT_REF_SLUG
+    paths:
+      - identityprovider/.gradle/
+      - identityprovider/build/
+      - portfolio/.gradle/
+      - portfolio/build/
 
 publish-protos-to-maven-local:
   stage: publishProtosToLocalMavenRepo
@@ -73,36 +73,36 @@ publish-protos-to-maven-local:
     - ./gradlew clean
     - ./gradlew publishToMavenLocal
   cache:
-   key: build-dirs-$GIT_COMMIT_REF_SLUG
-   paths:
-    - identityprovider/.gradle/
-    - identityprovider/build/
-    - portfolio/.gradle/
-    - portfolio/build/
+    key: build-dirs-$GIT_COMMIT_REF_SLUG
+    paths:
+      - identityprovider/.gradle/
+      - identityprovider/build/
+      - portfolio/.gradle/
+      - portfolio/build/
 
 # builds all branches, except dev and master
-#branch-build:
-# stage: build
-# script:
-#   - cd identityprovider
-#   - ./gradlew bootJar
-#   - cd ../portfolio
-#   - ./gradlew bootJar
-# artifacts:
-#   paths:
-#     - identityprovider/build/libs
-#     - portfolio/build/libs
-# cache:
-#   key: build-dirs-$GIT_COMMIT_REF_SLUG
-#   paths:
-#    - identityprovider/.gradle/
-#    - identityprovider/build/
-#    - portfolio/.gradle/
-#    - portfolio/build/
-# except:
-#   - tags
-#   - master
-#   - dev
+branch-build:
+  stage: build
+  script:
+    - cd identityprovider
+    - ./gradlew bootJar
+    - cd ../portfolio
+    - ./gradlew bootJar
+  artifacts:
+    paths:
+      - identityprovider/build/libs
+      - portfolio/build/libs
+  cache:
+    key: build-dirs-$GIT_COMMIT_REF_SLUG
+    paths:
+      - identityprovider/.gradle/
+      - identityprovider/build/
+      - portfolio/.gradle/
+      - portfolio/build/
+  except:
+    - tags
+    - master
+    - dev
 
 deploy-staging-identityprovider:
   stage: deploy
@@ -128,7 +128,6 @@ deploy-staging-identityprovider:
       - identityprovider/build/libs
   only:
     - dev
-    - fix/websocket-over-http
 
 deploy-staging-portfolio:
   stage: deploy
@@ -152,7 +151,6 @@ deploy-staging-portfolio:
       - portfolio/build/libs
   only:
     - dev
-    - fix/websocket-over-http
 
 deploy-production-identityprovider:
   stage: deploy
@@ -204,16 +202,16 @@ deploy-production-portfolio:
     - tags
     - master
 
-#sonarqube-report:
-# stage: sonarqube
-# variables:
-#   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
-# cache:
-#   key: "${CI_JOB_NAME}"
-#   paths:
-#     - .sonar/cache
-# script:
-#   - cd identityprovider
-#   - ./gradlew sonarqube
-#   - cd ../portfolio
-#   - ./gradlew sonarqube
+sonarqube-report:
+  stage: sonarqube
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - cd identityprovider
+    - ./gradlew sonarqube
+    - cd ../portfolio
+    - ./gradlew sonarqube
