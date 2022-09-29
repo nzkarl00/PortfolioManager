@@ -225,15 +225,15 @@
         let socket = await getSocket()
         stompClient = await Stomp.over(socket);
         // connect to the portfolio server
-        stompClient.connect({}, stompSuccessCallback(subTopic), stompFailureCallback());
+        stompClient.connect({}, stompSuccessCallback(subTopic), stompFailureCallback(subTopic));
     }
 
     async function getSocket() {
         return new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
     }
 
-    async function stompFailureCallback() {
-        setTimeout(connect, 10000);
+    async function stompFailureCallback(subTopic) {
+        setTimeout(connect, 10000, subTopic);
     };
 
     async function stompSuccessCallback(subTopic) {
