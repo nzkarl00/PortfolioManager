@@ -109,8 +109,7 @@
                         <div id="high_five_container" style="width:100%; text-align: right">
                             <button th:id="${'highFiveButton' + evidence.getId()}"
                                     class="high_five fa fa-hand-paper-o fa-2x" th:value="${evidence.getId()}"
-                                    type="submit" onclick="toggleHighFive(this)"
-                                    onload="displayHighFiveStatus(this)">
+                                    type="submit" onclick="toggleHighFive(this)">
                             </button>
                             <a style="text-decoration: underline; color: #337ab7"
                                th:id="${'High-Five_' + evidence.getId()}" th:value="${evidence.getHighFivesSize()}"
@@ -164,6 +163,13 @@
         <br>
     </div>
     <script th:inline="javascript">
+        var evidenceIDsHighFivedByUser = [[${highFiveList}]];
+        var evidenceList = [[${evidenceList}]];
+        var highFivesIndex = {};
+        evidenceList.forEach((evidence) => {
+            highFivesIndex[evidence.id] = evidence.highFivesSize;
+        })
+
         function addTagToEvidence(value, evidenceId, type) {
             let newItem = document.createElement("button");
             newItem.className = "table_text evidence_" + type + "_tag"
@@ -190,52 +196,61 @@
         }
 
         skillMap = [[${skillMap}]]
-        for (const evidence of [[${evidenceList}]]) {
+        evidenceList.forEach((evidence) => {
             addTagRowToEvidence(evidence.id, "si")
             for (const evidenceSkill of skillMap[evidence.id]) {
                 addTagToEvidence(evidenceSkill, evidence.id, "si")
             }
-        }
+        });
 
         categoryMap = [[${categoryMap}]]
-        for (const evidence of [[${evidenceList}]]) {
+        evidenceList.forEach((evidence) => {
             addTagRowToEvidence(evidence.id, "ci")
             for (const evidenceCategory of categoryMap[evidence.id].sort()) {
                 addTagToEvidence(evidenceCategory, evidence.id, "ci")
             }
-        }
-
-        function displayHighFiveStatus(event) {
-            highFiveList = [[${highFiveList}]]
-            if (event.value in highFiveList) {
-                document.getElementById("highFiveButton" + event.value).className = "high_five fa fa-sign-language fa-2x";
-            }
-        }
-
-        highFiveList = [[${highFiveList}]]
-        for (const evidenceId of highFiveList) {
-            document.getElementById("highFiveButton" + evidenceId).className = "high_five fa fa-sign-language fa-2x";
-        }
+        });
 
         function toggleHighFive(event) {
-            $.post("high-five", {evidenceId: event.value}).done(function (result) {
-
-                let highFiveElement = document.getElementById("highFiveButton" + event.value);
-                let currentCount = parseInt(document.getElementById('High-Five_'+event.value).getAttribute("value"));
+            const evidenceID = parseInt(event.value);
+            $.post("high-five", {evidenceId: evidenceID}).done(function (result) {
                 if (result === "added") {
-                    highFiveElement.classList.remove("high_five.fa.fa-hand-paper-o.fa-2x");
-                    highFiveElement.className = "high_five fa fa-sign-language fa-2x";
-                    currentCount = currentCount + 1;
+                    highFivesIndex[evidenceID] += 1;
+                    evidenceIDsHighFivedByUser.push(evidenceID);
                 } else if (result === "deleted") {
-                    highFiveElement.classList.remove("high_five.fa.fa-sign-language.fa-2x");
-                    highFiveElement.className = "high_five fa fa-hand-paper-o fa-2x";
-                    currentCount = Math.max(0,currentCount - 1);
+                    highFivesIndex[evidenceID] -= 1;
+                    evidenceIDsHighFivedByUser = evidenceIDsHighFivedByUser.filter((elem) => elem != evidenceID);
                 }
-                document.getElementById('High-Five_'+event.value).innerText = currentCount + " High-Fives";
-                document.getElementById('High-Five_'+event.value).setAttribute('value', currentCount);
 
+                renderHighFiveStatuses();
             })
         }
+
+        const renderHighFiveStatuses = () => {
+            const evidenceIDsWithHighFivesFromUser = evidenceIDsHighFivedByUser;
+
+            evidenceList.forEach((evidence) => {
+                const evidenceID = evidence.id;
+                let highFiveText = document.getElementById('High-Five_' + evidenceID);
+                let highFiveButton = document.getElementById('highFiveButton' + evidenceID);
+
+                // Apply the right button styling
+                if (evidenceIDsWithHighFivesFromUser.includes(evidenceID)) {
+                    highFiveButton.classList.remove("high_five.fa.fa-hand-paper-o.fa-2x");
+                    highFiveButton.className = "high_five fa fa-sign-language fa-2x";
+                } else {
+                    highFiveButton.classList.remove("high_five.fa.fa-sign-language.fa-2x");
+                    highFiveButton.className = "high_five fa fa-hand-paper-o fa-2x";
+                }
+
+                // Determine the count and apply it
+                let currentCount = highFivesIndex[evidenceID];
+
+                highFiveText.innerText = currentCount + ` High-Five${currentCount == 1 ? '' : 's'}`;
+            });
+        }
+
+        renderHighFiveStatuses();
     </script>
     <br>
 </div>
