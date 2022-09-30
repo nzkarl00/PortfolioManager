@@ -1099,6 +1099,15 @@
     color: white;
 }
 
+.group_delete_button {
+    border: none;
+    margin-left: 10px;
+    padding: 4px 10px;
+    background: #FF202E;
+    border-radius: 10px;
+    color: white;
+}
+
 .hiddenCalendar {
     visibility:hidden !important;
 }

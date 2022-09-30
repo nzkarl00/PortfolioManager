@@ -48,7 +48,7 @@
 
                     </a>
                     <br>
-                    <div th:if="${role == 'admin' or (role == 'teacher' and group.longName != 'Teachers Group')}" class="row-1" style="display: flex">
+                    <div th:if="${role != 'student'}" class="row-1" style="display: flex">
                     <select th:if="${role == 'admin'}" th:id="${'select_field_'+group.getId()}" class="project_edit_data horizontal_field">
                         <option th:each="g : ${groups}" th:value="${g.getId()}" th:text="${'(' + (g.shortName) + ') ' + g.longName}"></option>
                     </select>
@@ -57,7 +57,7 @@
                     </select>
                         <button th:id="${'edit_button_'+group.getId()}" disabled th:value="${group.getId()}" onclick="moveUsersToGroup(this); return false;" style="background: #AAAAAA" class="edit_button fa fa-arrow-left">&nbsp;ADD TO</button>
                         <div style="width: 50%"></div>
-                        <button th:if="${group.longName != 'Members Without a Group'}" disabled th:value="${group.getId()}" style="background: #AAAAAA" onclick="removeUsersFromGroup(this); return false;" th:id="${'delete_button_'+group.getId()}" class="delete_button fa fa-trash">&nbsp;REMOVE</button>
+                        <button th:if="${group.longName != 'Members Without a Group' and group.longName != 'Teachers Group' or role == 'admin'}" disabled th:value="${group.getId()}" style="background: #AAAAAA" onclick="removeUsersFromGroup(this); return false;" th:id="${'delete_button_'+group.getId()}" class="delete_button fa fa-trash">&nbsp;REMOVE</button>
                     </div>
                     <h5
                         th:if="${!group.isDefaultGroup()}"
@@ -137,7 +137,7 @@
                         th:style="${ group.getId() == 1 || group.getId() == 2 ?  'display: none; ' + display  : display}"
                         type="button" th:value="${group.shortName}"
                         th:id="${group.shortName}" data-toggle="modal"
-                        th:data-target="${'#deleteModal'+group.getId()}" class="fa fa-trash delete_button"></button>
+                        th:data-target="${'#deleteModal'+group.getId()}" class="fa fa-trash group_delete_button"></button>
             <div class="col-4">
                 <br>
                 <br>
@@ -159,6 +159,7 @@
 let client = axios.create({baseURL: [[${baseUrl}]]});
 /*]]>*/
 
+let role = [[${role}]];
 let clipboard = [[${clipboard}]];
 let cutboard = [[${cutboard}]];
 let selected = [];
@@ -265,7 +266,7 @@ function clearSelected(event) {
 
 // Enables the move and remove buttons for the group associted with the given ID
 function enableButtonsForGroup(groupId) {
-    if (groupId !== 2) {
+    if (groupId !== 2 && (groupId !== 1 || role.toString() === 'admin')) {
         document.getElementById("delete_button_" + groupId).disabled = false
         document.getElementById("delete_button_" + groupId).style = ""
     }
@@ -275,7 +276,7 @@ function enableButtonsForGroup(groupId) {
 
 // Disables the move and remove buttons for the group associted with the given ID
 function disableButtonsForGroup(groupId) {
-    if (groupId !== 2) {
+    if (groupId !== 2 && (groupId !== 1 || role.toString() === 'admin')) {
         document.getElementById("delete_button_" + groupId).disabled = true
         document.getElementById("delete_button_" + groupId).style = "background: #AAAAAA"
     }
