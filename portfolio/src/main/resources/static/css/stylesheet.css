@@ -1802,3 +1802,15 @@ select.form-control {
     background: #D9F9FF !important;
     border-radius: 10px;
 }
+
+.high_five_profile_picture {
+    width:2.5em;
+    height:2.5em;
+    padding: 0 !important;
+}
+
+.high_five_vertical_center {
+    display: inline-flex !important;
+    align-items: center;
+    padding-left: 1em
+}

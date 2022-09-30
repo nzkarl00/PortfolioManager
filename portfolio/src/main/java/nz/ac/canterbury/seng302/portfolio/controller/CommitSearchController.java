@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
+import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.portfolio.service.GitlabClient;
 import nz.ac.canterbury.seng302.portfolio.util.Validation;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * A Controller to control searching for commits associated with a group repository.
@@ -113,7 +115,13 @@ public class CommitSearchController {
             model.addAttribute(errorMessage, "Communicating with the Gitlab API failed, please try again");
             return commitDisplayFragment;
         }
-
+        if (selectedCommits.isPresent()) {
+            String selected = selectedCommits.get();
+            List<String> selectedHashes = EvidenceService.extractListFromHTMLStringWithTilda(selected);
+            selectedHashes = selectedHashes.stream().map(s -> s.split("\\+")[0]).collect(Collectors.toList());
+            List<String> finalSelectedHashes = selectedHashes;
+            res = res.stream().filter(commit -> !finalSelectedHashes.contains(commit.getId())).collect(Collectors.toList());
+        }
         model.addAttribute("commitList", res);
         return commitDisplayFragment;
     }

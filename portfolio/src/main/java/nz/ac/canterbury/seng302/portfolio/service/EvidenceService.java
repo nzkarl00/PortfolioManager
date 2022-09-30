@@ -294,7 +294,6 @@ public class EvidenceService {
             for (String[] associated : validUsers) {
                 int associatedId = Integer.parseInt(associated[0]);
                 String associatedName = associated[1];
-                logger.debug(associatedName);
                 EvidenceUser evidenceUser =
                         new EvidenceUser(associatedId, associatedName,
                                 userEvidence);
@@ -473,7 +472,6 @@ public class EvidenceService {
             } else {
                 groupRepo = optionalGroupRepo.get();
                 Commit foundCommit = gitlabClient.getSingleCommit(hashAndGroup.get(0), groupRepo);
-                logger.info(foundCommit.toString());
                 constructedCommits.add(new LinkedCommit(parentEvidence, groupRepo.getName(), groupRepo.getOwner(), hashAndGroup.get(0),
                         foundCommit.getAuthorName(), foundCommit.getTitle(), DateParser.convertToLocalDateTime(foundCommit.getCreatedAt())));
             }
@@ -510,7 +508,6 @@ public class EvidenceService {
      */
     public void deleteEvidence(Evidence evidence) {
         List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
-        System.out.println(evidenceTags);
         List<SkillTag> skillTags = evidenceTags.stream()
             .map(EvidenceTag::getParentSkillTag)
             .filter(skillTag -> !Objects.equals(skillTag.getTitle(), "No_skills"))

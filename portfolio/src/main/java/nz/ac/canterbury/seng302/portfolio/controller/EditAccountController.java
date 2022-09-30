@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFive;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFiveRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -28,6 +31,8 @@ public class EditAccountController {
 
     @Autowired
     private NavController navController;
+    @Autowired
+    private HighFiveRepository highFiveRepository;
 
     private final String displayNone = "display:none;";
     String editErrorShow = displayNone;
@@ -99,6 +104,13 @@ public class EditAccountController {
         if (editUserResponse.getIsSuccess()) {
             editErrorShow = displayNone;
             editSuccessShow = "";
+            // update the highFives when the user requests a name change
+            List<HighFive> highFiveList = highFiveRepository.findAllByParentUserId(id);
+            highFiveList.forEach((highFive) -> {
+                highFive.setFirstName(firstname);
+                highFive.setLastName(lastname);
+                highFiveRepository.save(highFive);
+            });
         } else {
             editErrorShow = "";
             editSuccessShow = displayNone;
