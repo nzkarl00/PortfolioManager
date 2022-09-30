@@ -306,11 +306,17 @@ public class GroupsServerService extends GroupsServiceImplBase {
         ModifyGroupDetailsResponse.Builder reply = ModifyGroupDetailsResponse.newBuilder();
         Groups targetGroup = groupRepo.findByGroupId(request.getGroupId());
         if (!(targetGroup == null)) {
-            if (!request.getShortName().isEmpty()) { targetGroup.setGroupShortName(request.getShortName()); }
-            if (!request.getLongName().isEmpty()) { targetGroup.setGroupLongName(request.getLongName()); }
-            groupRepo.save(targetGroup);
-            reply.setIsSuccess(true)
-                    .setMessage("Edit successful");
+
+            if ((groupRepo.findAllByGroupShortName(request.getShortName()).isEmpty() || request.getShortName().equals(targetGroup.getGroupShortName())) &&
+                    (groupRepo.findAllByGroupLongName(request.getLongName()).isEmpty() || request.getLongName().equals(targetGroup.getGroupLongName())) &&
+                    (groupRepo.findAllByGroupLongName(request.getShortName()).isEmpty() || request.getLongName().equals(targetGroup.getGroupLongName()))) {
+                groupRepo.save(targetGroup);
+                reply.setIsSuccess(true)
+                        .setMessage("Edit successful");
+            } else {
+                reply.setIsSuccess(false)
+                        .setMessage("Edit failed, group name in use");
+            }
 
             observer.onNext(reply.build());
             observer.onCompleted();
