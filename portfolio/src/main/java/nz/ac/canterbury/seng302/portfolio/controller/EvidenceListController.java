@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
@@ -165,7 +166,7 @@ public class EvidenceListController {
             }
         };
 
-        evidenceList.parallelStream().forEach(putEvidenceIntoMap);
+        evidenceList.forEach(putEvidenceIntoMap);
 
         skillTemp.forEach(pair -> evidenceSkillMap.put(pair.getValue0(), pair.getValue1()));
         categoryTemp.forEach(pair -> evidenceCategoryMap.put(pair.getValue0(), pair.getValue1()));
@@ -175,6 +176,7 @@ public class EvidenceListController {
         model.addAttribute("skillMap", evidenceSkillMap);
         model.addAttribute("categoryMap", evidenceCategoryMap);
         model.addAttribute("highFiveList", evidenceHighFiveList);
+        model.addAttribute("user", new User(accountClientService.getUserById(userId)));
         model.addAttribute("username", AuthStateInformer.getUsername(principal));
         model.addAttribute("userId", AuthStateInformer.getId(principal));
         return "fragments/evidenceItems.html :: evidenceItems";
