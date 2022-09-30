@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFiveRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
@@ -47,6 +48,9 @@ class EditAccountControllerTest {
 
     @MockBean
     AccountClientService accountClientService;
+
+    @MockBean
+    HighFiveRepository highFiveRepository;
 
     @MockBean
     NavController navController;
