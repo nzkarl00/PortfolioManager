@@ -22,13 +22,13 @@
                     <input type="file" id="photo" name="filename" accept="image/*" onChange='compress()' required>
                     <!--<input type="file" id="photo" name="filename" accept="image/*" required>-->
                     <button type="submit" class="save" style="width:96% !important;">
-                        Upload Photo
+                        <i class="fa fa-upload"></i> Upload photo
                     </button>
                 </form>
                 <span th:text="${message}"></span>
                 <form action="#" th:action="@{delete-photo}" th:method="delete">
                     <button type="submit" class="cancel" style="width:96% !important;">
-                        Delete Photo
+                        <i class="fa fa-trash"></i> Delete photo
                     </button>
                 </form>
                 <p><span th:text="${message}"></span></p>

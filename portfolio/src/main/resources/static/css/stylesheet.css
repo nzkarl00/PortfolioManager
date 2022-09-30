@@ -1698,7 +1698,8 @@ select.form-control {
 }
 
 .evidence_si_tag:hover {
-    background-color: #26D20F !important;
+    background-color:#056BFA; !important;
+    color:#056BFA; !important;
 }
 
 .author_tag{
@@ -1712,6 +1713,11 @@ select.form-control {
     margin-bottom: 0.3rem;
     margin-left: 0.3rem;
     font-size: 80% !important;
+}
+
+.author_tag:hover {
+    background-color:#056BFA; !important;
+    color:#056BFA; !important;
 }
 
 .contributor_tag{
@@ -1731,7 +1737,7 @@ select.form-control {
 
 .contributor_tag:hover {
     text-decoration: underline;
-    background-color: #FF202E; !important;
+    background-color:#056BFA; !important
     border-style: none !important;
     border-radius: 3px !important;
     color: #ffffff !important;
@@ -1755,7 +1761,8 @@ select.form-control {
 }
 
 .evidence_ci_tag:hover {
-    background-color: #26D20F !important;;
+    background-color:#056BFA; !important;
+    color:#056BFA; !important;
 }
 
 .wrapper {
@@ -1802,6 +1809,41 @@ select.form-control {
     background: #D9F9FF !important;
     border-radius: 10px;
 }
+.view_evidence {
+
+    background-color:#19DAFF; !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 150% !important;
+    align: center !important;
+    font-size: 100% !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+
+.view_evidence:hover {
+    background-color:#056BFA; !important;
+    color:#056BFA; !important;
+}
+
+.lowered {
+    margin-top: 2.3rem; !important;
+    padding-left: 2px; !important;
+}
+
+.delete_group {
+    padding-top: 1rem; !important
+
+}
+
+.go_right {
+
+    margin-right: 0.25rem !important;
+}
+
 
 .high_five_profile_picture {
     width:2.5em;

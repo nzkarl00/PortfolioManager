@@ -34,7 +34,7 @@
         <form class="row" id="eventForm" th:action="@{add-dates}" method="post">
 
             <div class="col-2"></div>
-            
+
             <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
                 <select class="project_edit_data horizontal_field" name="eventType" id="eventType" onchange="updateForm()">
                     <option id="eventNone" selected="true" disabled="disabled" value="">Choose a date type to add</option>
@@ -75,9 +75,9 @@
             <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
 
                 <button class="cancel" type="button">
-                    <a class="button_a" th:href="@{details(id=${project.getId})}">CANCEL</a>
+                    <a class="button_a" th:href="@{details(id=${project.getId})}"> <i class="fa fa-ban p-1"></i> Cancel</a>
                 </button>
-                <button class="save" id="dateSave" type="submit">SAVE</button>
+                <button class="save" id="dateSave" type="submit"><i class="fa fa-save p-1 pr-3"></i> Save</button>
             </div>
 
 
