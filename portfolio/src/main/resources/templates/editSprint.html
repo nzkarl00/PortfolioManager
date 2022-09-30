@@ -66,9 +66,9 @@
             <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
 
                 <button class="cancel" type="button">
-                    <a class="button_a" th:href="@{details(id=${project.getId})}">CANCEL</a>
+                    <a class="button_a" th:href="@{details(id=${project.getId})}"><i class="fa fa-ban p-1"></i> Cancel</a>
                 </button>
-                <button class="save" type="submit">SAVE</button>
+                <button class="save" type="submit"><i class="fa fa-save p-1 pr-3"></i> Save</button>
             </div>
 
 
@@ -109,7 +109,7 @@
 <script type="text/javascript" th:inline="javascript">
     let editType = "editing Sprint: " + [[${sprint.getName()}]]
     function sendEditStatus() {
-        axios.post("edit", null, {params:{"projectId":[[${project.getId()}]], "type":editType}})
+        $.post("edit", {"projectId":[[${project.getId()}]], "type":editType})
         setTimeout(sendEditStatus, 1250)
     }
 

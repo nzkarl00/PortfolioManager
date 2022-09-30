@@ -16,6 +16,8 @@ import org.springframework.data.domain.Sort;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nz.ac.canterbury.seng302.identityprovider.service.GroupsServerService.MWAG_GROUP_NAME_SHORT;
+import static nz.ac.canterbury.seng302.identityprovider.service.GroupsServerService.TEACHER_ROLE;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -202,6 +204,7 @@ class GroupsServerServiceTest {
 
     }
 
+
     /**
      * Test to delete valid group with group members assigned
      */
@@ -221,11 +224,24 @@ class GroupsServerServiceTest {
         when(groupMembershipRepo.findAllByRegisteredGroups(groups)).thenReturn(groupList);
         when(groupRepo.findAllByGroupId(1)).thenReturn(groupsCheck);
 
+
+
+        Groups mwagGroup = new Groups();
+        mwagGroup.setGroupShortName("MWAG");
+        mwagGroup.setGroupLongName("Members Without a Group");
+        List<Groups> mwaglist = new ArrayList<>();
+        mwaglist.add(mwagGroup);
+
+
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(mwaglist);
+
         DeleteGroupRequest validDeleteRequest = DeleteGroupRequest.newBuilder()
                 .setGroupId(1).build();
 
         gss.deleteGroup(validDeleteRequest, testDeleteObserver);
         groupRepo.deleteById(1);
+        // Main part checking that a new memebership for group B is added.
+        verify(groupMembershipRepo).save(refEq(new GroupMembership(mwagGroup, accountProfile)));
 
         verify(testDeleteObserver, times(1)).onCompleted();
         ArgumentCaptor<DeleteGroupResponse> captor = ArgumentCaptor.forClass(DeleteGroupResponse.class);
@@ -235,6 +251,61 @@ class GroupsServerServiceTest {
         assertEquals("group has been deleted", response.getMessage());
 
     }
+
+    /**
+     * Test to delete valid group with group members assigned
+     */
+    @Test
+    void deleteGroup_validGroup_withMemberInOtherGroup() {
+
+        Groups groups = new Groups(1);
+        Groups groups2 = new Groups(3);
+        List<Groups> groupsCheck = new ArrayList<>();
+        AccountProfile accountProfile = new AccountProfile();
+        List<GroupMembership> groupList = new ArrayList<>();
+        GroupMembership groupMembership = new GroupMembership(groups, accountProfile);
+        GroupMembership groupMembership2 = new GroupMembership(groups2, accountProfile);
+        groupMembership.setGroupMembershipId(0L);
+        groupMembership2.setGroupMembershipId(1L);
+        groupList.add(groupMembership);
+        groupList.add(groupMembership2);
+        groups.setMembers(groupList);
+        groupsCheck.add(groups);
+        groupsCheck.add(groups2);
+        when(groupRepo.findByGroupId(1)).thenReturn(groups);
+        when(groupMembershipRepo.findAllByRegisteredGroups(groups)).thenReturn(groupList);
+        when(groupRepo.findAllByGroupId(1)).thenReturn(groupsCheck);
+        when(groupMembershipRepo.findAllByRegisteredGroupUser(accountProfile)).thenReturn(groupList);
+
+
+
+        Groups mwagGroup = new Groups();
+        mwagGroup.setGroupShortName("MWAG");
+        mwagGroup.setGroupLongName("Members Without a Group");
+        List<Groups> mwaglist = new ArrayList<>();
+        mwaglist.add(mwagGroup);
+
+
+        when(groupRepo.findAllByGroupShortName("MWAG")).thenReturn(mwaglist);
+
+        DeleteGroupRequest validDeleteRequest = DeleteGroupRequest.newBuilder()
+                .setGroupId(1).build();
+
+        gss.deleteGroup(validDeleteRequest, testDeleteObserver);
+        groupRepo.deleteById(1);
+        // Main part checking that a new mWAG membership for this user is not added as they belong to another group.
+        verify(groupMembershipRepo, never()).save(refEq(new GroupMembership(mwagGroup, accountProfile)));
+
+        verify(testDeleteObserver, times(1)).onCompleted();
+        ArgumentCaptor<DeleteGroupResponse> captor = ArgumentCaptor.forClass(DeleteGroupResponse.class);
+        verify(testDeleteObserver, times(1)).onNext(captor.capture());
+        DeleteGroupResponse response = captor.getValue();
+        assertTrue(response.getIsSuccess());
+        assertEquals("group has been deleted", response.getMessage());
+
+    }
+
+
 
     /**
      * Test to delete invalid group to get error - done by providing an incorrect groupId
@@ -559,6 +630,8 @@ class GroupsServerServiceTest {
         mwagGroup.setMembers(new ArrayList<>(List.of(mwagMembership)));
         List<Groups> noMembers = new ArrayList<>(List.of(mwagGroup));
 
+        testUser.addRoleTestingOnly(new Role(testUser, "1student"));
+
         when(groupRepo.findByGroupId(2)).thenReturn(mwagGroup);
 
         when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
@@ -650,6 +723,7 @@ class GroupsServerServiceTest {
         mwagGroup.setMembers(new ArrayList<>(List.of(mwagMembership)));
         List<Groups> noMembers = new ArrayList<>(List.of(mwagGroup));
 
+        testUser.addRoleTestingOnly(new Role(testUser, "1student"));
         when(groupRepo.findByGroupId(2)).thenReturn(mwagGroup);
 
         when(groupRepo.findAllByGroupShortName("TG")).thenReturn(new ArrayList<>(List.of(teacherGroup)));
@@ -708,6 +782,7 @@ class GroupsServerServiceTest {
         GroupMembership duplicateGroupMembership = new GroupMembership(mwagGroup, testUser);
         when(groupMembershipRepo.findAllByRegisteredGroupsAndRegisteredGroupUser(mwagGroup,testUser)).thenReturn(new ArrayList<>(List.of(duplicateGroupMembership)));
 
+        testUser.addRoleTestingOnly(new Role(testUser, "1student"));
         AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder().setGroupId(2).addUserIds(1).build();
         gss.addGroupMembers(request, testAddGroupMembersObserver);
 

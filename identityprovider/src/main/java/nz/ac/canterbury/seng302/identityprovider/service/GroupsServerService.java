@@ -113,6 +113,17 @@ public class GroupsServerService extends GroupsServiceImplBase {
                 for (GroupMembership groupMembership : groupMemberships) {
                     groupMembershipRepo.deleteByGroupMembershipId(groupMembership.getGroupMembershipId());
                 }
+
+                if (user.getRoles().contains(TEACHER_ROLE)){
+                    List<Role> rolesOfUser = roleRepo.findAllByRegisteredUser(user); // List of roles held by that user
+                    for (Role role: rolesOfUser) {
+                        // Out of the roles held by that user, update the repos with the requested role to be removed.
+                        if (role.getRole().equals(TEACHER_ROLE)) {
+                            Long roleIdToRemove = role.getUserRoleId();
+                            roleRepo.deleteById(roleIdToRemove);
+                        }
+                    }
+                }
             }
 
             // if the user being added is not already in the group, aka it is not a duplicate group member
@@ -264,7 +275,20 @@ public class GroupsServerService extends GroupsServiceImplBase {
 
             // loop through all members and delete them one by one from the GroupMembership Repo
             for (int i=0; i < allMembers.size(); i++) {
+
                 groupMembershipRepo.deleteByGroupMembershipId(allMembers.get(i).getGroupMembershipId());
+            }
+
+            // If the user now has no groups, add to MWAG
+            for (int i=0; i < allMembers.size(); i++) {
+                AccountProfile user = allMembers.get(i).getRegisteredGroupUser();
+                List<GroupMembership> userMembers = groupMembershipRepo.findAllByRegisteredGroupUser(user);
+                if (userMembers.size() == 0) {
+                    List<Groups> noMembership = groupRepo.findAllByGroupShortName(MWAG_GROUP_NAME_SHORT);
+                    groupMembershipRepo.deleteByRegisteredGroupsAndRegisteredGroupUser(noMembership.get(0), user);
+                    groupMembershipRepo.save(new GroupMembership(noMembership.get(0), user));
+                }
+
             }
         }
         groupRepo.deleteById(Integer.valueOf(request.getGroupId()));

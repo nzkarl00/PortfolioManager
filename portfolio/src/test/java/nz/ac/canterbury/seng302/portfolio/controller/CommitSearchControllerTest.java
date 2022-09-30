@@ -1,16 +1,17 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.timeBoundItems.*;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
-import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.portfolio.service.GitlabClient;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Commit;
 import org.junit.Before;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -27,17 +27,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.*;
+import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateAdmin;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.never;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = CommitSearchController.class)
@@ -72,11 +70,14 @@ public class CommitSearchControllerTest {
     // setting up and closing the mocked static authStateInformer
     static MockedStatic<AuthStateInformer> utilities;
 
+    static Commit commit2;
+    static Commit commit;
+
     @BeforeAll
     static void open() {
         utilities = Mockito.mockStatic(AuthStateInformer.class);
 
-        Commit commit = new Commit();
+        commit = new Commit();
         commit.setAuthorName("John");
         commit.setAuthorEmail("john@example.com");
         commit.setId("223ac74e33ba54500c135f32fb29a23f38b73442");
@@ -84,15 +85,17 @@ public class CommitSearchControllerTest {
         commit.setMessage("Title\n");
         // Monday, August 8, 2022
         commit.setCreatedAt(Date.from(Instant.ofEpochSecond(1660000000)));
+        commit.setCommittedDate(Date.from(Instant.ofEpochSecond(1660000000)));
 
-        Commit commit2 = new Commit();
-        commit.setAuthorName("Not Same User");
-        commit.setAuthorEmail("notjohn@example.com");
-        commit.setId("f89ba2707192e1077956a48494b6b61bd635214d");
-        commit.setTitle("Not title");
-        commit.setMessage("Not title\n");
+        commit2 = new Commit();
+        commit2.setAuthorName("Not Same User");
+        commit2.setAuthorEmail("notjohn@example.com");
+        commit2.setId("f89ba2707192e1077956a48494b6b61bd635214d");
+        commit2.setTitle("Not title");
+        commit2.setMessage("Not title\n");
         // Friday, September 2, 2022
-        commit.setCreatedAt(Date.from(Instant.ofEpochSecond(1662100000)));
+        commit2.setCreatedAt(Date.from(Instant.ofEpochSecond(1662100000)));
+        commit2.setCommittedDate(Date.from(Instant.ofEpochSecond(1662100000)));
         exampleCommits = List.of(commit);
     }
 
@@ -351,7 +354,7 @@ public class CommitSearchControllerTest {
     }
 
     @Test
-    void searchCommits_matchingCommitsNoFilters() throws Exception {
+    void searchCommits_matchingCommitsNoFilters_listInOrder() throws Exception {
         //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(mockedSecurityContext.getAuthentication())
@@ -362,7 +365,9 @@ public class CommitSearchControllerTest {
 
         // Return no match for group id
         when(groupRepoRepository.findByParentGroupId(1)).thenReturn(Optional.of(exampleRepo));
-        Mockito.doReturn(exampleCommits).when(gitlabClient).getFilteredCommits(
+        // note this has the list in correct order
+        List<Commit> commitListWith2 = new ArrayList<>(List.of(commit2, commit));
+        Mockito.doReturn(commitListWith2).when(gitlabClient).getFilteredCommits(
                 anyString(),
                 anyString(),
                 anyString(),
@@ -377,7 +382,43 @@ public class CommitSearchControllerTest {
                         get("/evidence/search-commits")
                                 .param("group-id", "1")
                 )
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("commitList", commitListWith2));
+    }
+
+    @Test
+    void searchCommits_matchingCommitsNoFilters_listOutOfOrder() throws Exception {
+        //Create a mocked security context to return the AuthState object we made above (aka. validAuthState)
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(mockedSecurityContext.getAuthentication())
+                .thenReturn(new PreAuthenticatedAuthenticationToken(validAuthStateAdmin, ""));
+
+        // Configuring Spring to use the mocked SecurityContext
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        // Return no match for group id
+        when(groupRepoRepository.findByParentGroupId(1)).thenReturn(Optional.of(exampleRepo));
+        // note this has the list in the in-correct order
+        List<Commit> commitListWith2 = new ArrayList<>(List.of(commit, commit2));
+        List<Commit> correctCommitList = new ArrayList<>(commitListWith2);
+        Collections.reverse(correctCommitList);
+        Mockito.doReturn(commitListWith2).when(gitlabClient).getFilteredCommits(
+                anyString(),
+                anyString(),
+                anyString(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+        );
+
+        mockMvc.perform(
+                        get("/evidence/search-commits")
+                                .param("group-id", "1")
+                )
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("commitList", correctCommitList));
     }
 
     @Test

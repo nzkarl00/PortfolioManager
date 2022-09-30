@@ -25,7 +25,7 @@ public class LoginController {
     @Autowired
     private AuthenticateClientService authenticateClientService;
 
-    Logger logger = LoggerFactory.getLogger(LoginController.class);
+    static Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     /**
      * Attempts to authenticate with the Identity Provider via gRPC.
@@ -90,7 +90,7 @@ public class LoginController {
     ) {
 
         AuthenticateResponse authenticateResponse = authenticateLogin(username, password, model);
-        logger.trace("[LOGIN] Authenticate Response received");
+        logger.trace("[LOGIN] Authenticate Response received" + authenticateResponse);
 
         if (authenticateResponse == null) {
             return "redirect:login";
@@ -113,7 +113,7 @@ public class LoginController {
      * @param model to display feedback to user
      */
     public AuthenticateResponse authenticateLogin(String username, String password, Model model) {
-        logger.trace("[LOGIN] Attempting to authenticate user: " + username);
+        logger.trace("[LOGIN] Attempting to authenticate user: " + username.replaceAll("[\n\r\t]", "_"));
         try {
             return authenticateClientService.authenticate(username, password);
         } catch (StatusRuntimeException e){
@@ -129,7 +129,9 @@ public class LoginController {
      * @param response HTTP response that will be returned by this endpoint
      * @param authenticateResponse will contain the response details after a user has been authenticated to login
      */
-    public void setCookie(HttpServletRequest request, HttpServletResponse response, AuthenticateResponse authenticateResponse) {
+    public static void setCookie(HttpServletRequest request,
+                                 HttpServletResponse response,
+                                 AuthenticateResponse authenticateResponse) {
 
         var domain = request.getHeader("host");
         CookieUtil.create(

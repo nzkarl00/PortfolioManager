@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFive;
+import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFiveRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -28,9 +31,12 @@ public class EditAccountController {
 
     @Autowired
     private NavController navController;
+    @Autowired
+    private HighFiveRepository highFiveRepository;
 
-    String editErrorShow = "display:none;";
-    String editSuccessShow = "display:none;";
+    private final String displayNone = "display:none;";
+    String editErrorShow = displayNone;
+    String editSuccessShow = displayNone;
     String editSuccessCode = "successCode";
 
     /**
@@ -60,8 +66,8 @@ public class EditAccountController {
         model.addAttribute("editSuccessShow", editSuccessShow);
         model.addAttribute("editSuccessCode", editSuccessCode);
 
-        editErrorShow = "display:none;";
-        editSuccessShow = "display:none;";
+        editErrorShow = displayNone;
+        editSuccessShow = displayNone;
         editSuccessCode = "successCode";
 
         /* Return the name of the Thymeleaf template */
@@ -96,11 +102,18 @@ public class EditAccountController {
 
         editSuccessCode = editUserResponse.getMessage();
         if (editUserResponse.getIsSuccess()) {
-            editErrorShow = "display:none;";
+            editErrorShow = displayNone;
             editSuccessShow = "";
+            // update the highFives when the user requests a name change
+            List<HighFive> highFiveList = highFiveRepository.findAllByParentUserId(id);
+            highFiveList.forEach((highFive) -> {
+                highFive.setFirstName(firstname);
+                highFive.setLastName(lastname);
+                highFiveRepository.save(highFive);
+            });
         } else {
             editErrorShow = "";
-            editSuccessShow = "display:none;";
+            editSuccessShow = displayNone;
         }
 
         return "redirect:edit-account";

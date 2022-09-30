@@ -62,9 +62,9 @@
             <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
 
                 <button class="cancel" type="button">
-                    <a class="button_a" th:href="@{details(id=${project.getId})}">CANCEL</a>
+                    <a class="button_a" th:href="@{details(id=${project.getId})}"><i class="fa fa-ban"></i> Cancel</a>
                 </button>
-                <button class="save" id="projectSave" type="submit">SAVE</button>
+                <button class="save" id="projectSave" type="submit"><i class="fa fa-save"></i> Save</button>
             </div>
 
 
@@ -103,7 +103,7 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="text/javascript" th:inline="javascript">
     function sendEditStatus() {
-        axios.post("edit", null, {params:{"projectId":[[${project.getId()}]], "type":"editing the project"}})
+        $.post("edit", {"projectId":[[${project.getId()}]], "type":"editing the project"})
         setTimeout(sendEditStatus, 1250)
     }
 

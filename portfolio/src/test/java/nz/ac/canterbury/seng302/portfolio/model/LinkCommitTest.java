@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.LinkedCommit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

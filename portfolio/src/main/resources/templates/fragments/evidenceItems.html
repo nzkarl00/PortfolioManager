@@ -9,7 +9,6 @@
         <div class="col-1">
         </div>
 
-
         <!-- Evidence Section which includes 1. heading, 2. infom and 3. bottom -->
         <div class="col-lg-10 col-md-12 col-sm-12">
 
@@ -83,7 +82,7 @@
                         <br>
                         <p class="bio evidence_title" th:if="${!evidence.getLinkedCommit().isEmpty()}">Commits </p>
                         <div class="row" th:id="${'commit_list_' + evidence.getId}">
-                            <div th:each="commit: ${evidence.getLinkedCommit}" style="width: 85%; display: block; padding: 0.5rem 3rem">
+                            <div th:each="commit: ${evidence.getLinkedCommitInReverseChronologicalOrder}" style="width: 85%; display: block; padding: 0.5rem 3rem">
                                 <div th:id="${commit.getHash}" class="row">
                                     <div class="row commit_display_smaller" th:text="${'[' + commit.getHash + ']'}"></div>
                                     <div class="row commit_display_large" th:text="${commit.getTitle}"></div>
@@ -92,6 +91,7 @@
                                 </div>
                             </div>
                         </div>
+                        <br>
                         <div class="row-1" style="display: flex">
                         <form th:if="${evidence.getParentUserId() == userId}" th:action="@{edit-evidence}" method="get">
                             <input style="display:none;" th:name="id" th:value="${evidence.getId()}" type="number">
@@ -105,25 +105,37 @@
                                 type="button" th:style="${displayDeleteButton}" th:value="${evidence.getId()}"
                                 th:id="${'deleteButton' + evidence.getId()}" data-toggle="modal"
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
-                                class="fa fa-trash delete_button"></button>
+                                class="fa fa-trash delete_evidence"></button>
+                        <div id="high_five_container" style="width:100%; text-align: right">
+                            <button th:id="${'highFiveButton' + evidence.getId()}"
+                                    class="high_five fa fa-hand-paper-o fa-2x" th:value="${evidence.getId()}"
+                                    type="submit" onclick="toggleHighFive(this)"
+                                    onload="displayHighFiveStatus(this)">
+                            </button>
+                            <a style="text-decoration: underline; color: #337ab7"
+                               th:id="${'High-Five_' + evidence.getId()}" th:value="${evidence.getHighFiveNames}"
+                               data-toggle="modal" th:data-target="${'#highFiveModal'+evidence.getId()}"></a>
+                        </div>
                         </div>
                     </div>
-                    <!-- Modal -->
+                    <!-- Modals -->
+                    <!-- Modal Delete -->
                     <div class="modal fade" th:id="${'deleteModal'+evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" th:id= "${'exampleModalLongTitle'+evidence.getId()}"  th:text="${'Delete - ' + evidence.getTitle()+ '?' }">Delete?</h5>
+                                    <h3 class="modal-title" th:id= "${'exampleModalLongTitle'+evidence.getId()}" th:text="${'Delete - ' + evidence.getTitle()+ '?' }"></h3>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body"
-                                     th:text="${'Are you sure you want to delete this piece of evidence (' + evidence.getTitle()+ ') from your portfolio?'}"
+                                    th:text="${'Are you sure you want to delete this piece of evidence (' + evidence.getTitle()+ ') from your portfolio?'}"
                                 />
                                 <form method="post" th:action="@{delete-evidence}">
                                     <div class="modal-footer">
                                         <input type="number" th:name="evidenceId" th:value="${evidence.getId()}" style="display: none">
+                                        <input type="number" th:name="userID" th:value="${userId}" style="display: none">
                                         <input type="number" th:name="projectId" th:value="${evidence.getAssociatedProject().getId()}" style="display: none">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelButton">Cancel</button>
                                         <button type="submit" class="btn btn-primary bg-danger" id="deleteButton" >Delete</button>
@@ -131,7 +143,30 @@
                                 </form>
                             </div>
                         </div>
+                    </div>
+                    <!-- Modal High Five -->
 
+                    <div class="modal fade" th:id="${'highFiveModal'+evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="highfiveModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" th:id= "${'highFiveModalLongTitle'+evidence.getId()}" >High Five Summary</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div th:each="highFive: ${evidence.getHighFives}" class="row" style="display:flex; text-align: center; padding-left: 1em">
+                                        <div>
+                                            <img class="img-fluid rounded-circle rounded-circle col-2 high_five_profile_picture" th:src="${photoPrefix + highFive.getParentUserId}"  alt="">
+                                            <div class="col-7 high_five_vertical_center" th:text="${highFive.getFirstName + ' ' + highFive.getLastName}"></div>
+                                            <div class="col-3 high_five_vertical_center">
+                                            <a class="table_text author_tag high_five_vertical_center" th:href="@{account(id=${highFive.getParentUserId()})}" >View Profile</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -152,7 +187,33 @@
         </div>
         <br>
     </div>
+    </div>
     <script th:inline="javascript">
+
+        highFiveList = [[${highFiveList}]]
+        for (const evidenceId of highFiveList) {
+            document.getElementById("highFiveButton" + evidenceId).className = "high_five fa fa-sign-language fa-2x";
+        }
+
+        evidenceList = [[${evidenceList}]]
+        for (const evidence of evidenceList) {
+            createSummary(document.getElementById("High-Five_" + evidence.id))
+        }
+
+        function createSummary(element) {
+            // parse the [] and ', ' into an array of firstnames without the user
+            highFiveUsers = element.getAttribute("value").replace("]", "").replace("[", "").split(", ")
+            if (highFiveUsers.length === 0 || highFiveUsers[0] === "") {
+                element.textContent = "no one has high fived"
+            } else if (highFiveUsers.length === 1) {
+                element.textContent = highFiveUsers[0] + " has high fived"
+            } else if (highFiveUsers.length === 2) {
+                element.textContent = highFiveUsers[0] + " and " + highFiveUsers[1] + " have high fived"
+            } else {
+                element.textContent = highFiveUsers[0] + ", " + highFiveUsers[1] + ", and " + highFiveUsers.length-2 + " others have high fived"
+            }
+        }
+
         function addTagToEvidence(value, evidenceId, type) {
             let newItem = document.createElement("button");
             newItem.className = "table_text evidence_" + type + "_tag"
@@ -192,6 +253,28 @@
             for (const evidenceCategory of categoryMap[evidence.id].sort()) {
                 addTagToEvidence(evidenceCategory, evidence.id, "ci")
             }
+        }
+
+        function displayHighFiveStatus(event) {
+            highFiveList = [[${highFiveList}]]
+            if (event.value in highFiveList) {
+                document.getElementById("highFiveButton" + event.value).className = "high_five fa fa-sign-language fa-2x";
+            }
+        }
+
+        function toggleHighFive(event) {
+            $.post("high-five", {evidenceId: event.value}).done(function (result) {
+
+                let highFiveElement = document.getElementById("highFiveButton" + event.value);
+                let currentCount = parseInt(document.getElementById('High-Five_'+event.value).getAttribute("value"));
+                if (result === "added") {
+                    highFiveElement.classList.remove("high_five.fa.fa-hand-paper-o.fa-2x");
+                    highFiveElement.className = "high_five fa fa-sign-language fa-2x";
+                } else if (result === "deleted") {
+                    highFiveElement.classList.remove("high_five.fa.fa-sign-language.fa-2x");
+                    highFiveElement.className = "high_five fa fa-hand-paper-o fa-2x";
+                }
+            })
         }
     </script>
     <br>

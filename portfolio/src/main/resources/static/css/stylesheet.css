@@ -1080,11 +1080,25 @@
     color: white;
 }
 
-.delete_button {
+.edit_button {
+
+    font-family: Nexa !important;
     border: none;
     margin-left: 10px;
     padding: 4px 10px;
-    background: #FF202E !important;
+    background: #FF48CF;
+    border-radius: 10px;
+    color: white;
+    white-space: nowrap
+}
+
+.delete_button {
+
+    font-family: Nexa !important;
+    border: none;
+    margin-left: 10px;
+    padding: 4px 10px;
+    background: #FF202E;
     border-radius: 10px;
     color: white;
 }
@@ -1531,11 +1545,21 @@ select.form-control {
 }
 
 .edit_evidence {
-    height: 100%;
+    height: 2em;
+    min-width: 2em;
     border: none;
     margin-left: 10px;
-    padding: 4px 10px;
     background: #FF48CF  !important;
+    border-radius: 10px;
+    color: white;
+}
+
+.delete_evidence {
+    height: 2em;
+    min-width: 2em;
+    border: none;
+    margin-left: 10px;
+    background: #FF202E !important;
     border-radius: 10px;
     color: white;
 }
@@ -1674,7 +1698,8 @@ select.form-control {
 }
 
 .evidence_si_tag:hover {
-    background-color: #26D20F !important;
+    background-color:#056BFA; !important;
+    color:#056BFA; !important;
 }
 
 .author_tag{
@@ -1688,6 +1713,11 @@ select.form-control {
     margin-bottom: 0.3rem;
     margin-left: 0.3rem;
     font-size: 80% !important;
+}
+
+.author_tag:hover {
+    background-color:#056BFA; !important;
+    color:#056BFA; !important;
 }
 
 .contributor_tag{
@@ -1707,7 +1737,7 @@ select.form-control {
 
 .contributor_tag:hover {
     text-decoration: underline;
-    background-color: #FF202E; !important;
+    background-color:#056BFA; !important
     border-style: none !important;
     border-radius: 3px !important;
     color: #ffffff !important;
@@ -1731,7 +1761,8 @@ select.form-control {
 }
 
 .evidence_ci_tag:hover {
-    background-color: #26D20F !important;;
+    background-color:#056BFA; !important;
+    color:#056BFA; !important;
 }
 
 .wrapper {
@@ -1768,4 +1799,60 @@ select.form-control {
     font-size: 200%;
     color: #19DAFF !important;
     padding-bottom: 5px;
+}
+
+.high_five {
+    height: 100%;
+    border: none;
+    margin-left: 10px;
+    padding: -4px;
+    background: #D9F9FF !important;
+    border-radius: 10px;
+}
+.view_evidence {
+
+    background-color:#19DAFF; !important;
+    border-radius: 15px !important;
+    border-style: none !important;
+    color: #ffffff !important;
+    width: 150% !important;
+    align: center !important;
+    font-size: 100% !important;
+    padding: 0.5rem !important;
+    margin: 1rem !important;
+    font-family: nexaLight !important;
+
+}
+
+.view_evidence:hover {
+    background-color:#056BFA; !important;
+    color:#056BFA; !important;
+}
+
+.lowered {
+    margin-top: 2.3rem; !important;
+    padding-left: 2px; !important;
+}
+
+.delete_group {
+    padding-top: 1rem; !important
+
+}
+
+.go_right {
+
+    margin-right: 0.25rem !important;
+}
+
+
+.high_five_profile_picture {
+    width:2.5em;
+    height:2.5em;
+    padding: 0 !important;
+}
+
+.high_five_vertical_center {
+    display: inline-flex !important;
+    align-items: center;
+    padding-left: 1em
 }

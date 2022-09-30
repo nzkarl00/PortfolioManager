@@ -1,27 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceUser;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceUserRepository;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLinkRepository;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
-import nz.ac.canterbury.seng302.portfolio.service.*;
-import nz.ac.canterbury.seng302.portfolio.model.evidence.WebLink;
-import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
@@ -40,14 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -58,6 +35,7 @@ import java.util.stream.Collectors;
 @Controller
 public class EditEvidenceController {
 
+    private final String evidenceRedirect = "redirect:evidence";
     Logger logger = LoggerFactory.getLogger(EditEvidenceController.class);
     @Autowired
     private NavController navController;
@@ -76,6 +54,9 @@ public class EditEvidenceController {
     @Autowired
     private LinkedCommitRepository linkedCommitRepository;
 
+    /**
+     * Adds list of all users to the given model
+     */
     public static void userGroups(Model model,
                                   AccountClientService accountClientService) {
         PaginatedUsersResponse response =
@@ -91,7 +72,7 @@ public class EditEvidenceController {
 
     /**
      * Validates arguments passed to the edit evidence route.
-     * Currently only validates skill related components.
+     * Currently, only validates skill related components.
      */
     protected static void validateEditEvidenceParameters(
             Integer _id,
@@ -106,13 +87,12 @@ public class EditEvidenceController {
             String _description
     ) {
         // Delete may be empty, or 1 or more numbers separated by spaces
-        if (!Pattern.matches("^(\\d+( \\d+)*|)$", skillsDelete)) {
+        if ((!Pattern.matches("^(\\d+)(?>( \\d+))*$", skillsDelete)) && !(Objects.equals(skillsDelete, ""))) {
             throw new IllegalArgumentException(
                     "Skills to delete must be a sentence of numbers");
         }
         // Skills edit must be of form 9:some-skill_name 10:skill where 9 and 10 are existing IDs.
-        if (!Pattern.matches("^(\\d+:[\\w-_]+( \\d+:[\\w-_]+)*|)$",
-                skillsEdit)) {
+        if ((!Pattern.matches("^(\\d+:[\\w-_]+(?>( \\d+:[\\w-_]+))*)$", skillsEdit)) && !(Objects.equals(skillsEdit, ""))) {
             throw new IllegalArgumentException(
                     "Skills to edit is of incorrect form");
         }
@@ -120,13 +100,14 @@ public class EditEvidenceController {
         // To ensure they are valid
         String[] editTitles = skillsEdit.split("\\s?\\d+:");
         for (String skillTitle : editTitles) {
-            if (!skillTitle.isEmpty() && !SkillTag.isValidTitle(skillTitle)) {
+            //Skills that are being edited must not be empty, follow the correct format, and must not contain the substring "No_skill"
+            if ((!skillTitle.isEmpty() && !SkillTag.isValidTitle(skillTitle)) || skillTitle.toLowerCase().contains("no_skill")) {
                 throw new IllegalArgumentException(
                         "skillsEdit, skill title is invalid: " + skillTitle);
             }
         }
 
-        // SkillsNew must also be validated.
+        //Skills that are new must not be empty, follow the correct format, and must not contain the substring "No_skill"
         String[] newTitles = skillsNew.split(" ");
         for (String skillTitle : newTitles) {
             if (!skillTitle.isEmpty() && !SkillTag.isValidTitle(skillTitle)) {
@@ -137,11 +118,7 @@ public class EditEvidenceController {
     }
 
     /**
-     *
-     * @param skillsNew
-     * @param skillsDelete
-     * @param skillsEdit
-     * @return
+     * Extracts the add, remove and edit operations to be performed into three respective lists.
      */
     protected static EvidenceService.ParsedEditSkills parseSkillParameters(
             String skillsNew,
@@ -196,6 +173,7 @@ public class EditEvidenceController {
      * @return the html template to give to the user
      */
     @GetMapping("/edit-evidence")
+    @Transactional
     public String editEvidence(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "id") Optional<Integer> evidenceId,
@@ -213,14 +191,15 @@ public class EditEvidenceController {
         if (evidenceId.isPresent()) {
             evidenceIdActualised = evidenceId.get();
         } else {
-            return "redirect:evidence";
+            return evidenceRedirect;
         }
 
         Evidence evidence = evidenceRepository.findById(evidenceIdActualised);
+        logger.info(evidence.getEvidenceTags().toString());
 
         //Check is evidence is present or the user is the parent evidence user
         if (evidence == null || evidence.getParentUserId() != id) {
-            return "redirect:evidence";
+            return evidenceRedirect;
         }
 
         // get the links and pass the urls to the frontend
@@ -259,7 +238,7 @@ public class EditEvidenceController {
 
         Set<String> skillTagList = evidenceService.getAllUniqueSkills();
         logger.debug(skills.toString());
-        model.addAttribute("existingCommits", evidence.getLinkedCommit());
+        model.addAttribute("existingCommits", evidence.getLinkedCommitInReverseChronologicalOrder());
         PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(evidence.getParentUserId());
         model.addAttribute("groupList", groupList.getGroupsList());
         skillTagList.remove("No_skills");
@@ -293,24 +272,23 @@ public class EditEvidenceController {
      * @exception MalformedURLException if an invalid link is given
      * @exception GitLabApiException if there is an issue fetching commit data from gitlab API
      */
-    @Transactional
     @PostMapping("/edit-evidence")
+    @Transactional
     public String editEvidence(
-        @AuthenticationPrincipal AuthState principal,
-        @RequestParam(value = "titleInput") String title,
-        @RequestParam(value = "dateInput") String date,
-        @RequestParam(value = "projectId") Integer projectId,
-        @RequestParam(value = "categoryInput") String categories,
-        @RequestParam(value = "skillDeleteInput") String skillsDelete,
-        @RequestParam(value = "skillEditInput") String skillsEdit,
-        @RequestParam(value = "skillNewInput") String skillsNew,
-        @RequestParam(value = "linksInput") String links,
-        @RequestParam(value = "descriptionInput") String description,
-        @RequestParam(value = "evidenceId") Integer id,
-        @RequestParam(value = "userInput") String users,
-        @RequestParam(value = "commitsInput") String newCommits,
-        @RequestParam(value = "commitsDelete") String deletedCommits,
-        Model model) throws MalformedURLException, GitLabApiException {
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value = "titleInput") String title,
+            @RequestParam(value = "dateInput") String date,
+            @RequestParam(value = "projectId") Integer projectId,
+            @RequestParam(value = "categoryInput") String categories,
+            @RequestParam(value = "skillDeleteInput") String skillsDelete,
+            @RequestParam(value = "skillEditInput") String skillsEdit,
+            @RequestParam(value = "skillNewInput") String skillsNew,
+            @RequestParam(value = "linksInput") String links,
+            @RequestParam(value = "descriptionInput") String description,
+            @RequestParam(value = "evidenceId") Integer id,
+            @RequestParam(value = "userInput") String users,
+            @RequestParam(value = "commitsInput") String newCommits,
+            @RequestParam(value = "commitsDelete") String deletedCommits) throws MalformedURLException, GitLabApiException {
         logger.info(
                 String.format(
                         "Received POST request to edit-evidence, evidence-id=<%d>",
@@ -341,7 +319,7 @@ public class EditEvidenceController {
         Evidence evidence = evidenceRepository.findById((int) id);
         if (evidence == null || AuthStateInformer.getId(principal) !=
                 evidence.getParentUserId()) {
-            return "redirect:evidence";
+            return evidenceRedirect;
         }
         evidence.setCategories(Evidence.categoryStringToInt(categories));
 
@@ -377,6 +355,6 @@ public class EditEvidenceController {
         // Delete first, then edit, then add new.
         evidenceService.handleSkillTagEditsForEvidence(parsedSkills, evidence);
 
-        return "redirect:evidence";
+        return evidenceRedirect;
     }
 }

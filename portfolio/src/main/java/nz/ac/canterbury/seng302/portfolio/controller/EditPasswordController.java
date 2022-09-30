@@ -5,6 +5,8 @@ import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ChangePasswordResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -13,8 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.IOException;
-
 
 /**
  * Controller for the edit password page
@@ -22,6 +22,8 @@ import java.io.IOException;
 @Controller
 public class EditPasswordController {
     /* Create default project. */
+
+    Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
     private AccountClientService accountClientService;
@@ -83,6 +85,7 @@ public class EditPasswordController {
         ChangePasswordResponse changePasswordResponse = accountClientService.editPassword(id, currentPassword, newPassword);
 
         passwordSuccessCode = changePasswordResponse.getMessage();
+        logger.debug("[YIYANG HERE]" + changePasswordResponse);
         if (!changePasswordResponse.getIsSuccess()) {
             passwordErrorShow = "";
             passwordSuccessShow = "display:none;";

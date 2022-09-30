@@ -39,14 +39,10 @@
 
       <!-- Buttons -->
       <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end text-center" style="text-align:center;">
-
-        <button id="signup-button" class="save" type="submit">CREATE</button>
-
-
-        <button class="cancel" type="button">
-          <a  class="button_a " th:href="@{groups}">CANCEL</a>
-        </button>
-
+          <button class="cancel" type="button">
+            <a  class="button_a " th:href="@{groups}"><i class="fa fa-ban p-1"></i> Cancel</a>
+          </button>
+        <button id="signup-button" class="save" type="submit"><i class="fa fa-save p-1 pr-3"></i> Save</button>
       </div>
 
       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>

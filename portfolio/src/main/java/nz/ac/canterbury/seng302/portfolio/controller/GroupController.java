@@ -142,11 +142,13 @@ public class GroupController {
         model.addAttribute("cutboard", cutboard);
 
         String role = AuthStateInformer.getRole(principal);
-
         // if you are a teacher or an admin you can add a new group
-        if (role.equals("teacher") || role.equals("admin")) {
+        if (role.equals("teacher")) {
             model.addAttribute("display", "");
             model.addAttribute("role", "teacher");
+        } else if (role.equals("admin")) {
+            model.addAttribute("display", "");
+            model.addAttribute("role", "admin");
         } else {
             model.addAttribute("display", "display:none;");
             model.addAttribute("role", "student");
@@ -162,7 +164,20 @@ public class GroupController {
         @RequestParam("groupId") Integer groupId,
         Model model
     ) throws InterruptedException {
-        groupsClientService.addUserToGroup(groupId, (ArrayList<Integer>) ids);
+
+        List<Integer> userArray = new ArrayList<Integer>();
+        if (groupId == 2) {
+            for (Integer userId : ids){
+                // If they are removing themselves, dont add the user unless they are an admin
+                if ((userId.equals(AuthStateInformer.getId(principal))) && !(AuthStateInformer.getRole(principal).equals("admin"))) {
+                } else {
+                    userArray.add(userId);
+                }
+            }
+        } else {
+            userArray = ids;
+        }
+        groupsClientService.addUserToGroup(groupId, (ArrayList<Integer>) userArray);
         clipboard = ids;
         return "redirect:groups";
     }

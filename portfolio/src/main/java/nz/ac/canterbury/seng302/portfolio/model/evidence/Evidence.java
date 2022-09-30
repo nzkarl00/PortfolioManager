@@ -2,17 +2,16 @@ package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import javax.transaction.Transactional;
-import javax.ws.rs.core.Link;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validateEnoughCharacters;
 
@@ -62,8 +61,8 @@ public class Evidence {
     protected Project associatedProject;
 
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    protected List<EvidenceTag> evidenceTags = List.of();
+    @LazyCollection(LazyCollectionOption.TRUE)
+    protected List<EvidenceTag> evidenceTags;
 
     @Column(name="title", length = MAX_TITLE_LENGTH, nullable = false)
     protected String title = "";
@@ -90,6 +89,10 @@ public class Evidence {
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     protected List<LinkedCommit> linkedCommit;
 
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
+    protected List<HighFive> highFives;
+
     public Evidence() {}
 
     /**
@@ -111,7 +114,6 @@ public class Evidence {
         int categories
     ) {
         this.parentUserId = parentUserId;
-        this.evidenceUsersId = evidenceUsersId;
         this.associatedProject = associatedProject;
         this.title = title;
         this.description = description;
@@ -172,7 +174,6 @@ public class Evidence {
 
     /**
      * Sets the associated project to which the piece of evidence is associated
-     * @param associatedProject
      */
     public void setAssociatedProject(Project associatedProject) throws IllegalArgumentException {
         newAssociatedProjectIsValid(associatedProject);
@@ -189,7 +190,6 @@ public class Evidence {
 
     /**
      * Set the description of the evidence.
-     * @param description
      */
     public void setDescription(String description) {
         this.description = description;
@@ -197,16 +197,14 @@ public class Evidence {
 
     /**
      * Set the date of the piece of evidence.
-     * @param date
      */
     public void setDate(LocalDate date) throws IllegalArgumentException {
         newDateIsValid(date);
         this.date = date;
-    };
+    }
 
     /**
      * Get the ID of the piece of evidence
-     * @return
      */
     public int getId() {
         return id;
@@ -214,7 +212,6 @@ public class Evidence {
 
     /**
      * Get the ID of the parent user to which the piece of evidence belongs
-     * @return
      */
     public int getParentUserId() {
         return parentUserId;
@@ -222,7 +219,6 @@ public class Evidence {
 
     /**
      * Get the associated project to which the piece of evidence is associated.
-     * @return
      */
     public Project getAssociatedProject() {
         return associatedProject;
@@ -231,7 +227,6 @@ public class Evidence {
 
     /**
      * Get the title
-     * @return
      */
     public String getTitle() {
         return title;
@@ -239,7 +234,6 @@ public class Evidence {
 
     /**
      * Get the description
-     * @return
      */
     public String getDescription() {
         return description;
@@ -247,12 +241,12 @@ public class Evidence {
 
     /**
      * Get the date
-     * @return
      */
     public LocalDate getDate() {
         return date;
-    };
+    }
 
+    @Transactional
     public List<EvidenceTag> getEvidenceTags() { return evidenceTags; }
 
     /**
@@ -317,10 +311,9 @@ public class Evidence {
         if (e == this) {
             return true;
         }
-        if (!(e instanceof Evidence)) {
+        if (!(e instanceof Evidence toComp)) {
             return false;
         }
-        Evidence toComp = (Evidence) e;
         return toComp.id == this.id;
     }
 
@@ -336,7 +329,6 @@ public class Evidence {
 
     /**
      * Removes an evidence tag from the associated evidence tags.
-     * @param evidenceTag
      */
     @Transactional
     public void removeEvidenceTag(EvidenceTag evidenceTag) {
@@ -345,7 +337,6 @@ public class Evidence {
 
     /**
      * Add an evidence tag to the evidence.
-     * @param evidenceTag
      */
     @Transactional
     public void addEvidenceTag(EvidenceTag evidenceTag) {
@@ -354,9 +345,35 @@ public class Evidence {
 
     /**
      * Get the linked commits associated with a piece of Evidence
-     * @return
      */
     public List<LinkedCommit> getLinkedCommit() {
         return linkedCommit;
     }
+
+    public List<String> getHighFiveNames() {
+        return highFives.stream().map(highFive -> highFive.firstName).collect(Collectors.toList());
+    }
+    /**
+     * Get the linked commits associated with a piece of Evidence in reverse chronological order
+     */
+    public List<LinkedCommit> getLinkedCommitInReverseChronologicalOrder() {
+        linkedCommit.sort(Comparator.comparing(LinkedCommit::getTimeStamp).reversed());
+        return linkedCommit;
+    }
+
+    public List<HighFive> getHighFives() {
+        return this.highFives;
+    }
+
+    public void removeHighFive(HighFive highFive) {
+        this.highFives.removeIf((HighFive original) -> {
+                return original.getId() == highFive.getId();
+            });
+    }
+
+    /**
+     * Get the high-fives size associated with a piece of Evidence
+     */
+    @Transactional
+    public int getHighFivesSize() { return this.getHighFives().size(); }
 }

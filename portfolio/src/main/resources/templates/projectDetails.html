@@ -52,14 +52,13 @@
                         <button class="edit" style="padding-top:0rem;" type="submit">
                             <i class="fa fa-arrow-left"></i>&nbsp;
                             Return
-                            Return
                         </button>
                     </form>
                     <form class="col-lg-4 col-md-4 col-sm-12" th:action="@{edit-project}" method="get" th:style="${display}">
                         <input style="display:none;" th:name="id" id="id" th:value="${project.getId}" type="number">
                         <button class="edit" style="padding-top:0rem;" type="submit">
                             <i class="fa fa-edit"></i>&nbsp;
-                            Edit Project
+                            Edit project
                         </button>
                     </form>
                     <div class="col-2"></div>
@@ -107,7 +106,7 @@
                                 <input style="display:none;" th:name="projectId" id="projectId" th:value="${project.getId}" type="number">
                                 <button class="add" id="addDateButton" type="submit">
                                     <i class="fa fa-plus"></i>&nbsp;
-                                    Add Dates
+                                    Add dates
                                 </button>
                             </form>
                         </div>
@@ -120,9 +119,10 @@
                         <div class="col-lg-8 col-md-10 col-sm-12">
                             <form th:action="@{evidence}" method="get">
                                 <input th:name="pi" id="pi" th:value="${project.getId}" type="number" style="display: none">
+                                <input th:name="ui" id="ui" th:value="${userId}" type="number" style="display: none">
                                 <button class="add" type="submit">
                                     <i class="fa fa-plus"></i>&nbsp;
-                                    Add Evidence
+                                    Add evidence
                                 </button>
                             </form>
                         </div>
@@ -174,7 +174,6 @@
 
 <script th:src="@{js/fullcalendar.js}"></script>
 <script type="text/javascript" th:inline="javascript">
-    let client = axios.create({baseURL: [[${baseUrl}]]});
     canEdit = false;
     if([[${role}]] === "teacher" || [[${role}]] === "admin") {
         canEdit = true;
@@ -223,53 +222,64 @@
     let timeoutDict = {};
 
     async function connect(subTopic) {
-        let socket = new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
+        let socket = await getSocket()
         stompClient = await Stomp.over(socket);
         // connect to the portfolio server
-        stompClient.connect({}, function (frame) {
-            // subscribe to the global topic
-            stompClient.subscribe('/topic/' + subTopic + '/' + [[${project.getId()}]], function (update) {
-                let updateType = JSON.parse(update.body).updateType
-                if (updateType == "EDIT") {
-                    let editMessage = JSON.parse(update.body).message
-                    clearTimeout(timeoutDict[editMessage])
-                    timeoutDict[editMessage] = setTimeout(resetEditStatus, 2500, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
-                    if (currentEdits.includes(editMessage) === false) {
-                        currentEdits.push(editMessage)
-                    }
-                    displayEdits()
-                } else {
-                    if (updateType == "SPRINT") {
-                        client.get("/sprints", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                sprintList = response.data
-                                buildAll(sprintList, deadlineList, eventList, milestoneList)
-                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
-                            })
-                    } else if (updateType == "DEADLINE") {
-                        client.get("/deadlines", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                deadlineList = response.data
-                                buildAll(sprintList, deadlineList, eventList, milestoneList)
-                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
-                            })
-                    } else if (updateType == "EVENT") {
-                        client.get("/events", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                eventList = response.data
-                                buildAll(sprintList, deadlineList, eventList, milestoneList)
-                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
-                            })
-                    } else if (updateType == "MILESTONE") {
-                        client.get("/milestones", {params:{"id":[[${project.getId()}]]}})
-                            .then((response) => {
-                                milestoneList = response.data
-                                buildAll(sprintList, deadlineList, eventList, milestoneList)
-                                renderCalendar(sprintList, deadlineList, eventList, milestoneList)
-                            })
-                    }
+        stompClient.connect({}, stompSuccessCallback(subTopic), stompFailureCallback(subTopic));
+    }
+
+    async function getSocket() {
+        return new SockJS([[${baseUrl}]] + '/gs-guide-websocket');
+    }
+
+    async function stompFailureCallback(subTopic) {
+        setTimeout(connect, 10000, subTopic);
+    };
+
+    async function stompSuccessCallback(subTopic) {
+        // subscribe to the global topic
+        await new Promise(r => setTimeout(r, 1500));
+        await stompClient.subscribe('/topic/' + subTopic + '/' + [[${project.getId()}]], function (update) {
+            let updateType = JSON.parse(update.body).updateType
+            if (updateType === "EDIT") {
+                let editMessage = JSON.parse(update.body).message
+                clearTimeout(timeoutDict[editMessage])
+                timeoutDict[editMessage] = setTimeout(resetEditStatus, 2500, editMessage) //Used a dictionary with the edit message as key and timeoutID as value to store timeouts
+                if (currentEdits.includes(editMessage) === false) {
+                    currentEdits.push(editMessage)
                 }
-            });
+                displayEdits()
+            } else {
+                if (updateType === "SPRINT") {
+                    $.get("sprints", {"id":[[${project.getId()}]]})
+                        .then((response) => {
+                            sprintList = response.data
+                            buildAll(sprintList, deadlineList, eventList, milestoneList)
+                            renderCalendar(sprintList, deadlineList, eventList, milestoneList)
+                        })
+                } else if (updateType === "DEADLINE") {
+                    $.get("deadlines", {"id":[[${project.getId()}]]})
+                        .then((response) => {
+                            deadlineList = response.data
+                            buildAll(sprintList, deadlineList, eventList, milestoneList)
+                            renderCalendar(sprintList, deadlineList, eventList, milestoneList)
+                        })
+                } else if (updateType === "EVENT") {
+                    $.get("events", {"id":[[${project.getId()}]]})
+                        .then((response) => {
+                            eventList = response.data
+                            buildAll(sprintList, deadlineList, eventList, milestoneList)
+                            renderCalendar(sprintList, deadlineList, eventList, milestoneList)
+                        })
+                } else if (updateType === "MILESTONE") {
+                    $.get("milestones", {"id":[[${project.getId()}]]})
+                        .then((response) => {
+                            milestoneList = response.data
+                            buildAll(sprintList, deadlineList, eventList, milestoneList)
+                            renderCalendar(sprintList, deadlineList, eventList, milestoneList)
+                        })
+                }
+            }
         });
     }
 
@@ -285,7 +295,7 @@
     }
 
     function calendarTryAgain() {
-        client.get("/sprints", {params:{"id":[[${project.getId()}]]}})
+        $.get("sprints", {"id":[[${project.getId()}]]})
             .then((response) => {
                 renderCalendar(response.data, deadlineList, eventList, milestoneList)
             })
@@ -568,6 +578,7 @@
         // Sets the starting date for in-between sections and starting id
         let initialDate = [[${project.getStartDate()}]];
         let initialFalseId = 0.5;
+        let sprintNum = 1;
 
         for (const sprint of sprintList) {
             if (initialFalseId == 0.5) {
@@ -575,7 +586,8 @@
             } else {
                 buildInBetweenSprint(initialDate, sprint.startDate, initialFalseId, deadlineList, eventList, milestoneList, sprint.parentProjectId, "middle")
             }
-            buildSprint(sprint)
+            buildSprint(sprint, sprintNum)
+            sprintNum += 1
             initialDate = sprint.endDate;
             initialFalseId += 1;
 

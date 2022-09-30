@@ -1,5 +1,5 @@
 // build a sprint in html from js
-function buildSprint(sprint) {
+function buildSprint(sprint, sprintNum) {
     const mainDiv = document.getElementById("sprints")
     // make the main container for all the sprints
     const sprintDiv = document.createElement("div")
@@ -17,7 +17,7 @@ function buildSprint(sprint) {
 
     const label = document.createElement("div")
     label.className = "portion_sprintbody project_sprinthead "
-    label.innerText = sprint.label
+    label.innerText = "Sprint " + sprintNum
     col1.appendChild(label)
 
     const editButton = document.createElement("button")
@@ -25,8 +25,7 @@ function buildSprint(sprint) {
     col1.appendChild(editButton)
 
     const innerEditButton = document.createElement("a")
-    innerEditButton.className = "button_a"
-    innerEditButton.innerText = "EDIT"
+    innerEditButton.className = "button_a fa fa-edit"
     innerEditButton.href = "edit-sprint?id=" + sprint.parentProjectId + "&ids=" + sprint.id
     editButton.appendChild(innerEditButton)
 
@@ -50,10 +49,12 @@ function buildSprint(sprint) {
     deleteSprintId.value = sprint.id
     deleteSprintId.type = "number"
     deleteForm.appendChild(deleteSprintId)
+    const trashIcon = document.createElement("i")
+    trashIcon.className = "fa fa-trash"
 
     const deleteButton = document.createElement("button")
     deleteButton.className = "delete delete-button "
-    deleteButton.innerText = "DELETE"
+    deleteButton.appendChild(trashIcon)
     deleteForm.appendChild(deleteButton)
 
     const br1 = document.createElement("br")

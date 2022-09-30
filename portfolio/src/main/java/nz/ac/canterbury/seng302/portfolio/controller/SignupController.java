@@ -105,7 +105,7 @@ public class SignupController {
         }
 
         model.addAttribute("loginMessage", authenticateResponse.getMessage());
-        logger.info("[SIGNUP] Signup successful for user: " + username);
+        logger.info("[SIGNUP] Signup successful for user: " + username.replaceAll("[\n\r\t]", "_"));
         return "redirect:signup";
     }
 }

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -24,10 +25,12 @@ public class NavController {
      * @param id user id
      */
     public void updateModelForNav(AuthState principal, Model model, UserResponse userReply, int id) {
+
         String request = idpLocation + "/image/" + id;
         model.addAttribute("photo", request);
         model.addAttribute("photoPrefix", idpLocation + "/image/");
         model.addAttribute("username", userReply.getUsername());
         model.addAttribute("dateSince", DateParser.displayDate(userReply, new Date()));
+        model.addAttribute("userId", id);
     }
 }

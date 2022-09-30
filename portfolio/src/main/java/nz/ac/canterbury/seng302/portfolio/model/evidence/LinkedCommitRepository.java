@@ -4,12 +4,14 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 @Repository
 public interface LinkedCommitRepository extends CrudRepository<LinkedCommit, Integer> {
     LinkedCommit findById(int id);
     List<LinkedCommit> findByParentEvidence(int parentEvidenceId);
+    List<LinkedCommit> findByParentEvidence(Evidence parentEvidence);
 
 
     @Modifying

@@ -52,11 +52,13 @@ public class DetailsController {
     @Value("${portfolio.base-url}")
     private String baseUrl;
 
-    String errorShow = "display:none;";
+    private final String displayNone = "display:none;";
+    private final String detailsRedirect = "redirect:details?id=";
+    String errorShow = displayNone;
     String errorCode = "";
-    String successCalendarShow = "display:none;";
+    String successCalendarShow = displayNone;
     String successCalendarCode = "";
-    String errorCalendarShow = "display:none;";
+    String errorCalendarShow = displayNone;
     String errorCalendarCode = "";
 
     Logger logger = LoggerFactory.getLogger(DetailsController.class);
@@ -84,6 +86,7 @@ public class DetailsController {
         userReply = accountClientService.getUserById(id);
 
         navController.updateModelForNav(principal, model, userReply, id);
+        model.addAttribute("userId", AuthStateInformer.getId(principal));
 
         // setup the default lists of timeBoundItems
         List<Sprint> sprintList = repository.getSprintByParentProjectIdOrderBySprintStartDateAsc(projectId);
@@ -105,11 +108,11 @@ public class DetailsController {
         model.addAttribute("baseUrl", baseUrl);
 
         // Reset for the next display of the page
-        errorShow = "display:none;";
+        errorShow = displayNone;
         errorCode = "";
-        successCalendarShow = "display:none;";
+        successCalendarShow = displayNone;
         successCalendarCode = "";
-        errorCalendarShow = "display:none;";
+        errorCalendarShow = displayNone;
         errorCalendarCode = "";
 
         // Below code is just begging to be added as a method somewhere...
@@ -121,7 +124,7 @@ public class DetailsController {
             model.addAttribute("display", "");
             model.addAttribute("role", role);
         } else {
-            model.addAttribute("display", "display:none;");
+            model.addAttribute("display", displayNone);
             model.addAttribute("role", role);
         }
         return "projectDetails";
@@ -162,7 +165,7 @@ public class DetailsController {
             dateSocketService.sendSprintCalendarChange(projectId);
         }
 
-        return "redirect:details?id=" + projectId;
+        return detailsRedirect + projectId;
     }
 
     /**
@@ -189,7 +192,7 @@ public class DetailsController {
             dateSocketService.sendEventCalendarChange(projectService.getProjectById(projectId));
         }
 
-        return "redirect:details?id=" + projectId;
+        return detailsRedirect + projectId;
     }
     /**
      * The mapping to delete a deadline
@@ -214,7 +217,7 @@ public class DetailsController {
             dateSocketService.sendDeadlineCalendarChange(projectService.getProjectById(projectId));
         }
 
-        return "redirect:details?id=" + projectId;
+        return detailsRedirect + projectId;
     }
     /**
      * The mapping to delete a milestone
@@ -240,7 +243,7 @@ public class DetailsController {
             dateSocketService.sendMilestoneCalendarChange(projectService.getProjectById(projectId));
         }
 
-        return "redirect:details?id=" + projectId;
+        return detailsRedirect + projectId;
     }
 
     @PostMapping("/details")
@@ -251,7 +254,7 @@ public class DetailsController {
                                          @RequestParam(value="end") Date sprintEndDate) throws CustomExceptions.ProjectItemNotFoundException {
 
         String role = AuthStateInformer.getRole(principal);
-        String redirect = "redirect:details?id=" + projectId;
+        String redirect = detailsRedirect + projectId;
         sprintEndDate = new Date(sprintEndDate.getTime() - Duration.ofDays(1).toMillis());
         if (role.equals("teacher") || role.equals("admin")) {
             List<Sprint> sprints = sprintService.getSprintByParentId(projectId);
@@ -267,7 +270,7 @@ public class DetailsController {
             if (!checkStartDate.after(projStartDate) || !checkEndDate.before(projEndDate)) {
                 // check to is if the sprint isn't equal to the project start and end date
                 if (!checkStartDate.equals(projStartDate) && !checkEndDate.equals(projEndDate)) {
-                    successCalendarShow = "display:none;";
+                    successCalendarShow = displayNone;
                     successCalendarCode = "";
                     errorCalendarShow = "";
                     errorCalendarCode = "Sprints must be between "  + project.getStartDateString() + " - " + project.getEndDateString() + "";
@@ -277,7 +280,7 @@ public class DetailsController {
 
             // check if sprint start is before sprint end
             if (!checkStartDate.before(checkEndDate)) {
-                successCalendarShow = "display:none;";
+                successCalendarShow = displayNone;
                 successCalendarCode = "";
                 errorCalendarShow = "";
                 errorCalendarCode = "A sprint's start date must be before " + sprint.getEndDateString();
@@ -285,7 +288,7 @@ public class DetailsController {
             }
 
             if (!DateParser.sprintDateCheck(sprints, sprint, checkStartDate, checkEndDate)) {
-                successCalendarShow = "display:none;";
+                successCalendarShow = displayNone;
                 successCalendarCode = "";
                 errorCalendarShow = "";
                 errorCalendarCode = "A sprint cannot overlap with another sprint";
@@ -293,7 +296,7 @@ public class DetailsController {
             }
             sprint.setStartDate(new Date(sprintStartDate.getTime()));
             sprint.setEndDate(sprintEndDate);
-            errorCalendarShow = "display:none;";
+            errorCalendarShow = displayNone;
             errorCalendarCode = "";
             successCalendarShow = "";
             successCalendarCode = "Sprint time edited to: " + sprint.getStartDateString() + " - " + sprint.getEndDateString() + "";

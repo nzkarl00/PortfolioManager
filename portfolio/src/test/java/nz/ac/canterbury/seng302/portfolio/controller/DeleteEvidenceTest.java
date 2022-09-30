@@ -4,7 +4,6 @@ import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.*;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -25,13 +24,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.security.Principal;
 import java.time.LocalDate;
 
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.invalidAuthState;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonControllerUsage.validAuthStateTeacher;
 import static nz.ac.canterbury.seng302.portfolio.common.CommonProjectItems.getValidProject;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -72,6 +69,8 @@ public class DeleteEvidenceTest {
     private GitlabClient gitlabClient;
     @MockBean
     private LinkedCommitRepository linkedCommitRepository;
+    @MockBean
+    private HighFiveRepository highFiveRepository;
 
     private static final Project testProject = getValidProject();
     private static final LocalDate may4 = LocalDate.parse("2022-05-04");
@@ -99,6 +98,7 @@ public class DeleteEvidenceTest {
         utilities = Mockito.mockStatic(AuthStateInformer.class );
         DeleteEvidenceParams.add("projectId", String.valueOf(testProject.getId()));
         DeleteEvidenceParams.add("evidenceId", "1");
+        DeleteEvidenceParams.add("userID", "1");
     }
 
     @AfterAll
@@ -124,7 +124,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?pi=0&ui=123456"));
         verify(evidenceService).deleteEvidence(refEq(testEvidence));
     }
 
@@ -145,7 +145,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?pi=0&ui=654321"));
         verifyNoInteractions(evidenceService);
     }
 
@@ -166,7 +166,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?pi=0&ui=123456"));
         verifyNoInteractions(evidenceService);
     }
 
@@ -187,7 +187,7 @@ public class DeleteEvidenceTest {
         mockMvc.perform(post("/delete-evidence").params(DeleteEvidenceParams))
                 .andExpect(status().is3xxRedirection())
                 // Redirected to evidence page for project
-                .andExpect(view().name("redirect:evidence?pi=0"));
+                .andExpect(view().name("redirect:evidence?pi=0&ui=0"));
         verifyNoInteractions(evidenceService);
     }
 }

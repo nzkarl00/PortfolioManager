@@ -195,9 +195,12 @@ function clearUsers() {
 
 // Event listener to add skills when enter is pressed and the skill input is selected
 setTimeout(() => {document.querySelector("#add_skill_input").addEventListener("keyup", event => {
-                      if (event.key !== "Enter" && event.key !== " ") return;
-                      addSkill()
-                  })}, 20)
+    if (event.key === "Enter" || event.key === " ") {
+        addSkill()
+    } else if (event.key === "Delete") {
+        skillRow.children.item(skillRow.children.length-1).click() // Negative index doesn't work for htmlcollection
+    }
+})}, 20)
 
 
 //Returns the skills
@@ -232,8 +235,7 @@ function addSkill() {
     }
 
     // check to see if it matches the correct skill format
-    const validate = newSkill.match(skillPattern)
-    if (!validate || !validate.length == 1 || newSkill.length > skillCharLimit || newSkill.toLowerCase() == "no_skills" || /^([_-])+$/.test(newSkill)) {
+    if(validateSkill(newSkill)) {
         document.getElementById("skill_error").style = "color:red;";
         return
     }
@@ -247,6 +249,11 @@ function addSkill() {
     }
     document.getElementById("add_skill_input").value = ""
     appendSkill(newSkill)
+}
+
+function validateSkill(newSkill) {
+    const validate = newSkill.match(skillPattern)
+    return (!validate || !validate.length == 1 || newSkill.length > skillCharLimit || newSkill.toLowerCase().includes("no_skill") || /^([_-])+$/.test(newSkill));
 }
 
 function updateSkills() {

@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.model.evidence;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 public class EvidenceUser {

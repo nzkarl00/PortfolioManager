@@ -6,7 +6,6 @@ import io.cucumber.java.en.Then;
 import nz.ac.canterbury.seng302.portfolio.integration.SeleniumExample;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -149,7 +148,6 @@ public class WeblinksStepDefs {
             // add insecure weblink
             linkInput.sendKeys("http://info.cern.ch/");
             linkButton.click();
-            System.out.println("links added");
 
             WebElement saveButton = seleniumExample.config.getDriver()
                 .findElement(By.id("projectSave"));
