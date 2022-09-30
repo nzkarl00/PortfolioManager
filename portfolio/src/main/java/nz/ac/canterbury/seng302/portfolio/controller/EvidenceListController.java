@@ -176,7 +176,7 @@ public class EvidenceListController {
         model.addAttribute("skillMap", evidenceSkillMap);
         model.addAttribute("categoryMap", evidenceCategoryMap);
         model.addAttribute("highFiveList", evidenceHighFiveList);
-        model.addAttribute("user", new User(accountClientService.getUserById(userId)));
+        model.addAttribute("user", new User(accountClientService.getUserById(AuthStateInformer.getId(principal))));
         model.addAttribute("username", AuthStateInformer.getUsername(principal));
         model.addAttribute("userId", AuthStateInformer.getId(principal));
         return "fragments/evidenceItems.html :: evidenceItems";
