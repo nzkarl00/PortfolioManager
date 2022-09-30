@@ -632,8 +632,33 @@ public class EvidenceService {
         // new skill tag.
         if (numberOfParentUsers < 2) {
             // Simply rename the skill tag and save it
-            skillTag.setTitle(newTagTitle);
-            skillTagRepository.save(skillTag);
+            List<Evidence> evidenceForUser =
+                    evidenceRepository.findAllByParentUserId(
+                            evidence.getParentUserId());
+
+            evidenceForUser.stream().collect(Collectors.groupingBy(
+                    Evidence::getAssociatedProject)
+            ).forEach((project, evidenceInProject) -> {
+                logger.info(String.format(
+                        "Creating new skill tag for Project=<%d>, contains %d piece of evidence",
+                        project.getId(), evidenceInProject.size()
+                ));
+                // try to get an existing skill tag with the corresponding title/project
+                Optional<SkillTag> trySkillTag =
+                        skillTagRepository.findByTitleAndParentProject(
+                                newTagTitle, project);
+                SkillTag newSkillTag;
+                // set newSkillTag to the existing skill tag or create a new one
+                if (trySkillTag.isEmpty()) {
+                    skillTag.setTitle(newTagTitle);
+                    skillTagRepository.save(skillTag);
+                } else {
+                    newSkillTag = trySkillTag.get();
+                    evidenceTagRepository.deleteByParentEvidenceAndParentSkillTag(evidence, skillTag);
+                    EvidenceTag newTag = new EvidenceTag(newSkillTag, evidence);
+                    evidenceTagRepository.save(newTag);
+                }
+            });
         } else {
             // Otherwise we need to do the more complicated process
             // Find all evidence belonging to the owner.
