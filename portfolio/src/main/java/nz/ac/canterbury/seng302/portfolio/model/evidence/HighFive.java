@@ -37,16 +37,10 @@ public class HighFive {
     /**
      * A high five on a parent evidence
      * @param parentEvidence that this high five is associated with
-     * @param parentUserId that made the high five
+     * @param userId that made the high five
+     * @param firstName of the user
+     * @param lastName of the user
      */
-    public HighFive(
-            Evidence parentEvidence,
-            int parentUserId
-    ) {
-        this.parentEvidence = parentEvidence;
-        this.parentUserId = parentUserId;
-    }
-
     public HighFive(Evidence parentEvidence, int userId, String firstName, String lastName) {
         this.parentEvidence = parentEvidence;
         this.parentUserId = userId;
@@ -64,6 +58,14 @@ public class HighFive {
 
     public int getId() {
         return id;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Evidence getParentEvidence() {
