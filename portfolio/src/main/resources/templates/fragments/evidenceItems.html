@@ -157,7 +157,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <div th:each="highFive: ${evidence.getHighFives}" class="row" style="display:flex; text-align: center; padding-left: 1em">
-                                        <div th:if="${highFive.getParentUserId != userId}">
+                                        <div>
                                             <img class="img-fluid rounded-circle rounded-circle col-2 high_five_profile_picture" th:src="${photoPrefix + highFive.getParentUserId}"  alt="">
                                             <div class="col-7 high_five_vertical_center" th:text="${highFive.getFirstName + ' ' + highFive.getLastName}"></div>
                                             <div class="col-3 high_five_vertical_center">
@@ -202,8 +202,6 @@
         function createSummary(element) {
             // parse the [] and ', ' into an array of firstnames without the user
             highFiveUsers = element.getAttribute("value").replace("]", "").replace("[", "").split(", ")
-            highFiveUsers.splice(highFiveUsers.indexOf([[${username}]]), 1)
-            element.textContent = "hi"
             if (highFiveUsers.length === 0) {
                 element.textContent = "no one has high fived"
             } else if (highFiveUsers.length === 1) {
