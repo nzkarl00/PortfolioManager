@@ -83,7 +83,7 @@ public class SignupControllerTest {
             .param("pronouns", pronouns)
             .param("email", email)
         )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.view().name("redirect:signup"));
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(MockMvcResultMatchers.view().name("signup"));
     }
 }

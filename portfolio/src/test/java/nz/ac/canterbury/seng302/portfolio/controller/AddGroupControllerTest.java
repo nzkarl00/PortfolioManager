@@ -148,7 +148,7 @@ class AddGroupControllerTest {
                         .param("longName", "LONG")
                         .param("shortName", "SHORT"))
                 .andExpect(status().is3xxRedirection()) // gets redirected to addGroup with possible messages to read
-                .andExpect(view().name("redirect:addGroup"));
+                .andExpect(view().name("redirect:groups"));
     }
 
     @Test
@@ -167,6 +167,6 @@ class AddGroupControllerTest {
                         .param("longName", "LONG")
                         .param("shortName", "SHORT"))
                 .andExpect(status().is3xxRedirection()) // gets redirected to addGroup with possible messages to read
-                .andExpect(view().name("redirect:addGroup"));
+                .andExpect(view().name("redirect:groups"));
     }
 }

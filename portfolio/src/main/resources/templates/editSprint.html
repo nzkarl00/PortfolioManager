@@ -37,7 +37,7 @@
 
             <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
                 <label class="project_subhead" id="eventNameLabel" for="eventName">Sprint Name</label> <br/>
-                <input class="project_edit_data horizontal_field" id="eventName" type="text" th:name="sprintName" th:value="*{sprint.getName}">
+                <input class="project_edit_data horizontal_field" id="eventName" type="text" minLength="1"  th:name="sprintName" th:value="*{sprint.getName}">
                 <br/>
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
