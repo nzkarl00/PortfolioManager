@@ -253,6 +253,11 @@ public class AddDatesController {
             errorCode="Event dates must be within the project dates";
             return addDatesRedirectUrl;
         }
+        if (!startDate.isBefore(endDate)) {
+            errorShow="";
+            errorCode="Events must start before they end";
+            return addDatesRedirectUrl;
+        }
 
         Event event = new Event(project, eventName, eventDescription, startDate, endDate);
         eventRepository.save(event);

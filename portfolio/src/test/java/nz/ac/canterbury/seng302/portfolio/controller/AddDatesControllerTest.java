@@ -65,11 +65,12 @@ public class AddDatesControllerTest {
     private final Project testProjectForEvents = new Project("testName", "testDescription", eventMay1, eventJune1);
 
     private static final LocalDateTime may4 = DateParser.stringToLocalDateTime("2022-05-04", "16:20");
+    private static final LocalDateTime may4plusone = DateParser.stringToLocalDateTime("2022-05-04", "16:21");
     private static final LocalDateTime milestoneMay4 = DateParser.stringToLocalDateTime("2022-05-04", "");
 
     private final Deadline validDeadline = new Deadline(testProjectForEvents, "Deadline 1", "This is a deadline for project 1", may4);
     private final Milestone validMilestone = new Milestone(testProjectForEvents, "Milestone 1", "This is a milestone for project 1", milestoneMay4);
-    private final Event validEvent = new Event(testProjectForEvents, "Event 1", "This is a Event for project 1", may4, may4);
+    private final Event validEvent = new Event(testProjectForEvents, "Event 1", "This is a Event for project 1", may4, may4plusone);
 
     @Autowired
     private MockMvc mockMvc;
@@ -140,7 +141,7 @@ public class AddDatesControllerTest {
         validParamsEvent.add("eventName", "Event 1");
         validParamsEvent.add("eventType", "Event");
         validParamsEvent.add("eventStartDate", "2022-05-04T16:20");
-        validParamsEvent.add("eventEndDate", "2022-05-04T16:20");
+        validParamsEvent.add("eventEndDate", "2022-05-04T16:21");
         validParamsEvent.add("eventDescription", "This is a Event for project 1");
 
         startsBeforeProjectParams.add("projectId", String.valueOf(0));
