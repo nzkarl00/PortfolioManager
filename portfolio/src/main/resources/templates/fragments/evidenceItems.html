@@ -186,8 +186,8 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <div th:each="highFive: ${evidence.getHighFives}" class="row"
-                                         style="display:flex; text-align: center; padding-left: 1em">
+                                    <div th:each="highFive: ${evidence.getHighFives}" class="row" style="display:flex;
+                                    text-align: center; padding-left: 1em">
                                         <div th:if="${highFive.getParentUserId != userId}">
                                             <img class="img-fluid rounded-circle rounded-circle col-2 high_five_profile_picture"
                                                  th:src="${photoPrefix + highFive.getParentUserId}" alt="">
@@ -200,7 +200,7 @@
                                     </div>
                                 </div>
                                 <div th:id="${'highfived-modal-own-user-' + evidence.getId}" class="row"
-                                     style="display: flex; text-align: center; padding-left: 1em">
+                                     style="display:flex; text-align: center; padding-left: 1em">
                                     <img class="img-fluid rounded-circle rounded-circle col-2 high_five_profile_picture"
                                          th:src="${photoPrefix + userId}" alt="">
                                     <div class="col-7 high_five_vertical_center"
