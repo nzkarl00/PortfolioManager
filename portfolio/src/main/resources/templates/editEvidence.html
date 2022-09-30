@@ -166,6 +166,7 @@
         <script th:inline="javascript">
             const originalCommits = [[${existingCommits}]];
             const allServerSideSkillTags = [[${allSkills}]];
+            let deletedSkillTitlesLowercase = new Set();
 
             // Changes the text of a link to an input provided by the user
             // Changes the edit button to a save button
@@ -332,11 +333,12 @@
             // this original tag lets us know if the skill was an original skill and what it was
             if (skill.getAttribute("original")) {
                 deletedSkills.add(original)
+                deletedSkillTitlesLowercase.add(skill.getAttribute("original-title").toLowerCase());
                 loopAndDeleteEdited(original)
             } else {
                 newSkills.delete(event.target.value)
             }
-            skills.delete(event.target.value)
+            skills.delete(skill.value)
             parent.remove()
 
             storeSkills()
@@ -346,7 +348,6 @@
         // Use the data from the edit skill input textbox to overwrite a skill
         function editSkill(event) {
             skill = document.getElementById("skill_" + event.target.value)
-            skills.delete(skill.value)
             editingSkill = document.createElement("input")
             editingSkill.id = "skill_" + event.target.value
             editingSkill.className = "evidence_form_element_wide project_edit_data"
@@ -396,11 +397,18 @@
             // is not the original title of the skill tag. Reject the edit
             if (
                 skillTagTitleConflictsWithExisting &&
+                editedSkill.getAttribute("original-title") &&
                 editedSkill.getAttribute("original-title").toLowerCase() !== editedSkill.value.toLowerCase()
             ) {
                 document.getElementById("skill_error").style = "color:red;";
                 return false;
+            } else if (
+                deletedSkillTitlesLowercase.has(editedSkill.value.toLowerCase())
+            ) {
+                document.getElementById("skill_error").style = "color:red;";
+                return false;
             }
+            skills.delete(editedSkill.getAttribute("original-title"));
             skills.add(editedSkill.value);
 
             document.getElementById("skill_error").style = "display:none;";
@@ -452,7 +460,7 @@
             if (skill.getAttribute("original")) {
                 loopAndDeleteEdited(original)
                 // check for edit back to original title
-                if (original != editedSkill.value) {
+                if (original != editedSkill.getAttribute("original-title")) {
                     editedSkills.add(original + ":" + editedSkill.value)
                 }
             } else {
@@ -498,8 +506,10 @@
             }
 
 
+            console.log(newSkill)
+            console.log(deletedSkillTitlesLowercase)
             // check to see if it matches the correct skill format
-            if (validateSkill(newSkill)) {
+            if (validateSkill(newSkill) || deletedSkillTitlesLowercase.has(newSkill.toLowerCase())) {
                 document.getElementById("skill_error").style = "color:red;";
                 return false
             }
