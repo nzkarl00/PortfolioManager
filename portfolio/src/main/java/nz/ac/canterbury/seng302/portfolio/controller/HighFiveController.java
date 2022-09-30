@@ -12,9 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
+
+import javax.transaction.Transactional;
 
 /**
  * Responsible for high five network requests
@@ -37,6 +39,7 @@ public class HighFiveController {
      */
     @PostMapping("/high-five")
     @ResponseBody
+    @Transactional
     public String deleteEvidence(@RequestParam(value = "evidenceId") String evidenceId,
                                  @AuthenticationPrincipal AuthState principal) {
         int userId = AuthStateInformer.getId(principal);
@@ -49,6 +52,9 @@ public class HighFiveController {
                 return "added";
             } else {
                 logger.info("[HighFiveController] deleting HighFive: " + highFive.getId());
+
+                parentEvidence.removeHighFive(highFive);
+                evidenceRepository.save(parentEvidence);
                 highFiveRepository.delete(highFive);
                 return "deleted";
             }

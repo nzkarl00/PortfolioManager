@@ -9,7 +9,6 @@
         <div class="col-1">
         </div>
 
-
         <!-- Evidence Section which includes 1. heading, 2. infom and 3. bottom -->
         <div class="col-lg-10 col-md-12 col-sm-12">
 
@@ -83,7 +82,7 @@
                         <br>
                         <p class="bio evidence_title" th:if="${!evidence.getLinkedCommit().isEmpty()}">Commits </p>
                         <div class="row" th:id="${'commit_list_' + evidence.getId}">
-                            <div th:each="commit: ${evidence.getLinkedCommit}" style="width: 85%; display: block; padding: 0.5rem 3rem">
+                            <div th:each="commit: ${evidence.getLinkedCommitInReverseChronologicalOrder}" style="width: 85%; display: block; padding: 0.5rem 3rem">
                                 <div th:id="${commit.getHash}" class="row">
                                     <div class="row commit_display_smaller" th:text="${'[' + commit.getHash + ']'}"></div>
                                     <div class="row commit_display_large" th:text="${commit.getTitle}"></div>
@@ -108,13 +107,19 @@
                                 th:data-target="${'#deleteModal'+evidence.getId()}"
                                 class="fa fa-trash delete_evidence"></button>
                         <div id="high_five_container" style="width:100%; text-align: right">
-                        <button th:id="${'highFiveButton' + evidence.getId()}"
-                                class="high_five fa fa-hand-paper-o fa-2x" th:value="${evidence.getId()}"
-                                type="submit" onclick="toggleHighFive(this)">
-                        </button>
+                            <button th:id="${'highFiveButton' + evidence.getId()}"
+                                    class="high_five fa fa-hand-paper-o fa-2x" th:value="${evidence.getId()}"
+                                    type="submit" onclick="toggleHighFive(this)"
+                                    onload="displayHighFiveStatus(this)">
+                            </button>
+                            <a style="text-decoration: underline; color: #337ab7"
+                               th:id="${'High-Five_' + evidence.getId()}" th:value="${evidence.getHighFivesSize()}"
+                               th:text="${evidence.getHighFivesSize() + ' High-Fives'}"
+                            ></a>
                         </div>
                         </div>
                     </div>
+
                     <!-- Modal -->
                     <div class="modal fade" th:id="${'deleteModal'+evidence.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -131,6 +136,7 @@
                                 <form method="post" th:action="@{delete-evidence}">
                                     <div class="modal-footer">
                                         <input type="number" th:name="evidenceId" th:value="${evidence.getId()}" style="display: none">
+                                        <input type="number" th:name="userID" th:value="${userId}" style="display: none">
                                         <input type="number" th:name="projectId" th:value="${evidence.getAssociatedProject().getId()}" style="display: none">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelButton">Cancel</button>
                                         <button type="submit" class="btn btn-primary bg-danger" id="deleteButton" >Delete</button>
@@ -138,7 +144,6 @@
                                 </form>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -201,13 +206,37 @@
             }
         }
 
-        function toggleHighFive(event) {
-            $.post("high-five", {evidenceId: event.value}).done(function (result) {
-                console.log(result)
-            })
+        function displayHighFiveStatus(event) {
+            highFiveList = [[${highFiveList}]]
+            if (event.value in highFiveList) {
+                document.getElementById("highFiveButton" + event.value).className = "high_five fa fa-sign-language fa-2x";
+            }
         }
 
+        highFiveList = [[${highFiveList}]]
+        for (const evidenceId of highFiveList) {
+            document.getElementById("highFiveButton" + evidenceId).className = "high_five fa fa-sign-language fa-2x";
+        }
 
+        function toggleHighFive(event) {
+            $.post("high-five", {evidenceId: event.value}).done(function (result) {
+
+                let highFiveElement = document.getElementById("highFiveButton" + event.value);
+                let currentCount = parseInt(document.getElementById('High-Five_'+event.value).getAttribute("value"));
+                if (result === "added") {
+                    highFiveElement.classList.remove("high_five.fa.fa-hand-paper-o.fa-2x");
+                    highFiveElement.className = "high_five fa fa-sign-language fa-2x";
+                    currentCount = currentCount + 1;
+                } else if (result === "deleted") {
+                    highFiveElement.classList.remove("high_five.fa.fa-sign-language.fa-2x");
+                    highFiveElement.className = "high_five fa fa-hand-paper-o fa-2x";
+                    currentCount = Math.max(0,currentCount - 1);
+                }
+                document.getElementById('High-Five_'+event.value).innerText = currentCount + " High-Fives";
+                document.getElementById('High-Five_'+event.value).setAttribute('value', currentCount);
+
+            })
+        }
     </script>
     <br>
 </div>

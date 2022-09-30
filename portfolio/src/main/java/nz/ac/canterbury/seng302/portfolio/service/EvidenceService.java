@@ -291,11 +291,9 @@ public class EvidenceService {
             evidenceRepository.save(userEvidence);
 
             //Loop through all associated users again so that we can associate them to the evidence we created
-            // TODO: can refactor this to use to addUsersToExistingEvidence function
             for (String[] associated : validUsers) {
                 int associatedId = Integer.parseInt(associated[0]);
                 String associatedName = associated[1];
-                logger.debug(associatedName);
                 EvidenceUser evidenceUser =
                         new EvidenceUser(associatedId, associatedName,
                                 userEvidence);
@@ -309,7 +307,7 @@ public class EvidenceService {
     /**
      * Takes an evidence ID and returns a list of all skill tag titles that are associated with it.
      *
-     * @param evidenceId The evidence ID to be checked against
+     * @param evidence The evidence to be checked against
      * @return List of skill tag title strings
      */
     @Transactional
@@ -332,15 +330,15 @@ public class EvidenceService {
     public void addSkillsToRepo(Project parentProject, Evidence evidence,
                                 String skills) {
         //Create new skill for any skill that doesn't exist, create evidence tag for all skills
+        List<SkillTag> skillTags = getUserSkills(evidence.getParentUserId());
+
         if (skills.replace(" ", "").length() > 0) {
             List<String> skillList = extractListFromHTMLStringWithTilda(skills);
             for (String skillString : skillList) {
                 String validSkillString = skillString.replace(" ", "_");
-                SkillTag skillFromRepo =
-                        skillTagRepository.findByTitleIgnoreCase(
-                                validSkillString);
-                saveSkillsAndEvidenceTags(parentProject, evidence,
-                        validSkillString, skillFromRepo);
+                SkillTag skillFromRepo = getSkillIgnoreUsersCase(skillString, skillTags);
+                skillTags.add(saveSkillsAndEvidenceTags(parentProject, evidence,
+                        validSkillString, skillFromRepo));
             }
         }
 
@@ -368,7 +366,7 @@ public class EvidenceService {
      * @param validSkillString input skill to be checked
      * @param skillFromRepo    skill tag from the repo if matches validSkillString (case-insensitive)
      */
-    public void saveSkillsAndEvidenceTags(
+    public SkillTag saveSkillsAndEvidenceTags(
             Project parentProject,
             Evidence evidence,
             String validSkillString,
@@ -381,6 +379,7 @@ public class EvidenceService {
             skillTagRepository.save(newSkill);
             EvidenceTag noSkillEvidence = new EvidenceTag(newSkill, evidence);
             evidenceTagRepository.save(noSkillEvidence);
+            return newSkill;
         } else {
             logger.info(
                     "[EVIDENCE_SERVICE] Finding all evidence tag using the evidence id, by using evidenceTagRepository");
@@ -400,6 +399,7 @@ public class EvidenceService {
                         new EvidenceTag(skillFromRepo, evidence);
                 evidenceTagRepository.save(noSkillEvidence);
             }
+            return skillFromRepo;
         }
     }
 
@@ -474,7 +474,6 @@ public class EvidenceService {
             } else {
                 groupRepo = optionalGroupRepo.get();
                 Commit foundCommit = gitlabClient.getSingleCommit(hashAndGroup.get(0), groupRepo);
-                logger.info(foundCommit.toString());
                 constructedCommits.add(new LinkedCommit(parentEvidence, groupRepo.getName(), groupRepo.getOwner(), hashAndGroup.get(0),
                         foundCommit.getAuthorName(), foundCommit.getTitle(), DateParser.convertToLocalDateTime(foundCommit.getCreatedAt())));
             }
@@ -511,7 +510,6 @@ public class EvidenceService {
      */
     public void deleteEvidence(Evidence evidence) {
         List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
-        System.out.println(evidenceTags);
         List<SkillTag> skillTags = evidenceTags.stream()
             .map(EvidenceTag::getParentSkillTag)
             .filter(skillTag -> !Objects.equals(skillTag.getTitle(), "No_skills"))
@@ -540,7 +538,8 @@ public class EvidenceService {
         HashSet<Integer> tagIDs = new HashSet<>();
         ArrayList<SkillTag> tagList = new ArrayList<>();
         for (Evidence evidence : evidenceList) {
-            List<EvidenceTag> tagsForEvidence = evidence.getEvidenceTags();
+            List<EvidenceTag> tagsForEvidence = evidenceTagRepository.findAllByParentEvidenceId(
+                evidence.getId());
             for (EvidenceTag evidenceTag : tagsForEvidence) {
                 SkillTag skillTag = evidenceTag.getParentSkillTag();
                 if (!tagIDs.contains(skillTag.getId())) {
@@ -581,14 +580,14 @@ public class EvidenceService {
             deleteOrphanedSkillTag(skillID);
         }
 
+        List<SkillTag> skillTags = getUserSkills(evidence.getParentUserId());
+
         // Create
         logger.debug("Handling skill tag creations");
         for (String skillStr : input.skillsToAdd) {
-            SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase(
-                    skillStr
-            );
-            saveSkillsAndEvidenceTags(evidence.getAssociatedProject(), evidence,
-                    skillStr, skillFromRepo);
+            SkillTag skillFromRepo = getSkillIgnoreUsersCase(skillStr, skillTags);
+            skillTags.add(saveSkillsAndEvidenceTags(evidence.getAssociatedProject(), evidence,
+                    skillStr, skillFromRepo));
         }
 
         // Now manage tag renames.
@@ -597,6 +596,29 @@ public class EvidenceService {
 
         // Finally, apply or remove no skills tag.
         optionallyApplyNoSkillsTag(evidence.getId());
+    }
+
+    /**
+     * This function is designed to look through all the skills
+     * check if there is a skill in there that matches the skill string
+     * if not it then uses JPA to try and get the exact spelling
+     * @param skillString string to match
+     * @param skillTags the list of skills to match from
+     * @return
+     */
+    public SkillTag getSkillIgnoreUsersCase(String skillString, List<SkillTag> skillTags) {
+        return skillTags.stream()
+                .filter((SkillTag tag) -> {
+                    // Return matching skills, case-insensitive.
+                    return tag.getTitle().equalsIgnoreCase(skillString);
+                })
+                // Only return the first
+                .findFirst()
+                // If there is no match, then run default search against repo.
+                .orElseGet(() -> {
+                    return skillTagRepository.findByTitle(skillString);
+                });
+
     }
 
     private void modifySkillTag(final Integer evidenceID,
@@ -624,6 +646,10 @@ public class EvidenceService {
                         .getParentUserId())
                 .distinct()
                 .count();
+        logger.trace(String.format(
+                "Skill tag, is linked to evidence owned by %d users.",
+                numberOfParentUsers
+        ));
 
         // Two cases, one there is only one owner, in which case simply rename
         // The skill. In the other case, there are multiple owners, in which case
@@ -631,8 +657,34 @@ public class EvidenceService {
         // new skill tag.
         if (numberOfParentUsers < 2) {
             // Simply rename the skill tag and save it
-            skillTag.setTitle(newTagTitle);
-            skillTagRepository.save(skillTag);
+
+            List<Evidence> evidenceForUser =
+                evidenceRepository.findAllByParentUserId(
+                    evidence.getParentUserId());
+
+            evidenceForUser.stream().collect(Collectors.groupingBy(
+                Evidence::getAssociatedProject)
+            ).forEach((project, evidenceInProject) -> {
+                logger.info(String.format(
+                    "Creating new skill tag for Project=<%d>, contains %d piece of evidence",
+                    project.getId(), evidenceInProject.size()
+                ));
+                // try to get an existing skill tag with the corresponding title/project
+                Optional<SkillTag> trySkillTag =
+                    skillTagRepository.findByTitleAndParentProject(
+                        newTagTitle, project);
+                SkillTag newSkillTag;
+                // set newSkillTag to the existing skill tag or create a new one
+                if (trySkillTag.isEmpty()) {
+                    skillTag.setTitle(newTagTitle);
+                    skillTagRepository.save(skillTag);
+                } else {
+                    newSkillTag = trySkillTag.get();
+                    evidenceTagRepository.deleteByParentEvidenceAndParentSkillTag(evidence, skillTag);
+                    EvidenceTag newTag = new EvidenceTag(newSkillTag, evidence);
+                    evidenceTagRepository.save(newTag);
+                }
+            });
         } else {
             // Otherwise we need to do the more complicated process
             // Find all evidence belonging to the owner.
@@ -724,6 +776,7 @@ public class EvidenceService {
         Evidence evidence = evidenceOption.get();
 
         SkillTag noSkillTag = skillTagRepository.findByTitle("No_skills");
+
         List<EvidenceTag> allTags = evidenceTagRepository.findAllByParentEvidenceId(evidenceID);
         // Determine if the evidence has a tag of no_skills
         boolean evidenceContainsNoSkillTag = allTags
@@ -732,7 +785,7 @@ public class EvidenceService {
                         (EvidenceTag tag) -> tag.getParentSkillTag().getId() ==
                                 noSkillTag.getId());
 
-        if (evidence.getEvidenceTags().size() == 0) {
+        if (evidence.getEvidenceTags().isEmpty()) {
             EvidenceTag noSkillEvidence = new EvidenceTag(noSkillTag, evidence);
             evidenceTagRepository.save(noSkillEvidence);
         } else if (allTags.size() > 1 &&

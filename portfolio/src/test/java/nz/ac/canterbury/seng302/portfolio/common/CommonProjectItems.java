@@ -57,6 +57,14 @@ public final class CommonProjectItems {
         return new SkillTag(getValidProject(), "C");
     }
 
+    public static SkillTag getSkillTagAlpha() {
+        return new SkillTag(getValidProject(), "Alpha");
+    }
+
+    public static SkillTag getSkillTagAlphaLowercase() {
+        return new SkillTag(getValidProject(), "alpha");
+    }
+
     public static EvidenceTag getNoSkillsEvidenceTag(Evidence e) {
         SkillTag skillTag = getNoSkillsSkillTag();
         EvidenceTag evidenceTag = new EvidenceTag(skillTag, e);

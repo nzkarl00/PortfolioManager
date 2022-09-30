@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validateEnoughCharacters;
@@ -346,4 +347,29 @@ public class Evidence {
     public List<LinkedCommit> getLinkedCommit() {
         return linkedCommit;
     }
+
+    /**
+     * Get the linked commits associated with a piece of Evidence in reverse chronological order
+     */
+    public List<LinkedCommit> getLinkedCommitInReverseChronologicalOrder() {
+        linkedCommit.sort(Comparator.comparing(LinkedCommit::getTimeStamp).reversed());
+        return linkedCommit;
+    }
+
+
+    public List<HighFive> getHighFives() {
+        return this.highFives;
+    }
+
+    public void removeHighFive(HighFive highFive) {
+        this.highFives.removeIf((HighFive original) -> {
+                return original.getId() == highFive.getId();
+            });
+    }
+
+    /**
+     * Get the high-fives size associated with a piece of Evidence
+     */
+    @Transactional
+    public int getHighFivesSize() { return this.getHighFives().size(); }
 }

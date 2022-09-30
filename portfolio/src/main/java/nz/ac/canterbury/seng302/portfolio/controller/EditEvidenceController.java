@@ -237,7 +237,7 @@ public class EditEvidenceController {
 
         Set<String> skillTagList = evidenceService.getAllUniqueSkills();
         logger.debug(skills.toString());
-        model.addAttribute("existingCommits", evidence.getLinkedCommit());
+        model.addAttribute("existingCommits", evidence.getLinkedCommitInReverseChronologicalOrder());
         PaginatedGroupsResponse groupList = groupsService.getAllGroupsForUser(evidence.getParentUserId());
         model.addAttribute("groupList", groupList.getGroupsList());
         skillTagList.remove("No_skills");
@@ -271,8 +271,8 @@ public class EditEvidenceController {
      * @exception MalformedURLException if an invalid link is given
      * @exception GitLabApiException if there is an issue fetching commit data from gitlab API
      */
-    @Transactional
     @PostMapping("/edit-evidence")
+    @Transactional
     public String editEvidence(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "titleInput") String title,
