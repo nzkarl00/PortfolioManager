@@ -89,6 +89,10 @@ public class AddGroupController {
                 return "redirect:groups";
             } else {
                 result.addError(new ObjectError("globalError", createReply.getMessage()));
+                Integer userId = AuthStateInformer.getId(principal);
+                UserResponse userReply;
+                userReply = accountClientService.getUserById(userId);
+                navController.updateModelForNav(principal, model, userReply, userId);
                 return "addGroup";
             }
         } else {
