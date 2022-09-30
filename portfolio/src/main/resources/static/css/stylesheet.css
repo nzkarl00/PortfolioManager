@@ -1080,11 +1080,25 @@
     color: white;
 }
 
-.delete_button {
+.edit_button {
+
+    font-family: Nexa !important;
     border: none;
     margin-left: 10px;
     padding: 4px 10px;
-    background: #FF202E !important;
+    background: #FF48CF;
+    border-radius: 10px;
+    color: white;
+    white-space: nowrap
+}
+
+.delete_button {
+
+    font-family: Nexa !important;
+    border: none;
+    margin-left: 10px;
+    padding: 4px 10px;
+    background: #FF202E;
     border-radius: 10px;
     color: white;
 }
@@ -1787,4 +1801,16 @@ select.form-control {
     padding: -4px;
     background: #D9F9FF !important;
     border-radius: 10px;
+}
+
+.high_five_profile_picture {
+    width:2.5em;
+    height:2.5em;
+    padding: 0 !important;
+}
+
+.high_five_vertical_center {
+    display: inline-flex !important;
+    align-items: center;
+    padding-left: 1em
 }

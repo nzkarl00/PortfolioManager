@@ -49,7 +49,7 @@ public class EditPasswordTest {
 
     private ChangePasswordResponse changePasswordResponse = ChangePasswordResponse.newBuilder()
         .setIsSuccess(true)
-        .setMessage("Password changed successfully")
+        .setMessage("Password changed")
         .build();
 
     String newPassword = "newPassword";

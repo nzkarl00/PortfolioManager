@@ -1,5 +1,6 @@
 
 commits = new Set()
+commitsEdit = new Set()
 existing = new Set()
 removedCommits = new Set()
 
@@ -22,16 +23,21 @@ function repositionCommit(id) {
     button.setAttribute('onclick', "deleteCommit('" + id + "')")
     // allow for showing a commit already added in the search without overlapping the ids
     commit.id = "moved" + id
-    commits.add(id + "+" + document.getElementById("commit_group").value)
+    commits.add(id  + "+" + document.getElementById("commit_group").value)
     removedCommits.delete(id)
     let commitsStore = document.getElementById("commitsInput")
+
     let deletedCommits = document.getElementById("commitsDelete")
     commitsStore.value = Array.from(commits).join('~')
     deletedCommits.value = Array.from(removedCommits).join('~')
+
+    checkEditForNewCommit();
 }
 
 // remove the commit from the added commit list
 function deleteCommit(id) {
+
+
     const commit = document.getElementById("moved" + id)
     if (commit) {
         commit.remove()
@@ -48,6 +54,17 @@ function deleteCommit(id) {
     let deletedCommits = document.getElementById("commitsDelete")
     commitsStore.value = Array.from(commits).join('~')
     deletedCommits.value = Array.from(removedCommits).join('~')
+    checkEditForNewCommit();
+
+}
+
+function checkEditForNewCommit() {
+    let commitsStore = document.getElementById("commitsInput")
+    let deletedCommits = document.getElementById("commitsDelete")
+    try {
+        commitRecheck(commitsStore.value, deletedCommits.value)
+    } catch (error) {
+    }
 }
 
 // update the form property to contain all commit hashes

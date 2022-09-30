@@ -39,21 +39,21 @@
                     </div>
 
                     <div class="col-7">
-                    <form th:if="${isSelf}" th:action="@{edit-password}" id="edit_password_button" method="get">
-                        <input style="display:none;" th:name="id" id="id" type="number">
-                        <button class="edit_wide" style="padding-top:0rem;" type="submit">
-                            EDIT PASSWORD
-                        </button>
-                    </form>
+                        <form th:if="${isSelf}" th:action="@{edit-password}" id="edit_password_button" method="get">
+                            <input style="display:none;" th:name="id" id="id" type="number">
+                            <button class="edit_wide" style="padding-top:0rem;" type="submit">
+                                EDIT PASSWORD
+                            </button>
+                        </form>
                     </div>
 
                     <div class="col-7">
-                    <form th:if="${isSelf}" th:action="@{edit-photo}" method="get" id="edit_photo_button">
-                        <input style="display:none;" th:name="id" id="id" type="number">
-                        <button class="edit_wide" style="padding-top:0rem;" type="submit">
-                            EDIT PHOTO
-                        </button>
-                    </form>
+                        <form th:if="${isSelf}" th:action="@{edit-photo}" method="get" id="edit_photo_button">
+                            <input style="display:none;" th:name="id" id="id" type="number">
+                            <button class="edit_wide" style="padding-top:0rem;" type="submit">
+                                EDIT PHOTO
+                            </button>
+                        </form>
                     </div>
 
                 </div>

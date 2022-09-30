@@ -291,11 +291,9 @@ public class EvidenceService {
             evidenceRepository.save(userEvidence);
 
             //Loop through all associated users again so that we can associate them to the evidence we created
-            // TODO: can refactor this to use to addUsersToExistingEvidence function
             for (String[] associated : validUsers) {
                 int associatedId = Integer.parseInt(associated[0]);
                 String associatedName = associated[1];
-                logger.debug(associatedName);
                 EvidenceUser evidenceUser =
                         new EvidenceUser(associatedId, associatedName,
                                 userEvidence);
@@ -474,7 +472,6 @@ public class EvidenceService {
             } else {
                 groupRepo = optionalGroupRepo.get();
                 Commit foundCommit = gitlabClient.getSingleCommit(hashAndGroup.get(0), groupRepo);
-                logger.info(foundCommit.toString());
                 constructedCommits.add(new LinkedCommit(parentEvidence, groupRepo.getName(), groupRepo.getOwner(), hashAndGroup.get(0),
                         foundCommit.getAuthorName(), foundCommit.getTitle(), DateParser.convertToLocalDateTime(foundCommit.getCreatedAt())));
             }
@@ -511,7 +508,6 @@ public class EvidenceService {
      */
     public void deleteEvidence(Evidence evidence) {
         List<EvidenceTag> evidenceTags = evidenceTagRepository.findAllByParentEvidenceId(evidence.getId());
-        System.out.println(evidenceTags);
         List<SkillTag> skillTags = evidenceTags.stream()
             .map(EvidenceTag::getParentSkillTag)
             .filter(skillTag -> !Objects.equals(skillTag.getTitle(), "No_skills"))
@@ -584,11 +580,13 @@ public class EvidenceService {
         // Create
         logger.debug("Handling skill tag creations");
         for (String skillStr : input.skillsToAdd) {
-            SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase(
-                    skillStr
-            );
-            saveSkillsAndEvidenceTags(evidence.getAssociatedProject(), evidence,
-                    skillStr, skillFromRepo);
+            if (!skillStr.toLowerCase().contains("no_skill")) {
+                SkillTag skillFromRepo = skillTagRepository.findByTitleIgnoreCase(
+                        skillStr
+                );
+                saveSkillsAndEvidenceTags(evidence.getAssociatedProject(), evidence,
+                        skillStr, skillFromRepo);
+            }
         }
 
         // Now manage tag renames.
@@ -631,8 +629,33 @@ public class EvidenceService {
         // new skill tag.
         if (numberOfParentUsers < 2) {
             // Simply rename the skill tag and save it
-            skillTag.setTitle(newTagTitle);
-            skillTagRepository.save(skillTag);
+            List<Evidence> evidenceForUser =
+                    evidenceRepository.findAllByParentUserId(
+                            evidence.getParentUserId());
+
+            evidenceForUser.stream().collect(Collectors.groupingBy(
+                    Evidence::getAssociatedProject)
+            ).forEach((project, evidenceInProject) -> {
+                logger.info(String.format(
+                        "Creating new skill tag for Project=<%d>, contains %d piece of evidence",
+                        project.getId(), evidenceInProject.size()
+                ));
+                // try to get an existing skill tag with the corresponding title/project
+                Optional<SkillTag> trySkillTag =
+                        skillTagRepository.findByTitleAndParentProject(
+                                newTagTitle, project);
+                SkillTag newSkillTag;
+                // set newSkillTag to the existing skill tag or create a new one
+                if (trySkillTag.isEmpty()) {
+                    skillTag.setTitle(newTagTitle);
+                    skillTagRepository.save(skillTag);
+                } else {
+                    newSkillTag = trySkillTag.get();
+                    evidenceTagRepository.deleteByParentEvidenceAndParentSkillTag(evidence, skillTag);
+                    EvidenceTag newTag = new EvidenceTag(newSkillTag, evidence);
+                    evidenceTagRepository.save(newTag);
+                }
+            });
         } else {
             // Otherwise we need to do the more complicated process
             // Find all evidence belonging to the owner.
