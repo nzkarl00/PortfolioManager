@@ -300,7 +300,8 @@
             skills.add(newSkill.value)
             // this original tag lets us know if the skill was an original skill and what it was
             if (isOriginal) {
-                newSkill.setAttribute("original", skillId)
+                newSkill.setAttribute("original", skillId);
+                newSkill.setAttribute("original-title", skillText);
             }
 
             let skillDelete = document.createElement("button");
@@ -354,6 +355,7 @@
             // this original tag lets us know if the skill was an original skill and what it was
             if (skill.getAttribute("original")) {
                 editingSkill.setAttribute("original", skill.getAttribute("original"))
+                editingSkill.setAttribute("original-title", skill.getAttribute("original-title"))
             }
             skill.parentNode.replaceChild(editingSkill, skill)
 
@@ -390,7 +392,12 @@
                 .filter((skillTag) => skillTag.toLowerCase() == editedSkill.value.toLowerCase())
                 .length > 0;
 
-            if (skillTagTitleConflictsWithExisting) {
+            // If the title conflicts with an existing tag, and the title we are trying to save
+            // is not the original title of the skill tag. Reject the edit
+            if (
+                skillTagTitleConflictsWithExisting &&
+                editedSkill.getAttribute("original-title").toLowerCase() !== editedSkill.value.toLowerCase()
+            ) {
                 document.getElementById("skill_error").style = "color:red;";
                 return false;
             }
@@ -409,7 +416,10 @@
             newSkill.onclick = editSkill;
             // this original tag lets us know if the skill was an original skill and what it was
             if (skill.getAttribute("original")) {
-                editingSkill.setAttribute("original", skill.getAttribute("original"))
+                editingSkill.setAttribute("original", skill.getAttribute("original"));
+                editingSkill.setAttribute("original-title", skill.getAttribute("original-title"));
+                newSkill.setAttribute("original", skill.getAttribute("original"));
+                newSkill.setAttribute("original-title", skill.getAttribute("original-title"));
             }
 
             let skillDelete = document.createElement("button");
