@@ -5,7 +5,9 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFive;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFiveRepository;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,6 +48,8 @@ public class HighFiveControllerTest {
     private HighFiveRepository highFiveRepository;
     @MockBean
     private EvidenceRepository evidenceRepository;
+    @MockBean
+    private AccountClientService accountClientService;
 
     static MockedStatic<AuthStateInformer> utilities;
 
@@ -80,6 +84,7 @@ public class HighFiveControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
         when(evidenceRepository.findById(123456)).thenReturn(testEvidence);
+        when(accountClientService.getUserById(1)).thenReturn(UserResponse.newBuilder().setFirstName("admin").setLastName("admin").build());
         when(highFiveRepository.findByParentEvidenceAndParentUserId(testEvidence, 1)).thenReturn(null);
         MvcResult result = mockMvc.perform(post("/high-five").param("evidenceId", String.valueOf(123456)))
                 .andExpect(status().isOk()).andReturn();
@@ -100,6 +105,7 @@ public class HighFiveControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
         when(evidenceRepository.findById(123456)).thenReturn(mockEvidence);
+        when(accountClientService.getUserById(1)).thenReturn(UserResponse.newBuilder().setFirstName("admin").setLastName("admin").build());
         doNothing().when(mockEvidence).removeHighFive(any());
         // High five exists
         when(highFiveRepository.findByParentEvidenceAndParentUserId(mockEvidence, 1)).thenReturn(new HighFive());
@@ -121,6 +127,7 @@ public class HighFiveControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         utilities.when(() -> AuthStateInformer.getId(validAuthStateTeacher)).thenReturn(1);
         when(evidenceRepository.findById(123456)).thenReturn(null);
+        when(accountClientService.getUserById(1)).thenReturn(UserResponse.newBuilder().setFirstName("admin").setLastName("admin").build());
         when(highFiveRepository.findByParentEvidenceAndParentUserId(testEvidence, 1)).thenReturn(null);
         MvcResult result = mockMvc.perform(post("/high-five").param("evidenceId", String.valueOf(123456)))
                 .andExpect(status().isOk()).andReturn();
