@@ -33,27 +33,30 @@
                         <form th:action="@{edit-account}" method="get">
                             <input style="display:none;" th:name="id" id="id" type="number">
                             <button class="edit_wide" style="padding-top:0rem;" type="submit">
-                                EDIT PROFILE
+                                <i class="fa fa-edit"></i>
+                                Edit profile
                             </button>
                         </form>
                     </div>
 
                     <div class="col-7">
-                        <form th:if="${isSelf}" th:action="@{edit-password}" id="edit_password_button" method="get">
-                            <input style="display:none;" th:name="id" id="id" type="number">
-                            <button class="edit_wide" style="padding-top:0rem;" type="submit">
-                                EDIT PASSWORD
-                            </button>
-                        </form>
+                    <form th:if="${isSelf}" th:action="@{edit-password}" id="edit_password_button" method="get">
+                        <input style="display:none;" th:name="id" id="id" type="number">
+                        <button class="edit_wide" style="padding-top:0rem;" type="submit">
+                            <i class="fa fa-edit"></i>
+                            Edit password
+                        </button>
+                    </form>
                     </div>
 
                     <div class="col-7">
-                        <form th:if="${isSelf}" th:action="@{edit-photo}" method="get" id="edit_photo_button">
-                            <input style="display:none;" th:name="id" id="id" type="number">
-                            <button class="edit_wide" style="padding-top:0rem;" type="submit">
-                                EDIT PHOTO
-                            </button>
-                        </form>
+                    <form th:if="${isSelf}" th:action="@{edit-photo}" method="get" id="edit_photo_button">
+                        <input style="display:none;" th:name="id" id="id" type="number">
+                        <button class="edit_wide" style="padding-top:0rem;" type="submit">
+                            <i class="fa fa-edit"></i>
+                            Edit photo
+                        </button>
+                    </form>
                     </div>
 
                 </div>
@@ -123,8 +126,8 @@
             <!-- View Evidence Button -->
             <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
                 <a th:href="@{evidence(ui=${userId})}">
-                    <button class="edit_wide" style="padding-top:0rem;">
-                        VIEW EVIDENCE
+                    <button class="view_evidence" style="padding-top:0rem;">
+                        <i class="fa fa-eye"></i> View evidence
                     </button>
                 </a>
             </div>
