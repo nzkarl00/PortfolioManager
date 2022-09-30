@@ -148,7 +148,6 @@ public class WeblinksStepDefs {
             // add insecure weblink
             linkInput.sendKeys("http://info.cern.ch/");
             linkButton.click();
-            System.out.println("links added");
 
             WebElement saveButton = seleniumExample.config.getDriver()
                 .findElement(By.id("projectSave"));

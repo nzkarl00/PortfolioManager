@@ -5,12 +5,12 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceTag;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.SkillTag;
 import nz.ac.canterbury.seng302.portfolio.service.DateParser;
+import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public final class CommonProjectItems {
 
@@ -27,6 +27,18 @@ public final class CommonProjectItems {
         Evidence evidence = new Evidence(0, testProject, "Evidence One", "This evidence is the first to be submitted", may4, 0);
 
         return evidence;
+    }
+
+    public static final List<Integer> testDeleteSkillIDs = List.of(1);
+    private static final List<String> testSkillsToAdd = List.of("Skill1", "Skill2");
+    private static final HashMap<Integer, String> testSkillsToChange = new HashMap<Integer, String>() {{put(1, "Skill");}};
+
+    public static EvidenceService.ParsedEditSkills getParsedEditSkillsAddSkill() {
+        return new EvidenceService.ParsedEditSkills(testSkillsToAdd, Collections.emptyList(), new HashMap<>());
+    }
+
+    public static EvidenceService.ParsedEditSkills getParsedEditSkillsRemoveSkill() {
+        return new EvidenceService.ParsedEditSkills(Collections.emptyList(), testDeleteSkillIDs, new HashMap<>());
     }
 
     public static SkillTag getNoSkillsSkillTag() {

@@ -103,7 +103,11 @@
                                 </input>
                             </div>
                         </div>
-                        <button id="add_user_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addUser(); return false;"></button>
+                        <button id="add_user_button" type="button" style="margin-left: 1em"
+                                class="table_text user_role_table user_button"
+                                onclick="addUser(); return false;">
+                            <span><i class="fa fa-plus"></i></span>
+                        </button>
                     </div>
                     <label class="project_inputAlertBlue" id="userCharCount" style="padding-left: 5px">Characters Remaining: 65</label>
                     <br>
@@ -125,7 +129,11 @@
                         </input>
                         </div>
                         </div>
-                        <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill(); return false;"></button>
+                        <button id="add_skill_button" type="button" style="margin-left: 1em"
+                                class="table_text user_role_table user_button"
+                                onclick="addSkill(); return false;">
+                            <span><i class="fa fa-plus"></i></span>
+                        </button>
                     </div>
                     <label class="project_inputAlertBlue" id="skillCharCount" style="padding-left: 5px">Characters Remaining: 50, press DELETE with skill input selected to remove skills</label>
                     <br>
@@ -144,7 +152,11 @@
                         <div class="col-12" id="links_div" style="display: flex; justify-content: center; align-items: center;">
                             <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
                             <input form="evidenceCreateForm" type="text" id="add_link_input" class="evidence_form_element_wide project_edit_data">
-                            <button id="add_link_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addLink(); return false;"></button>
+                            <button id="add_link_button" type="button" style="margin-left: 1em"
+                                    class="table_text user_role_table user_button"
+                                    onclick="addLink(); return false;">
+                                <span><i class="fa fa-plus"></i></span>
+                            </button>
                             </input>
                         </div><br>
 
@@ -175,8 +187,8 @@
                         <div class="col-9">
                         </div>
                         <div class="col-2" id="submit_and_cancel" >
-                            <button form="evidenceCreateForm" class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button">CANCEL</button>
-                            <button form="evidenceCreateForm" class="save_evidence" id="projectSave" type="submit">SAVE</button>
+                            <button form="evidenceCreateForm" class="cancel_evidence" onclick="displayAddButton()" id="cancelButton" type="button"><i class="fa fa-ban pr-3"></i> Cancel</button>
+                            <button form="evidenceCreateForm" class="save_evidence" id="projectSave" type="submit"><i class="fa fa-save p-1 pr-3"></i> Save</button>
                         </div>
                 </div>
         </form>
@@ -184,7 +196,7 @@
     <br>
     <div class="row">
         <div class="col-1"></div>
-        <button class="add_evidence col-10" onclick="displayAddEvidenceForm(); canSaveCheck()" id="add_button"> + Add Evidence </button>
+        <button class="add_evidence col-10" onclick="displayAddEvidenceForm(); canSaveCheck()" id="add_button"> <span><i class="fa fa-plus"></i></span> Add evidence </button>
         <div class="col-1"></div>
     </div>
     <script type="text/javascript" th:src="@{js/autocomplete.js}"></script>

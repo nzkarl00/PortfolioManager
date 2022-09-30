@@ -37,7 +37,7 @@
 
             <div class="col-lg-7 col-md-8 col-sm-12 portion_body">
                 <label class="project_subhead" id="eventNameLabel" for="eventName">Sprint Name</label> <br/>
-                <input class="project_edit_data horizontal_field" id="eventName" type="text" th:name="sprintName" th:value="*{sprint.getName}">
+                <input class="project_edit_data horizontal_field" id="eventName" type="text" minLength="1"  th:name="sprintName" th:value="*{sprint.getName}">
                 <br/>
                 <div class="horizontal-group">
                     <div class="horizontal-group-element" >
@@ -66,9 +66,9 @@
             <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end">
 
                 <button class="cancel" type="button">
-                    <a class="button_a" th:href="@{details(id=${project.getId})}">CANCEL</a>
+                    <a class="button_a" th:href="@{details(id=${project.getId})}"><i class="fa fa-ban p-1"></i> Cancel</a>
                 </button>
-                <button class="save" type="submit">SAVE</button>
+                <button class="save" type="submit"><i class="fa fa-save p-1 pr-3"></i> Save</button>
             </div>
 
 

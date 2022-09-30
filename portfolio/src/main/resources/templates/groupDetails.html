@@ -28,13 +28,16 @@
 
         <form th:style="${editPermission}" th:action="@{edit-group}" method="get">
           <input style="display:none;" th:name="id" id="id" th:value="${group.GroupId}" type="number">
-          <button class="add" id="addDateButton" type="submit">
-            Edit Group Properties
+          <button class="edit" id="addDateButton" type="submit">
+              <i class="fa fa-edit"></i>&nbsp;
+            Edit group properties
           </button>
         </form>
 
-        <button th:style="${ group.getGroupId() == 1 || group.getGroupId() == 2  ?  'display: none; ' + editPermission  : editPermission}" type="button" class="delete-group" data-toggle="modal" data-target="#deleteModal">
-          Delete Group
+        <button th:style="${ group.getGroupId() == 1 || group.getGroupId() == 2  ?  'display: none; ' + editPermission  : editPermission}"
+                type="button" class="delete-group" data-toggle="modal" data-target="#deleteModal">
+            <i class="fa fa-trash"></i>&nbsp;
+          Delete group
         </button>
 
         <!-- Modal -->
