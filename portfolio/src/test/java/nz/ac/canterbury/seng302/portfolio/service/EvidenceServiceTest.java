@@ -201,49 +201,16 @@ public class EvidenceServiceTest {
     }
 
     @Test
-    void getSkillIgnoreUsersCase_perfectMatch() {
-        List<SkillTag> skills = new ArrayList<>(List.of(getSkillTagA()));
-        SkillTag actual = evidenceService.getSkillIgnoreUsersCase("A", skills);
-        Assertions.assertEquals(getSkillTagA().getTitle(), actual.getTitle());
-    }
-
-    @Test
-    void getSkillIgnoreUsersCase_letterMatch() {
-        List<SkillTag> skills = new ArrayList<>(List.of(getSkillTagA()));
-        SkillTag actual = evidenceService.getSkillIgnoreUsersCase("a", skills);
-        Assertions.assertEquals(getSkillTagA().getTitle(), actual.getTitle());
-    }
-
-    /**
-     * If there are multiple case-insensitive matches. It should return the first.
-     */
-    @Test
-    void getSkillIgnoreUsersCase_multiplePossibleMatches_returnsFirstInList() {
-        List<SkillTag> skills = new ArrayList<>(List.of(getSkillTagAlpha(), getSkillTagAlphaLowercase()));
-        SkillTag actual = evidenceService.getSkillIgnoreUsersCase(
-                "alpha",
-                skills
-            );
-        Assertions.assertEquals(getSkillTagAlpha().getTitle(), actual.getTitle());
-
-        SkillTag actualRepeated = evidenceService.getSkillIgnoreUsersCase(
-                "Alpha",
-                skills
-        );
-        Assertions.assertEquals(getSkillTagAlpha().getTitle(), actualRepeated.getTitle());
-    }
-
-    @Test
-    void getSkillIgnoreUsersCase_noMatch() {
-        List<SkillTag> skills = new ArrayList<>(List.of(getSkillTagA()));
-        SkillTag actual = evidenceService.getSkillIgnoreUsersCase("b", skills);
-        assertNull(actual);
-    }
-
-    @Test
-    void getSkillIgnoreUsersCase_emptyList() {
-        List<SkillTag> skills = List.of();
-        SkillTag actual = evidenceService.getSkillIgnoreUsersCase("b", skills);
-        assertNull(actual);
+    void deleteLastSkillAndApplyNoSkillsTag() {
+        Evidence testEvidence = getValidEvidence();
+        SkillTag noSkillsTag = getNoSkillsSkillTag();
+        testEvidence.setEvidenceTags(Collections.emptyList());
+        when(evidenceRepository.findById(any(Integer.class))).thenReturn(Optional.of(testEvidence));
+        when(skillTagRepository.findByTitle("No_skills")).thenReturn(noSkillsTag);
+        when(evidenceTagRepository.findAllByParentEvidenceId(any(Integer.class))).thenReturn(Collections.emptyList());
+        when(evidenceTagRepository.findByParentEvidenceIdAndParentSkillTagId(any(Integer.class), any(Integer.class)))
+                .thenReturn(getEvidenceTagA(testEvidence));
+        evidenceService.handleSkillTagEditsForEvidence(getParsedEditSkillsRemoveSkill(), testEvidence);
+        verify(evidenceTagRepository).save(refEq(new EvidenceTag(noSkillsTag, testEvidence)));
     }
 }

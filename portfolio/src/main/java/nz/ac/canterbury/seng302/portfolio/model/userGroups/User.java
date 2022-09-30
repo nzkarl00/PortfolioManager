@@ -17,6 +17,9 @@ public class User {
     public Integer id;
     public List<Role> roles = new ArrayList<>();
 
+    public User() {
+    }
+
     /**
      * the constructor to parse a UserResponse into a usable class
      * @param response the UserResponse

@@ -18,7 +18,7 @@
       <br><br><br>
     </div>
     <!-- Signup Form -->
-    <form class="row" th:action="@{createGroup}" method="post">
+    <form class="row" th:action="@{createGroup}" th:object="${groupForm}" method="post">
 
       <div class="col-lg-2 col-m-1 col-2"></div>
 
@@ -39,14 +39,10 @@
 
       <!-- Buttons -->
       <div class="col-lg-1 col-md-2 col-sm-8 col-7 align-items-end text-center" style="text-align:center;">
-
-        <button id="signup-button" class="save" type="submit">CREATE</button>
-
-
-        <button class="cancel" type="button">
-          <a  class="button_a " th:href="@{groups}">CANCEL</a>
-        </button>
-
+          <button class="cancel" type="button">
+            <a  class="button_a " th:href="@{groups}"><i class="fa fa-ban p-1"></i> Cancel</a>
+          </button>
+        <button id="signup-button" class="save" type="submit"><i class="fa fa-save p-1 pr-3"></i> Save</button>
       </div>
 
       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -57,7 +53,7 @@
 
       <div class="col-2"></div>
 
-    </form>
+
 
     <br>
 
@@ -68,12 +64,8 @@
       <div class="col-7 text-center ">
 
 
-        <button class="signup_box" th:style="${errorShow}">
-          <p class="signup_error" th:text="${successCode}"/>
-        </button>
-
-        <button class="signup_box_green" th:style="${successShow}">
-          <p class="signup_error_green" th:text="${successCode}"/>
+        <button th:if="${#fields.hasErrors('global')}" class="signup_box">
+          <p th:each="err : ${#fields.errors('global')}" th:text="${err}" />
         </button>
 
 
@@ -83,7 +75,7 @@
 
 
     </div>
-
+    </form>
     <div class="row-1">
       <br><br><br>
     </div>

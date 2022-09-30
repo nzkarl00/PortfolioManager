@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.Group;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepo;
 import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupRepoRepository;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.GroupTemplate;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.GitlabClient;
@@ -18,7 +19,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -79,38 +83,25 @@ public class EditGroupController {
         } else {
             return "redirect:groups";
         }
-
-        model.addAttribute("errorShow", errorShow);
-        model.addAttribute("errorCode", errorCode);
-        model.addAttribute("successShow", successShow);
-        model.addAttribute("successCode", successCode);
-        model.addAttribute("groupId", id);
-
         Integer userId = AuthStateInformer.getId(principal);
-
-
         navController.updateModelForNav(principal, model, userReply, userId);
-
         model.addAttribute("id", id);
 
         GroupDetailsResponse response = groupsService.getGroup(id);
 
-        model.addAttribute("longName", response.getLongName());
-        model.addAttribute("shortName", response.getShortName());
+        GroupTemplate template = new GroupTemplate();
+        template.setLongName(response.getLongName());
+        template.setShortName(response.getShortName());
+        model.addAttribute("groupId", id);
         // Try fetch the repo data from Repo store.
         Optional<GroupRepo> groupRepo = groupRepoRepository.findByParentGroupId(group.getId());
         if (groupRepo.isPresent()) {
-            model.addAttribute("repoOwner", groupRepo.get().getOwner());
-            model.addAttribute("repoName", groupRepo.get().getName());
-            model.addAttribute("apiKey", groupRepo.get().getApiKey());
-            model.addAttribute("repoAlias", groupRepo.get().getAlias());
-        } else {
-            model.addAttribute("repoOwner", "");
-            model.addAttribute("repoName", "");
-            model.addAttribute("apiKey", "");
-            model.addAttribute("repoAlias", "");
+            template.setRepoOwner(groupRepo.get().getOwner());
+            template.setRepoName(groupRepo.get().getName());
+            template.setApiKey(groupRepo.get().getApiKey());
+            template.setRepoAlias(groupRepo.get().getAlias());
         }
-
+        model.addAttribute("groupForm", template);
         return "editGroup";
     }
 
@@ -133,7 +124,7 @@ public class EditGroupController {
      * @param model the model to add info to display
      * @return String to direct the user
      */
-    @PostMapping("/modifyGroup")
+    @PostMapping("/editGroup")
     public String editGroup(
         @AuthenticationPrincipal AuthState principal,
         @RequestParam Integer id,
@@ -143,6 +134,8 @@ public class EditGroupController {
         @RequestParam String repoName,
         @RequestParam String repoAlias,
         @RequestParam String apiKey,
+        @ModelAttribute("groupForm") GroupTemplate g,
+        BindingResult result,
         Model model ) {
 
         Integer userid = AuthStateInformer.getId(principal);
@@ -162,12 +155,8 @@ public class EditGroupController {
 
         ModifyGroupDetailsResponse response = groupsService.modifyGroup(id, longName, shortName);
         successCode = response.getMessage();
-        if (response.getIsSuccess()) {
-            errorShow = "display:none;";
-            successShow = "";
-        } else {
-            errorShow = "";
-            successShow = "display:none;";
+        if (!response.getIsSuccess()) {
+            result.addError(new ObjectError("globalError", successCode));
         }
 
         // Now deal with group repo stuff
@@ -176,12 +165,8 @@ public class EditGroupController {
 
             // All must be set
             if (repoOwner.length() == 0 || repoName.length() == 0 || apiKey.length() == 0 || repoAlias.length() == 0) {
-                errorShow = "";
-                errorCode = "If any of Repo Owner, Repo Name, Repo Alias or API Key is set, all must be set.";
-                successShow = "display:none;";
-                return "redirect:editGroup?id=" + id;
+                result.addError(new ObjectError("globalError", "If any of Repo Owner, Repo Name, Repo Alias or API Key is set, all must be set."));
             }
-
             // Try and fetch an existing Repo record
             GroupRepo groupRepo = null;
             Optional<GroupRepo> existingGroupRepo = groupRepoRepository.findByParentGroupId(id);
@@ -195,7 +180,6 @@ public class EditGroupController {
             groupRepo.setName(repoName);
             groupRepo.setApiKey(apiKey);
             groupRepo.setAlias(repoAlias);
-
             // Check with Gitlab client that the repo exists.
             try {
                 gitlabClient.getProject(apiKey, repoOwner, repoName);
@@ -209,17 +193,19 @@ public class EditGroupController {
                 // If the connection fails, save it if there was no existing repo record
                 // However if there was no existing record, then don't save it.
                 if (existingGroupRepo.isPresent()) {
-                    errorShow = "";
-                    successShow = "display:none;";
-                    errorCode = "Group details not saved as API connection details are incorrect.";
-                    return "redirect:editGroup?id=" + id;
+                    result.addError(new ObjectError("globalError", "Group details not saved as API connection details are incorrect."));
                 } else {
                     errorShow = "";
                     successShow = "display:none;";
                     errorCode = "Group details saved, however Gitlab API Connection is broken.";
                 }
             }
-
+            if (result.hasGlobalErrors()) {
+                navController.updateModelForNav(principal, model, userReply, userid);
+                model.addAttribute("id", id);
+                model.addAttribute("groupId", id);
+                return "editGroup";
+            }
             try {
                 groupRepoRepository.save(groupRepo);
             } catch (Exception e) {
@@ -228,7 +214,6 @@ public class EditGroupController {
                 successShow = "display:none;";
             }
         }
-
-        return "redirect:editGroup?id=" + id;
+        return "redirect:group?id=" + id;
     }
 }

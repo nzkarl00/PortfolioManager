@@ -350,7 +350,6 @@ public class Evidence {
         return linkedCommit;
     }
 
-
     /**
      * Get the linked commits associated with a piece of Evidence in reverse chronological order
      */

@@ -1,14 +1,20 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.UserTemplate;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -39,7 +45,7 @@ public class SignupController {
     public String signup(
         Model model
     ) {
-
+        model.addAttribute("userForm", new UserTemplate());
         model.addAttribute("testData", "null");
         model.addAttribute("errorShow", errorShow);
         model.addAttribute("successShow", successShow);
@@ -77,24 +83,25 @@ public class SignupController {
         @RequestParam(value="lastname") String lastname,
         @RequestParam(value="pronouns") String pronouns,
         @RequestParam(value="email") String email,
+        @ModelAttribute("userForm") UserTemplate user,
+        BindingResult result,
         Model model
     )
     {
         UserRegisterResponse registerReply;
         registerReply = accountClientService.register(username, password, firstname, lastname, pronouns, email);
         successCode = registerReply.getMessage();
-        if (successCode.contains("Created account")) {
-            errorShow = "display:none;";
-            successShow = "";
-        } else {
-            errorShow = "";
-            successShow = "display:none;";
+        logger.debug(successCode);
+        if (!successCode.contains("Created account")) {
+            result.addError(new ObjectError("globalError", successCode));
         }
 
         // Tries to auto authenticate a login after signing up
         AuthenticateResponse authenticateResponse = loginController.authenticateLogin(username, password, model);
         logger.trace("[LOGIN] Authenticate Response received");
-
+        if (result.hasErrors()) {
+            return "signup";
+        }
         if (authenticateResponse == null) {
             return "redirect:signup";
         }
