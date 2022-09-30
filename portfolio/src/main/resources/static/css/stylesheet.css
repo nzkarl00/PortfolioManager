@@ -1809,6 +1809,7 @@ select.form-control {
     background: #D9F9FF !important;
     border-radius: 10px;
 }
+
 .view_evidence {
 
     background-color:#19DAFF; !important;
@@ -1844,7 +1845,6 @@ select.form-control {
     margin-right: 0.25rem !important;
 }
 
-
 .high_five_profile_picture {
     width:2.5em;
     height:2.5em;
@@ -1854,5 +1854,5 @@ select.form-control {
 .high_five_vertical_center {
     display: inline-flex !important;
     align-items: center;
-    padding-left: 1em
+    padding-left: 1em;
 }

@@ -350,9 +350,6 @@ public class Evidence {
         return linkedCommit;
     }
 
-    public List<String> getHighFiveNames() {
-        return highFives.stream().map(highFive -> highFive.firstName).collect(Collectors.toList());
-    }
     /**
      * Get the linked commits associated with a piece of Evidence in reverse chronological order
      */
