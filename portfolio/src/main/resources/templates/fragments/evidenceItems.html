@@ -203,7 +203,7 @@
         function createSummary(element) {
             // parse the [] and ', ' into an array of firstnames without the user
             highFiveUsers = element.getAttribute("value").replace("]", "").replace("[", "").split(", ")
-            if (highFiveUsers.length === 0) {
+            if (highFiveUsers.length === 0 || highFiveUsers[0] === "") {
                 element.textContent = "no one has high fived"
             } else if (highFiveUsers.length === 1) {
                 element.textContent = highFiveUsers[0] + " has high fived"
