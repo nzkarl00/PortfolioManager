@@ -88,7 +88,11 @@
                             </input>
                         </div>
                     </div>
-                    <button id="add_user_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="canEditCheck()"></button>
+                    <button id="add_user_button" type="button" style="margin-left: 1em"
+                            class="table_text user_role_table user_button"
+                            onclick="addUser(); return false; canEditCheck()">
+                        <span><i class="fa fa-plus"></i></span>
+                    </button>
                 </div>
                 <label class="project_inputAlertBlue" id="userCharCount" style="padding-left: 5px">Characters Remaining: 65</label>
                 <br>
@@ -110,7 +114,11 @@
                             </input>
                         </div>
                     </div>
-                    <button id="add_skill_button" type="button" style="margin-left: 1em" class="table_text user_role_table" th:text="Add" onclick="addSkill()"></button>
+                    <button id="add_skill_button" type="button" style="margin-left: 1em"
+                            class="table_text user_role_table user_button"
+                            onclick="addSkill(); return false; canEditCheck()">
+                        <span><i class="fa fa-plus"></i></span>
+                    </button>
                 </div>
                 <label class="project_inputAlertBlue" id="skillCharCount" style="padding-left: 5px">Characters Remaining: 50</label>
                 <br>
@@ -127,7 +135,11 @@
                     <div class="col-12" id="links_div" style="display: flex; justify-content: center; align-items: center;">
                         <!-- Style for padding and margin here place the button inside the input, and ensure text won't collide with button -->
                         <input type="text" id="add_link_input" class="evidence_form_element_wide project_edit_data">
-                        <button id="add_link_button" type="button" style="margin-left: 1em" class="table_text user_role_table" onclick="addLink(); return false; canEditCheck()" th:text="Add"></button>
+                        <button id="add_link_button" type="button" style="margin-left: 1em"
+                                class="table_text user_role_table user_button"
+                                onclick="addLink(); return false; canEditCheck()" >
+                            <span><i class="fa fa-plus"></i></span>
+                        </button>
                         </input>
                     </div>
                     <br>
@@ -152,8 +164,8 @@
                         </div>
 
                         <div id="submit_and_cancel" style="width: 15%; display: block; justify-content: left">
-                            <button class="cancel_edit_evidence"><a th:href="@{evidence}" id="cancelButton" type="button" style="text-align: center; color: #FFFFFF;">CANCEL</a></button>
-                            <button class="save_edit_evidence" id="projectSave" type="submit" style="background-color: #AAAAAA;" disabled>SAVE</button>
+                            <button class="cancel_edit_evidence"><a th:href="@{evidence}" id="cancelButton" type="button" style="text-align: center; color: #FFFFFF;"><i class="fa fa-ban"></i> Cancel</a></button>
+                            <button class="save_edit_evidence" id="projectSave" type="submit" style="background-color: #AAAAAA;" disabled> <i class="fa fa-save p-1 pr-3"></i> Save</button>
                         </div>
                     </div>
                 </div>

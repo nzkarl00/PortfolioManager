@@ -25,8 +25,7 @@ function buildSprint(sprint, sprintNum) {
     col1.appendChild(editButton)
 
     const innerEditButton = document.createElement("a")
-    innerEditButton.className = "button_a"
-    innerEditButton.innerText = "EDIT"
+    innerEditButton.className = "button_a fa fa-edit"
     innerEditButton.href = "edit-sprint?id=" + sprint.parentProjectId + "&ids=" + sprint.id
     editButton.appendChild(innerEditButton)
 
@@ -50,10 +49,12 @@ function buildSprint(sprint, sprintNum) {
     deleteSprintId.value = sprint.id
     deleteSprintId.type = "number"
     deleteForm.appendChild(deleteSprintId)
+    const trashIcon = document.createElement("i")
+    trashIcon.className = "fa fa-trash"
 
     const deleteButton = document.createElement("button")
     deleteButton.className = "delete delete-button "
-    deleteButton.innerText = "DELETE"
+    deleteButton.appendChild(trashIcon)
     deleteForm.appendChild(deleteButton)
 
     const br1 = document.createElement("br")

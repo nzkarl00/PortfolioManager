@@ -44,13 +44,15 @@
                     <b class="evidence_head setWide">Skill:</b><br>
                     <select id="si" th:name="si" onclick="resetElement('ci')" class="project_edit_data setWide">
                         <option value="" selected disabled> Choose here</option>
-                        <div th:if="${userSkills.size() > 0}" th:each="skill: ${userSkills}"><option th:value="${skill.getTitle}" th:text="${skill.getTitle}"> </option><div>
+                        <div th:if="${userSkills.size() > 0}" th:each="skill: ${userSkills}"><option th:value="${skill.getTitle}" th:text="${skill.getTitle}"> </option></div>
                     </select>
                 </div>
             </div>
 
             <div class="evidence_form_element align-content-center col-1">
-                <button id="searchEvidence" class="search" type="submit"><i class="fa fa-search"></i></button>
+                <button id="searchEvidence" class="search" type="submit">
+                    <i class="fa fa-search"></i>
+                </button>
             </div>
 
         </form>
