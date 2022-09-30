@@ -164,7 +164,8 @@
         <script type="text/javascript" th:src="@{js/evidenceFormHandler.js}"></script>
 
         <script th:inline="javascript">
-            const originalCommits = [[${existingCommits}]]
+            const originalCommits = [[${existingCommits}]];
+            const allServerSideSkillTags = [[${allSkills}]];
 
             // Changes the text of a link to an input provided by the user
             // Changes the edit button to a save button
@@ -368,15 +369,30 @@
             return false;
         }
 
+        const getServerSkillsAndLocalSkills = () => {
+            let res = Array.from(skills);
+            allServerSideSkillTags.forEach((serverTag) => {
+                alreadyExistsInLocalSkills = res.filter(
+                    (localSkill) => localSkill.toLowerCase() === serverTag.toLowerCase())
+                    .length > 0;
+                if (!alreadyExistsInLocalSkills) {
+                    res.push(serverTag);
+                }
+            })
+            return res;
+        };
+
         // when the check button is pressed save the edited skill
         function saveSkill(event) {
             editedSkill = document.getElementById("skill_" + event.target.value)
-            for (const skill of skills) {
-                //Retrieve what the value the user has edited the skill to, to compare to all other skills currently on this evidence
-                if (skill.toLowerCase() == editedSkill.value.toLowerCase()) {
-                    document.getElementById("skill_error").style = "color:red;";
-                    return false;
-                }
+
+            const skillTagTitleConflictsWithExisting = getServerSkillsAndLocalSkills()
+                .filter((skillTag) => skillTag.toLowerCase() == editedSkill.value.toLowerCase())
+                .length > 0;
+
+            if (skillTagTitleConflictsWithExisting) {
+                document.getElementById("skill_error").style = "color:red;";
+                return false;
             }
             skills.add(editedSkill.value);
 
@@ -507,7 +523,7 @@
         editedSkills = new Set()
         deletedSkills = new Set()
         newSkills = new Set()
-        allSkills = [[${allSkills}]]
+        allSkills = [[${allSkills}]];
         allUsers = [[${allUsers}]];
 
         autocomplete(document.getElementById("add_skill_input"), allSkills, "skill");
@@ -577,7 +593,6 @@
         let commitChange = "N";
 
         function commitRecheck(commits, commitDelete) {
-
             if (commitDelete === "") {
                 if (commits === "") {
                     commitChange = "N"
