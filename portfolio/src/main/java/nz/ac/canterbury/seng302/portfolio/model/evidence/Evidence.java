@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static nz.ac.canterbury.seng302.portfolio.service.ValidateService.validateEnoughCharacters;
 
@@ -88,6 +89,7 @@ public class Evidence {
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     protected List<LinkedCommit> linkedCommit;
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "parentEvidence", cascade = CascadeType.ALL)
     protected List<HighFive> highFives;
 
@@ -348,6 +350,9 @@ public class Evidence {
         return linkedCommit;
     }
 
+    public List<String> getHighFiveNames() {
+        return highFives.stream().map(highFive -> highFive.firstName).collect(Collectors.toList());
+    }
     /**
      * Get the linked commits associated with a piece of Evidence in reverse chronological order
      */
@@ -355,7 +360,6 @@ public class Evidence {
         linkedCommit.sort(Comparator.comparing(LinkedCommit::getTimeStamp).reversed());
         return linkedCommit;
     }
-
 
     public List<HighFive> getHighFives() {
         return this.highFives;

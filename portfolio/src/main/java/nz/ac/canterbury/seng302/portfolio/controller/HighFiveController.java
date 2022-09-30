@@ -4,6 +4,8 @@ import nz.ac.canterbury.seng302.portfolio.model.evidence.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFive;
 import nz.ac.canterbury.seng302.portfolio.model.evidence.HighFiveRepository;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.User;
+import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.checkerframework.checker.units.qual.A;
@@ -28,6 +30,8 @@ public class HighFiveController {
     HighFiveRepository highFiveRepository;
     @Autowired
     EvidenceRepository evidenceRepository;
+    @Autowired
+    AccountClientService accountClientService;
 
     Logger logger = LoggerFactory.getLogger(HighFiveController.class);
 
@@ -43,12 +47,13 @@ public class HighFiveController {
     public String deleteEvidence(@RequestParam(value = "evidenceId") String evidenceId,
                                  @AuthenticationPrincipal AuthState principal) {
         int userId = AuthStateInformer.getId(principal);
+        User user = new User(accountClientService.getUserById(userId));
         Evidence parentEvidence = evidenceRepository.findById(Integer.parseInt(evidenceId));
         if (parentEvidence != null) {
             HighFive highFive = highFiveRepository.findByParentEvidenceAndParentUserId(parentEvidence, userId);
             if (highFive == null) {
                 logger.info("[HighFiveController] adding new HighFive to evidence: " + parentEvidence.getParentUserId());
-                highFiveRepository.save(new HighFive(parentEvidence, userId));
+                highFiveRepository.save(new HighFive(parentEvidence, userId, user.getFirstName(), user.getLastName()));
                 return "added";
             } else {
                 logger.info("[HighFiveController] deleting HighFive: " + highFive.getId());
