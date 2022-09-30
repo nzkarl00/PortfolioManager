@@ -31,6 +31,8 @@ public class Group {
         }
     }
 
+    public Group(){};
+
     /**
      * Gets long name of the group
      * @return  long name of the group

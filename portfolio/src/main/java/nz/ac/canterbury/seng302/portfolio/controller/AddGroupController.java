@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.UserTemplate;
+import nz.ac.canterbury.seng302.portfolio.model.userGroups.Group;
 import nz.ac.canterbury.seng302.portfolio.service.AccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateInformer;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
@@ -12,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -28,10 +33,6 @@ public class AddGroupController {
     private AccountClientService accountClientService;
 
     Logger logger = LoggerFactory.getLogger(AddGroupController.class);
-    final String displayNone = "display:none;";
-    String errorShow = displayNone;
-    String successShow = displayNone;
-    String successCode = "successCode";
 
     /**
      * the get mapping of the create group page
@@ -48,11 +49,7 @@ public class AddGroupController {
         if (!(role.equals("teacher") || role.equals("admin"))) {
             return "redirect:groups";
         }
-
-        model.addAttribute("errorShow", errorShow);
-        model.addAttribute("successShow", successShow);
-        model.addAttribute("successCode", successCode);
-
+        model.addAttribute("groupForm", new Group());
 
         Integer userId = AuthStateInformer.getId(principal);
 
@@ -77,6 +74,8 @@ public class AddGroupController {
         @AuthenticationPrincipal AuthState principal,
         @RequestParam(value="longName") String longName,
         @RequestParam(value="shortName") String shortName,
+        @ModelAttribute("groupForm") Group group,
+        BindingResult result,
         Model model
     )
     {
@@ -86,16 +85,12 @@ public class AddGroupController {
             model.addAttribute("display", "");
             CreateGroupResponse createReply;
             createReply = groupsService.create(shortName, longName);
-            successCode = createReply.getMessage();
             if (createReply.getIsSuccess()) {
-                errorShow = displayNone;
-                successShow = "";
+                return "redirect:groups";
             } else {
-                errorShow = "";
-                successShow = displayNone;
+                result.addError(new ObjectError("globalError", createReply.getMessage()));
+                return "addGroup";
             }
-
-            return "redirect:addGroup";
         } else {
             return "redirect:groups";
         }
